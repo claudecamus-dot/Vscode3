@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VSCode3 — Wiki d'onboarding</title>
+<style>
+  :root {
+    --bg: #EEF0EA;
+    --surface: #FFFFFF;
+    --surface-2: #E4E8DF;
+    --ink: #1D2420;
+    --ink-soft: #52594F;
+    --ink-faint: #868C7E;
+    --line: #D3D8CB;
+    --line-soft: #E1E5DA;
+    --accent: #445A7C;
+    --accent-soft: #E1E7EE;
+    --accent-ink: #2C3D57;
+    --confirmed: #3E7A53;
+    --confirmed-soft: #DEEBE1;
+    --deduit: #A67611;
+    --deduit-soft: #F3E7C9;
+    --incertain: #A2582C;
+    --incertain-soft: #F1DFCF;
+    --font-display: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Consolas, "Liberation Mono", monospace;
+    --sidebar-w: 264px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14181A;
+      --surface: #1B2120;
+      --surface-2: #222925;
+      --ink: #E7ECE6;
+      --ink-soft: #AEB6A9;
+      --ink-faint: #6E756A;
+      --line: #2C332D;
+      --line-soft: #242B26;
+      --accent: #93AAD1;
+      --accent-soft: #24313F;
+      --accent-ink: #C7D5EA;
+      --confirmed: #7FBD93;
+      --confirmed-soft: #1E3327;
+      --deduit: #E0B256;
+      --deduit-soft: #362B12;
+      --incertain: #D48A5F;
+      --incertain-soft: #382417;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14181A; --surface: #1B2120; --surface-2: #222925;
+    --ink: #E7ECE6; --ink-soft: #AEB6A9; --ink-faint: #6E756A;
+    --line: #2C332D; --line-soft: #242B26;
+    --accent: #93AAD1; --accent-soft: #24313F; --accent-ink: #C7D5EA;
+    --confirmed: #7FBD93; --confirmed-soft: #1E3327;
+    --deduit: #E0B256; --deduit-soft: #362B12;
+    --incertain: #D48A5F; --incertain-soft: #382417;
+  }
+  :root[data-theme="light"] {
+    --bg: #EEF0EA; --surface: #FFFFFF; --surface-2: #E4E8DF;
+    --ink: #1D2420; --ink-soft: #52594F; --ink-faint: #868C7E;
+    --line: #D3D8CB; --line-soft: #E1E5DA;
+    --accent: #445A7C; --accent-soft: #E1E7EE; --accent-ink: #2C3D57;
+    --confirmed: #3E7A53; --confirmed-soft: #DEEBE1;
+    --deduit: #A67611; --deduit-soft: #F3E7C9;
+    --incertain: #A2582C; --incertain-soft: #F1DFCF;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent-ink); }
+  a:focus-visible, button:focus-visible, .toc-link:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .wiki { display: flex; align-items: flex-start; max-width: 1160px; margin: 0 auto; }
+
+  .sidebar {
+    position: sticky; top: 0; width: var(--sidebar-w); flex: 0 0 var(--sidebar-w);
+    height: 100vh; overflow-y: auto; padding: 26px 18px 40px;
+    border-right: 1px solid var(--line); background: var(--surface);
+  }
+  .brand { font-family: var(--font-display); font-size: 1.22rem; font-weight: 700; margin: 0 0 2px; }
+  .brand-sub {
+    font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--ink-faint); margin: 0 0 20px;
+  }
+  .toc-group { margin-bottom: 16px; }
+  .toc-group-label {
+    font-family: var(--font-mono); font-size: 0.66rem; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--ink-faint); margin: 0 0 6px; padding-left: 10px;
+  }
+  .toc-link {
+    display: block; font-size: 0.86rem; color: var(--ink-soft); text-decoration: none;
+    padding: 5px 10px; border-radius: 6px; border-left: 2px solid transparent; line-height: 1.3;
+  }
+  .toc-link:hover { background: var(--surface-2); color: var(--ink); }
+
+  .content { flex: 1 1 auto; min-width: 0; padding: 36px 52px 120px; max-width: 840px; }
+
+  .doc-header { margin-bottom: 8px; }
+  .doc-header h1 { font-family: var(--font-display); font-size: 2rem; margin: 0 0 6px; text-wrap: balance; }
+  .doc-meta {
+    display: flex; flex-wrap: wrap; gap: 6px 16px; font-family: var(--font-mono);
+    font-size: 0.76rem; color: var(--ink-faint); margin-bottom: 28px;
+  }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 34px; padding: 14px 16px;
+    border: 1px solid var(--line); border-radius: 10px; background: var(--surface);
+    font-size: 0.82rem; color: var(--ink-soft); align-items: center;
+  }
+  .legend strong { color: var(--ink); font-weight: 600; }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin: 0 0 36px; }
+  .stat-card {
+    border: 1px solid var(--line); border-radius: 10px; padding: 12px 12px; background: var(--surface);
+    display: flex; flex-direction: column; gap: 3px; text-align: center;
+  }
+  .stat-num { font-family: var(--font-display); font-size: 1.5rem; color: var(--accent-ink); font-variant-numeric: tabular-nums; }
+  .stat-label { font-size: 0.72rem; color: var(--ink-soft); line-height: 1.3; }
+
+  section.doc { margin-bottom: 64px; scroll-margin-top: 20px; }
+  section.doc + section.doc { border-top: 1px solid var(--line); padding-top: 44px; }
+  .eyebrow {
+    font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase;
+    letter-spacing: 0.09em; color: var(--accent-ink); margin: 0 0 6px;
+  }
+  h2 { font-family: var(--font-display); font-size: 1.5rem; margin: 0 0 6px; text-wrap: balance; }
+  .file-meta {
+    font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-faint);
+    margin: 0 0 20px; display: flex; gap: 14px; flex-wrap: wrap;
+  }
+  h3 { font-family: var(--font-display); font-size: 1.12rem; margin: 26px 0 10px; }
+  p { margin: 0 0 10px; max-width: 66ch; color: var(--ink); }
+  ul, ol { margin: 0 0 10px; padding-left: 1.25em; max-width: 66ch; }
+  li { margin-bottom: 6px; }
+  strong { font-weight: 600; }
+  code {
+    font-family: var(--font-mono); font-size: 0.86em; background: var(--surface-2);
+    padding: 0.08em 0.38em; border-radius: 4px; color: var(--accent-ink);
+  }
+
+  .fact { margin: 0 0 16px; padding-left: 12px; border-left: 2px solid var(--line); }
+  .tag {
+    display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono);
+    font-size: 0.7rem; font-weight: 600; padding: 2px 8px; border-radius: 999px;
+    margin-top: 4px; letter-spacing: 0.02em;
+  }
+  .tag-confirme { background: var(--confirmed-soft); color: var(--confirmed); }
+  .tag-deduit { background: var(--deduit-soft); color: var(--deduit); }
+  .tag-incertain { background: var(--incertain-soft); color: var(--incertain); }
+  .tag-source { font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-faint); margin-top: 5px; }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; margin: 12px 0 20px; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.86rem; min-width: 480px; }
+  thead th {
+    text-align: left; font-family: var(--font-mono); font-size: 0.66rem; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--ink-faint); background: var(--surface-2);
+    padding: 9px 13px; border-bottom: 1px solid var(--line); white-space: nowrap;
+  }
+  tbody td { padding: 9px 13px; border-bottom: 1px solid var(--line-soft); vertical-align: top; color: var(--ink); }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--surface-2); }
+
+  .tree {
+    font-family: var(--font-mono); font-size: 0.79rem; background: var(--surface-2);
+    border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px;
+    overflow-x: auto; line-height: 1.65; color: var(--ink-soft); margin: 12px 0 20px;
+  }
+  .tree .arrow { color: var(--accent-ink); }
+
+  .critical {
+    border-left: 3px solid var(--incertain); background: var(--incertain-soft);
+    border-radius: 0 10px 10px 0; padding: 12px 16px; margin: 8px 0 20px;
+  }
+  .critical p:last-child { margin-bottom: 0; }
+
+  .shadow-list { list-style: none; padding-left: 0; }
+  .shadow-list li {
+    padding-left: 22px; position: relative; color: var(--ink-soft);
+  }
+  .shadow-list li::before { content: "?"; position: absolute; left: 2px; color: var(--ink-faint); font-family: var(--font-mono); }
+
+  footer.doc-footer {
+    border-top: 1px solid var(--line); padding-top: 16px; margin-top: 50px;
+    font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-faint);
+  }
+
+  @media (max-width: 860px) {
+    .wiki { flex-direction: column; }
+    .sidebar { position: relative; width: 100%; height: auto; flex-basis: auto; border-right: none; border-bottom: 1px solid var(--line); }
+    .content { padding: 28px 20px 80px; max-width: 100%; }
+  }
+  @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+</head>
+<body>
+
+<div class="wiki">
+  <aside class="sidebar">
+    <p class="brand">VSCode3</p>
+    <p class="brand-sub">Wiki d'onboarding · onboarder</p>
+    <nav>
+      <div class="toc-group">
+        <p class="toc-group-label">Vue d'ensemble</p>
+        <a class="toc-link" href="#index">Index</a>
+      </div>
+      <div class="toc-group">
+        <p class="toc-group-label">Métier</p>
+        <a class="toc-link" href="#business">Domaine BMAD IAP</a>
+      </div>
+      <div class="toc-group">
+        <p class="toc-group-label">Technique</p>
+        <a class="toc-link" href="#stack">Stack</a>
+        <a class="toc-link" href="#architecture">Architecture</a>
+        <a class="toc-link" href="#conventions">Conventions</a>
+        <a class="toc-link" href="#tests">Tests</a>
+      </div>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <div class="doc-header">
+      <h1>Wiki d'onboarding — VSCode3</h1>
+      <div class="doc-meta">
+        <span>Généré par : onboarder</span>
+        <span>Mis à jour : 2026-07-07</span>
+        <span>Source : docs/wiki/*.md</span>
+      </div>
+    </div>
+
+    <div class="legend">
+      <strong>Tags de confiance :</strong>
+      <span class="tag tag-confirme">CONFIRMÉ</span>
+      <span class="tag tag-deduit">DÉDUIT</span>
+      <span class="tag tag-incertain">INCERTAIN</span>
+      <span>— chaque assertion cite agent · date · fichier source</span>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card"><span class="stat-num">2</span><span class="stat-label">Commits git</span></div>
+      <div class="stat-card"><span class="stat-num">0</span><span class="stat-label">Tests automatisés</span></div>
+      <div class="stat-card"><span class="stat-num">0</span><span class="stat-label">Pipeline CI/CD</span></div>
+      <div class="stat-card"><span class="stat-num">0</span><span class="stat-label">Ligne de code applicatif</span></div>
+      <div class="stat-card"><span class="stat-num">1</span><span class="stat-label">Livrable de fond (cadrage)</span></div>
+    </div>
+
+    <!-- ============ INDEX ============ -->
+    <section class="doc" id="index">
+      <p class="eyebrow">Vue d'ensemble</p>
+      <h2>BMAD IAP Cadrage — Index Wiki</h2>
+      <p class="file-meta"><span>docs/wiki/index.md</span><span>confidence: confirmed</span></p>
+
+      <h3>Nature du dépôt</h3>
+      <div class="fact">
+        <p>Dépôt Claude Code sans application exécutable : scaffolding de projet (hooks, réglages de permissions) + documentation de cadrage pour le module de transformation consulting BMAD IAP (Infra as a Product).</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · CLAUDE.md, docs/bmad-iap-cadrage.md</div>
+      </div>
+
+      <h3>Contenu critique</h3>
+      <div class="fact">
+        <p>Le seul artefact substantiel du dépôt est <code>docs/bmad-iap-cadrage.md</code> (v1.6) — mirroir local d'un wiki de cadrage claude.ai, revu et corrigé le 2026-07-07 (compteurs de templates/checklists, redaction des noms clients, dépendances externes versionnées, gate de maturité DevOps tranché, schéma module.yaml résolu).</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · docs/bmad-iap-cadrage.md:5</div>
+      </div>
+
+      <h3>God nodes — concepts les plus connectés</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Concept</th><th>Pages liées</th><th>Criticité</th></tr></thead>
+          <tbody>
+            <tr><td>Gate IA &amp; confidentialité</td><td>Architecture, Domaine BMAD IAP</td><td>Critique</td></tr>
+            <tr><td>BMAD IAP (11 agents / 11 workflows / 14 templates / 9 checklists)</td><td>Architecture, Domaine BMAD IAP</td><td>Haute</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Carte des domaines métier</h3>
+      <ul>
+        <li><a href="#business">Transformation Infra as a Product</a> — module de cadrage consulting pour transformer une organisation infra en plateforme produit tout en traitant structurellement le gaspillage</li>
+      </ul>
+
+      <h3>Points critiques actifs</h3>
+      <div class="critical">
+        <p>Le module <code>bmad-iap/</code> lui-même (agents/, workflows/, templates/, knowledge/) n'existe pas encore physiquement dans ce dépôt — seul le cadrage est rédigé à ce stade.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · absence de dossier bmad-iap/</div>
+      </div>
+      <div class="critical">
+        <p>Le <code>module.yaml</code> du futur module dépend d'un outillage externe (<code>bmb</code>, bmad-builder) non encore invoqué localement — scaffolding prévu en MVP1.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · docs/bmad-iap-cadrage.md §Structure, "Résolution module.yaml"</div>
+      </div>
+
+      <h3>Zones d'ombre</h3>
+      <ul class="shadow-list">
+        <li>Pas de CI/CD, pas de tests automatisés (dépôt documentaire)</li>
+        <li><code>.roadmap/</code> et <code>.claude/skills/</code> mentionnés dans CLAUDE.md comme « à créer au besoin » — pas encore présents dans l'arborescence</li>
+        <li>Process de redaction du REX source formalisé en principe seulement — pas encore une étape de workflow reproductible</li>
+      </ul>
+    </section>
+
+    <!-- ============ BUSINESS ============ -->
+    <section class="doc" id="business">
+      <p class="eyebrow">Métier</p>
+      <h2>Domaine métier — BMAD IAP (Infra as a Product)</h2>
+      <p class="file-meta"><span>docs/wiki/business/index.md</span><span>confidence: confirmed</span></p>
+
+      <h3>Vue d'ensemble</h3>
+      <div class="fact">
+        <p>Module de transformation consulting à double mission : transformer une organisation infrastructure (guichet, centre de coûts ou fonction support) en plateforme interne opérée comme un produit, ET traiter structurellement le gaspillage qui l'en empêche. Les deux piliers ne sont pas séquentiels ni optionnels l'un par rapport à l'autre.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · docs/bmad-iap-cadrage.md §Mission &amp; vision</div>
+      </div>
+
+      <h3>Domaines documentés</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Domaine</th><th>Fichier</th><th>Concepts clés</th></tr></thead>
+          <tbody>
+            <tr><td>Cadrage BMAD IAP</td><td>docs/bmad-iap-cadrage.md</td><td>Produit infra, traitement des gaspillages, gate IA, modèles de maturité, agents/workflows</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Concepts transversaux</h3>
+      <div class="fact">
+        <p><strong>Gate IA &amp; confidentialité</strong> — workflow bloquant (<code>iap-ai-data-confidentiality-gate</code>), checkpoint humain non-automatisable avant tout usage IA sur données client, classification D0–D4.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · docs/bmad-iap-cadrage.md §Gate IA &amp; confidentialité</div>
+      </div>
+      <div class="fact">
+        <p><strong>Traitement des gaspillages</strong> — 8 familles (flux, humain, RUN, financier, cognitif, décisionnel, environnemental, IA), chaîne Détecter→Qualifier→Quantifier→…→Prévenir, scoring Impact × Faisabilité − Prudence IA.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · docs/bmad-iap-cadrage.md §Traitement des gaspillages</div>
+      </div>
+      <div class="fact">
+        <p><strong>Modèles de maturité</strong> — deux échelles indépendantes : maturité produit/plateforme (grille VSCode1) et maturité IA client (pilier IA/Agentic/Organisation Augmentée).</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · docs/bmad-iap-cadrage.md §Modèles de maturité</div>
+      </div>
+
+      <h3>Utilisateurs cibles</h3>
+      <div class="fact">
+        <p>Consultant BMAD IAP (« le coach ») — pilote la mission de bout en bout, un agent invoqué à la fois, aucune orchestration automatique (Niveau A de l'ambition de l'outil).</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · docs/bmad-iap-cadrage.md §Utilisation simple par le coach</div>
+      </div>
+      <div class="fact">
+        <p>Sponsor client — achète la trajectoire produit/plateforme à moyen terme, lit le deck exécutif final.</p>
+        <span class="tag tag-deduit">DÉDUIT</span>
+        <div class="tag-source">onboarder · 2026-07-07 · docs/bmad-iap-cadrage.md §Mission &amp; vision, §Workflows</div>
+      </div>
+      <div class="fact">
+        <p>Parties prenantes interviewées — équipe infra, utilisateurs applicatifs, management, sponsor — une <code>Interview</code> par persona pour objectiver convergences/divergences.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · docs/bmad-iap-cadrage.md §Moteur d'assessment</div>
+      </div>
+    </section>
+
+    <!-- ============ STACK ============ -->
+    <section class="doc" id="stack">
+      <p class="eyebrow">Technique</p>
+      <h2>Stack</h2>
+      <p class="file-meta"><span>docs/wiki/technical/stack.md</span><span>confidence: confirmed</span></p>
+
+      <h3>Dépendances principales</h3>
+      <div class="fact">
+        <p>Aucune dépendance applicative — ce dépôt ne contient pas d'application exécutable, seulement de la documentation et le scaffolding Claude Code.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · absence de requirements.txt / package.json / pyproject.toml</div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Catégorie</th><th>Technologie</th><th>Rôle</th></tr></thead>
+          <tbody>
+            <tr><td>Outillage IA</td><td>Claude Code CLI</td><td>Assistant de développement, exécute le hook PreToolUse</td></tr>
+            <tr><td>Scripting hook</td><td>Python 3 (stdlib uniquement)</td><td>guard_destructive_git.py — aucune dépendance tierce</td></tr>
+            <tr><td>Versionnement</td><td>Git</td><td>Deux commits à ce jour</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tag-source">CONFIRMÉ · onboarder · 2026-07-07 · .claude/hooks/guard_destructive_git.py, .claude/settings.json</p>
+
+      <h3>Variables d'environnement requises</h3>
+      <div class="fact">
+        <p>Aucune détectée — pas de <code>.env</code> ni <code>.env.example</code> dans ce dépôt.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07</div>
+      </div>
+
+      <h3>Contraintes de version</h3>
+      <div class="fact">
+        <p>Pas de <code>.python-version</code> ni de version Python figée pour le hook — dépend de l'interpréteur <code>py</code> disponible sur la machine.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · .claude/settings.json:6</div>
+      </div>
+    </section>
+
+    <!-- ============ ARCHITECTURE ============ -->
+    <section class="doc" id="architecture">
+      <p class="eyebrow">Technique</p>
+      <h2>Architecture</h2>
+      <p class="file-meta"><span>docs/wiki/technical/architecture.md</span><span>confidence: confirmed</span></p>
+
+      <h3>Structure globale</h3>
+      <div class="fact">
+        <p>Dépôt documentaire, pas d'architecture logicielle : scaffolding Claude Code (hooks, permissions) autour d'un unique livrable de fond, <code>docs/bmad-iap-cadrage.md</code>.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · arborescence racine</div>
+      </div>
+
+      <h3>Arborescence</h3>
+      <div class="tree">VSCode3/
+  .claude/
+    settings.json                    <span class="arrow">←</span> hook PreToolUse (garde-fou git) + permissions deny
+    hooks/guard_destructive_git.py    <span class="arrow">←</span> bloque git push --force sans lease et git reset --hard
+  docs/
+    bmad-iap-cadrage.md               <span class="arrow">←</span> wiki de cadrage BMAD IAP, v1.6
+    wiki/                             <span class="arrow">←</span> ce wiki d'onboarding (sources markdown)
+    wiki.html                         <span class="arrow">←</span> ce rendu HTML autonome
+  CLAUDE.md                           <span class="arrow">←</span> instructions projet
+  .gitignore                          <span class="arrow">←</span> exclut settings.local.json, CLAUDE.local.md</div>
+
+      <h3>Architecture du contenu documenté (BMAD IAP)</h3>
+      <div class="fact">
+        <p>Le vrai « système » que ce dépôt documente n'est pas du code mais une méthode consulting : 11 agents, 11 workflows, 14 templates, 9 checklists, 9+ fichiers knowledge, 1 gate IA transversal non-automatisable — rien n'est encore implémenté physiquement ici, seul le cadrage l'est.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · docs/bmad-iap-cadrage.md §Structure</div>
+      </div>
+
+      <h3>Décisions architecturales notables</h3>
+      <div class="fact">
+        <p><strong>Isolation multi-client</strong> — <code>engagements/&lt;client-slug&gt;/</code> séparé de la méthode générique, pour qu'une même installation serve plusieurs missions sans mélange de données.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · docs/bmad-iap-cadrage.md §Isolation multi-client</div>
+      </div>
+      <div class="fact">
+        <p><strong>Gate IA toujours checkpoint humain</strong> — quel que soit le mode d'autonomie choisi à l'intake, la décision de confidentialité IA n'est jamais automatisable.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · docs/bmad-iap-cadrage.md §Gate IA &amp; confidentialité</div>
+      </div>
+      <div class="fact">
+        <p><strong>Dépendances externes versionnées</strong> — grille de maturité VSCode1 (pin V3.2) et contrats OpenHub (VSCode2, ADR-006/009), revus à chaque boucle de réévaluation et chaque MVP gate.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · docs/bmad-iap-cadrage.md §Modèles de maturité</div>
+      </div>
+
+      <h3>Points de fragilité connus</h3>
+      <div class="critical">
+        <p>Le module <code>bmad-iap/</code> n'existe pas encore physiquement — l'implémentation démarre en MVP0/MVP1.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · absence de dossier bmad-iap/</div>
+      </div>
+      <div class="critical">
+        <p>Aucune CI/CD.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07</div>
+      </div>
+    </section>
+
+    <!-- ============ CONVENTIONS ============ -->
+    <section class="doc" id="conventions">
+      <p class="eyebrow">Technique</p>
+      <h2>Conventions</h2>
+      <p class="file-meta"><span>docs/wiki/technical/conventions.md</span><span>confidence: mixed</span></p>
+
+      <h3>Linting &amp; formatage</h3>
+      <div class="fact">
+        <p>Aucun outil de linting/formatage configuré pour le seul script Python du dépôt.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07</div>
+      </div>
+      <div class="fact">
+        <p>Pas de pre-commit hooks git (à ne pas confondre avec le hook Claude Code PreToolUse, un garde-fou d'agent, pas un hook git).</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07</div>
+      </div>
+
+      <h3>Nommage</h3>
+      <ul>
+        <li>Documents de cadrage : <code>kebab-case.md</code> sous <code>docs/</code></li>
+        <li>Script hook Python : <code>snake_case.py</code></li>
+        <li>Langue : français, vocabulaire technique anglais conservé (RUN/BUILD, gate, checklist, MVP…)</li>
+      </ul>
+      <p class="tag-source">CONFIRMÉ · onboarder · 2026-07-07 · docs/, .claude/hooks/, docs/bmad-iap-cadrage.md</p>
+
+      <h3>Git</h3>
+      <div class="fact">
+        <p>Deux commits à ce jour, messages en anglais avec co-auteur Claude explicite.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · git log</div>
+      </div>
+      <div class="fact">
+        <p><code>.gitignore</code> exclut <code>.claude/settings.local.json</code> et <code>CLAUDE.local.md</code> — réglages propres à une machine/personne, jamais partagés.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · .gitignore</div>
+      </div>
+
+      <h3>Configuration &amp; secrets</h3>
+      <div class="fact">
+        <p><code>.claude/settings.json</code> bloque explicitement la lecture de <code>.env</code>, <code>secrets/**</code>, <code>config/credentials.json</code> par l'agent, même si ces fichiers n'existent pas encore dans ce dépôt.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · .claude/settings.json:12</div>
+      </div>
+
+      <h3>Patterns spécifiques à l'équipe</h3>
+      <div class="fact">
+        <p><strong>Garde-fou destructif « fail open »</strong> — le hook <code>guard_destructive_git.py</code> ne bloque que sur un motif reconnu avec certitude ; toute erreur de parsing laisse passer la commande plutôt que de bloquer à tort.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · .claude/hooks/guard_destructive_git.py:139-141</div>
+      </div>
+      <div class="fact">
+        <p>Tags de confiance CONFIRMÉ / DÉDUIT / INCERTAIN systématiques sur toute assertion de cadrage — convention empruntée au projet frère VSCode2 (OpenHub) et reprise telle quelle dans ce wiki.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · docs/bmad-iap-cadrage.md §Agents BMAD</div>
+      </div>
+    </section>
+
+    <!-- ============ TESTS ============ -->
+    <section class="doc" id="tests">
+      <p class="eyebrow">Technique</p>
+      <h2>Stratégie de tests</h2>
+      <p class="file-meta"><span>docs/wiki/technical/tests.md</span><span>confidence: confirmed</span></p>
+
+      <h3>Frameworks</h3>
+      <div class="fact">
+        <p>Aucun — pas de code applicatif à tester dans ce dépôt.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07</div>
+      </div>
+
+      <h3>Organisation</h3>
+      <div class="fact">
+        <p>Pas de dossier <code>tests/</code>.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07</div>
+      </div>
+
+      <h3>Seuil de couverture</h3>
+      <div class="fact">
+        <p>Non applicable.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07</div>
+      </div>
+
+      <h3>Philosophie</h3>
+      <div class="fact">
+        <p>Le seul artefact « testable » au sens qualité est <code>docs/bmad-iap-cadrage.md</code> lui-même : sa section §Qualité &amp; test du module propose déjà une méthodologie (missions fixtures, pré-check structurel vs jugement humain) applicable au futur module <code>bmad-iap/</code>, mais rien n'est encore implémenté ici.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">onboarder · 2026-07-07 · docs/bmad-iap-cadrage.md §Qualité &amp; test du module</div>
+      </div>
+
+      <h3>Tests existants</h3>
+      <p>Aucun (0).</p>
+
+      <footer class="doc-footer">
+        Rendu depuis docs/wiki/*.md — VSCode3 · onboarder · 2026-07-07
+      </footer>
+    </section>
+  </main>
+</div>
+</body>
+</html>
