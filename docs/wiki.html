@@ -274,6 +274,11 @@
         <a class="toc-link" href="#index">Index</a>
       </div>
       <div class="toc-group">
+        <p class="toc-group-label">Projet (VSCode3)</p>
+        <a class="toc-link" href="#repo-structure">Structure du dépôt</a>
+        <a class="toc-link" href="#projet-roadmap">Roadmap du projet</a>
+      </div>
+      <div class="toc-group">
         <p class="toc-group-label">Métier</p>
         <a class="toc-link" href="#business">Domaine BMAD IAP</a>
       </div>
@@ -389,9 +394,99 @@
       <h3>Zones d'ombre</h3>
       <ul class="shadow-list">
         <li>Pas de CI/CD, pas de tests automatisés (dépôt documentaire)</li>
-        <li><code>.roadmap/</code> et <code>.claude/skills/</code> mentionnés dans CLAUDE.md comme « à créer au besoin » — pas encore présents dans l'arborescence</li>
+        <li><code>.claude/skills/</code> mentionné dans CLAUDE.md comme « à créer au besoin » — pas encore présent dans l'arborescence ; <code>.roadmap/</code> existe désormais (voir <a href="#projet-roadmap">Roadmap du projet</a>)</li>
         <li>Process de redaction du REX source formalisé en principe seulement — pas encore une étape de workflow reproductible</li>
       </ul>
+    </section>
+
+    <!-- ============ REPO STRUCTURE (pattern VSCode1 README) ============ -->
+    <section class="doc" id="repo-structure">
+      <p class="eyebrow">Projet (VSCode3)</p>
+      <h2>Structure du dépôt</h2>
+      <p>Table « contenu du dépôt » sur le même modèle que le <code>README.md</code> de VSCode1 — un point d'entrée qui dit où trouver quoi, sans dupliquer le détail qui vit déjà dans chaque fichier.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Dossier / fichier</th><th>Contenu</th></tr></thead>
+          <tbody>
+            <tr><td><code>docs/bmad-iap-cadrage.md</code></td><td>Wiki de cadrage BMAD IAP (v1.6) — mirroir local corrigé d'un artifact claude.ai.</td></tr>
+            <tr><td><code>docs/wiki/</code></td><td>Sources Markdown du wiki d'onboarding (<code>index.md</code>, <code>business/</code>, <code>technical/</code>) — tags <code>CONFIRMÉ</code>/<code>DÉDUIT</code>/<code>INCERTAIN</code>.</td></tr>
+            <tr><td><code>docs/wiki.html</code></td><td>Rendu HTML autonome — wiki d'onboarding + cadrage complet, sans étape de build, ouvrable directement dans un navigateur.</td></tr>
+            <tr><td><code>.claude/</code></td><td>Scaffolding Claude Code — hook <code>PreToolUse</code> (garde-fou git), permissions <code>deny</code> sur les secrets.</td></tr>
+            <tr><td><code>.roadmap/</code></td><td><code>roadmap.json</code> versionné (source de vérité) + <code>roadmap.svg</code> régénéré à la demande par le skill <code>roadmap-keeper</code>, gitignoré.</td></tr>
+            <tr><td><code>export/</code></td><td>Export de configuration et de pratiques réutilisables pour réintégration dans un nouveau projet — cible actuelle : VSCode1.</td></tr>
+            <tr><td><code>CLAUDE.md</code></td><td>Instructions projet — structure attendue de <code>.claude/</code>, <code>.roadmap/</code>, skills locaux.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Où trouver quoi</h3>
+      <ul>
+        <li><strong>Pourquoi ce module, pour qui, quel parcours ?</strong> → <a href="#business">Domaine BMAD IAP</a> ou <code>docs/bmad-iap-cadrage.md</code> §Mission &amp; vision</li>
+        <li><strong>Comment ce dépôt est construit ?</strong> → <a href="#architecture">Architecture</a></li>
+        <li><strong>Où en est le projet, prochaines étapes ?</strong> → <a href="#projet-roadmap">Roadmap du projet</a> (régénérer <code>.roadmap/roadmap.svg</code> via <code>roadmap-keeper</code> s'il est absent ou périmé)</li>
+        <li><strong>Comment répliquer ces pratiques dans un nouveau projet ?</strong> → <code>export/claude-code-setup-export.md</code></li>
+      </ul>
+    </section>
+
+    <!-- ============ PROJECT ROADMAP (pattern VSCode1 .roadmap/roadmap-keeper) ============ -->
+    <section class="doc" id="projet-roadmap">
+      <p class="eyebrow">Projet (VSCode3)</p>
+      <h2>Roadmap du projet</h2>
+      <p>Suivi visuel en trois phases — <strong>Réflexion</strong> (cadrage, recherche), <strong>Conception</strong> (choix d'architecture documentaire), <strong>Réalisation</strong> (livraisons, une par incrément) — même convention que <code>.roadmap/</code> dans VSCode1/VSCode2, maintenue par le skill <code>roadmap-keeper</code>.</p>
+
+      <div class="critical">
+        <span class="fact-label">Fichier régénéré, pas une source figée</span>
+        <p><code>.roadmap/roadmap.svg</code> est gitignoré et régénéré à la demande — l'image ci-dessous peut être absente juste après un clone frais, ou en retard sur <code>.roadmap/roadmap.json</code> (source de vérité versionnée) si personne ne l'a relancé récemment. Vérifier contre <code>git log</code>/<code>git status</code> avant de lui faire confiance, comme pour tout fichier de roadmap de ce type.</p>
+      </div>
+
+      <p style="text-align:center; margin: 18px 0;">
+        <img src="../.roadmap/roadmap.svg" alt="Roadmap visuelle VSCode3 — phases Réflexion/Conception/Réalisation" style="max-width:100%; border:1px solid var(--line); border-radius:10px; background:var(--surface);">
+      </p>
+
+      <h3>Repère texte (au cas où l'image est absente)</h3>
+      <div class="mvp-timeline">
+        <div class="mvp-step">
+          <p class="mvp-label">Réflexion</p>
+          <h4>Récupération du cadrage BMAD IAP</h4>
+          <p>Fetch de l'artifact claude.ai (wiki de cadrage v1.5) et lecture intégrale.</p>
+        </div>
+        <div class="mvp-step">
+          <p class="mvp-label">Réflexion</p>
+          <h4>Revue critique du cadrage</h4>
+          <p>Compteurs périmés, noms clients non rédigés, dépendances externes non versionnées, asymétrie de rigueur.</p>
+        </div>
+        <div class="mvp-step">
+          <p class="mvp-label">Conception</p>
+          <h4>Choix du pattern documentaire</h4>
+          <p>Mirroir local + wiki d'onboarding (pattern VSCode2) + rendu HTML autonome auto-porté.</p>
+        </div>
+        <div class="mvp-step">
+          <p class="mvp-label">Réalisation 1</p>
+          <h4>Mirroir du cadrage + corrections v1.6</h4>
+          <p>Compteurs, redaction, dépendances versionnées, gate DevOps tranché, module.yaml résolu.</p>
+        </div>
+        <div class="mvp-step">
+          <p class="mvp-label">Réalisation 2</p>
+          <h4>Wiki d'onboarding</h4>
+          <p><code>docs/wiki/</code> — index, business, technical, tags de confiance.</p>
+        </div>
+        <div class="mvp-step">
+          <p class="mvp-label">Réalisation 3</p>
+          <h4>Rendu HTML autonome</h4>
+          <p><code>docs/wiki.html</code> — design system + fusion du cadrage complet.</p>
+        </div>
+        <div class="mvp-step">
+          <p class="mvp-label">Réalisation 4 · en cours</p>
+          <h4>Structure + roadmap dans le wiki</h4>
+          <p>Cette section, et la table de structure du dépôt ci-avant.</p>
+        </div>
+        <div class="mvp-step future">
+          <p class="mvp-label">Réalisation 5 · à faire</p>
+          <h4>Export de config pour réintégration</h4>
+          <p><code>export/claude-code-setup-export.md</code> — cible : VSCode1.</p>
+        </div>
+      </div>
     </section>
 
     <!-- ============ BUSINESS ============ -->

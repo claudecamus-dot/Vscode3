@@ -1,0 +1,53 @@
+{
+  "title": "VSCode3 — Cadrage BMAD IAP & wiki d'onboarding",
+  "subtitle": "Depot documentaire (pas d'application) : mirroir + corrections du cadrage BMAD IAP, wiki d'onboarding a la VSCode2, rendu HTML autonome. Reste : structure/roadmap dans le wiki et export de config pour reintegration (cible VSCode1).",
+  "items": [
+    { "phase": "reflexion", "title": "Recuperation du cadrage BMAD IAP", "description": "Fetch de l'artifact claude.ai (wiki de cadrage v1.5) et lecture integrale.", "status": "done" },
+    { "phase": "reflexion", "title": "Revue critique du cadrage", "description": "Compteurs perimes, noms clients non rediges, dependances externes non versionnees, asymetrie de rigueur.", "status": "done" },
+    {
+      "phase": "conception",
+      "title": "Choix du pattern documentaire",
+      "description": "Mirroir local + wiki d'onboarding (pattern docs/wiki/ de VSCode2) + rendu HTML autonome auto-porte.",
+      "status": "done"
+    },
+    {
+      "phase": "realisation",
+      "title": "1. Mirroir du cadrage + corrections v1.6",
+      "description": "docs/bmad-iap-cadrage.md : compteurs, redaction noms clients, dependances versionnees, gate DevOps tranche, module.yaml resolu.",
+      "status": "done",
+      "subItems": [
+        { "label": "Mirroir artifact -> markdown", "status": "done" },
+        { "label": "Compteurs templates/checklists", "status": "done" },
+        { "label": "Redaction noms clients", "status": "done" },
+        { "label": "Dependances externes versionnees", "status": "done" },
+        { "label": "Owners/echeances points ouverts", "status": "done" },
+        { "label": "module.yaml resolu (bmb)", "status": "done" },
+        { "label": "Gate DevOps tranche (ADR)", "status": "done" }
+      ]
+    },
+    {
+      "phase": "realisation",
+      "title": "2. Wiki d'onboarding",
+      "description": "docs/wiki/index.md + business/ + technical/{stack,architecture,conventions,tests}.md, tags CONFIRME/DEDUIT/INCERTAIN.",
+      "status": "done"
+    },
+    {
+      "phase": "realisation",
+      "title": "3. Rendu HTML autonome",
+      "description": "docs/wiki.html : design system (chips, callouts, tables, tree, decision-grid) + fusion complete du cadrage (28 sections).",
+      "status": "done"
+    },
+    {
+      "phase": "realisation",
+      "title": "4. Structure + roadmap dans le wiki",
+      "description": "Section 'Structure du depot' (a la VSCode1 README) et roadmap visuelle embarquee dans docs/wiki.html.",
+      "status": "current"
+    },
+    {
+      "phase": "realisation",
+      "title": "5. Export de config pour reintegration",
+      "description": "export/claude-code-setup-export.md : config, pratiques agentic, forme du wiki html — cible VSCode1.",
+      "status": "todo"
+    }
+  ]
+}
