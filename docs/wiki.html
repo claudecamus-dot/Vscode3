@@ -23,6 +23,8 @@
     --deduit-soft: #F3E7C9;
     --incertain: #A2582C;
     --incertain-soft: #F1DFCF;
+    --d1: #7C9B4A;
+    --d3: #C07A3A;
     --font-display: Charter, "Bitstream Charter", "Sitka Text", Cambria, Georgia, serif;
     --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Consolas, "Liberation Mono", monospace;
@@ -47,6 +49,8 @@
       --deduit-soft: #362B12;
       --incertain: #D48A5F;
       --incertain-soft: #382417;
+      --d1: #A0C273;
+      --d3: #DB9E68;
     }
   }
   :root[data-theme="dark"] {
@@ -57,6 +61,7 @@
     --confirmed: #7FBD93; --confirmed-soft: #1E3327;
     --deduit: #E0B256; --deduit-soft: #362B12;
     --incertain: #D48A5F; --incertain-soft: #382417;
+    --d1: #A0C273; --d3: #DB9E68;
   }
   :root[data-theme="light"] {
     --bg: #EEF0EA; --surface: #FFFFFF; --surface-2: #E4E8DF;
@@ -66,6 +71,7 @@
     --confirmed: #3E7A53; --confirmed-soft: #DEEBE1;
     --deduit: #A67611; --deduit-soft: #F3E7C9;
     --incertain: #A2582C; --incertain-soft: #F1DFCF;
+    --d1: #7C9B4A; --d3: #C07A3A;
   }
 
   * { box-sizing: border-box; }
@@ -193,6 +199,56 @@
   }
   .shadow-list li::before { content: "?"; position: absolute; left: 2px; color: var(--ink-faint); font-family: var(--font-mono); }
 
+  .fact.accent { border-left-color: var(--accent); }
+  .fact-label {
+    display: block; font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--accent-ink); margin-bottom: 4px;
+  }
+  .critical .fact-label { color: var(--incertain); }
+
+  .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 18px; }
+  .chip-pill {
+    font-family: var(--font-mono); font-size: 0.72rem; padding: 4px 10px; border-radius: 999px;
+    color: #fff; white-space: nowrap;
+  }
+  .chip-d0 { background: var(--confirmed); }
+  .chip-d1 { background: var(--d1); }
+  .chip-d2 { background: var(--deduit); }
+  .chip-d3 { background: var(--d3); }
+  .chip-d4 { background: var(--incertain); }
+
+  .stat-strip { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 10px 0 20px; font-size: 0.86rem; color: var(--ink-soft); }
+  .stat-strip strong { color: var(--ink); font-family: var(--font-display); }
+
+  .decision-grid { display: grid; gap: 8px; margin: 12px 0 20px; }
+  .decision-row {
+    border: 1px solid var(--line); border-radius: 8px; padding: 9px 14px; background: var(--surface);
+    font-size: 0.88rem;
+  }
+  .decision-row .decision-tag {
+    font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase;
+    color: var(--accent-ink); margin-right: 6px;
+  }
+
+  .mvp-timeline { border-left: 2px solid var(--line); margin-left: 6px; padding-left: 22px; }
+  .mvp-step { position: relative; padding-bottom: 22px; }
+  .mvp-step:last-child { padding-bottom: 0; }
+  .mvp-step::before {
+    content: ""; position: absolute; left: -27px; top: 4px; width: 9px; height: 9px;
+    border-radius: 50%; background: var(--accent); border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--accent);
+  }
+  .mvp-step.future::before { background: var(--surface); box-shadow: 0 0 0 1px var(--ink-faint); }
+  .mvp-label { font-family: var(--font-mono); font-size: 0.7rem; color: var(--accent-ink); text-transform: uppercase; letter-spacing: 0.05em; }
+  .mvp-step.future .mvp-label { color: var(--ink-faint); }
+  .mvp-step h4 { margin: 2px 0 4px; font-family: var(--font-display); font-size: 1rem; }
+
+  .agent-grid, .wf-list { display: grid; gap: 8px; margin: 12px 0 20px; }
+  .agent-card, .wf-card {
+    border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; background: var(--surface); font-size: 0.88rem;
+  }
+  .agent-card code, .wf-card code { display: block; margin-bottom: 3px; }
+  .agent-card .challenge { color: var(--ink-faint); font-size: 0.82rem; font-style: italic; }
+
   footer.doc-footer {
     border-top: 1px solid var(--line); padding-top: 16px; margin-top: 50px;
     font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-faint);
@@ -227,6 +283,31 @@
         <a class="toc-link" href="#architecture">Architecture</a>
         <a class="toc-link" href="#conventions">Conventions</a>
         <a class="toc-link" href="#tests">Tests</a>
+      </div>
+      <div class="toc-group">
+        <p class="toc-group-label">Cadrage complet (BMAD IAP)</p>
+        <a class="toc-link" href="#mission">Mission &amp; vision</a>
+        <a class="toc-link" href="#structure">Structure du corpus</a>
+        <a class="toc-link" href="#multiclient">Isolation multi-client</a>
+        <a class="toc-link" href="#doctrine">Règles d'or</a>
+        <a class="toc-link" href="#gate-ia">Gate IA</a>
+        <a class="toc-link" href="#maturite">Modèles de maturité</a>
+        <a class="toc-link" href="#produit">Définition produit infra</a>
+        <a class="toc-link" href="#gaspillage">Traitement des gaspillages</a>
+        <a class="toc-link" href="#comitologie">Comitologie</a>
+        <a class="toc-link" href="#equipes">Modèles d'équipe</a>
+        <a class="toc-link" href="#assessment">Moteur d'assessment</a>
+        <a class="toc-link" href="#agents">Agents BMAD</a>
+        <a class="toc-link" href="#workflows">Workflows</a>
+        <a class="toc-link" href="#scenarios">Routage des scénarios</a>
+        <a class="toc-link" href="#ambition">Ambition de l'outil</a>
+        <a class="toc-link" href="#usage-coach">Utilisation (coach)</a>
+        <a class="toc-link" href="#kpis">KPIs</a>
+        <a class="toc-link" href="#qa-module">Qualité &amp; test</a>
+        <a class="toc-link" href="#schema">Schéma de fonctionnement</a>
+        <a class="toc-link" href="#roadmap">Roadmap</a>
+        <a class="toc-link" href="#decisions">Décisions de cadrage</a>
+        <a class="toc-link" href="#ouverts">Points ouverts</a>
       </div>
     </nav>
   </aside>
@@ -572,6 +653,1066 @@
         Rendu depuis docs/wiki/*.md — VSCode3 · onboarder · 2026-07-07
       </footer>
     </section>
+<section class="doc" id="mission">
+  <p class="eyebrow">Vue d'ensemble</p>
+  <h2>Mission &amp; vision</h2>
+
+  <p>Un module BMAD à <strong>double mission</strong>, pas une méthode de transformation avec un traitement du gaspillage en option : transformer une organisation infrastructure — guichet, centre de coûts ou fonction support — en <strong>plateforme interne opérée comme un produit</strong>, ET traiter structurellement le gaspillage qui l'en empêche.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Pilier</th><th>Ce qu'il vise</th><th>Ce qu'il finance</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Transformer</strong></td><td>Cible produit/plateforme : utilisateurs identifiés, proposition de valeur, roadmap, engagements de qualité, gouvernance lisible</td><td>La vision à moyen terme — ce que le sponsor achète</td></tr>
+        <tr><td><strong>Assainir</strong></td><td>Traitement mesurable des gaspillages (flux, RUN, humain, financier, cognitif, décisionnel, environnemental, IA)</td><td>La capacité récupérée qui finance la trajectoire produit — pas un audit de coûts isolé</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Les deux piliers ne sont pas séquentiels ni optionnels l'un par rapport à l'autre : une cible produit sans traitement du gaspillage manque de capacité pour s'y déployer ; un traitement du gaspillage sans cible produit reste un exercice de réduction de coûts sans vision — c'est explicitement l'anti-pattern à éviter (voir doctrine, « ne jamais confondre... »).</p>
+
+  <p>La démarche équilibre trois tensions permanentes :</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Efficacité du delivery</th><th>Robustesse du RUN</th><th>Valeur perçue par les utilisateurs internes</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <p>Elle relie systématiquement : organisation, delivery, technologie, RUN, TMA/fournisseurs, financement, UX/adoption, données, IA/automatisation, compétences, gouvernance.</p>
+
+  <div class="fact accent">
+    <span class="fact-label">Risque cadre — issu du brainstorm source</span>
+    <p>« L'IA amplifie le système organisationnel existant : elle aide davantage les organisations déjà bien structurées qu'elle ne corrige les dysfonctionnements profonds. » Cette phrase ancre la règle d'or 3.2.1 (ne jamais proposer l'IA comme réponse à un problème d'abord organisationnel) — elle en est l'argument, pas un doublon.</p>
+  </div>
+</section>
+
+<section class="doc" id="structure">
+  <p class="eyebrow">Vue d'ensemble</p>
+  <h2>Structure &amp; emplacement du corpus</h2>
+
+  <p>Décision de cadrage : pas de fichier pivot <code>iap-module-context.md</code>. Le corpus source (doc d'intégration + brainstorm PDF) se décompose directement dans <code>bmad-iap/knowledge/</code>, chaque fichier ayant un propriétaire de contenu unique.</p>
+
+  <h3>Vue globale du module (v1.1)</h3>
+  <ul>
+    <li>11 — Agents</li>
+    <li>11 — Workflows</li>
+    <li>14 — Templates</li>
+    <li>9 — Checklists</li>
+    <li>9+ — Knowledge (dont 2 nouveaux v0.6–0.7)</li>
+    <li>1 — Gate IA transversal non-automatisable</li>
+  </ul>
+
+  <div class="tree">bmad-iap/
+  module.yaml <span class="arrow">←</span> résolu (v1.6) : scaffoldé via bmb, voir §Structure "Résolution module.yaml"
+  agents/            11 agents — voir §Agents
+  workflows/         11 workflows — voir §Workflows
+  templates/         14 templates
+  checklists/        9 checklists
+  knowledge/
+    infra-product-definition.md   <span class="arrow">←</span> mission/vision + invariants organisationnels + ITIL4/Platform Eng.
+    doctrine-and-golden-rules.md  <span class="arrow">←</span> règles d'or IAP + IA/données (renforcées)
+    anti-patterns.md
+    ai-confidentiality-doctrine.md  <span class="arrow">←</span> nouveau, sorti de la doctrine générale (trop dense)
+    platform-maturity-model.md      <span class="arrow">←</span> nouveau, maturité produit/plateforme (≠ maturité IA)
+    scenario-library.md           <span class="arrow">←</span> routage + spécificités clients anonymisées
+    waste-library.md              <span class="arrow">←</span> familles + patterns de traitement fusionnés
+    metrics-library.md
+    rex-library.md                <span class="arrow">←</span> REX clients, après redaction (voir callout ci-dessous)
+  engagements/&lt;client-slug&gt;/  <span class="arrow">←</span> nouveau, isolation multi-client — voir section dédiée</div>
+
+  <div class="fact accent">
+    <span class="fact-label">Confidentialité amont — redaction appliquée</span>
+    <p>La source brute contenait des noms de clients réels (secteurs télécom/plateformes numériques, banque de détail, GIE informatique bancaire) et une donnée chiffrée identifiante (pyramide des âges). Conformément aux règles de redaction déjà fixées en doctrine, ce wiki de cadrage ne cite plus que des alias sectoriels génériques (« Client Télécom/Diffusion A », « Client Bancaire B », « Client GIE Informatique Bancaire C ») et des chiffres généralisés par tranche large — c'était le premier test réel de cette règle, pas un cas théorique. Le process de redaction reste néanmoins à formaliser en étape de workflow reproductible pour les prochains REX (voir §Points ouverts) ; l'intégration effective dans <code>rex-library.md</code> devra repartir des mêmes alias, jamais des noms bruts de la source PDF.</p>
+  </div>
+
+  <h3>Résolution module.yaml (v1.6)</h3>
+  <p>Point bloquant levé. L'installation BMAD locale (<code>_bmad/</code>, BMAD v6.8.0, cf. <code>_bmad/_config/manifest.yaml</code>) distingue deux objets différents qu'il ne fallait pas confondre :</p>
+  <ul>
+    <li><strong><code>config.yaml</code></strong> (un par module déjà installé — <code>core/config.yaml</code>, <code>bmm/config.yaml</code>…) : configuration d'exécution locale (langue, dossiers de sortie, nom du projet) — ne concerne pas la définition d'un nouveau module.</li>
+    <li><strong><code>module.yaml</code></strong> : l'asset de <strong>définition/enregistrement</strong> d'un module (nom, agents, workflows, templates exposés) — fourni comme gabarit par le module <strong><code>bmb</code> (bmad-builder, v1.8.1)</strong>, déjà installé localement. Le manifeste de fichiers de l'installation (<code>_bmad/_config/files-manifest.csv</code>) référence explicitement deux gabarits <code>module.yaml</code> fournis par <code>bmb</code> : <code>bmb/bmad-bmb-setup/assets/module.yaml</code> et <code>bmb/bmad-module-builder/assets/setup-skill-template/assets/module.yaml</code>.</li>
+  </ul>
+
+  <div class="fact accent">
+    <span class="fact-label">Décision de cadrage</span>
+    <p><code>bmad-iap/module.yaml</code> ne sera pas rédigé à la main contre un schéma supposé. Il sera <strong>scaffoldé via l'outillage <code>bmb</code> (Module Builder) déjà installé</strong> dans <code>_bmad/</code>, en MVP1, au même moment que <code>iap-intake</code> — cohérent avec le rôle même de <code>bmb</code> (construire de nouveaux modules BMAD). Propriétaire : première itération MVP1, à valider par relecture humaine avant d'être considéré final (même discipline que le reste : outillage propose, humain valide).</p>
+  </div>
+</section>
+
+<section class="doc" id="multiclient">
+  <p class="eyebrow">Vue d'ensemble</p>
+  <h2>Isolation multi-client</h2>
+
+  <p>Trou identifié dans le corpus source : rien ne prévoyait qu'une même installation du module serve plusieurs missions sans mélange de contexte. Ajout d'un niveau dans l'arborescence :</p>
+
+  <div class="tree">bmad-iap/engagements/&lt;client-slug&gt;/
+  iap-context.md
+  diagnostic/
+  product-definition/
+  operating-model/
+  ai-data-gate/
+  waste-treatment/
+  adoption/
+  deck/</div>
+
+  <p>La racine du module (<code>agents/</code>, <code>workflows/</code>, <code>templates/</code>, <code>knowledge/</code>) reste la méthode générique, sans donnée client. Tout output de mission vit sous <code>engagements/&lt;client-slug&gt;/</code> — c'est le premier garde-fou de confidentialité, avant même la question du modèle IA utilisé.</p>
+</section>
+
+<section class="doc" id="doctrine">
+  <p class="eyebrow">Doctrine</p>
+  <h2>Règles d'or</h2>
+
+  <h3>Infra as a Product</h3>
+  <ol>
+    <li>Ne jamais confondre actif technique et produit infra.</li>
+    <li>Toujours expliciter utilisateurs, proposition de valeur, engagements et roadmap.</li>
+    <li>Distinguer produit plateforme, service, capacité, composant, leviers d'automatisation/gouvernance/expérience.</li>
+    <li>Distinguer RUN subi, RUN maîtrisé, BUILD, dette, sécurité, obsolescence, innovation.</li>
+    <li>Relier organisation, delivery, technologie, financement, UX et adoption.</li>
+    <li>Traiter dépendances et règles de gouvernance.</li>
+    <li>Intégrer la TMA/fournisseurs dans le modèle cible si le RUN est externalisé.</li>
+    <li>Toujours produire une option diagnostic-first <em>et</em> une option pilot-first en contexte incertain.</li>
+    <li>Transformer les recommandations en livrables actionnables et réutilisables.</li>
+    <li>Toujours prévoir des métriques de succès.</li>
+  </ol>
+
+  <h3>IA &amp; données</h3>
+  <ol>
+    <li>Ne jamais proposer l'IA si le problème est d'abord organisationnel <em>— l'IA amplifie le système existant, elle ne corrige pas les dysfonctionnements profonds.</em></li>
+    <li>Ne jamais envoyer de données client confidentielles à une IA externe sans autorisation explicite.</li>
+    <li>Toujours qualifier la classification des données avant d'utiliser un LLM.</li>
+    <li>Toujours évaluer en priorité l'IA interne du client.</li>
+    <li>Toujours évaluer si un LLM local/privé peut suffire.</li>
+    <li>Documenter les limites du modèle choisi : qualité, contexte, latence, coût, sécurité, auditabilité.</li>
+    <li>Prévoir supervision humaine, intervention, contournement, audit, désactivation.</li>
+    <li>Vérifier provenance, qualité, fraîcheur des données.</li>
+    <li>Distinguer automatisation classique, IA générative, RAG, agentic workflow, décision automatisée.</li>
+    <li>Prévoir un mode dégradé si l'IA n'est pas autorisée sur les données réelles.</li>
+  </ol>
+
+  <p>Anti-patterns à détecter : appeler « produit » un composant technique isolé ; PO sans changer la gestion de la demande ; agilité sans traiter les dépendances ; priorisation par bruit/statut ; chatbot IA sans cadrer flux/rôles/données ; automatiser un processus mal conçu ; externaliser des données sensibles sans cadre ; ignorer le RUN dans la roadmap ; plateforme techniquement bonne mais peu adoptée ; séparer transformation organisationnelle et technique.</p>
+</section>
+
+<section class="doc" id="gate-ia">
+  <p class="eyebrow">Doctrine</p>
+  <h2>Gate IA &amp; confidentialité</h2>
+
+  <p>Workflow obligatoire avant tout usage IA sur données client : <code>iap-ai-data-confidentiality-gate</code>. Principe directeur : <strong>les données client gouvernent le choix du modèle IA, pas l'inverse.</strong></p>
+
+  <h3>Classification des données</h3>
+  <p>Tags : <code>D0 · Public</code> — <code>D1 · Interne non sensible</code> — <code>D2 · Confidentiel</code> — <code>D3 · Restreint</code> — <code>D4 · Critique / réglementé</code></p>
+
+  <div class="chip-row">
+    <span class="chip-pill chip-d0">D0 · Public</span>
+    <span class="chip-pill chip-d1">D1 · Interne non sensible</span>
+    <span class="chip-pill chip-d2">D2 · Confidentiel</span>
+    <span class="chip-pill chip-d3">D3 · Restreint</span>
+    <span class="chip-pill chip-d4">D4 · Critique / réglementé</span>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Niveau</th><th>Exemples</th><th>Usage IA par défaut</th></tr></thead>
+      <tbody>
+        <tr><td>D0</td><td>Articles publics, docs méthodo</td><td>IA externe possible</td></tr>
+        <tr><td>D1</td><td>Organisation macro, catalogue anonymisé</td><td>IA client recommandée ; externe sur accord</td></tr>
+        <tr><td>D2</td><td>Notes d'interview, reporting, portefeuille projets</td><td>IA client ou LLM privé/local</td></tr>
+        <tr><td>D3</td><td>Tickets détaillés, logs, CMDB, IAM</td><td>LLM local/client, contrôles forts</td></tr>
+        <tr><td>D4</td><td>Secrets de production, données réglementées</td><td>Local/on-prem, éventuellement sans IA générative</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Modes d'exécution</h3>
+  <ul>
+    <li><strong>IA client / tenant privé</strong> — cas par défaut pour données internes.</li>
+    <li><strong>LLM local / on-premise</strong> — données sensibles, souveraineté, audit fort.</li>
+    <li><strong>LLM privé cloud dédié</strong> — clients à maturité cloud/IA établie.</li>
+    <li><strong>IA externe SaaS</strong> — données non sensibles ou anonymisées uniquement.</li>
+    <li><strong>Mode hybride</strong> — externe pour la méthode générique, client/local pour les données réelles.</li>
+  </ul>
+
+  <h3>Fonctionner sans IA externe (v0.9)</h3>
+  <p>Le mode « pas d'IA sur les données réelles » (M0, voir §Modèles de maturité) n'est pas un mode dégradé au rabais — la méthode doit rester intégralement exécutable à la main. Deux volets : des pistes encore ouvertes, et une approche déjà assez concrète pour être appliquée.</p>
+
+  <h4 class="sub">Brainstorm — pistes non tranchées</h4>
+  <ul>
+    <li>Consultant senior en doublure sur la synthèse manuelle — la paire de relecture croisée remplace la vérification qu'apporterait normalement un second passage IA.</li>
+    <li>Utiliser la grille de maturité (VSCode1) comme trame de facilitation d'atelier humain plutôt que comme seul support de scoring — un animateur peut dérouler pilier/objectif/question en atelier collectif, sans LLM de synthèse.</li>
+    <li>Budget-temps volontairement allongé et annoncé au sponsor dès l'intake, plutôt que de dégrader silencieusement la profondeur du livrable pour tenir un délai calé sur le mode assisté par IA.</li>
+    <li>Tableau croisé manuel thème × interviewé sur un mur ou un tableur partagé, pour repérer convergences/divergences sans passer par une GlobalSynthesis générée.</li>
+    <li><strong>Question ouverte :</strong> au-delà de M0 (pas d'IA du tout), existe-t-il un palier intermédiaire réaliste — IA locale très limitée en contexte — qui mérite sa propre approche plutôt que d'être traité comme un M0 dégradé de plus ?</li>
+  </ul>
+
+  <h4 class="sub">Approche UX/UI recommandée</h4>
+  <ul>
+    <li><strong>Badge visible et jamais silencieux</strong> — tout livrable produit en mode sans IA externe porte la mention « Synthèse manuelle — mode M0 » de façon aussi visible qu'un tag de confiance, cohérent avec la règle OpenHub de ne jamais basculer de mode sans le signaler (voir §Agents).</li>
+    <li><strong>Méthode de pré-synthèse manuelle outillée, pas un simple principe</strong> — reprendre l'algorithme du mode démo de VSCode2 (<code>synthese_ai.py</code> : fréquence de mots-clés, cooccurrence entre répondants) et le formaliser en template <code>manual-synthesis-guide.md</code>, exécutable à la main par un consultant sans dépendre d'un LLM.</li>
+    <li><strong>Tags de confiance renforcés en mode M0</strong> — un constat <code>DÉDUIT</code> sans IA doit citer sa méthode manuelle (comptage, croisement de tableau) en plus de sa source, pas seulement la source.</li>
+    <li><strong>Le scoring reste intact</strong> — le score de priorisation des gaspillages et le score valeur/complexité (voir §Traitement des gaspillages et §Moteur d'assessment) sont des formules, pas des capacités IA : à rappeler explicitement pour éviter qu'un consultant pense devoir renoncer au scoring faute d'IA disponible.</li>
+  </ul>
+</section>
+
+<section class="doc" id="maturite">
+  <p class="eyebrow">Doctrine</p>
+  <h2>Modèles de maturité</h2>
+
+  <p>Deux échelles indépendantes — ne pas les mélanger dans un seul diagnostic.</p>
+
+  <h3>Maturité IA client (M0–M4)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Niveau</th><th>Description</th><th>Stratégie BMAD</th></tr></thead>
+      <tbody>
+        <tr><td>M0</td><td>Pas d'IA interne utilisable</td><td>Méthodo générique, données anonymisées/synthétiques</td></tr>
+        <tr><td>M1</td><td>IA interne basique</td><td>Synthèses internes, pas d'analyse critique automatisée</td></tr>
+        <tr><td>M2</td><td>IA privée avec RAG</td><td>Diagnostic documentaire, consolidation</td></tr>
+        <tr><td>M3</td><td>Plateforme IA gouvernée</td><td>Workflows agentic contrôlés</td></tr>
+        <tr><td>M4</td><td>IA industrielle</td><td>Agents spécialisés à fort volume, contrôle humain</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Maturité produit / plateforme (v0.6 — remplacé par la grille VSCode1)</h3>
+  <p>Le raisonnement en 3 dimensions imaginé en v0.5 (état de l'art / marches à franchir / mode d'accompagnement) reste valable comme <em>lecture</em> de la grille, mais n'est plus l'instrument de mesure : on réutilise telle quelle la <strong>Grille d'Assessment Agile V3.2 (variante IA-Agentic-Complet)</strong> du projet VSCode1 — un référentiel déjà éprouvé (outil web de passation, résultats agrégés en radar, export de restitution PPT), plutôt que d'inventer une échelle qualitative à 5 crans.</p>
+
+  <p>Format du référentiel : <strong>5 Piliers → Objectifs → Questions → 4 Niveaux (0–3)</strong>, chaque niveau portant un texte descriptif complet (pas un simple chiffre).</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Pilier</th><th>Objectifs</th><th>Pertinence pour BMAD IAP</th></tr></thead>
+      <tbody>
+        <tr><td>Équipe Produit</td><td>Gestion du backlog · fonctionnement en équipe produit · orientation client &amp; pilotage par la valeur</td><td>Adjacent — utile en périphérie de <code>iap-product-definition</code></td></tr>
+        <tr><td><strong>Excellence Technique</strong></td><td>Ingénierie logicielle &amp; testing · usine DevOps existante et évolutive · indicateurs de performance/qualité (TTM)</td><td><strong>Cœur du périmètre infra</strong> — réutilisé directement comme grille de maturité plateforme</td></tr>
+        <tr><td>Culture de l'Entreprise Agile</td><td>Rôles &amp; collaboration · leadership &amp; culture agile · Ressources Humaines</td><td>Adjacent — recoupe <code>iap-change-coach</code></td></tr>
+        <tr><td><strong>Agilité à l'Échelle</strong></td><td>Vision de la transformation · fonctionnement à l'échelle · gouvernance &amp; management des produits</td><td><strong>Cœur du périmètre</strong> — recoupe <code>iap-operating-model</code></td></tr>
+        <tr><td><strong>IA, Agentic et Organisation Augmentée</strong></td><td>Acculturation/adoption · gouvernance &amp; IA responsable · produit/métier/excellence technique · agentic readiness · AgentOps &amp; industrialisation · organisation multi-agent</td><td><strong>Remplace le M0–M4 générique ci-dessus</strong> — plus opérationnel, question par question</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Extrait — pilier « Excellence Technique », objectif « Usine DevOps »</h3>
+  <div class="fact accent">
+    <span class="fact-label">Question</span>
+    <p>« Comment est réalisée la chaîne de construction des livrables ? »</p>
+    <p><strong>[0]</strong> Chaîne manuelle. <strong>[1]</strong> Chaîne automatisée et fiabilisée. <strong>[2]</strong> Pipeline d'intégration continue déclenché automatiquement, exécute build/tests, livrable versionné dans un dépôt. <strong>[3]</strong> Livrable packagé/versionné (snapshot/RC/final), portable, équipe produit autonome sur build et configuration des tests.</p>
+  </div>
+
+  <h3>Extrait — pilier « IA, Agentic », objectif « Agentic Readiness »</h3>
+  <div class="fact accent">
+    <span class="fact-label">Questions (niveaux 0–3 rédigés dans le référentiel source)</span>
+    <p>« Les processus sont-ils suffisamment explicites, documentés et mesurables pour être exécutés par des agents ? » · « Les rôles respectifs des humains et des agents sont-ils clairement définis ? » · « Les équipes savent-elles concevoir, utiliser et piloter des agents IA ? »</p>
+  </div>
+
+  <div class="fact accent">
+    <span class="fact-label">Décision de cadrage</span>
+    <p>Importer directement <code>Grille-Assessment-Agile-V3.2-IA-Agentic-Complet.xlsx</code> comme source de <code>platform-maturity-model.md</code>, plutôt que de ré-écrire une échelle à la main. <code>iap-intake</code> positionne chaque client sur les piliers <strong>Excellence Technique</strong> et <strong>Agilité à l'Échelle</strong> (maturité produit/plateforme) et sur le pilier <strong>IA, Agentic et Organisation Augmentée</strong> (maturité IA, en lieu et place du M0–M4 générique).</p>
+  </div>
+
+  <h3>Dépendances externes — versionnage (v1.6)</h3>
+  <p>BMAD IAP réutilise des artefacts vivants issus de deux projets frères qui continuent d'évoluer indépendamment. Sans pin explicite, une évolution de VSCode1 ou VSCode2 pourrait faire dériver silencieusement le cadrage sans que personne ne le remarque avant un engagement client.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Dépendance</th><th>Version pinnée</th><th>Fichier local de référence</th><th>Déclencheur de resynchronisation</th></tr></thead>
+      <tbody>
+        <tr><td>Grille d'Assessment Agile (VSCode1)</td><td><strong>V3.2</strong>, variante IA-Agentic-Complet</td><td><code>knowledge/platform-maturity-model.md</code> (§Modèles de maturité)</td><td>Revue obligatoire avant tout nouvel engagement si VSCode1 publie une V3.3+ ; <code>iap-strategy-lead</code> évalue l'écart avant d'importer</td></tr>
+        <tr><td>Contrats de handoff &amp; checkpoint OpenHub — ADR-006 / ADR-009 (VSCode2)</td><td>Version des ADR au moment de l'emprunt, à consigner dans <code>knowledge/doctrine-and-golden-rules.md</code></td><td>Contrats de handoff (§Agents) et checkpoint non-automatisable (§Gate IA)</td><td>Revue si OpenHub republie ADR-006 ou ADR-009 sous un numéro/contenu modifié</td></tr>
+        <tr><td>Moteur d'assessment / Interview-to-Deck (VSCode2)</td><td>Structure de données seule (Mission/Trame/Theme/Question…), pas le code applicatif</td><td><code>platform-maturity-model.md</code>-adjacent — voir §Moteur d'assessment</td><td>Revue si VSCode2 change son schéma de données source</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Règle de cadrage : chaque dépendance externe versionnée est revue systématiquement à deux moments — à chaque boucle de réévaluation <code>iap-re-assessment</code> (T+6–12 mois, voir §Schéma de fonctionnement) et à chaque passage de MVP gate (voir §Roadmap) — plutôt que laissée sans point de contrôle jusqu'à ce qu'une incohérence soit détectée en mission. Propriétaire de cette revue : <code>iap-strategy-lead</code>, consigné dans le même fichier que les décisions ADR de l'operating model.</p>
+</section>
+
+<section class="doc" id="produit">
+  <p class="eyebrow">Méthode</p>
+  <h2>Définition produit infra</h2>
+
+  <p>Un produit d'infrastructure : ensemble cohérent de capacités techniques, fourni comme service à des clients internes/externes, avec responsable, cycle de vie, roadmap, engagements de qualité.</p>
+
+  <div class="fact accent">
+    <span class="fact-label">Test de qualification</span>
+    <p>« Puis-je décrire ce que j'offre à un utilisateur, la valeur apportée, les engagements de service, les règles d'usage, les évolutions prévues, les métriques de succès ? » Si oui → produit. Si non → actif ou composant technique. Vision cohérente avec ITIL 4 et le Platform Engineering : on ne livre plus des technologies, mais des produits de plateforme consommés comme des services.</p>
+  </div>
+
+  <h3>Niveaux de granularité</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Niveau</th><th>Exemple</th><th>Usage BMAD</th></tr></thead>
+      <tbody>
+        <tr><td>Produit plateforme</td><td>Cloud interne, Kubernetes, CI/CD, observabilité</td><td>Objet principal de product definition</td></tr>
+        <tr><td>Service</td><td>Sauvegarde, base managée, digital workplace</td><td>Partie du catalogue de capacités</td></tr>
+        <tr><td>Capacité</td><td>Provisioning VM, secret management</td><td>Brique consommable</td></tr>
+        <tr><td>Automatisation</td><td>Script, template, API, workflow self-service</td><td>Réduit le RUN / simplifie les parcours</td></tr>
+        <tr><td>Gouvernance</td><td>Standard sécurité, politique FinOps</td><td>Cadre d'usage et de décision</td></tr>
+        <tr><td>Expérience</td><td>Créer une app, diagnostiquer un incident</td><td>Parcours à designer et mesurer</td></tr>
+        <tr><td>Composant</td><td>Serveur, VM, switch, firewall</td><td>Ressource technique, pas produit par défaut</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="fact accent">
+    <span class="fact-label">Décision de cadrage — Product Discovery</span>
+    <p>Le framework source distingue Product Discovery (personas, parcours, pain points) de Product Definition. Dans ce cadrage, la discovery reste <strong>fusionnée</strong> dans l'étape 1 de <code>iap-product-definition</code> — plus simple pour MVP1, à rouvrir en MVP4 si un client demande une discovery approfondie découplée.</p>
+  </div>
+</section>
+
+<section class="doc" id="gaspillage">
+  <p class="eyebrow">Méthode</p>
+  <h2>Traitement des gaspillages</h2>
+
+  <p>Le focus le plus développé du corpus — traité comme un objet de transformation à part entière, au même niveau que le produit, l'operating model, l'adoption et l'IA.</p>
+
+  <h3>Familles</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Famille</th><th>Exemples</th></tr></thead>
+      <tbody>
+        <tr><td>Flux</td><td>Attentes, validations multiples, dépendances</td></tr>
+        <tr><td>Humain</td><td>Experts seniors sur tâches répétitives, management subi</td></tr>
+        <tr><td>RUN</td><td>Incidents récurrents, demandes répétitives, escalades</td></tr>
+        <tr><td>Financier</td><td>Surdimensionnement, ressources non décommissionnées</td></tr>
+        <tr><td>Cognitif</td><td>Trop d'outils, procédures complexes, doc dispersée</td></tr>
+        <tr><td>Décisionnel</td><td>Arbitrages subjectifs, priorisation opaque</td></tr>
+        <tr><td>Environnemental</td><td>Ressources inutilisées, environnements non éteints</td></tr>
+        <tr><td>IA</td><td>Cas d'usage gadget, données non fiables, automatisation sans garde-fous</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Chaîne de traitement</h3>
+  <p>Détecter <span class="arrow">→</span> Qualifier <span class="arrow">→</span> Quantifier <span class="arrow">→</span> Comprendre la cause racine <span class="arrow">→</span> Choisir un pattern <span class="arrow">→</span> Prioriser <span class="arrow">→</span> Expérimenter <span class="arrow">→</span> Mesurer <span class="arrow">→</span> Industrialiser <span class="arrow">→</span> Prévenir la réapparition.</p>
+
+  <h3>Scoring de priorisation</h3>
+  <div class="tree">Score impact     = capacité + utilisateur + delivery + RUN + financier + risque + environnement
+Score faisabilité = faisabilité + maturité données/outillage + confiance preuves
+Score prudence IA = confidentialité + besoin supervision + criticité décision
+
+Priorité = Score impact × Score faisabilité − Score prudence IA</div>
+
+  <p>Le score ne remplace pas l'arbitrage humain : il rend la discussion explicite.</p>
+
+  <div class="critical">
+    <span class="fact-label">Garde-fou anti-déplacement</span>
+    <p>Avant de déclarer un gain : vérifier qu'il ne crée pas plus de charge utilisateur/support, plus de complexité cognitive, plus de risque sécurité, plus de coûts cachés, plus de dette technique ou de dépendance fournisseur.</p>
+  </div>
+
+  <h3>Automatisation concrète (v1.3 — le pattern « Automatiser » restait un mot dans une case)</h3>
+  <p>Deux artefacts nouveaux pour transformer le pattern « Automatiser » de la bibliothèque de traitements en plan exécutable, plutôt que de le laisser au niveau du principe.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Artefact</th><th>Déclenchement</th><th>Contenu</th></tr></thead>
+      <tbody>
+        <tr><td><code>automation-readiness-checklist.md</code> (9ᵉ checklist)</td><td>Avant de choisir le pattern « Automatiser » (étape « Choisir un pattern » de la chaîne de traitement)</td><td>Processus déjà simplifié/standardisé ? Encore utile aujourd'hui ? Réellement stable et déterministe ? Qui a intérêt à ce qu'il reste manuel ? — propriétaire : <code>iap-waste-treatment-lead</code></td></tr>
+        <tr><td><code>automation-action-plan.md</code> (14ᵉ template)</td><td>Après scoring, une fois le pattern « Automatiser » retenu</td><td>Portée exacte, prérequis techniques, effort, définition du « fait », mode Coach/Délégué, plan de retrait du geste manuel — <strong>deux branches distinctes</strong> : Test &amp; Qualité (confiance, risque de faux sentiment de sécurité) vs Tâche RUN (capacité récupérée, provisioning/nettoyage)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="critical">
+    <span class="fact-label">Gate de maturité DevOps — tranché (v1.6) : dur par défaut, dérogation tracée</span>
+    <p>Recommander « automatiser les tests » quand le pilier <strong>Excellence Technique / Usine DevOps</strong> (grille VSCode1) est mesuré au niveau [0] (chaîne manuelle) est un anti-pattern quasi certain — la recommandation pertinente à ce niveau est « fiabiliser la chaîne de construction », pas automatiser par-dessus. Décision : <strong>règle dure par défaut</strong> — <code>iap-waste-treatment-lead</code> ne peut pas retenir le pattern « Automatiser » tant que le niveau mesuré est [0], sauf <strong>dérogation explicite</strong> consignée comme une décision ADR à part entière dans <code>operating-model/decisions/</code> (Statut / Contexte / Décision / Conséquences / <strong>Alternatives rejetées obligatoire</strong>) et contre-signée par <code>iap-risk-reviewer</code> avant d'être appliquée. Ce compromis protège contre l'anti-pattern par défaut (la règle dure) tout en préservant l'arbitrage humain pour le cas réel où le consultant a une raison documentée de déroger (la règle souple, mais jamais silencieuse) — cohérent avec le principe déjà acté « le score ne remplace pas l'arbitrage humain, il le rend explicite ».</p>
+  </div>
+
+  <p><strong>Coach/Délégué appliqué à l'automatisation</strong> : toute US liée à l'automatisation doit porter une date ou un critère de bascule Coach → Délégué explicite — sans quoi le consultant risque de s'installer en exécutant technique permanent, à l'exact opposé de la posture Enabling « jamais permanente » (voir §Modèles d'équipe). Métrique de sortie de mission : proportion d'US automatisation encore taguées Coach à T+3 mois — un chiffre élevé signale une dépendance non résorbée.</p>
+
+  <p><strong>Métriques de capacité réellement libérée</strong>, portées par <code>iap-metrics-sre-finops-lead</code>, exprimées avec tag de confiance comme le reste (une baisse de MTTR sans ExternalEvidence à l'appui reste <code>DÉDUIT</code>, pas <code>CONFIRMÉ</code>) : temps de cycle build→déploiement, interventions manuelles/semaine sur la tâche ciblée, MTTR et régressions en prod, tickets de demande manuelle, et un <strong>taux d'override manuel</strong> — un taux élevé signale que l'automatisation ne couvre pas le cas réel et que le geste manuel perdure en doublon.</p>
+</section>
+
+<section class="doc" id="comitologie">
+  <p class="eyebrow">Méthode</p>
+  <h2>Comitologie</h2>
+
+  <p>Instances de décision, rituels, cadences : jusqu'à présent réparties sans point de convergence entre <code>iap-operating-model</code> (cadences/décisions clés), <code>iap-waste-treatment</code> (cadences de revue du backlog) et <code>iap-diagnostic-systemique</code> (<code>governance-friction-map.md</code>). Cette section les rassemble sans créer de 12ᵉ agent.</p>
+
+  <h3>Anti-patterns à nommer explicitement</h3>
+  <ul>
+    <li><strong>Le comité qui valide mais n'arbitre jamais</strong> — tout le monde dit « OK » en réunion, le vrai arbitrage se fait après, en couloir ou par défaut.</li>
+    <li><strong>Cadence calée sur le calendrier plutôt que sur le flux</strong> — un comité mensuel traite un sujet urgent trois semaines trop tard, ou se réunit sans rien à décider.</li>
+    <li><strong>Empilement d'instances redondantes</strong> — le même sujet remonte à trois niveaux sans qu'aucun n'ait un mandat de décision distinct.</li>
+    <li><strong>Comitologie muette sur le RUN</strong> — la gouvernance suit le BUILD/projets, aucune instance n'a mandat sur les incidents récurrents ou la dette RUN.</li>
+    <li><strong>Comité fantoche post-gate IA</strong> — une instance créée pour superviser l'IA qui ne challenge jamais vraiment un cas d'usage, contredisant l'esprit du checkpoint non-automatisable.</li>
+    <li><strong>Comitologie qui survit à sa raison d'être</strong> — une instance créée pour un projet ponctuel continue de se réunir des années après, sans clause de fin de vie.</li>
+  </ul>
+
+  <h3>Pivots recommandés</h3>
+  <ul>
+    <li>Remplacer un <strong>comité de suivi de projet</strong> (statuts, jalons) par une <strong>revue de flux</strong> centrée sur ce qui bloque réellement.</li>
+    <li><strong>Fusionner les instances redondantes</strong> autour d'un mandat de décision unique par sujet plutôt que plusieurs comités qui discutent la même chose à des granularités différentes.</li>
+    <li>Instances d'arbitrage à <strong>deux issues obligatoires</strong> — « on fait » ou « on ne fait pas / pas maintenant » — bannir l'issue implicite « on en reparle ».</li>
+    <li><strong>Time-boxer les comités eux-mêmes</strong> — toute nouvelle instance porte une date de revue de pertinence (6-12 mois), avec option de suppression.</li>
+    <li>Séparer explicitement <strong>pilotage opérationnel</strong> (flux, incidents, décisions courtes) et <strong>pilotage stratégique</strong> (trajectoire produit, arbitrages budgétaires) en deux cadences distinctes.</li>
+  </ul>
+
+  <h3>Bibliothèque de patterns par scénario, pas une cible générique unique</h3>
+  <p>Une comitologie cible unique reproduirait l'anti-pattern « agilité sans traiter le contexte » : elle doit suivre la même logique de bibliothèque que <code>scenario-library.md</code>, pas un design générique.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Scénario</th><th>Pattern de comitologie</th></tr></thead>
+      <tbody>
+        <tr><td>RUN massif</td><td>Comitologie resserrée sur le flux incidents/dette, cadence courte, peu de participants — pas de grand comité stratégique tant que le RUN n'est pas stabilisé</td></tr>
+        <tr><td>TMA dominante</td><td>Le fournisseur doit être partie prenante formelle, pas seulement en reporting, sinon les décisions client n'ont pas de prise sur le RUN externalisé</td></tr>
+        <tr><td>Priorités politiques</td><td>Instance de priorisation transparente (score visible) pour désamorcer le jeu de pouvoir plutôt qu'une liste de règles</td></tr>
+        <tr><td>Organisation sceptique</td><td>Ne pas ajouter de comité du tout — rendre la décision visible dans un rituel existant, pour ne pas nourrir le scepticisme (« encore une usine à gaz »)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Liste illustrative, pas exhaustive des 9+ scénarios déjà routés (voir §Routage des scénarios).</p>
+
+  <h3>Checkpoint conditionnel selon le risque — hybride, pas 100 % automatisable</h3>
+  <p>Le principe ADR-006 (checkpoint IA toujours manuel mais pas systématique en mode semi-auto/auto, voir §Agents) se transpose partiellement : une instance humaine ne se réunirait qu'au franchissement d'un seuil de risque/désaccord/impact plutôt qu'à date fixe. Mais contrairement au gate IA (seuil assez objectif : classification de données), un désaccord humain reste qualitatif — risque de sur-outiller un jugement qui ne s'y prête pas complètement. Compromis retenu : une <strong>cadence plancher basse</strong> (ex. trimestrielle) comme filet de sécurité, plus des convocations hors cycle dès qu'un seuil est franchi — cohérent avec le refus déjà acté de traiter le spectre d'ambition A/B/C comme strictement linéaire (voir §Ambition de l'outil).</p>
+
+  <div class="fact accent">
+    <span class="fact-label">Portage — pas un agent dédié</span>
+    <p>Onzième agent déjà nombreux : plutôt qu'un 12ᵉ, une <strong>checklist</strong> <code>comitologie-coherence.md</code> invoquée par <code>iap-risk-reviewer</code> (croise les cadences proposées par les différents workflows pour détecter des doublons ou contradictions), et un <strong>template transverse</strong> <code>governance-instance-map.md</code> — propriété canonique de <code>iap-operating-model-architect</code>, amendé (jamais réécrit) par <code>iap-waste-treatment-lead</code> et <code>iap-diagnostic-systemique</code>, même principe que <code>ai-risk-register.md</code>.</p>
+  </div>
+
+  <h3>Livrable : matrice instance × fréquence × décision × participants × source de vérité</h3>
+  <p>Colonnes : instance, fréquence/déclencheur (date fixe ou seuil de risque), décision portée, participants, source de vérité, <strong>instance remplacée/fusionnée</strong> (pour tracer le pivot, pas seulement l'état cible). Vit comme sous-section de <code>governance-friction-map.md</code> (diagnostic) qui bascule en cible dans <code>operating-model/</code> — pas un fichier entièrement nouveau. À ne pas confondre avec un RACI classique : centré sur la décision et sa cadence, pas sur qui-fait-quoi au quotidien.</p>
+
+  <h3>Expérimentée, pas décrétée — sauf le gate IA</h3>
+  <p>Cohérent avec la chaîne de traitement des gaspillages (Prioriser → <strong>Expérimenter</strong> → Mesurer → Industrialiser, voir §Traitement des gaspillages) et avec les expérimentations pilotes qui nourrissent l'operating model (voir <code>iap-operating-model</code> en §Workflows) : une nouvelle cadence de comitologie est elle-même un candidat à une expérimentation courte (« tester une revue de flux hebdomadaire pendant 6 semaines ») plutôt qu'un décret descendant — portée directement par une US du <code>transformation-backlog.md</code>, taguée Coach ou Délégué. Exception explicite : le <strong>gate IA reste non négociable</strong>, jamais sujet à une pré-expérimentation légère.</p>
+</section>
+
+<section class="doc" id="equipes">
+  <p class="eyebrow">Méthode</p>
+  <h2>Modèles d'équipe</h2>
+
+  <p>Déjà cité en une ligne dans le brainstorm source (« framework d'agilité à l'échelle, team topologie et structure d'équipe »), jamais développé. Le rattacher explicitement à <code>iap-operating-model-architect</code> : la cible « plateforme opérée comme un produit » de toute la mission BMAD IAP <strong>est</strong>, au sens de ce framework, une <em>Platform Team</em>.</p>
+
+  <h3>4 types d'équipe (Team Topologies)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Type</th><th>Rôle</th><th>Lecture BMAD IAP</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Stream-aligned</strong></td><td>Alignée sur un flux de valeur métier continu</td><td>Les équipes applicatives clientes de la plateforme infra</td></tr>
+        <tr><td><strong>Platform</strong></td><td>Fournit des capacités en self-service (X-as-a-Service) pour réduire la charge cognitive des stream-aligned</td><td><strong>La cible même de la transformation IAP</strong> — pas un type parmi d'autres, l'objet du module</td></tr>
+        <tr><td><strong>Enabling</strong></td><td>Aide temporairement une équipe à monter en compétence sur un domaine, puis se retire</td><td>Posture du coach BMAD IAP pendant la mission — jamais permanente</td></tr>
+        <tr><td><strong>Complicated-subsystem</strong></td><td>Expertise pointue sur un composant à compétences rares</td><td>Distingue un vrai sous-système complexe (ex. moteur ML) d'un produit plateforme classique — voir §Définition produit infra</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>3 modes d'interaction — et un 4ᵉ à envisager</h3>
+  <ul>
+    <li><strong>Collaboration</strong> — travail conjoint étroit et temporaire, haute bande passante de communication.</li>
+    <li><strong>X-as-a-Service</strong> — une équipe consomme une capacité en self-service sans collaboration continue : le mode cible d'une Platform Team mature, cohérent avec toute la doctrine produit déjà cadrée.</li>
+    <li><strong>Facilitating</strong> — une équipe aide une autre à progresser sans faire le travail à sa place.</li>
+  </ul>
+
+  <p><code>iap-operating-model-architect</code> doit qualifier explicitement le mode actuel (souvent Collaboration ad hoc — ticket, réunion) et le mode cible (X-as-a-Service) pour la relation infra/équipes applicatives. Lecture directe du backlog de transformation déjà cadré : une US taguée <strong>Coach</strong> relève typiquement d'un mode Facilitating/Enabling ; une US taguée <strong>Délégué</strong> marque le passage effectif vers l'autonomie X-as-a-Service de l'équipe cliente.</p>
+
+  <div class="fact accent">
+    <span class="fact-label">Extension — les agents IA comme membres d'équipe</span>
+    <p>Team Topologies a été conçu pour des équipes 100 % humaines. Extension nécessaire pour BMAD IAP, cohérente avec le pilier <strong>IA, Agentic et Organisation Augmentée</strong> de la grille de maturité (§Modèles de maturité) :</p>
+    <ul>
+      <li>Un agent IA peut être <strong>membre à part entière d'une Stream-aligned team</strong> (ex. triage de tickets, préparation de PR) — réduit la charge cognitive humaine, mais exige un mandat clair de ce que l'agent décide seul vs escalade (rejoint le gate IA et son checkpoint non-automatisable).</li>
+      <li>Une <strong>Platform Team peut exposer un agent IA comme capacité en self-service</strong> — un agent conversationnel de triage devient une brique du catalogue de capacités, au même titre qu'un pipeline CI/CD.</li>
+      <li><strong>Mode d'interaction candidat, absent du modèle original : Supervision</strong> — une équipe humaine supervise un agent IA opérant à un niveau d'autonomie donné, sur le même principe que les 3 modes manuel/semi-auto/auto déjà empruntés à OpenHub (§Agents) — proposé comme 4ᵉ mode plutôt que forcé dans Collaboration ou X-as-a-Service.</li>
+      <li>La question « les rôles respectifs des humains et des agents sont-ils clairement définis ? » (pilier Agentic Readiness de la grille VSCode1) est, de fait, une question de team topology augmentée — les deux référentiels se recoupent et devraient être lus ensemble par <code>iap-operating-model-architect</code>.</li>
+    </ul>
+  </div>
+
+  <p>Nouveau template à prévoir : <code>team-topology-map.md</code> — équipes existantes (type, mode d'interaction actuel), équipes cibles, et localisation des agents IA (membre d'équipe vs capacité exposée) — rattaché à <code>iap-operating-model</code>, alimenté comme le reste par les expérimentations pilotes (voir §Workflows) plutôt que décrété d'emblée.</p>
+</section>
+
+<section class="doc" id="assessment">
+  <p class="eyebrow">Méthode</p>
+  <h2>Moteur d'assessment</h2>
+
+  <p>Le diagnostic BMAD IAP restait, jusqu'ici, décrit comme une prose libre issue d'« axes d'analyse ». Le projet Interview-to-Deck (outil de capture d'entretiens qualitatifs pour audits) fournit un pipeline déjà éprouvé pour exactement ce besoin — on en reprend la structure de données, pas le code.</p>
+
+  <h3>Hiérarchie de capture</h3>
+  <div class="tree">Mission (= engagement IAP)
+  <span class="arrow">└─</span> Trame
+       <span class="arrow">└─</span> Theme          <span class="arrow">←</span> les axes de diagnostic déjà identifiés
+            <span class="arrow">└─</span> Question   <span class="arrow">←</span> reprend §8.4 : flux/priorisation, RUN/support,
+                             humain/compétences, financier/environnemental,
+                             cognitif/UX, décisionnel/gouvernance, IA/données
+
+Interview (une par partie prenante : équipe infra, utilisateur, management, sponsor)
+  <span class="arrow">├─</span> Answer            (par Question, statut pending/answered/skipped/revisit)
+  <span class="arrow">├─</span> Verbatim           (citation rattachée à une Question — alimente le deck)
+  <span class="arrow">└─</span> audio_backup_path  (v1.5 — sauvegarde audio complète, filet de sécurité uniquement)
+
+CoachNote (v1.5 — réflexion libre hors trame formelle : trajet, debrief à chaud, intuition)
+  <span class="arrow">└─</span> audio_backup_path  (même mécanisme, jamais transcrit sans passage par le gate IA)</div>
+
+  <div class="fact accent">
+    <span class="fact-label">Enregistrement audio (v1.5 — repris de VSCode2 / Interview-to-Deck)</span>
+    <p>VSCode2 conserve, par Interview, un <code>audio_backup_path</code> (chemin relatif à <code>data/recordings/</code>) : la sauvegarde audio complète de l'entretien, jamais transcrite automatiquement — un <strong>filet de sécurité</strong> en cas de souci d'extraction/transcription, l'audio brut n'étant sinon jamais conservé. Repris tel quel pour les Interviews BMAD IAP, et étendu à une nouvelle entité légère <strong>CoachNote</strong> : réflexion vocale libre hors trame formelle (un debrief à chaud dans la voiture entre deux sites, une intuition à noter avant de l'oublier) — capture rapide, pas structurée en Thème/Question.</p>
+  </div>
+
+  <div class="critical">
+    <span class="fact-label">Confidentialité de l'audio — jamais un contournement du gate</span>
+    <p>Un enregistrement audio d'interview est par défaut <strong>D2+</strong> (voix identifiable, propos non filtrés) — même règle de classification que le reste (§Gate IA). La transcription automatique d'un audio suit exactement le mode d'exécution IA déjà décidé pour la mission (IA client/LLM local/pas d'IA) ; l'audio brut ne part jamais vers une IA externe au prétexte que « ce n'est qu'une sauvegarde ». En mode M0, l'audio reste un filet de sécurité non exploité activement — pas de transcription du tout, le consultant retranscrit à la main s'il en a besoin.</p>
+  </div>
+
+  <div class="fact accent">
+    <span class="fact-label">Ce que ça résout</span>
+    <p>La doctrine identifie la « multiplicité des utilisateurs internes » comme point d'attention permanent (§2.2 du corpus source), mais rien n'obligeait à interviewer chaque persona séparément. Une <code>Interview</code> par partie prenante rend ce principe opérationnel : RUN/infra, utilisateurs applicatifs et management répondent à la même Trame, ce qui permet ensuite de repérer les convergences et divergences entre points de vue plutôt que de produire un diagnostic monolithique.</p>
+  </div>
+
+  <h3>Import de données outils (v0.8 — repli sans connecteur live)</h3>
+  <p>Le MVP6 (« Transformation Companion », voir §Roadmap) reste hors périmètre — mais rien n'empêche d'<strong>importer manuellement des exports</strong> de ServiceNow, Jira, Confluence, CMDB ou outils FinOps quand un accès direct n'est pas possible : extraits CSV de tickets, backlog exporté, inventaire CMDB, rapport de coûts cloud. Ces imports alimentent le <strong>même diagnostic</strong> que les interviews, mais par une entité distincte :</p>
+
+  <div class="tree">Interview <span class="arrow">→</span> Answer / Verbatim   <span class="arrow">←</span> déclaratif, sujet au biais de l'interviewé
+ExternalEvidence <span class="arrow">→</span> source, type, date, référence   <span class="arrow">←</span> factuel, extrait d'un système
+                                                       tag de confiance : toujours CONFIRMÉ
+                                                       (donnée système, pas une opinion)</div>
+
+  <div class="fact accent">
+    <span class="fact-label">Pourquoi une entité séparée plutôt que fondre les deux</span>
+    <p>Un ticket ServiceNow n'a pas le même statut épistémique qu'un verbatim d'interview : c'est une preuve factuelle (tag <code>CONFIRMÉ</code> automatique, voir §Agents), pas une déclaration à recouper. Séparer <code>ExternalEvidence</code> d'<code>Interview</code> permet à <code>iap-incident-postmortem-miner</code> (voir décisions ci-dessous) de croiser les deux sans confondre un fait et une perception — utile en particulier pour objectiver l'écart entre RUN perçu et RUN réel (voir §KPIs).</p>
+  </div>
+
+  <p>Format d'import minimal attendu : un CSV/export brut par outil source, mappé à la Trame via un fichier <code>import-mapping.md</code> par engagement (quelles colonnes source correspondent à quels Thèmes/Questions) — pas de connecteur API, juste un import de fichier déposé par le client ou le consultant.</p>
+
+  <h3>Synthèse (v1.1 — revue et approfondie)</h3>
+  <p>Une <strong>Synthesis</strong> par Thème (convergences/divergences entre interviewés), puis une <strong>GlobalSynthesis</strong> à 5 catégories fixes, transverse à la mission — remplace la prose libre de <code>diagnostic-systemique.md</code> par une structure éprouvée :</p>
+
+  <p>Catégories : <code>Contexte</code> · <code>Culture &amp; ADN</code> · <code>Forces / succès</code> · <code>Points d'amélioration</code> · <code>Aspirations (ou leur absence)</code></p>
+
+  <div class="fact accent">
+    <span class="fact-label">Revue de structure — 3 clarifications (v1.4)</span>
+    <ul>
+      <li><strong>Aspirations autorise explicitement un contenu négatif</strong> — résignation, épuisement, aspiration absente sont des constats de plein droit, pas un échec à remplir la case. Les scénarios « organisation sceptique », « RUN massif » ou « absence de sponsor mandaté » (§Routage des scénarios) produisent rarement une vision positive spontanée ; forcer une formulation positive de façade ment sur l'état réel.</li>
+      <li><strong>Non-duplication explicite avec le waste-register</strong> : « Forces/succès » et « Points d'amélioration » sont la couche <em>exécutive</em> (5-10 lignes qu'un sponsor lit en premier), le waste-register reste l'outil de travail scoré du consultant — les deux publics et les deux granularités sont différents, ça doit être dit dans le livrable (« voir waste-treatment-backlog.md pour le détail scoré »), pas seulement supposé.</li>
+      <li><strong>Distribution des tags visible par catégorie</strong> — chaque paragraphe de GlobalSynthesis liste en fin de texte la distribution des tags de ses constats sources (ex. « 3 CONFIRMÉ, 2 DÉDUIT, 1 INCERTAIN »), pour ne pas aplatir en un seul bloc lisse des constats de fiabilité très inégale. Ferme le point ouvert v1.1 sur les tags hétérogènes.</li>
+    </ul>
+    <p>RUN/BUILD, comitologie, Team Topologies et gouvernance IA n'ont pas de foyer naturel dans les 5 catégories — décision : enrichir d'abord la Trame (Thèmes/Questions guides propres à chaque catégorie) plutôt que d'ajouter une 6ᵉ catégorie d'emblée, une 6ᵉ catégorie restant en réserve si l'enrichissement s'avère insuffisant à l'usage.</p>
+  </div>
+
+  <p>Jusqu'ici cadrée en une seule phrase alors qu'elle est le maillon qui transforme des réponses brutes en matière exploitable. Champs minimaux désormais explicites :</p>
+
+  <div class="tree">theme_id, mission_id
+statut            <span class="arrow">←</span> empty / draft-generated / edited / validated (cycle de vie)
+méthode_génération <span class="arrow">←</span> llm / manuel-outillé / atelier-collectif (INDÉPENDANT du statut :
+                     un M0 sans IA a bien un "generated", produit par manual-synthesis-guide.md)
+couverture         <span class="arrow">←</span> répondants / total prévu + répartition par persona (infra/utilisateur/
+                     management/sponsor) — condition nécessaire pour détecter un faux consensus
+constats[]         <span class="arrow">←</span> texte + tag CONFIRMÉ/DÉDUIT/INCERTAIN + sources (Verbatim.id et/ou
+                     ExternalEvidence.id) + type dominant (déclaratif/factuel/mixte)
+divergences[]      <span class="arrow">←</span> distinctes des convergences, voir structure ci-dessous
+alerte_couverture  <span class="arrow">←</span> posée automatiquement si 0 réponse ou déséquilibre fort par persona</div>
+
+  <div class="fact accent">
+    <span class="fact-label">Triage des tags de confiance — le lien manquant avec §Agents</span>
+    <p>Les tags CONFIRMÉ/DÉDUIT/INCERTAIN (empruntés à OpenHub) et l'entité Synthesis étaient cadrés dans deux sections qui ne se citaient jamais, alors que l'exemple donné pour DÉDUIT (« constat déduit de plusieurs entretiens ») est littéralement une Synthesis. Règle désormais explicite : convergence forte (≥4 interviews alignées) → <code>DÉDUIT</code> ; convergence avec preuve factuelle à l'appui (ExternalEvidence, pas seulement des opinions répétées) → <code>CONFIRMÉ</code> ; divergence non résolue en fin de mission → <code>INCERTAIN</code>. Le tag se pose <strong>par constat</strong>, jamais globalement sur toute la Synthesis — une même Synthesis mélange typiquement les trois.</p>
+  </div>
+
+  <div class="critical">
+    <span class="fact-label">Garde-fou anti-faux-consensus, porté par la donnée</span>
+    <p>Une Synthesis reste <strong>provisoire</strong> tant que la couverture est incomplète, affichée avec un bandeau explicite « provisoire — X/Y interviews reçues » (pas un simple label « draft » muet sur le manque). Sous un seuil de couverture (ex. &lt;50 % des interviews prévues sur ce Thème), tout constat <code>DÉDUIT</code> est automatiquement rétrogradé en <code>INCERTAIN</code> — le tag suit la maturité réelle de l'échantillon, pas seulement le jugement de l'agent qui rédige. Un Thème à 0 réponse déclenche <code>alerte_couverture</code> plutôt que de disparaître silencieusement du diagnostic.</p>
+  </div>
+
+  <p><strong>Divergences structurées</strong>, pas juste « les avis divergent » : chaque entrée porte la question source, les positions résumées par groupe d'interviewés avec <code>verbatim_id</code> précis, un <code>axe_de_divergence</code> (périmètre différent / fait vs perception / enjeu politique / information datée) et un statut de <code>résolution</code> (non résolu / tranché par ExternalEvidence / tranché par l'agent / divergence légitime acceptée). Une divergence non résolue en fin de mission remonte automatiquement dans <code>ai-risk-register.md</code> plutôt que de rester enterrée dans un fichier que peu de monde relit après le deck.</p>
+
+  <p><strong>Synthesis → waste-register</strong> : jamais de génération automatique d'un gaspillage depuis une Synthesis — un constat de convergence n'est qu'un signal, un gaspillage qualifié suppose le passage Qualifier → Quantifier → Cause racine déjà cadré (voir §Traitement des gaspillages). Le pont reste <em>assisté</em> : un constat fortement négatif (mots-clés récurrents détectés par l'algorithme fréquence/cooccurrence du mode M0) peut pré-remplir un brouillon d'entrée dans le <code>waste-register</code> — le registre brut des signaux, distinct du <code>waste-treatment-backlog.md</code> qualifié et scoré qui n'accueille que ce qui a franchi ce passage — avec lien retour vers la Synthesis d'origine, jamais une entrée générée directement dans le backlog priorisé.</p>
+
+  <p>Correction apportée à la hiérarchie de capture : un <code>Verbatim</code> ne doit plus alimenter le deck-builder directement en court-circuitant la Synthesis — il doit d'abord être cité comme source d'un constat tagué, pour ne pas ouvrir un chemin parallèle non gouverné par les tags de confiance.</p>
+
+  <h3>Recommandations</h3>
+  <p><strong>RecommendationAxis</strong> (3–4 axes transverses, pas un axe par thème) → <strong>Recommendation</strong> (Objectif / Acteurs / Proposition de valeur / Plan d'actions / Résultats attendus), notée sur deux axes simples <strong>valeur / complexité (1–5)</strong>.</p>
+
+  <div class="fact accent">
+    <span class="fact-label">Ne remplace pas le scoring du waste-treatment</span>
+    <p>Le scoring <code>Impact × Faisabilité − Prudence IA</code> du backlog de gaspillages (voir section précédente) reste en place — il est plus granulaire et propre au traitement des gaspillages. Le couple valeur/complexité (1–5) est réservé aux <strong>recommandations de transformation transverses</strong> (issues du diagnostic global, alimentant la roadmap et le deck), un usage plus léger et plus proche d'une matrice effort/valeur classique.</p>
+  </div>
+
+  <h3>Recommandations niveau équipe (v1.4)</h3>
+  <p>Ce que BMAD IAP recommande à <strong>une équipe précise</strong> sur son fonctionnement, distinct du diagnostic transverse de mission — pas un nouveau palier d'entité, un simple champ <code>scope: mission | équipe</code> (+ <code>team_id</code>) ajouté à <code>Recommendation</code>, et une section optionnelle « Profil équipe » dans <code>recommendation-card.md</code> plutôt qu'un template dédié en plus des 14 déjà prévus.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Axe</th><th>Exemples de recommandations propres à une équipe</th><th>Propriétaire</th></tr></thead>
+      <tbody>
+        <tr><td>Delivery</td><td>Swimlanes RUN/BUILD séparées avec WIP propre ; Definition of Done infra (alerting, runbook, rollback testé) ; dépendances externes visibles sur le kanban avec SLA</td><td><code>iap-platform-product-pm</code> (flux/DoD) + <code>iap-run-tma-specialist</code> (patterns RUN)</td></tr>
+        <tr><td>Gaspillage</td><td>Bus factor, canal de contournement du manager, ping-pong de tickets à l'interface de cette équipe, backlog fantôme hors outil officiel — une maille plus fine du même <code>waste-register</code>, pas un nouvel objet</td><td><code>iap-waste-treatment-lead</code></td></tr>
+        <tr><td>Efficacité</td><td>Rotation « bouclier » anti-interruption, allocation RUN explicite avec alerte de dérive, contrat écrit « ce qui justifie une interruption », plafond de toil déclenchant l'automation-readiness-checklist</td><td><code>iap-run-tma-specialist</code> + <code>iap-metrics-sre-finops-lead</code> (handoff conjoint, pas un propriétaire unique)</td></tr>
+        <tr><td>Interaction</td><td>Mode d'interaction déclaré par dépendance (actuel/cible, §Modèles d'équipe), mini-catalogue de service propre à l'équipe, règle « une seule voix en comitologie », menu d'escalade explicite du manager</td><td><code>iap-operating-model-architect</code>, alimenté par <code>iap-diagnostic-systemique</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Position générale : <strong>pas de nouvel agent</strong> (pas de <code>iap-team-coach</code>) — chaque agent existant applique sa lecture à une maille plus fine, cohérent avec le refus déjà acté d'un 12ᵉ agent pour la comitologie. Extension du garde-fou anti-déplacement : toute fiche de recommandation niveau équipe porte un champ « Qui d'autre est affecté ? » (équipes voisines/management/comitologie) — un gain d'équipe peut être un optimum local qui déplace la file d'attente vers une équipe amont/aval.</p>
+
+  <h3>Mapping vers les workflows IAP</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Entité du moteur</th><th>Porté par</th></tr></thead>
+      <tbody>
+        <tr><td>Mission, Trame</td><td>Créées par <code>iap-intake</code></td></tr>
+        <tr><td>Interview, Answer, Verbatim</td><td>Capturées par <code>iap-diagnostic-systemique</code> et <code>iap-discovery-gaspillage</code>, une par persona</td></tr>
+        <tr><td>Synthesis, GlobalSynthesis</td><td>Output structuré de <code>iap-diagnostic-systemique</code>, remplace le markdown libre — alimente <em>assisté</em> (jamais automatique) le waste-register et, via <code>iap-waste-treatment-lead</code>, les RecommendationAxis</td></tr>
+        <tr><td>RecommendationAxis, Recommendation</td><td>Output transverse consommé par <code>iap-deck-builder</code> (slides recommandations/roadmap)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="doc" id="agents">
+  <p class="eyebrow">Exécution</p>
+  <h2>Agents BMAD</h2>
+
+  <p>Contrat commun à chaque agent : synthèse, hypothèses, questions ouvertes, recommandations, risques, métriques, handoffs, livrable Markdown.</p>
+
+  <div class="fact accent">
+    <span class="fact-label">Clause d'allègement — décision de cadrage</span>
+    <p>En mode brouillon/itération rapide, un agent peut ne produire que synthèse + hypothèses + questions + recommandations, et compléter risques/métriques/handoffs seulement au passage en version « prête à partager ».</p>
+  </div>
+
+  <h3>Mécanismes empruntés à OpenHub (v0.7 — framework multi-agents trouvé dans VSCode2/external/openhub)</h3>
+  <p>VSCode2 invoque déjà en interne un framework multi-agents complet et documenté par ADR. Quatre de ses mécanismes se transposent directement à BMAD IAP, sans reprendre son code — seulement ses contrats.</p>
+
+  <h4 class="sub">Contrats de handoff formalisés (cf. ADR-009)</h4>
+  <p>Chaque paire agent producteur→consommateur (ex. <code>iap-waste-treatment-lead</code> → <code>iap-deck-builder</code>) reçoit un contrat partagé : un bloc <code>## Retour vers &lt;consommateur&gt;</code> normalisé, produit en fin de mission d'un agent, contenant la sortie complète (jamais résumée) et des champs de métadonnées actionnables (statut, routing recommandé, verdict). Règle stricte héritée d'OpenHub : <strong>le consommateur ne construit jamais un output à partir d'une entrée non structurée</strong> — un bloc absent ou incomplet déclenche une demande explicite à l'agent producteur plutôt qu'une reconstruction approximative.</p>
+
+  <h4 class="sub">Checkpoint non-automatisable, quel que soit le mode (cf. ADR-006)</h4>
+  <p>OpenHub propose 3 modes de workflow (manuel / semi-auto / auto) choisis une fois pour la session, mais un checkpoint reste <strong>toujours manuel dans tous les modes</strong> (chez OpenHub : la décision de merger du code). Transposé à BMAD IAP : quel que soit le mode d'autonomie choisi à l'intake, <strong>la décision du gate IA/confidentialité reste toujours un checkpoint humain</strong>, jamais automatisable — « absence de risque apparent » n'équivaut pas à « autorisé ».</p>
+
+  <h4 class="sub">Tags de confiance CONFIRMÉ / DÉDUIT / INCERTAIN (cf. wiki vivant OpenHub)</h4>
+  <p>Chaque constat produit par un agent BMAD IAP (diagnostic, gaspillage, recommandation) porte désormais un tag de confiance explicite et sa source :</p>
+
+  <div class="tree">- Constat : ...
+  <span class="arrow">—</span> `CONFIRMÉ` · &lt;agent&gt; · &lt;date&gt; · &lt;verbatim/document:référence&gt;
+
+- Constat déduit de plusieurs entretiens : ...
+  <span class="arrow">—</span> `DÉDUIT` · &lt;agent&gt; · &lt;date&gt; · &lt;sources croisées&gt;
+
+- Hypothèse non encore validée par le client : ...
+  <span class="arrow">—</span> `INCERTAIN` · &lt;agent&gt; · &lt;date&gt;</div>
+
+  <p>Rend opérationnelles deux règles déjà présentes dans la doctrine (« expliciter ses hypothèses », « signaler les informations manquantes ») en leur donnant un format portable plutôt qu'une intention en prose.</p>
+
+  <h4 class="sub">Agent strictement lecture-seule (cf. agents auditor/onboarder OpenHub)</h4>
+  <p><code>iap-risk-reviewer</code> adopte la règle stricte des agents d'audit OpenHub : <strong>« ne réalise jamais d'action hors lecture »</strong>. Il challenge, verdict, recommande — mais ne modifie jamais directement un livrable produit par un autre agent. Une correction proposée par <code>iap-risk-reviewer</code> reste une recommandation à valider par l'agent propriétaire du fichier, jamais une réécriture directe.</p>
+
+  <h3>Les 11 agents</h3>
+  <div class="agent-grid">
+    <div class="agent-card"><code>iap-strategy-lead</code> — Cadre la transformation, sponsors, scénarios, trajectoire. <span class="challenge">« Quel problème business règle-t-on vraiment ? »</span></div>
+    <div class="agent-card"><code>iap-platform-product-pm</code> — Définit produits infra, personas, valeur, catalogue, roadmap. <span class="challenge">« Est-ce un produit ou juste un composant technique ? »</span></div>
+    <div class="agent-card"><code>iap-operating-model-architect</code> — Conçoit rôles, gouvernance, financement, dépendances. <span class="challenge">« Comment ça fonctionne réellement demain ? »</span></div>
+    <div class="agent-card"><code>iap-run-tma-specialist</code> — RUN, SLA/SLO, TMA, incidents récurrents, astreintes. <span class="challenge">« Le modèle est-il opérable sans sacrifier le BUILD ? »</span></div>
+    <div class="agent-card"><code>iap-waste-treatment-lead</code> — Cartographie, score et backlog de traitement des gaspillages.</div>
+    <div class="agent-card"><code>iap-platform-architect</code> — Relie cible produit et réalité technique. <span class="challenge">« La cible produit est-elle techniquement cohérente ? »</span></div>
+    <div class="agent-card"><code>iap-ux-adoption-lead</code> — Parcours, onboarding, self-service, documentation, feedback. <span class="challenge">« Pourquoi les équipes applicatives adopteraient-elles la plateforme ? »</span></div>
+    <div class="agent-card"><code>iap-metrics-sre-finops-lead</code> — Métriques de flux, fiabilité, coût, usage, satisfaction. <span class="challenge">« Comment saura-t-on que ça marche ? »</span></div>
+    <div class="agent-card"><code>iap-ai-governance-lead</code> — Cas d'usage IA/agentic, garde-fous, supervision, audit. <span class="challenge">« L'IA est-elle sûre, utile et gouvernable ? »</span></div>
+    <div class="agent-card"><code>iap-change-coach</code> — Middle management, compétences, RH, communautés. <span class="challenge">« Comment évite-t-on une transformation cosmétique ? »</span></div>
+    <div class="agent-card"><code>iap-risk-reviewer</code> — Revue critique des livrables, angles morts. <span class="challenge">« Qu'est-ce qui va échouer chez ce client ? »</span></div>
+  </div>
+
+  <h3>Vue globale — graphe des handoffs (v1.1)</h3>
+  <p>Simplifié en 3 chaînes séquentielles plutôt qu'un graphe complet (trop d'arêtes croisées pour rester lisible). Les agents en accent (<code>platform-product-pm</code>, <code>operating-model-architect</code>, <code>metrics-sre-finops-lead</code>) apparaissent sur plusieurs chaînes — même agent, pas une copie.</p>
+
+  <div class="tree">STRATÉGIE  : iap-strategy-lead <span class="arrow">→</span> platform-product-pm <span class="arrow">→</span> operating-model-architect <span class="arrow">→</span> ai-governance-lead
+
+PRODUIT    : platform-product-pm <span class="arrow">→</span> ux-adoption-lead <span class="arrow">→</span> metrics-sre-finops-lead <span class="arrow">→</span> platform-architect
+
+RUN/TMA    : run-tma-specialist <span class="arrow">→</span> operating-model-architect <span class="arrow">→</span> metrics-sre-finops-lead
+
+GASPILLAGE : iap-waste-treatment-lead <span class="arrow">→</span> operating-model-architect (capacité)
+                                       &amp; metrics-sre-finops-lead (métriques du backlog scoré)
+
+--- (lecture seule, transverse) ---
+iap-risk-reviewer — lecture seule, challenge tous les agents ci-dessus avant le deck final
+iap-change-coach accompagne l'adoption humaine en parallèle de ux-adoption-lead</div>
+
+  <h3>Focus management (v1.4 — approfondit iap-change-coach)</h3>
+  <p>Le management était traité en une ligne (« middle management, compétences, RH, communautés »). Trois clarifications, sans créer de nouvel agent ni de 9ᵉ famille de gaspillage :</p>
+
+  <div class="fact accent">
+    <span class="fact-label">Persona à nommer explicitement</span>
+    <p><strong>« L'expert devenu manager malgré lui »</strong> — parcours technique récompensé par une promotion managériale non choisie ou non préparée, sans retrait progressif du dossier technique. Accompagnement en 3 pistes : mentorat par un pair externe (un manager d'une autre organisation ayant vécu la même transition, plus crédible qu'un consultant qui n'a jamais tenu le rôle), pairing structuré sur des situations réelles (un comité, un arbitrage RUN) plutôt qu'une formation générique, formation ciblée sur un seul geste à la fois (animer une rétro sans redonner les réponses, déléguer et tenir une semaine). Mécanisme <strong>Coach → Délégué en miroir</strong> de celui de l'automatisation (§Traitement des gaspillages) : le consultant accompagne directement 2-3 situations réelles, bascule vers Délégué quand le manager anime seul le même rituel sans supervision.</p>
+  </div>
+
+  <p><strong>Gaspillage managérial — angle transverse, pas une famille de plus</strong> : plutôt que d'ajouter une 9ᵉ famille à <code>waste-library.md</code> (recouperait déjà « Humain » et « Décisionnel »), un angle de lecture « vu depuis le manager » s'applique aux familles existantes. Patterns à nommer : réunions de statut organisées <em>par</em> le manager (pas seulement subies), reporting redondant recopié à chaque niveau hiérarchique, « reporting miroir » (un manager maintient un reporting détaillé parallèle au reporting simplifié transmis), micromanagement compensatoire — la cause racine est un déficit d'information fiable, pas un trait de personnalité ; la vraie remédiation redonne un signal de confiance (métriques de flux), pas plus de contrôle.</p>
+
+  <p><strong>Indicateurs de posture, jamais un score RH déguisé</strong> : ratio temps réunion de statut / temps résolution d'obstacles, taux de décisions déléguées effectivement tenues, fréquence d'escalade déclenchée par l'équipe elle-même plutôt que par le manager. Tag de confiance applicable ici aussi (une amélioration rapportée par le manager seul reste <code>DÉDUIT</code>, confirmée par l'équipe en interview croisée peut monter en confiance) — ces indicateurs restent des signaux de coaching, jamais un livrable communicable à la hiérarchie du manager sans son accord.</p>
+
+  <div class="critical">
+    <span class="fact-label">Risque documenté — dépendance non maîtrisable aux structures RH</span>
+    <p>Coacher une posture que les grilles de promotion/évaluation continuent de récompenser à l'inverse (contrôle, expertise technique visible) revient à ramer contre le système d'incitation — la même règle d'or que « l'IA amplifie le système existant » (§Doctrine) s'applique ici à une méthode humaine. Traitement : un <code>management-posture-risk</code> consigné sur le modèle d'<code>ai-risk-register.md</code>, avec une question de sortie de mission systématique côté sponsor (« qu'est-ce qui, dans vos grilles d'évaluation actuelles, récompense encore le comportement qu'on vient de décourager ? ») — sans obligation de la résoudre, avec obligation de la poser et de tracer la réponse.</p>
+  </div>
+</section>
+
+<section class="doc" id="workflows">
+  <p class="eyebrow">Exécution</p>
+  <h2>Workflows</h2>
+
+  <p>Un seul est bloquant avant tout usage IA sur données client : <code>iap-ai-data-confidentiality-gate</code>.</p>
+
+  <div class="wf-list">
+    <div class="wf-card"><code>iap-intake</code> — <em>Démarrage de mission.</em> Qualifie le contexte client, positionne sur les deux échelles de maturité, choisit le chemin (diagnostic-first / pilot-first / adoption-first / operating-model-first / AI-gate-first). Outputs : <code>iap-context.md</code> · <code>client-scenario.md</code> · <code>recommended-path.md</code></div>
+
+    <div class="wf-card"><code>iap-ai-data-confidentiality-gate</code> — <em>Bloquant avant tout usage IA.</em> Classifie les données, évalue IA client/LLM local/anonymisation, décide le mode d'exécution, définit garde-fous. Outputs — propriété canonique de ce workflow : <code>ai-data-confidentiality-assessment.md</code> · <code>llm-execution-mode-decision.md</code> · <code>human-oversight-model.md</code> · <code>ai-risk-register.md</code> (amendé, jamais réécrit, par les autres workflows IA)</div>
+
+    <div class="wf-card"><code>iap-diagnostic-systemique</code> — <em>Comprendre le système.</em> Structure, gouvernance, flux, dépendances, RUN/BUILD, posture management, relation infra/produits applicatifs.</div>
+
+    <div class="wf-card"><code>iap-discovery-gaspillage</code> — <em>Carte exploitable, pas une liste.</em> Preuves, causes racines, impact, options de traitement, owner, métriques par gaspillage détecté.</div>
+
+    <div class="wf-card"><code>iap-waste-treatment</code> — <em>Pont diagnostic → operating model → adoption.</em> Transforme les gaspillages en backlog priorisé (scoring, patterns, cadences de revue, garde-fou anti-déplacement).</div>
+
+    <div class="wf-card"><code>iap-product-definition</code> — <em>Discovery fusionnée — voir décision de cadrage.</em> Personas → capacités → distinction produit/service/composant → proposition de valeur → SLA/SLO → roadmap. Output optionnel — nouveau : <code>mvp-target-model.md</code> : core target model minimal pour expérimentation/témoignage rapide, distinct du product canvas complet.</div>
+
+    <div class="wf-card">
+      <code>iap-operating-model</code> — <em>Opérer durablement la plateforme.</em> Rôles, gouvernance, financement par capacité, RUN/BUILD, TMA, cadences, décisions clés.
+      <ul>
+        <li><em>Format ADR pour les décisions structurantes — nouveau (v0.7, cf. OpenHub) :</em> Chaque décision de modèle-cible (ex. « financement par capacité plutôt que par projet ») devient un fichier séparé <code>decisions/NNN-titre.md</code> — Statut / Contexte / Décision / Conséquences (positives, négatives-compromis) / Alternatives rejetées — plutôt qu'un unique <code>operating-model.md</code> monolithique. Une décision peut être amendée plus tard en ajoutant une section « Amendement » en fin de fichier, sans réécrire l'historique.</li>
+        <li><em>Le modèle cible n'est pas décrété d'emblée — nouveau (v0.9) :</em> Le target operating model n'est pas figé au moment où il est rédigé : chaque décision structurante peut être testée par une <strong>expérimentation pilote</strong> (ex. une nouvelle cadence de priorisation essayée 6 semaines sur une seule équipe) avant généralisation. Les résultats de l'expérimentation — mesurés, pas supposés — amendent la décision ADR correspondante plutôt que de la valider a priori. C'est le même principe que le pilot-first déjà en doctrine (règle d'or #8), appliqué spécifiquement à l'operating model plutôt qu'au diagnostic initial.</li>
+        <li><strong><code>iap-operating-model → transformation-backlog.md</code></strong> (nouveau, v0.9) — <em>Un artefact transverse, pas un output de plus parmi d'autres.</em> Reprend le pattern Epic → User Story déjà repéré dans le projet frère VSCode1 (<code>cadrage/epics-us.md</code>) pour transformer les décisions d'operating model, le backlog de gaspillages et la roadmap produit en actions exécutables. Chaque US porte un <strong>mode d'exécution explicite</strong> : <code>Coach</code> · <code>Délégué</code>. <strong>Coach</strong> : réalisée directement par le consultant en mission (ex. animer un atelier de priorisation, rédiger une fiche produit). <strong>Délégué</strong> : confiée à l'équipe client elle-même ou à un autre agent BMAD (ex. l'équipe RUN documente ses tickets récurrents, <code>iap-metrics-sre-finops-lead</code> instrumente un tableau de bord). Cette distinction évite l'anti-pattern où le consultant fait tout à la place du client — contraire à l'objectif d'autonomisation de l'operating model cible. Champs par US : Titre · Epic parent · critères d'acceptation · mode (Coach/Délégué) · owner · effort estimé · dépendances · lien vers la décision ADR ou le gaspillage d'origine.</li>
+      </ul>
+    </div>
+
+    <div class="wf-card"><code>iap-agentic-opportunities</code> — <em>Chercher le gaspillage avant de chercher l'IA.</em> Consulte (ne régénère pas) <code>llm-execution-mode-decision.md</code> et <code>human-oversight-model.md</code> produits par le gate.</div>
+
+    <div class="wf-card"><code>iap-adoption-plan</code> — <em>Faire adopter la plateforme.</em> Personas, onboarding, documentation, communautés, feedback loops, migration.</div>
+
+    <div class="wf-card"><code>iap-scenario-playbook</code> — <em>Adapter la démarche au scénario client.</em></div>
+
+    <div class="wf-card">
+      <code>iap-deck-builder</code> — <em>Deck modulaire, 16 sections par défaut.</em> Slide 02 (« ce qui est différent d'une transfo agile classique ») récupère les tables problème→méthode du brainstorm source.
+      <ul>
+        <li><em>Exigence explicite — niveau professionnel (v1.3) :</em> Le deck exporté doit atteindre un niveau <strong>professionnel</strong>, pas seulement fonctionnel — en design (typographie, palette, composants visuels) <strong>et</strong> en UX (hiérarchie de lecture, navigabilité, clarté du message pour un sponsor qui le feuillette en 10 secondes). Un deck qui « passe » le garde-fou géométrique n'est pas encore un deck de ce niveau.</li>
+        <li><em>Visuels infra à construire :</em> Radar 5 piliers (couleur par pilier constante entre radar T0, T0/T1 superposé et légende — jamais deux mappings couleur différents dans le même deck) ; frise RUN/BUILD (rubans proportionnels RUN subi/maîtrisé/BUILD, pas un simple donut) ; matrice de dépendances inter-équipes (teinte d'intensité, pas un graphe nœud-lien dense — même principe de simplification que le graphe des handoffs d'agents ci-dessus) ; diagramme en couches concentriques pour la granularité produit/service/capacité/composant. Le scoring de gaspillage à 3 dimensions (Impact × Faisabilité − Prudence IA) perd sa 3ᵉ dimension en 2D — traiter la Prudence IA comme <strong>recoloration d'alerte</strong> (teinte gate) au-delà d'un seuil plutôt que comme un vrai 3ᵉ axe, ou préférer un classement en barres horizontales (plus lisible qu'un scatter au-delà d'une dizaine d'items, limite connue de la légende native PowerPoint).</li>
+        <li><em>Palette — décision non tranchée :</em> Réserver l'ambre strictement au gate IA/alertes (déjà son usage dans ce wiki) ; l'utiliser aussi pour les sections « gaspillage » risquerait de sur-connoter tout le pilier Assainir comme un problème de sécurité. Piste retenue à confirmer : une teinte neutre pour les sections gaspillage plutôt qu'une couleur dédiée, en réservant le teal à la vision produit.</li>
+      </ul>
+      <div class="critical">
+        <span class="fact-label">Garde-fous manquants — plus dangereux qu'un débordement de forme, car invisibles en relecture rapide</span>
+        <p><strong>Texte débordant sa propre boîte</strong> (le garde-fou géométrique actuel ne détecte que les formes hors cadre, pas un overflow interne à une zone de texte) et <strong>cohérence d'échelle entre radars</strong> (un même <code>scale_max</code>/graduation obligatoire entre radar T0 et T0/T1, sinon un delta visuel peut ne représenter aucun delta réel).</p>
+      </div>
+      <ul>
+        <li><em>Discipline de rendu — brouillon vs final :</em> Rendu réel (LibreOffice/PowerPoint → PDF, vérification du nombre de pages) <strong>non-bloquant en mode brouillon</strong> (log un avertissement, n'arrête pas le workflow) mais <strong>obligatoire avant remise en comité</strong> (<code>mode: final</code>) — jamais de dégradation silencieuse si l'outil de rendu est indisponible sur le poste (échec visible, cohérent avec la règle OpenHub déjà actée). Un flag <code>mode: brouillon</code> réduit aussi le nombre de sections (6 slides clés plutôt que 16) sans dupliquer le générateur — même mécanique que la clause d'allègement des agents, transposée au deck.</li>
+        <li><em>Confidentialité de l'export lui-même :</em> Checklist de relecture explicite avant export (verbatims, captures d'écran, noms d'équipes) plutôt qu'un filtre automatique — les captures d'écran sont un angle mort spécifique (données visibles à l'œil, non détectables par un filtre texte). Verbatims cités dans le deck anonymisés par défaut (« un manager RUN » plutôt qu'un nom) ; bandeau de classification D0–D4 visible sur toute slide contenant des données D2+. En mode M0, cette relecture reste entièrement manuelle — pas de filtre automatique, cohérent avec le badge « Synthèse manuelle » déjà acté.</li>
+        <li><em>Template dédié — nice-to-have, pas un prérequis :</em> Un template PowerPoint OCTO propre à BMAD IAP coûterait cher à maintenir pour un seul module ; la mécanique déjà template-agnostique (accepte un template client uploadé ou construit un deck 16:9 depuis zéro) suffit avec un thème de couleurs/pictogrammes appliqué par-dessus, plutôt qu'un fichier figé séparé.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="doc" id="scenarios">
+  <p class="eyebrow">Exécution</p>
+  <h2>Routage des scénarios</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Scénario</th><th>Signaux</th><th>Chemin recommandé</th></tr></thead>
+      <tbody>
+        <tr><td>Organisation sceptique</td><td>« Chez nous le produit ne marche pas »</td><td>Pilot-first + vocabulaire commun + preuves terrain</td></tr>
+        <tr><td>RUN massif</td><td>Tickets récurrents, BUILD sacrifié</td><td>Diagnostic RUN + discovery gaspillage + waste treatment</td></tr>
+        <tr><td>Gaspillages diffus</td><td>Irritants nombreux, peu de preuves consolidées</td><td>Discovery gaspillage + scoring + expérimentations courtes</td></tr>
+        <tr><td>TMA dominante</td><td>RUN externalisé, SLA contractuels</td><td>Workflow RUN/TMA + operating model</td></tr>
+        <tr><td>Plateforme peu adoptée</td><td>Shadow IT, faible usage</td><td>Product discovery + UX/adoption</td></tr>
+        <tr><td>Priorités politiques</td><td>Premier arrivé, plus bruyant</td><td>Flux entrants + gouvernance de priorisation</td></tr>
+        <tr><td>Pression IA sponsor</td><td>« Mettre de l'IA » sans cas d'usage</td><td>AI/Data Gate + discovery gaspillage</td></tr>
+        <tr><td>Données sensibles</td><td>Tickets, logs, coûts, PII</td><td>IA client ou LLM local + anonymisation</td></tr>
+        <tr><td>Maturité IA faible</td><td>Pas de plateforme IA gouvernée</td><td>Méthodo + données synthétiques</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="doc" id="ambition">
+  <p class="eyebrow">Trajectoire</p>
+  <h2>Ambition de l'outil</h2>
+
+  <p>BMAD IAP n'est pas figé sur un seul niveau d'ambition technique. Trois niveaux distincts, du plus simple au plus connecté :</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Niveau</th><th>Rôle de l'outil</th><th>Rôle du consultant</th><th>Corrélation roadmap</th></tr></thead>
+      <tbody>
+        <tr><td><strong>A · Aide au coach</strong></td><td>Génère un livrable à la demande (template rempli, score calculé, deck assemblé) — aucune initiative propre</td><td>Pilote à 100 % : lit, décide, ajuste chaque livrable</td><td>Correspond à l'état actuel du cadrage (MVP0–MVP5) : agents invoqués un par un, sorties Markdown</td></tr>
+        <tr><td><strong>B · Assistant interactif</strong></td><td>Guide pas à pas, pose des questions de clarification, signale les incohérences entre livrables (ex. double scoring waste/recommandation)</td><td>Reste décisionnaire, mais délègue l'orchestration entre agents à l'outil</td><td>Palier intermédiaire non numéroté dans la roadmap actuelle — à situer entre MVP5 et MVP6</td></tr>
+        <tr><td><strong>C · Companion connecté</strong></td><td>Vision « Transformation Companion » déjà actée : connecté en direct à ServiceNow/Jira/Confluence/Datadog/CMDB/FinOps, quasi autonome sur la collecte</td><td>Supervise, arbitre les checkpoints non-automatisables (gate IA — voir §Agents)</td><td>= MVP6, toujours non engagé</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="fact accent">
+    <span class="fact-label">Pas nécessairement un spectre linéaire</span>
+    <p>Monter de A à C n'est pas qu'une question de fonctionnalités en plus : le niveau C suppose un accès direct aux données de production du client (risque sécurité/confidentialité d'un tout autre ordre que A/B, voir le gate IA). Un cabinet peut très bien vouloir rester durablement au niveau A ou B par choix de gouvernance, pas seulement par contrainte technique transitoire.</p>
+  </div>
+
+  <h3>Solution technique envisagée (v1.5 — Website en primaire, App en complément)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Composant</th><th>Rôle</th><th>Ancrage</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Website</strong> (web app)</td><td>Outil principal — moteur d'assessment, deck-builder, wiki de cadrage, grille de maturité, tableau de bord multi-engagements</td><td>Même pattern que les deux projets frères déjà éprouvés : VSCode1 (Express/Node.js) et VSCode2 (FastAPI/Jinja2/HTMX) — aucun build step lourd, déploiement simple, pas de friction de store</td></tr>
+        <tr><td><strong>App</strong> (companion mobile, léger)</td><td>Capture terrain uniquement : enregistrement audio (Interview/CoachNote, voir ci-dessus), prise de note rapide hors connexion, synchronisation différée vers le Website</td><td>Répond au cas d'usage où le consultant n'a pas son ordinateur ouvert pendant l'entretien ou entre deux sites — pas une réplique du Website sur mobile, un outil de capture minimal qui se synchronise</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Le Website reste l'unique source de vérité (missions, engagements, livrables) ; l'App ne fait que déposer des captures brutes (audio, notes) qui remontent au même modèle de données (Interview/CoachNote) — pas deux systèmes à maintenir en parallèle. Correspond au Niveau B de l'ambition ci-dessus ; le Niveau A (aide au coach, état actuel du cadrage) n'a besoin d'aucun des deux, juste des agents invoqués à la demande.</p>
+</section>
+
+<section class="doc" id="usage-coach">
+  <p class="eyebrow">Trajectoire</p>
+  <h2>Utilisation simple par le coach</h2>
+
+  <p>Avant toute ambition Niveau B/C, voici littéralement ce qu'un consultant fait avec BMAD IAP aujourd'hui — un agent invoqué à la fois, aucune autonomie, un livrable Markdown à chaque étape.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Ce que fait le coach</th><th>Ce qu'il obtient</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Décrit le contexte client à <code>iap-intake</code></td><td>Positionnement sur les 2 échelles de maturité + chemin recommandé (diagnostic-first, pilot-first…)</td></tr>
+        <tr><td>2</td><td>Prend le gabarit de guide d'entretien du scénario détecté dans <code>scenario-library.md</code></td><td>Une Trame prête à l'emploi (Thèmes/Questions déjà écrits)</td></tr>
+        <tr><td>3</td><td>Mène les interviews une par une, note verbatims — importe si possible des exports ServiceNow/Jira</td><td>Une Interview par persona + ExternalEvidence en complément</td></tr>
+        <tr><td>4</td><td>Lance <code>iap-diagnostic-systemique</code> et <code>iap-discovery-gaspillage</code></td><td>Synthesis par Thème + GlobalSynthesis + waste-register scoré</td></tr>
+        <tr><td>5</td><td>Lance <code>iap-product-definition</code> et <code>iap-operating-model</code></td><td>Product canvas, mvp-target-model.md, décisions ADR, transformation-backlog.md (US Coach/Délégué)</td></tr>
+        <tr><td>6</td><td>Relit avec <code>iap-risk-reviewer</code> avant de finaliser</td><td>Une liste de challenges/incohérences à corriger — jamais une réécriture automatique</td></tr>
+        <tr><td>7</td><td>Lance <code>iap-deck-builder</code></td><td>Le deck exécutif modulaire, prêt à présenter</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Pas d'orchestration automatique entre ces étapes, pas de tableau de bord : le coach garde la main d'un bout à l'autre, exactement comme décrit au Niveau A du spectre d'ambition ci-dessus. Rien n'empêche de sauter une étape (ex. mission flash : intake + gate IA + un pilote d'une semaine, cf. §Points ouverts) — la séquence complète n'est qu'un plafond, pas un plancher.</p>
+</section>
+
+<section class="doc" id="kpis">
+  <p class="eyebrow">Trajectoire</p>
+  <h2>KPIs</h2>
+
+  <p>Trois familles de KPIs, à ne pas confondre : ceux de la <strong>mission chez le client</strong> (est-ce que la transformation marche ?), ceux de <strong>l'usage du module BMAD IAP lui-même</strong> (est-ce que la méthode est efficace pour le cabinet ?), et ceux de la <strong>grille de maturité</strong> (progression mesurée dans le temps).</p>
+
+  <h3>KPIs de mission (côté client)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Catégorie</th><th>Indicateurs</th></tr></thead>
+      <tbody>
+        <tr><td>Gaspillage traité</td><td>Tickets récurrents évités, ressources décommissionnées, interruptions d'experts réduites, capacité RUN récupérée</td></tr>
+        <tr><td>Adoption produit</td><td>Usage réel des capacités livrées, taux de self-service, taux de contribution retour, recommandation spontanée inter-équipes</td></tr>
+        <tr><td>Fiabilité &amp; coût</td><td>MTTR, incidents par cause racine, coût par capacité, ressources orphelines</td></tr>
+        <tr><td>Gouvernance IA</td><td>Cas IA avec supervision/audit/critère d'arrêt documentés, incidents IA, mode d'exécution respecté (pas de bascule silencieuse)</td></tr>
+        <tr><td>Maturité</td><td>Delta de score par pilier de la grille (Excellence Technique, Agilité à l'Échelle, IA/Agentic) entre T0 et re-assessment</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>KPIs d'usage du module (côté cabinet)</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Catégorie</th><th>Indicateurs</th></tr></thead>
+      <tbody>
+        <tr><td>Accélération</td><td>Temps pour produire un cadrage flash, un diagnostic, un deck sponsor</td></tr>
+        <tr><td>Réutilisation</td><td>Part des livrables issus de templates BMAD IAP plutôt que rédigés ad hoc</td></tr>
+        <tr><td>Cohérence</td><td>Écarts détectés par <code>iap-risk-reviewer</code> entre diagnostic, recommandations, roadmap et deck</td></tr>
+        <tr><td>Capitalisation</td><td>Scénarios, REX et anti-patterns ajoutés à <code>rex-library.md</code> / <code>scenario-library.md</code> par mission</td></tr>
+        <tr><td>Adoption interne</td><td>Nombre de consultants utilisant le module, nombre de missions traitées</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>Le score de priorisation des gaspillages et le score valeur/complexité des recommandations (voir §Traitement des gaspillages et §Moteur d'assessment) restent des scores de <em>priorisation</em>, pas des KPIs de résultat — ne pas les confondre dans un tableau de bord de suivi de mission.</p>
+</section>
+
+<section class="doc" id="qa-module">
+  <p class="eyebrow">Trajectoire</p>
+  <h2>Qualité &amp; test du module</h2>
+
+  <p>Pas le testing chez le client — comment on sait que ce que <strong>produit BMAD IAP lui-même</strong> (livrables Markdown, decks, scores) est réellement bon, pas seulement présent. Fil conducteur : séparer strictement une couche <strong>structurelle automatisable</strong> et une couche <strong>qualitative irréductiblement humaine</strong>, ne jamais confondre les deux sous un même badge.</p>
+
+  <h3>Ce qui se transpose du test logiciel, et ce qui ne se transpose pas</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Technique</th><th>Transposition à BMAD IAP</th></tr></thead>
+      <tbody>
+        <tr><td>Tests de structure/complétude</td><td>Aucune section vide ou placeholder (« TODO ») dans un livrable — se transpose bien</td></tr>
+        <tr><td>Property-based testing</td><td>Propriétés toujours vraies : aucun tag CONFIRMÉ sans source citée, aucune Recommendation sans couple valeur/complexité</td></tr>
+        <tr><td>Contract testing</td><td>Un bloc « Retour vers &lt;consommateur&gt; » (ADR-009) est présent et complet avant que l'agent consommateur ne s'exécute</td></tr>
+        <tr><td>Tests de mutation</td><td>Injecter un livrable corrompu (score incohérent, tag mal posé) et vérifier qu'<code>iap-risk-reviewer</code> le détecte</td></tr>
+        <tr><td>Linting</td><td>« Linting doctrinal » — scanner les formulations-signal des anti-patterns déjà nommés</td></tr>
+        <tr><td>Non-régression exacte (input→output stable)</td><td><strong>Ne se transpose pas</strong> — un LLM ne produit jamais deux fois le même texte</td></tr>
+        <tr><td>Tests de charge/performance</td><td><strong>Ne se transpose pas</strong> — pas d'enjeu de scalabilité technique ici</td></tr>
+        <tr><td>Jugement de pertinence contextuelle</td><td><strong>Irréductiblement humain</strong> — aucun test ne mesure si un diagnostic reflète vraiment CE client</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Détecter le livrable structurellement complet mais qualitativement creux</h3>
+  <p>Un <code>product-canvas-infra.md</code> avec les 6 champs remplis peut rester une généralité interchangeable d'un client à l'autre. Signaux proxy, jamais des preuves : ratio verbatim/assertion (un constat sans <code>verbatim_id</code> ni <code>ExternalEvidence.id</code> est suspect — déjà mesurable via le schéma de Synthesis, voir §Moteur d'assessment) ; couverture insuffisante comme témoin indirect (déjà cadré : <code>alerte_couverture</code>, rétrogradation DÉDUIT→INCERTAIN) ; détection de texte générique recyclé entre missions (nécessite un corpus anonymisé, en tension avec l'isolation multi-client — à traiter avec précaution). Le jugement qualitatif pur (proposition de valeur convaincante ? roadmap réaliste ?) reste le rôle assumé d'<code>iap-risk-reviewer</code> et du consultant — aucun mécanisme structurel ne le remplace.</p>
+
+  <h3>Missions fixtures rejouées de bout en bout</h3>
+  <p>3 à 5 scénarios clients fictifs calqués sur le tableau de §Routage des scénarios (jamais de vraies données), rejoués intake→diagnostic→product-definition→waste-treatment→deck à chaque changement de version d'un agent ou d'un template — pas à chaque commit. Objectif : pas vérifier qu'un LLM produit le même texte, mais que les invariants structurels et la cohérence avec le scénario tiennent (le scénario « RUN massif » doit toujours produire un chemin orienté RUN). L'assertion finale reste une checklist de relecture humaine courte, jamais un simple diff vert/rouge. Risque à surveiller : des fixtures trop stables sur-adaptent les prompts des agents à ces scénarios précis (« teaching to the test » méthodologique) — à faire varier dans le temps.</p>
+
+  <div class="critical">
+    <span class="fact-label">Pré-check structurel avant iap-risk-reviewer</span>
+    <p>Séparer une couche structurelle/mécanique (champs manquants, double-scoring waste/recommandation déjà repéré comme incohérence possible, tag DÉDUIT posé sous le seuil de couverture, décision ADR sans Alternatives rejetées) qui peut devenir un script ou sous-agent déterministe passé <strong>avant</strong> la revue humaine — et une couche jugement pur qui reste le rôle de l'agent. Règle non négociable : ce pré-check ne corrige jamais silencieusement, il liste des anomalies à trancher par l'agent producteur — même règle « lecture seule » que <code>iap-risk-reviewer</code> lui-même.</p>
+  </div>
+
+  <p><strong>9 checklists de readiness, deux couches par item</strong> : chaque item tagué <code>[STRUCTUREL]</code> (case à cocher, automatisable) ou <code>[JUGEMENT]</code> (question ouverte, irréductiblement humaine) dès la rédaction — prépare une automatisation future sans l'exiger dès MVP1. <code>ai-confidentiality-readiness</code> est la plus structurelle des 8 par nature (classification D0-D4, mode d'exécution documentés) mais son checkpoint final reste, par doctrine, toujours un jugement humain (ADR-006). <code>no-waste-shift-checklist</code> est presque entièrement jugement par construction.</p>
+
+  <div class="critical">
+    <span class="fact-label">Anti-pattern : la QA cosmétique côté outillage</span>
+    <p>Un badge « validé » qui ne précise pas explicitement ce qui a été vérifié (structurel seul, ou structurel + relecture humaine) crée une fausse confiance — même écart que « transformation cosmétique » déjà nommé côté client, reproduit cette fois côté outillage QA. Un badge <code>QA structurelle uniquement — relecture qualitative non faite</code> rend visible le niveau de contrôle réellement appliqué, sur le même principe que le badge « Synthèse manuelle — mode M0 ».</p>
+  </div>
+
+  <p>Rattachement roadmap : un sous-dossier <code>bmad-iap/qa/</code> (fixtures, pré-check structurel, script de rendu réel du deck-builder — voir §Workflows, <code>iap-deck-builder</code>) traité comme un investissement d'industrialisation de MVP5, pas une case cochée en fin de sprint. KPI de qualité candidat : taux de livrables ayant déclenché une correction lors de la revue <code>iap-risk-reviewer</code> avant présentation, à suivre dans le temps.</p>
+</section>
+
+<section class="doc" id="schema">
+  <p class="eyebrow">Trajectoire</p>
+  <h2>Schéma de fonctionnement</h2>
+
+  <p>Vue d'ensemble du mode opératoire : deux sources de collecte convergent vers un diagnostic structuré, le gate IA s'applique transversalement à toute étape qui invoque un LLM, et une boucle de réévaluation referme le cycle.</p>
+
+  <div class="tree">┌──────────────────────────────────────────────────────────────────────────────────────┐
+│ Gate IA &amp; confidentialité — checkpoint humain non-automatisable,                       │
+│ transversal à toutes les étapes ci-dessous                                             │
+└──────────────────────────────────────────────────────────────────────────────────────┘
+
+  COLLECTE                        DIAGNOSTIC                    CONCEPTION                          RESTITUTION
+
+  Interviews par persona   ┐                                ┌ Product definition
+  (Trame/Theme/Question)   ├──▶ Synthesis par Thème +       ┤   (+ mvp-target-model.md)     ──▶  Deck exécutif
+                            │    GlobalSynthesis             │                                    (RecommendationAxis
+  Import de données outils ┘    + waste-register             └ Operating model                     + radar maturité)
+  (ServiceNow/Jira/CMDB          (tags CONFIRMÉ/DÉDUIT/          + waste-treatment
+   si accès → ExternalEvidence)  INCERTAIN)                      (décisions ADR · nourri par
+                                                                   des expérimentations pilotes)
+
+  ─────────────────────────────────────────────────────────────────────────────────
+  iap-risk-reviewer — lecture seule, challenge les livrables ci-dessus
+  (Product definition / Operating model → Deck exécutif)
+  ─────────────────────────────────────────────────────────────────────────────────
+
+  <span class="arrow">⟲</span> Boucle de réévaluation : iap-re-assessment · boucle T+6–12 mois · alimente rex-library.md
+     (repart du bandeau de revue et reboucle vers la Collecte)
+
+  Chaque flèche traverse implicitement le bandeau Gate IA dès qu'une étape invoque un LLM sur des données client.</div>
+</section>
+
+<section class="doc" id="roadmap">
+  <p class="eyebrow">Trajectoire</p>
+  <h2>Roadmap de mise en œuvre</h2>
+
+  <div class="mvp-timeline">
+    <div class="mvp-step">
+      <p class="mvp-label">MVP 0</p>
+      <h4>Corpus — Décomposer le corpus dans knowledge/</h4>
+      <p>Inclut la redaction du REX source, la doctrine renforcée, les invariants organisationnels et le nouveau modèle de maturité produit/plateforme.</p>
+    </div>
+    <div class="mvp-step">
+      <p class="mvp-label">MVP 1</p>
+      <h4>Cœur — iap-intake, iap-product-definition, iap-deck-builder</h4>
+      <p>Product-definition gagne l'output optionnel <code>mvp-target-model.md</code> ; le deck-builder récupère le matériel argumentaire du brainstorm.</p>
+    </div>
+    <div class="mvp-step">
+      <p class="mvp-label">MVP 2</p>
+      <h4>Gate IA — iap-ai-data-confidentiality-gate + templates IA</h4>
+    </div>
+    <div class="mvp-step">
+      <p class="mvp-label">MVP 3</p>
+      <h4>Diagnostic &amp; gaspillages — Diagnostic systémique, discovery gaspillage, waste treatment, operating model</h4>
+      <p>Bénéficie de l'isolation multi-client dès les premiers engagements réels.</p>
+    </div>
+    <div class="mvp-step">
+      <p class="mvp-label">MVP 4</p>
+      <h4>Spécialisation — Scénario playbook, adoption plan, agentic opportunities, agents restants</h4>
+      <p>Point de réouverture prévu pour la Product Discovery découplée.</p>
+    </div>
+    <div class="mvp-step">
+      <p class="mvp-label">MVP 5</p>
+      <h4>Industrialisation — QA, REX, templates slides, connecteurs éventuels</h4>
+    </div>
+    <div class="mvp-step future">
+      <p class="mvp-label">MVP 6</p>
+      <h4>Connecteurs — non engagé — « Transformation Companion »</h4>
+      <p>Vision d'un assistant connecté en direct à ServiceNow, Jira, Confluence, Datadog, CMDB, FinOps tooling. Changement d'échelle en termes de sécurité/confidentialité — acté comme horizon hors périmètre explicite plutôt que laissé en non-dit.</p>
+    </div>
+  </div>
+</section>
+
+<section class="doc" id="decisions">
+  <p class="eyebrow">Trajectoire</p>
+  <h2>Décisions de cadrage v0.5</h2>
+
+  <p>Consolidation des arbitrages tranchés au fil de l'analyse du corpus (doc d'intégration + brainstorm source).</p>
+
+  <div class="decision-grid">
+    <div class="decision-row"><span class="decision-tag">[Structure]</span><strong>Pas de fichier pivot</strong> — Décomposition directe du corpus dans knowledge/, avec un nouveau fichier ai-confidentiality-doctrine.md.</div>
+    <div class="decision-row"><span class="decision-tag">[Ownership]</span><strong>Fichiers partagés entre workflows</strong> — Un propriétaire canonique par fichier (gate IA pour les décisions de mode, agent AI Governance pour le risk register) ; les autres l'amendent.</div>
+    <div class="decision-row"><span class="decision-tag">[Confidentialité]</span><strong>Isolation multi-client</strong> — Nouveau niveau engagements/&lt;client-slug&gt;/ — méthode générique et données client physiquement séparées.</div>
+    <div class="decision-row"><span class="decision-tag">[Langue]</span><strong>Français, vocabulaire technique conservé</strong> — RUN/BUILD, TMA, FinOps, SLA/SLO, golden path non traduits. Pas de bilingue avant MVP5.</div>
+    <div class="decision-row"><span class="decision-tag">[Agents]</span><strong>Contrat allégé en mode brouillon</strong> — Contrat complet conservé pour le livrable final ; version compacte autorisée en itération rapide.</div>
+    <div class="decision-row"><span class="decision-tag">[Confidentialité]</span><strong>Redaction du REX source</strong> — Noms de clients et données chiffrées identifiantes de la source PDF anonymisés avant intégration à rex-library.md.</div>
+    <div class="decision-row"><span class="decision-tag">[Doctrine]</span><strong>Règle 3.2.1 renforcée</strong> — Ajout de la citation source sur l'amplification du système existant par l'IA, comme argument de la règle.</div>
+    <div class="decision-row"><span class="decision-tag">[Scope]</span><strong>Product Discovery fusionnée</strong> — Reste dans iap-product-definition pour MVP1 ; réouverture actée pour MVP4.</div>
+    <div class="decision-row"><span class="decision-tag">[Doctrine]</span><strong>Maturité produit/plateforme</strong> — Nouvelle échelle indépendante du M0-M4 IA (état de l'art / marches / accompagnement).</div>
+    <div class="decision-row"><span class="decision-tag">[Méthode]</span><strong>Incrément pilote minimal</strong> — mvp-target-model.md ajouté comme output optionnel de iap-product-definition.</div>
+    <div class="decision-row"><span class="decision-tag">[Scope]</span><strong>Transformation Companion hors périmètre</strong> — Acté explicitement comme MVP 6 non engagé plutôt que laissé en non-dit.</div>
+    <div class="decision-row"><span class="decision-tag">[Contenu]</span><strong>Matériel argumentaire récupéré</strong> — Tables problème→méthode du brainstorm rattachées au deck-builder, slide 02.</div>
+    <div class="decision-row"><span class="decision-tag">[Maturité]</span><strong>Grille VSCode1 importée telle quelle</strong> — Le modèle 3 dimensions inventé en v0.5 est remplacé par la Grille d'Assessment Agile V3.2 (5 piliers, 17 objectifs, ~50 questions, 4 niveaux rédigés) — Excellence Technique et Agilité à l'Échelle pour la maturité produit/plateforme, IA/Agentic/Organisation Augmentée en lieu et place du M0-M4 générique.</div>
+    <div class="decision-row"><span class="decision-tag">[Assessment]</span><strong>Moteur d'assessment emprunté à VSCode2</strong> — Structure Mission/Trame/Theme/Question + Interview/Verbatim par persona + Synthesis/GlobalSynthesis (5 catégories) + RecommendationAxis/Recommendation (valeur/complexité) reprise d'Interview-to-Deck pour structurer iap-intake, iap-diagnostic-systemique et iap-discovery-gaspillage.</div>
+    <div class="decision-row"><span class="decision-tag">[Agents]</span><strong>Contrats de handoff formalisés</strong> — Chaque paire agent producteur→consommateur reçoit un bloc « Retour vers &lt;consommateur&gt; » normalisé avec champs actionnables — le consommateur ne construit jamais un output depuis une sortie non structurée (ADR-009 OpenHub).</div>
+    <div class="decision-row"><span class="decision-tag">[Gouvernance]</span><strong>Checkpoint gate IA non-automatisable</strong> — Quel que soit le mode d'autonomie choisi à l'intake (manuel/semi-auto/auto), la décision du gate IA/confidentialité reste toujours un checkpoint humain (ADR-006 OpenHub).</div>
+    <div class="decision-row"><span class="decision-tag">[Agents]</span><strong>Tags de confiance CONFIRMÉ/DÉDUIT/INCERTAIN</strong> — Chaque constat produit par un agent porte un tag de confiance et sa source, sur le modèle du wiki vivant OpenHub — rend opérationnelles les règles doctrinales existantes sur les hypothèses et informations manquantes.</div>
+    <div class="decision-row"><span class="decision-tag">[Agents]</span><strong>iap-risk-reviewer strictement lecture-seule</strong> — Ne modifie jamais directement un livrable d'un autre agent — challenge, verdict, recommande uniquement (règle des agents auditor/onboarder OpenHub).</div>
+    <div class="decision-row"><span class="decision-tag">[Documentation]</span><strong>Décisions de modèle-cible au format ADR</strong> — iap-operating-model produit un fichier de décision par choix structurant (Statut/Contexte/Décision/Conséquences/Alternatives rejetées), amendable sans réécrire l'historique, plutôt qu'un operating-model.md monolithique.</div>
+    <div class="decision-row"><span class="decision-tag">[Mission]</span><strong>Double mission Transformer/Assainir</strong> — Le traitement des gaspillages devient un pilier de mission à part entière, pas une méthode annexe — la capacité récupérée finance la trajectoire produit. Affiné par l'agent de réflexion en cours.</div>
+    <div class="decision-row"><span class="decision-tag">[Positionnement]</span><strong>Spectre d'ambition A/B/C non tranché comme linéaire</strong> — Aide au coach / assistant interactif / companion connecté ne sont pas nécessairement empilables — le niveau C change la nature du risque (accès direct aux données de prod). Cadrage initial, en cours d'affinage par 2 agents.</div>
+    <div class="decision-row"><span class="decision-tag">[Données]</span><strong>Import manuel de données outils (ExternalEvidence)</strong> — Repli sans connecteur live : import CSV/export de ServiceNow/Jira/CMDB/FinOps, entité distincte de l'Interview (tag de confiance toujours CONFIRMÉ), mappée à la Trame via import-mapping.md par engagement.</div>
+    <div class="decision-row"><span class="decision-tag">[Méthode]</span><strong>Expérimentations pilotes nourrissent l'operating model</strong> — Le target operating model n'est pas décrété a priori — des expérimentations mesurées (nouvelle cadence testée 6 semaines, etc.) amendent les décisions ADR correspondantes, sur le même principe que le pilot-first déjà en doctrine.</div>
+    <div class="decision-row"><span class="decision-tag">[Artefact]</span><strong>Backlog de transformation — US Coach/Délégué</strong> — transformation-backlog.md reprend le pattern Epic/US de VSCode1, chaque US taguée Coach (réalisée par le consultant) ou Délégué (confiée au client ou à un autre agent) — évite que le consultant fasse tout à la place du client.</div>
+    <div class="decision-row"><span class="decision-tag">[Gate IA]</span><strong>Fonctionnement sans IA externe outillé</strong> — Le mode M0 (pas d'IA) reste intégralement exécutable à la main : badge jamais silencieux, manual-synthesis-guide.md formalisant la méthode fréquence/cooccurrence de VSCode2, scoring de priorisation rappelé comme indépendant de l'IA.</div>
+    <div class="decision-row"><span class="decision-tag">[Gouvernance]</span><strong>Comitologie consolidée, pas un 12ᵉ agent</strong> — Anti-patterns et pivots nommés explicitement, bibliothèque de patterns par scénario plutôt qu'une cible générique, checkpoint hybride (cadence plancher + convocation hors cycle si seuil de risque). Portage par une checklist (comitologie-coherence.md) et un template transverse (governance-instance-map.md), pas un agent dédié.</div>
+    <div class="decision-row"><span class="decision-tag">[Assessment]</span><strong>Synthesis par Thème — schéma de champs explicite</strong> — Statut de cycle de vie séparé de la méthode de génération, couverture/répartition par persona pour détecter le faux consensus, divergences structurées avec verbatims liés et statut de résolution, tag de confiance posé par constat et rétrogradé automatiquement sous un seuil de couverture.</div>
+    <div class="decision-row"><span class="decision-tag">[Assessment]</span><strong>Pont Synthesis→waste-register assisté, jamais automatique</strong> — Un constat négatif peut pré-remplir un brouillon dans le waste-register (registre brut des signaux), jamais directement dans le waste-treatment-backlog.md qualifié — le passage Qualifier→Quantifier→Cause racine reste obligatoire.</div>
+    <div class="decision-row"><span class="decision-tag">[Opérating model]</span><strong>Team Topologies comme grille de lecture de l'operating model</strong> — La cible IAP est explicitement une Platform Team ; iap-operating-model-architect qualifie mode d'interaction actuel/cible (Collaboration ad hoc → X-as-a-Service). US Coach/Délégué relues comme Facilitating/Enabling → autonomie.</div>
+    <div class="decision-row"><span class="decision-tag">[Agents IA]</span><strong>Agents IA comme coéquipiers, pas seulement outils</strong> — Un agent IA peut être membre d'une Stream-aligned team ou capacité exposée par la Platform Team. Nouveau mode d'interaction candidat « Supervision » (autonomie manuel/semi-auto/auto), à recouper avec le pilier Agentic Readiness de la grille de maturité.</div>
+    <div class="decision-row"><span class="decision-tag">[Gaspillage]</span><strong>Automatisation concrète — 2 nouveaux artefacts</strong> — automation-readiness-checklist.md (avant de choisir le pattern) et automation-action-plan.md, 14ᵉ template, à deux branches Test/RUN — évite qu'« Automatiser » reste un mot dans une case du backlog.</div>
+    <div class="decision-row"><span class="decision-tag">[QA module]</span><strong>Structurel automatisable vs qualitatif humain, jamais confondu</strong> — Pré-check structurel avant iap-risk-reviewer (lecture seule, ne corrige jamais), missions fixtures rejouées à chaque changement d'agent/template, checklists taguées [STRUCTUREL]/[JUGEMENT] — tout badge de conformité dit explicitement ce qu'il a vérifié.</div>
+    <div class="decision-row"><span class="decision-tag">[Deck PPT]</span><strong>Niveau professionnel exigé, garde-fous et discipline de rendu</strong> — Rendu réel non-bloquant en brouillon / obligatoire en mode final ; garde-fous texte débordant + cohérence d'échelle inter-radars ; confidentialité de l'export par checklist de relecture humaine ; template dédié jugé nice-to-have.</div>
+    <div class="decision-row"><span class="decision-tag">[Assessment]</span><strong>GlobalSynthesis — 3 clarifications</strong> — Aspirations autorise un contenu négatif ; non-duplication explicite avec le waste-register (couche exécutive vs backlog opérationnel) ; distribution des tags visible par catégorie. 6ᵉ catégorie en réserve, enrichissement de la Trame testé d'abord.</div>
+    <div class="decision-row"><span class="decision-tag">[Assessment]</span><strong>Recommandations niveau équipe — champ scope, pas de nouveau palier</strong> — Recommendation gagne scope: mission|équipe + team_id. Patterns par axe (delivery/gaspillage/efficacité/interaction) distribués sur les agents existants, pas de iap-team-coach. Garde-fou anti-déplacement étendu aux équipes voisines.</div>
+    <div class="decision-row"><span class="decision-tag">[Management]</span><strong>Focus management sans 9ᵉ famille ni nouvel agent</strong> — Persona "expert devenu manager malgré lui" nommé avec mécanisme Coach→Délégué miroir de l'automatisation ; angle de lecture transverse plutôt qu'une famille de gaspillage dédiée ; dépendance RH traitée comme management-posture-risk documenté.</div>
+    <div class="decision-row"><span class="decision-tag">[Données]</span><strong>Enregistrement audio — filet de sécurité, pas un contournement</strong> — audio_backup_path repris de VSCode2 pour Interview + nouvelle entité CoachNote (réflexion libre hors trame). Classification D2+ par défaut, transcription soumise au même mode d'exécution IA que le reste — jamais un raccourci vers une IA externe.</div>
+    <div class="decision-row"><span class="decision-tag">[Outillage]</span><strong>Website en primaire, App en complément de capture</strong> — Le Website (pattern VSCode1/VSCode2 déjà éprouvé) reste l'unique source de vérité ; une App mobile légère ne sert qu'à la capture terrain (audio, notes hors connexion) qui se synchronise vers le même modèle de données — pas deux systèmes parallèles.</div>
+    <div class="decision-row"><span class="decision-tag">[Confidentialité]</span><strong>Redaction du REX appliquée au cadrage lui-même</strong> — Les noms de clients réels et la donnée démographique identifiante de la source brute ont été remplacés par des alias sectoriels génériques directement dans ce wiki (voir §Structure) ; le process de redaction reproductible pour les prochains REX reste un point ouvert distinct.</div>
+    <div class="decision-row"><span class="decision-tag">[Gouvernance]</span><strong>Dépendances externes versionnées et revues</strong> — Grille VSCode1 (pin V3.2), contrats OpenHub ADR-006/ADR-009 et schéma de données Interview-to-Deck (VSCode2) sont désormais des dépendances explicitement pinnées, revues à chaque boucle <code>iap-re-assessment</code> et à chaque MVP gate, propriété de <code>iap-strategy-lead</code> (voir §Modèles de maturité).</div>
+    <div class="decision-row"><span class="decision-tag">[Rigueur]</span><strong>Points ouverts avec owner et échéance</strong> — Chaque point ouvert du cadrage porte désormais un owner (agent/rôle) et une échéance cible (jalon MVP), sur le même principe de traçabilité que le format ADR déjà imposé aux décisions produit (voir §Points ouverts).</div>
+    <div class="decision-row"><span class="decision-tag">[Outillage]</span><strong>Résolution du schéma module.yaml</strong> — Levé via l'installation BMAD locale (<code>_bmad/</code>) : <code>module.yaml</code> est un asset de définition de module fourni en gabarit par le module <code>bmb</code> (bmad-builder) déjà installé, distinct des <code>config.yaml</code> d'exécution par module. Scaffoldé via <code>bmb</code> en MVP1 plutôt que rédigé à la main (voir §Structure).</div>
+    <div class="decision-row"><span class="decision-tag">[Méthode]</span><strong>Gate de maturité DevOps — règle dure par défaut, dérogation ADR tracée</strong> — Le pattern « Automatiser » est bloqué par défaut sous le niveau [0] du pilier Excellence Technique/Usine DevOps (grille VSCode1) ; toute dérogation doit être consignée comme décision ADR avec Alternatives rejetées obligatoires et contre-signature <code>iap-risk-reviewer</code> (voir §Traitement des gaspillages).</div>
+  </div>
+</section>
+
+<section class="doc" id="ouverts">
+  <p class="eyebrow">Trajectoire</p>
+  <h2>Points ouverts</h2>
+
+  <div class="fact accent">
+    <span class="fact-label">Discipline de suivi (v1.6)</span>
+    <p>Le cadrage impose un format ADR strict (Statut/Contexte/Décision/Conséquences/Alternatives rejetées) aux décisions produit, mais n'appliquait jusqu'ici aucune rigueur équivalente à ses propres points ouverts — aucun n'avait d'owner ni d'échéance. Corrigé ci-dessous : chaque point porte désormais un owner (agent ou rôle responsable de le trancher) et une échéance cible (jalon MVP ou repère temporel). Deux points précédemment listés ici sont retirés parce que déjà tranchés ailleurs dans ce document et non par oubli de mise à jour : le schéma <code>module.yaml</code> (voir §Structure, "Résolution module.yaml") et la règle dure/souple du gate de maturité DevOps (voir §Traitement des gaspillages). Un troisième — les tags hétérogènes de GlobalSynthesis — était déjà fermé par la clarification v1.4 sur la distribution des tags (§Moteur d'assessment) mais était resté listé ici par erreur ; retiré pour la même raison.</p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Point ouvert</th><th>Owner</th><th>Échéance cible</th></tr></thead>
+      <tbody>
+        <tr><td>Convention de nommage des <code>&lt;client-slug&gt;</code> sous <code>engagements/</code> (slug libre vs registre contrôlé)</td><td><code>iap-intake</code></td><td>Avant MVP1</td></tr>
+        <tr><td>Process de redaction du REX formalisé en étape de workflow reproductible (au-delà du principe déjà acté)</td><td><code>iap-ai-governance-lead</code></td><td>Avant clôture MVP0</td></tr>
+        <tr><td>Product Discovery découplée — nouveau workflow vs sous-étape enrichie</td><td><code>iap-platform-product-pm</code></td><td>MVP4</td></tr>
+        <tr><td>Vecteur d'import de la grille — Excel vendored vs JSON/Markdown portable</td><td><code>iap-strategy-lead</code></td><td>MVP0 (avant intégration à <code>platform-maturity-model.md</code>)</td></tr>
+        <tr><td>Réutilisation du code vs du seul modèle de données (VSCode1/VSCode2)</td><td><code>iap-platform-architect</code></td><td>Revisite à MVP5 (industrialisation)</td></tr>
+        <tr><td>Granularité des contrats de handoff — par paire réelle vs format générique paramétré</td><td><code>iap-risk-reviewer</code></td><td>MVP1</td></tr>
+        <tr><td>Versionnement d'une Synthesis dans le temps (brouillon vs re-synthèse déclenchée)</td><td><code>iap-diagnostic-systemique</code></td><td>MVP3</td></tr>
+        <tr><td>Teinte des sections gaspillage dans le deck — neutre vs 3ᵉ couleur dédiée</td><td><code>iap-deck-builder</code></td><td>MVP1</td></tr>
+        <tr><td>Gate dur ou soft sur la relecture qualitative avant livraison (attestation obligatoire vs jugement professionnel)</td><td>Direction de cabinet (choix de gouvernance, pas un agent)</td><td>MVP5</td></tr>
+        <tr><td><code>iap-change-coach</code> doit-il refuser une mission sans engagement RH minimal ?</td><td><code>iap-change-coach</code></td><td>MVP4</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
   </main>
 </div>
 </body>
