@@ -32,3 +32,38 @@
   `.roadmap/*.svg` gitignoré (régénéré par le skill `roadmap-keeper`) — ce
   fichier peut être en avance/retard sur le code réel, vérifier contre
   `git log`/`git status` avant de lui faire confiance.
+- `docs/vscode1-export/` : miroir local de `export/` du projet frère VSCode1
+  (kit PPT `ppt-toolkit.md`, méthode tokens `optimisation-tokens.md`, design
+  system/template/backlog du deck OCTO). Copie de référence, pas la source de
+  vérité — resynchroniser manuellement contre VSCode1 si besoin.
+- `docs/cadrage-ppt/` : le deck OCTO annoncé comme « à réactiver si un jour »
+  ci-dessus est désormais réel — `template-octo.pptx` (copie du template de
+  marque, masters/layouts/thème OCTO) + `pptx_deck.py` (copie synchronisée du
+  skill global `pptx-deck`) + `generate_deck.py` (13 slides de synthèse du
+  cadrage BMAD IAP, dessinées sur le vrai template via ses layouts `04 -
+  Titre seul` et `40 - Couverture [1]`) → `bmad-iap-cadrage-synthese.pptx`.
+  Regénérer avec `python generate_deck.py` depuis ce dossier ; toute nouvelle
+  version du cadrage qui change une affirmation déjà reprise en slide doit
+  répercuter le changement ici, pas seulement dans le `.md` source.
+
+## Optimisation tokens
+
+Pratiques issues de `docs/vscode1-export/optimisation-tokens.md` (§1-5),
+opérationnalisées pour ce dépôt :
+
+- **Ne pas re-dériver ce que le wiki ou une mémoire documente déjà** —
+  consulter `docs/wiki.html`/`docs/wiki/` et les mémoires projet avant de
+  relire des fichiers sources pour reconstruire un contexte déjà écrit.
+- **Lire des portions ciblées, pas des fichiers entiers** — Grep/Glob puis
+  `Read` avec `offset`/`limit` sur la zone utile plutôt qu'une lecture
+  intégrale d'un gros fichier (le wiki fait ~1800 lignes, le cadrage BMAD IAP
+  ~99K).
+- **Pas de sous-agent par défaut** — ce dépôt est petit et le contexte est
+  déjà chargé la plupart du temps ; ne déléguer à un `Agent` que si la tâche
+  est explicitement large/exploratoire ou demandée comme telle.
+- **Documenter une décision une fois plutôt que la rejouer** — toute décision
+  de cadrage ou de convention actée va dans le wiki, `docs/vscode1-export/`
+  ou une mémoire projet, pas seulement dans la réponse de conversation.
+- **Enchaîner les actions sans pause longue** — le cache prompt a un TTL
+  d'~5 min ; éviter les silences de plusieurs minutes en plein enchaînement
+  d'outils.
