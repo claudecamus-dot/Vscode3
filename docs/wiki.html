@@ -359,7 +359,7 @@
 
       <h3>Contenu critique</h3>
       <div class="fact">
-        <p>Le seul artefact substantiel du dépôt est <code>docs/bmad-iap-cadrage.md</code> (v1.7) — mirroir local d'un wiki de cadrage claude.ai, revu et corrigé le 2026-07-07 (compteurs de templates/checklists, redaction des noms clients, dépendances externes versionnées, gate de maturité DevOps tranché, schéma module.yaml résolu) puis enrichi le 2026-07-09 d'une réflexion sur la mise en œuvre des agents IA dans les équipes.</p>
+        <p>Le seul artefact substantiel du dépôt est <code>docs/bmad-iap-cadrage.md</code> (v1.8) — mirroir local d'un wiki de cadrage claude.ai, revu et corrigé le 2026-07-07 (compteurs de templates/checklists, redaction des noms clients, dépendances externes versionnées, gate de maturité DevOps tranché, schéma module.yaml résolu) puis enrichi le 2026-07-09 d'une réflexion et d'une démarche sur la mise en œuvre des agents IA dans les équipes, et d'une réflexion sur la production de livrables PPT.</p>
         <span class="tag tag-confirme">CONFIRMÉ</span>
         <div class="tag-source">onboarder · 2026-07-07 · docs/bmad-iap-cadrage.md:5</div>
       </div>
@@ -410,7 +410,7 @@
         <table>
           <thead><tr><th>Dossier / fichier</th><th>Contenu</th></tr></thead>
           <tbody>
-            <tr><td><code>docs/bmad-iap-cadrage.md</code></td><td>Wiki de cadrage BMAD IAP (v1.7) — mirroir local corrigé d'un artifact claude.ai.</td></tr>
+            <tr><td><code>docs/bmad-iap-cadrage.md</code></td><td>Wiki de cadrage BMAD IAP (v1.8) — mirroir local corrigé d'un artifact claude.ai.</td></tr>
             <tr><td><code>docs/wiki/</code></td><td>Sources Markdown du wiki d'onboarding (<code>index.md</code>, <code>business/</code>, <code>technical/</code>) — tags <code>CONFIRMÉ</code>/<code>DÉDUIT</code>/<code>INCERTAIN</code>.</td></tr>
             <tr><td><code>docs/wiki.html</code></td><td>Rendu HTML autonome — wiki d'onboarding + cadrage complet, sans étape de build, ouvrable directement dans un navigateur.</td></tr>
             <tr><td><code>.claude/</code></td><td>Scaffolding Claude Code — hook <code>PreToolUse</code> (garde-fou git), permissions <code>deny</code> sur les secrets.</td></tr>
@@ -510,10 +510,9 @@
         <table>
           <thead><tr><th>Item</th><th>État</th><th>Contexte / prochaine action</th></tr></thead>
           <tbody id="todo-session-rows">
-            <tr><td>Rien n'est committé depuis le début de cette session (2026-07-09) : cadrage v1.7, wiki.html, CLAUDE.md, tout <code>docs/cadrage-ppt/</code></td><td>À valider</td><td>Demander confirmation avant <code>git add</code> — le <code>.pptx</code> généré pèse 2,2 Mo, vérifier que c'est voulu dans l'historique avant de committer</td></tr>
-            <tr><td><code>.claude/hooks/guard_destructive_git.py</code>, <code>.claude/settings.json</code>, <code>CLAUDE.md</code> — scaffolding Claude Code</td><td>En attente depuis plusieurs sessions</td><td>Stagés (<code>git status</code> : A/AM) mais laissés hors commit intentionnellement à chaque fois — reconfirmer que c'est toujours voulu avant de trancher</td></tr>
-            <tr><td><code>docs/vscode1-export/</code> — miroir du kit PPT/tokens VSCode1</td><td>Non committé depuis 2026-07-08</td><td>Même décision que ci-dessus, en attente depuis la session précédente</td></tr>
-            <tr><td>Réflexion « mise en œuvre des agents IA dans les équipes » (cadrage §Modèles d'équipe, v1.7)</td><td>Brainstorm non tranché</td><td>À confronter aux premières missions pilotes plutôt qu'à décréter — pas bloquant, juste ne pas la traiter comme une décision actée</td></tr>
+            <tr><td><code>.claude/hooks/guard_destructive_git.py</code>, <code>.claude/settings.json</code>, <code>CLAUDE.md</code> — scaffolding Claude Code</td><td>En attente depuis plusieurs sessions</td><td>Stagés (<code>git status</code> : A/AM) mais laissés hors commit intentionnellement à chaque fois (cadrage/wiki/PPT committés séparément le 2026-07-09) — reconfirmer que c'est toujours voulu avant de trancher</td></tr>
+            <tr><td>Démarche d'accompagnement agents en 5 phases + réflexion PPT (cadrage v1.8, §Modèles d'équipe et §Workflows)</td><td>Brainstorm/retour d'expérience non tranchés</td><td>À confronter aux premières missions pilotes plutôt qu'à décréter — pas bloquant, juste ne pas les traiter comme des décisions actées</td></tr>
+            <tr><td>PPT restructuré : 9 slides (exec summary + résultats de cadrage seuls), plus d'agents BMAD/schéma/roadmap/points ouverts</td><td>Fait, à committer</td><td>Régénéré et vérifié (géométrie + rendu réel PowerPoint) le 2026-07-09 — reste à committer avec ce mirroir wiki.html</td></tr>
           </tbody>
         </table>
       </div>
@@ -1271,6 +1270,25 @@ Priorité = Score impact × Score faisabilité − Score prudence IA</div>
   </div>
 
   <p>Ce sujet relève de MVP4 (« agentic opportunities », §Roadmap) pour l'outillage — mais la question du <strong>mandat par équipe</strong> peut et doit être posée dès qu'un agent existant touche une équipe cliente, y compris avant MVP4, au même titre que le gate IA n'a jamais été conditionné à un MVP donné. Position provisoire : pas de nouveau template dédié — le mandat par agent vient enrichir <code>team-topology-map.md</code> d'une colonne mandat/escalade/owner plutôt que de créer un document séparé, à confirmer ou infirmer à l'usage.</p>
+
+  <h3>Démarche d'accompagnement — mise en place d'un agent dans une équipe (v1.8)</h3>
+  <p>La réflexion ci-dessus pose le cadre (paliers, préalable, mandat, risques) ; elle ne donne pas de séquence actionnable pour une équipe cliente donnée. Démarche en 5 phases, portée par les agents et gabarits déjà cadrés — aucun nouvel agent, cohérent avec le refus déjà acté d'un agent dédié par sujet transverse (§Comitologie, §Recommandations niveau équipe).</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Phase</th><th>Objectif</th><th>Owner</th><th>Sortie de phase (critère de passage)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>0 · Qualifier</strong></td><td>Vérifier que le candidat est un vrai gaspillage récurrent, pas un gadget IA — réutilise le scoring impact × faisabilité − prudence IA</td><td><code>iap-waste-treatment-lead</code></td><td>Candidat scoré, priorité justifiée</td></tr>
+        <tr><td><strong>1 · Cadrer le process</strong></td><td>Documenter/stabiliser le processus cible avant l'agent (préalable non négociable)</td><td><code>iap-operating-model-architect</code></td><td>Processus explicite et validé par l'équipe</td></tr>
+        <tr><td><strong>2 · Mandater</strong></td><td>Rédiger le mandat écrit : décide seul / escalade / owner des erreurs</td><td><code>iap-ai-governance-lead</code> + manager équipe</td><td>Mandat signé, versionné dans <code>team-topology-map.md</code></td></tr>
+        <tr><td><strong>3 · Piloter en assisté</strong></td><td>1-2 cas réels, l'humain valide chaque sortie ; accompagnement en parallèle sur résistance/compétences (mêmes 3 pistes que la persona « expert devenu manager malgré lui », §Focus management)</td><td><code>iap-change-coach</code> + équipe pilote</td><td>Taux d'adhésion mesuré, aucun incident non détecté</td></tr>
+        <tr><td><strong>4 · Élargir</strong></td><td>Supervisé puis délégué si le signal deskilling-risk est négatif (« l'équipe saurait-elle reprendre la main une semaine sans l'agent ? »)</td><td><code>iap-metrics-sre-finops-lead</code> + <code>iap-risk-reviewer</code></td><td>Cadence de revue actée, alignée sur <code>iap-re-assessment</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="critical">
+    <span class="fact-label">Ce que cette démarche n'est pas</span>
+    <p>Un plan de déploiement technique séquencé par des dates. Chaque passage de phase se déclenche par un critère observé (adhésion, incidents, signal deskilling), pas par un calendrier — même principe anti-décret que le reste de la doctrine d'automatisation. Une équipe peut rester durablement en phase 3 (assisté) par choix, au même titre qu'un cabinet peut rester au niveau d'ambition A (§Ambition de l'outil) — pas de palier « final » obligatoire.</p>
+  </div>
 </section>
 
 <section class="doc" id="assessment">
@@ -1544,6 +1562,11 @@ iap-change-coach accompagne l'adoption humaine en parallèle de ux-adoption-lead
         <li><em>Confidentialité de l'export lui-même :</em> Checklist de relecture explicite avant export (verbatims, captures d'écran, noms d'équipes) plutôt qu'un filtre automatique — les captures d'écran sont un angle mort spécifique (données visibles à l'œil, non détectables par un filtre texte). Verbatims cités dans le deck anonymisés par défaut (« un manager RUN » plutôt qu'un nom) ; bandeau de classification D0–D4 visible sur toute slide contenant des données D2+. En mode M0, cette relecture reste entièrement manuelle — pas de filtre automatique, cohérent avec le badge « Synthèse manuelle » déjà acté.</li>
         <li><em>Template dédié — nice-to-have, pas un prérequis :</em> Un template PowerPoint OCTO propre à BMAD IAP coûterait cher à maintenir pour un seul module ; la mécanique déjà template-agnostique (accepte un template client uploadé ou construit un deck 16:9 depuis zéro) suffit avec un thème de couleurs/pictogrammes appliqué par-dessus, plutôt qu'un fichier figé séparé.</li>
       </ul>
+      <div class="fact accent">
+        <span class="fact-label">Réflexion — retour d'expérience VSCode3, à nuancer plutôt qu'à renverser la décision ci-dessus (v1.8)</span>
+        <p>La synthèse PPT de ce cadrage (<code>docs/cadrage-ppt/</code>) a d'abord été construite sur un canevas vierge avec un thème de couleurs recopié à la main — exactement le mode « sans template » validé ci-dessus — avant d'être reconstruite pour dessiner directement par-dessus le vrai template de marque OCTO (masters/layouts/thème natifs), sur le modèle déjà éprouvé côté VSCode1 (<code>ppt-toolkit.md</code>, <code>template-&lt;nom&gt;.md</code>). Le second résultat est nettement supérieur à coût comparable : logo, pied de page et badge de pagination hérités gratuitement du template au lieu d'être redessinés à la main, couleurs lues depuis le thème réel plutôt que recopiées en dur, police de marque appliquée par défaut sur les placeholders.</p>
+        <p>La distinction utile n'est donc pas « avec ou sans template » mais <strong>« un template de marque fixe est-il disponible pour cette mission ? »</strong> — si oui (client ou cabinet), le rouvrir et dessiner sur ses layouts natifs plutôt que de l'imiter ; si non, le mode actuel (thème appliqué sur un deck construit depuis zéro) reste la bonne dégradation. Deux pièges opérationnels pour <code>iap-deck-builder</code> s'il reprend ce pattern : (1) supprimer les slides d'exemple d'un template nécessite de retirer la relation (<code>drop_rel</code>), pas seulement la référence dans la liste des slides, sous peine de collision de nom de fichier interne au <code>.pptx</code> généré ; (2) un deck géométriquement propre peut rester mal centré dans sa zone de contenu (vide vertical) — seul un rendu réel le révèle, jamais le seul contrôle géométrique.</p>
+      </div>
     </div>
   </div>
 </section>
