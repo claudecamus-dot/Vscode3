@@ -311,6 +311,7 @@
         <a class="toc-link" href="#kpis">KPIs</a>
         <a class="toc-link" href="#qa-module">Qualité &amp; test</a>
         <a class="toc-link" href="#schema">Schéma de fonctionnement</a>
+        <a class="toc-link" href="#mise-en-oeuvre-tom">Mise en œuvre du target operating model</a>
         <a class="toc-link" href="#roadmap">Roadmap</a>
         <a class="toc-link" href="#decisions">Décisions de cadrage</a>
         <a class="toc-link" href="#ouverts">Points ouverts</a>
@@ -359,7 +360,7 @@
 
       <h3>Contenu critique</h3>
       <div class="fact">
-        <p>Le seul artefact substantiel du dépôt est <code>docs/bmad-iap-cadrage.md</code> (v1.8) — mirroir local d'un wiki de cadrage claude.ai, revu et corrigé le 2026-07-07 (compteurs de templates/checklists, redaction des noms clients, dépendances externes versionnées, gate de maturité DevOps tranché, schéma module.yaml résolu) puis enrichi le 2026-07-09 d'une réflexion et d'une démarche sur la mise en œuvre des agents IA dans les équipes, et d'une réflexion sur la production de livrables PPT.</p>
+        <p>Le seul artefact substantiel du dépôt est <code>docs/bmad-iap-cadrage.md</code> (v1.9) — mirroir local d'un wiki de cadrage claude.ai, revu et corrigé le 2026-07-07 (compteurs de templates/checklists, redaction des noms clients, dépendances externes versionnées, gate de maturité DevOps tranché, schéma module.yaml résolu) puis enrichi le 2026-07-09 d'une réflexion et d'une démarche sur la mise en œuvre des agents IA dans les équipes, d'une réflexion sur la production de livrables PPT, et d'un brainstorm sur la trajectoire de mise en œuvre du target operating model côté client avec ses 4 profils de deck.</p>
         <span class="tag tag-confirme">CONFIRMÉ</span>
         <div class="tag-source">onboarder · 2026-07-07 · docs/bmad-iap-cadrage.md:5</div>
       </div>
@@ -410,7 +411,7 @@
         <table>
           <thead><tr><th>Dossier / fichier</th><th>Contenu</th></tr></thead>
           <tbody>
-            <tr><td><code>docs/bmad-iap-cadrage.md</code></td><td>Wiki de cadrage BMAD IAP (v1.8) — mirroir local corrigé d'un artifact claude.ai.</td></tr>
+            <tr><td><code>docs/bmad-iap-cadrage.md</code></td><td>Wiki de cadrage BMAD IAP (v1.9) — mirroir local corrigé d'un artifact claude.ai.</td></tr>
             <tr><td><code>docs/wiki/</code></td><td>Sources Markdown du wiki d'onboarding (<code>index.md</code>, <code>business/</code>, <code>technical/</code>) — tags <code>CONFIRMÉ</code>/<code>DÉDUIT</code>/<code>INCERTAIN</code>.</td></tr>
             <tr><td><code>docs/wiki.html</code></td><td>Rendu HTML autonome — wiki d'onboarding + cadrage complet, sans étape de build, ouvrable directement dans un navigateur.</td></tr>
             <tr><td><code>.claude/</code></td><td>Scaffolding Claude Code — hook <code>PreToolUse</code> (garde-fou git), permissions <code>deny</code> sur les secrets.</td></tr>
@@ -511,8 +512,8 @@
           <thead><tr><th>Item</th><th>État</th><th>Contexte / prochaine action</th></tr></thead>
           <tbody id="todo-session-rows">
             <tr><td><code>.claude/hooks/guard_destructive_git.py</code>, <code>.claude/settings.json</code>, <code>CLAUDE.md</code> — scaffolding Claude Code</td><td>En attente depuis plusieurs sessions</td><td>Stagés (<code>git status</code> : A/AM) mais laissés hors commit intentionnellement à chaque fois (cadrage/wiki/PPT committés séparément le 2026-07-09) — reconfirmer que c'est toujours voulu avant de trancher</td></tr>
-            <tr><td>Démarche d'accompagnement agents en 5 phases + réflexion PPT (cadrage v1.8, §Modèles d'équipe et §Workflows)</td><td>Brainstorm/retour d'expérience non tranchés</td><td>À confronter aux premières missions pilotes plutôt qu'à décréter — pas bloquant, juste ne pas les traiter comme des décisions actées</td></tr>
-            <tr><td>PPT restructuré : 9 slides (exec summary + résultats de cadrage seuls), plus d'agents BMAD/schéma/roadmap/points ouverts</td><td>Fait, à committer</td><td>Régénéré et vérifié (géométrie + rendu réel PowerPoint) le 2026-07-09 — reste à committer avec ce mirroir wiki.html</td></tr>
+            <tr><td>Démarche d'accompagnement agents (v1.8) + trajectoire de mise en œuvre du TOM/livrables PPT (v1.9) — cadrage §Modèles d'équipe, §Trajectoire, §Workflows</td><td>Brainstorms non tranchés</td><td>À confronter aux premières missions pilotes plutôt qu'à décréter — owner proposé mais pas acté (`iap-operating-model-architect`)</td></tr>
+            <tr><td>PPT restructuré : 11 slides (exec summary + résultats de cadrage + trajectoire TOM + livrables PPT), formes inspirées des slides d'exemple du template OCTO</td><td>Fait, à committer</td><td>Régénéré et vérifié (géométrie + rendu réel PowerPoint) le 2026-07-09 — reste à committer avec ce mirroir wiki.html</td></tr>
           </tbody>
         </table>
       </div>
@@ -1764,6 +1765,54 @@ iap-change-coach accompagne l'adoption humaine en parallèle de ux-adoption-lead
      (repart du bandeau de revue et reboucle vers la Collecte)
 
   Chaque flèche traverse implicitement le bandeau Gate IA dès qu'une étape invoque un LLM sur des données client.</div>
+</section>
+
+<section class="doc" id="mise-en-oeuvre-tom">
+  <p class="eyebrow">Trajectoire</p>
+  <h2>Mise en œuvre du target operating model — brainstorm (v1.9)</h2>
+
+  <div class="critical">
+    <span class="fact-label">Le trou identifié</span>
+    <p>Le schéma ci-dessus s'arrête à RESTITUTION (le deck exécutif livré) puis saute directement à la boucle de réévaluation T+6–12 mois — rien ne décrit ce qui se passe <strong>entre les deux</strong>, c'est-à-dire la période où le client déploie réellement la cible operating model définie pendant la mission. Brainstorm ci-dessous, non tranché — à confronter aux premières missions pilotes.</p>
+  </div>
+
+  <h3>Trajectoire en 3 temps + boucle, inspirée du gabarit OCTO lui-même</h3>
+  <p>Le template <code>template-octo.pptx</code> porte déjà, dans ses slides d'exemple (« Notre approche », « Une approche contextualisée »), un pattern de trajectoire en 3 temps utilisé ailleurs dans le cabinet — signal fort qu'il ne s'agit pas d'inventer un vocabulaire de plus mais de brancher BMAD IAP sur une trame déjà partagée.</p>
+  <div class="tree">① ASSESSMENT FLASH          ② PREMIER DÉPLOIEMENT           ③ IMPLÉMENTATION ITÉRATIVE        <span class="arrow">⟲</span> BOUCLE
+  1–2 semaines                 4–5 semaines                    en continu, jusqu'à T+6–12 mois     T+6–12 mois
+
+  = le Schéma de              1-2 équipes pilotes,             Généralisation progressive         iap-re-assessment
+  fonctionnement déjà         mode Coach dominant               aux équipes restantes,              (déjà cadré)
+  cadré ci-dessus             (US taguées Coach)                bascule Coach → Délégué            reboucle vers
+  (Collecte→Diagnostic→                                         équipe par équipe                  la Collecte
+  Conception→Restitution)     Piste agent IA (optionnelle,
+                               si retenue) démarre ici :        Piste agent IA (si retenue) :
+                               phases 0-2 de la démarche         phases 3-4 de la démarche
+                               d'accompagnement (§Modèles        d'accompagnement — supervisé
+                               d'équipe) — qualifier,             puis délégué, jamais forcé
+                               cadrer, mandater</div>
+
+  <div class="fact accent">
+    <span class="fact-label">Bifurcation explicite — avec ou sans agents IA déployés</span>
+    <p>Le tronc commun (①→②→③→⟲) ne change pas de structure que la cible operating model inclue des agents IA ou non — c'est une variable de contenu à l'intérieur des phases ②/③, pas un chemin séparé. Si aucun agent n'est retenu, ②/③ restent un déploiement humain classique (Coach→Délégué sur le <code>transformation-backlog.md</code> déjà cadré). Si un agent est retenu, la démarche en 5 phases déjà cadrée (§Modèles d'équipe, v1.8) se greffe sur ②/③ plutôt que d'être une trajectoire séparée à maintenir — un seul calendrier, une piste de contenu en plus.</p>
+  </div>
+
+  <p>Ce que ça ne tranche pas : durée exacte de ③ (dépend du nombre d'équipes et du scénario, §Routage des scénarios), et qui porte la trajectoire au global — probablement <code>iap-operating-model-architect</code> en propriétaire, avec <code>iap-change-coach</code> co-portant le volet humain, mais non tranché à ce stade.</p>
+
+  <h3>Livrables PPT par étape — brainstorm (v1.9)</h3>
+  <p><code>iap-deck-builder</code> est aujourd'hui cadré comme <strong>un seul</strong> deck modulaire à 16 sections, produit une fois à la Restitution. La trajectoire ci-dessus implique plusieurs publics et plusieurs moments de décision — un seul deck monolithique ne les sert pas tous. Brainstorm : décliner le même moteur modulaire en <strong>plusieurs instanciations</strong>, un profil de sections par étape, cohérent avec le flag <code>mode: brouillon</code> déjà cadré.</p>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Étape</th><th>Livrable PPT</th><th>Audience</th><th>Contenu clé</th></tr></thead>
+      <tbody>
+        <tr><td>① Assessment flash</td><td>Deck exécutif de restitution (déjà cadré)</td><td>Sponsor, comité de lancement</td><td>GlobalSynthesis, RecommendationAxis, radar de maturité T0</td></tr>
+        <tr><td>② Premier déploiement</td><td><strong>Deck de plan de déploiement</strong> (nouveau)</td><td>Équipes pilotes + management direct</td><td>Cible operating model détaillée, backlog Coach/Délégué priorisé, mandat agent IA si retenu</td></tr>
+        <tr><td>③ Implémentation itérative</td><td><strong>Deck de comité de pilotage</strong>, périodique (nouveau)</td><td>Instance de comitologie</td><td>Avancement du backlog, delta de KPIs de mission, risques actifs (<code>ai-risk-register.md</code>, <code>deskilling-risk</code>)</td></tr>
+        <tr><td>⟲ Boucle de réévaluation</td><td><strong>Deck de bilan / ré-évaluation</strong> (nouveau)</td><td>Sponsor</td><td>Delta de maturité T0 → T+6–12 mois, REX consolidé (<code>rex-library.md</code>)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="color:var(--ink-faint); font-size:0.85rem;">Position provisoire : pas de 4 générateurs séparés — un unique contrat de payload <code>iap-deck-builder</code>, avec un paramètre de profil de sections par type de deck. Owner de la définition des profils : <code>iap-deck-builder</code> (portage technique) + <code>iap-strategy-lead</code> (validation du contenu attendu) — à confirmer sur les premières missions pilotes.</p>
 </section>
 
 <section class="doc" id="roadmap">

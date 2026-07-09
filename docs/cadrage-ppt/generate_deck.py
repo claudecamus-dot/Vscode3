@@ -1,4 +1,4 @@
-"""Génère une synthèse PPT (9 slides) des RÉSULTATS du cadrage BMAD IAP
+"""Génère une synthèse PPT (11 slides) des RÉSULTATS du cadrage BMAD IAP
 (docs/bmad-iap-cadrage.md) à partir des helpers pptx_deck, dessinée
 PAR-DESSUS le vrai template de marque OCTO (template-octo.pptx) —
 masters/layouts/thème conservés, pas un deck sur canevas vierge.
@@ -113,12 +113,12 @@ def slide_cover(prs):
     phs[0].text_frame.text = "BMAD IAP"
     phs[1].text_frame.text = "Infra as a Product Transformation Pack — synthèse de cadrage"
     phs[2].text_frame.text = "OCTO Technology"
-    phs[3].text_frame.text = "v1.8 · 2026-07-09"
+    phs[3].text_frame.text = "v1.9 · 2026-07-09"
 
     # Bandeau de métadonnées sous la zone de couverture du template, dans la
     # bande basse encore libre (le pied de page/logo du master restent visibles).
     metas = [
-        ("STATUT", "Draft consolidé v1.8"),
+        ("STATUT", "Draft consolidé v1.9"),
         ("LANGUE", "FR"),
         ("CONFIDENTIALITÉ", "Client-data-first"),
         ("SOURCES", "VSCode1 · VSCode2"),
@@ -415,6 +415,113 @@ def slide_team_topologies(prs):
     return s
 
 
+# ---------------------------------------------------------------- slide 8
+# Formes inspirées des slides d'exemple du template lui-même (« Notre
+# approche ») : badges circulaires connectés par une ligne, chip de durée,
+# description centrée sous chaque étape.
+def slide_trajectoire(prs):
+    s = content_slide(prs, "Trajectoire", "Mise en œuvre du target operating model — brainstorm")
+    phases = [
+        ("①", "Assessment flash", "1–2 sem.", D.PALETTE[0],
+         "= Schéma de fonctionnement déjà cadré (Collecte → Diagnostic → Conception → Restitution)."),
+        ("②", "Premier déploiement", "4–5 sem.", D.PALETTE[3],
+         "1-2 équipes pilotes, mode Coach dominant. Piste agent IA (si retenue) : qualifier, cadrer, mandater."),
+        ("③", "Implémentation itérative", "→ T+6-12 mois", D.PALETTE[1],
+         "Généralisation équipe par équipe, bascule Coach → Délégué. Piste agent IA : supervisé puis délégué."),
+        ("⟲", "Boucle de réévaluation", "T+6-12 mois", D.PALETTE[2],
+         "iap-re-assessment reboucle vers la Collecte — alimente rex-library.md."),
+    ]
+    n = len(phases)
+    badge_d = 0.55
+    top0 = CONTENT_TOP + 0.1
+    line_y = top0 + badge_d / 2 - 0.012
+    D.add_rect(s, MARGIN + badge_d / 2, line_y, CONTENT_W - badge_d, 0.024, fill=LINE)
+    desc_h = 0.95
+    for i, (sym, titre, duree, color, desc) in enumerate(phases):
+        x, w = col_x(i, n)
+        cx = x + w / 2 - badge_d / 2
+        D.add_rect(s, cx, top0, badge_d, badge_d, fill=color, rounded=True, radius=0.5)
+        D.add_text(s, cx, top0, badge_d, badge_d, [
+            (sym, dict(size=16, bold=True, color="#ffffff", align=PP_ALIGN.CENTER))
+        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+        ty = top0 + badge_d + 0.12
+        D.add_text(s, x, ty, w, 0.35, [
+            (titre, dict(size=8, bold=True, color=NAVY, align=PP_ALIGN.CENTER, line_spacing=1.05)),
+        ], align=PP_ALIGN.CENTER)
+        chip_y = ty + 0.36
+        chip(s, x + w / 2 - 0.55, chip_y, 1.1, 0.24, duree, color, size=7)
+        desc_y = chip_y + 0.32
+        D.add_text(s, x + 0.05, desc_y, w - 0.1, desc_h, [
+            (desc, dict(size=7, color=MUTED, align=PP_ALIGN.CENTER, line_spacing=1.2)),
+        ], align=PP_ALIGN.CENTER)
+
+    note_top = top0 + badge_d + 0.12 + 0.36 + 0.32 + desc_h + 0.12
+    note_h = CONTENT_BOTTOM - note_top
+    D.add_rect(s, MARGIN, note_top, CONTENT_W, note_h, fill=TRACK, rounded=True, radius=0.08)
+    D.add_text(s, MARGIN + 0.2, note_top + 0.08, CONTENT_W - 0.4, note_h - 0.16, [
+        ("Bifurcation avec/sans agents IA déployés", dict(size=8, bold=True, color=NAVY)),
+        ("Le tronc commun ①→②→③→⟲ ne change pas de structure — la piste agent IA (si retenue) "
+         "se greffe sur ②/③ via la démarche en 5 phases déjà cadrée (§Modèles d'équipe), plutôt "
+         "que d'être un chemin séparé à maintenir. Owner proposé (non tranché) : "
+         "iap-operating-model-architect + iap-change-coach sur le volet humain.",
+         dict(size=7, color=NAVY, space_before=3, line_spacing=1.25)),
+    ])
+    return s
+
+
+# ---------------------------------------------------------------- slide 9
+# Formes inspirées de la slide d'exemple « Une approche contextualisée » du
+# template : colonne par étape avec badge + bandeau titre + ligne de
+# séparation + bloc LIVRABLES, plutôt qu'un tableau plat.
+def slide_livrables_ppt(prs):
+    s = content_slide(prs, "Trajectoire", "Livrables PPT par étape — brainstorm")
+    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.4, [
+        ("iap-deck-builder est cadré comme un seul deck modulaire 16 sections, produit une fois "
+         "à la Restitution — la trajectoire ci-avant implique plusieurs publics et moments de "
+         "décision distincts. Piste : un profil de sections par étape, pas 4 générateurs séparés.",
+         dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
+    ])
+    cols = [
+        ("①", "Assessment flash", D.PALETTE[0], "Sponsor, comité de lancement",
+         "Deck exécutif de restitution", "(déjà cadré) GlobalSynthesis, RecommendationAxis, radar T0"),
+        ("②", "Premier déploiement", D.PALETTE[3], "Équipes pilotes + management",
+         "Deck de plan de déploiement", "(nouveau) Cible TOM détaillée, backlog Coach/Délégué, mandat agent IA"),
+        ("③", "Implémentation itérative", D.PALETTE[1], "Instance de comitologie",
+         "Deck de comité de pilotage", "(nouveau, périodique) Avancement backlog, delta KPIs, risques actifs"),
+        ("⟲", "Boucle de réévaluation", D.PALETTE[2], "Sponsor",
+         "Deck de bilan / ré-évaluation", "(nouveau) Delta maturité T0→T+6-12, REX consolidé"),
+    ]
+    n = len(cols)
+    top0 = CONTENT_TOP + 0.5
+    card_h = CONTENT_BOTTOM - top0
+    badge_d = 0.34
+    for i, (sym, titre, color, audience, deck, contenu) in enumerate(cols):
+        x, w = col_x(i, n)
+        D.add_card(s, x, top0, w, card_h, color)
+        pad = 0.16
+        D.add_rect(s, x + pad, top0 + 0.14, badge_d, badge_d, fill=color, rounded=True, radius=0.5)
+        D.add_text(s, x + pad, top0 + 0.14, badge_d, badge_d, [
+            (sym, dict(size=11, bold=True, color="#ffffff", align=PP_ALIGN.CENTER)),
+        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+        D.add_text(s, x + pad + badge_d + 0.08, top0 + 0.14, w - 2 * pad - badge_d - 0.08, badge_d, [
+            (titre, dict(size=8, bold=True, color=color, line_spacing=1.0)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+        line_y = top0 + 0.14 + badge_d + 0.1
+        D.add_rect(s, x + pad, line_y, w - 2 * pad, 0.012, fill=LINE)
+        D.add_text(s, x + pad, line_y + 0.08, w - 2 * pad, 0.22, [
+            (audience, dict(size=7, italic=True, color=MUTED)),
+        ])
+        D.add_text(s, x + pad, line_y + 0.34, w - 2 * pad, 0.55, [
+            ("LIVRABLES", dict(size=7, bold=True, color=NAVY)),
+            (deck, dict(size=8, bold=True, color=NAVY, space_before=2, line_spacing=1.1)),
+        ])
+        contenu_top = line_y + 0.98
+        D.add_text(s, x + pad, contenu_top, w - 2 * pad, top0 + card_h - contenu_top - 0.12, [
+            (contenu, dict(size=7, color=MUTED, line_spacing=1.25)),
+        ])
+    return s
+
+
 # ---------------------------------------------------------------- slide 10
 def slide_ambition(prs):
     s = content_slide(prs, "Trajectoire", "Trois niveaux d'ambition, pas un spectre linéaire")
@@ -502,6 +609,8 @@ def build():
     slide_maturite(prs)
     slide_gaspillages(prs)
     slide_team_topologies(prs)
+    slide_trajectoire(prs)
+    slide_livrables_ppt(prs)
     slide_ambition(prs)
     slide_kpis(prs)
 
