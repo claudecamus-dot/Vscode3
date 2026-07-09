@@ -116,14 +116,18 @@ d'empiler toutes les équipes sur une seule frise — cohérent avec le
 
 | Élément | Verdict | Pourquoi |
 |---|---|---|
-| Couleur de chapitre par section du deck | **À envisager** | Signal de navigation plus fort que le kicker textuel seul ; se ferait par un paramètre de couleur passé à `content_slide()`, pas par un nouveau layout (le template OCTO n'a qu'un seul layout « Titre seul ») |
-| Jauge à points pour un score 1-5 (valeur/complexité) | **À reprendre** | Correspond à une donnée déjà cadrée (§Recommandations) et jamais illustrée ; outillage déjà présent dans `pptx_deck.py` |
-| Roadmap déclinée par équipe/stream | **À envisager** | Précédent concret pour le profil de deck « Plan de déploiement » du brainstorm v1.9 |
+| Couleur de chapitre par section du deck | **Repris (2026-07-09)** | Signal de navigation plus fort que le kicker textuel seul ; implémenté comme paramètre de couleur passé à `content_slide()` (pas un nouveau layout — le template OCTO n'a qu'un seul layout « Titre seul »). Cadrage=bleu, Méthode=vert, Trajectoire=or, Executive summary=cyan |
+| Jauge à points pour un score 1-5 (valeur/complexité) | **Repris (2026-07-09)** | Implémenté sur `slide_gaspillages` (score « impact × faisabilité − prudence IA ») via un nouveau helper local `dot_scale()` qui compose `D.add_dot` — aucun helper ajouté à `pptx_deck.py` lui-même |
+| Roadmap déclinée par équipe/stream | **À envisager** | Précédent concret pour le profil de deck « Plan de déploiement » du brainstorm v1.9 — pas encore fait, suppose d'abord des données réelles par équipe (`team-topology-map.md`) que ce deck de synthèse n'a pas |
 | Police Arial | **À ne pas reprendre** | OCTO a une police de marque dédiée (Outfit) — un vrai recul par rapport à ce qui est déjà utilisé |
-| 6 couleurs d'accent simultanées | **À ne pas reprendre telles quelles** | Casserait la sobriété de la charte OCTO (2 couleurs d'accent) déjà en place ; au mieux, s'inspirer du *principe* (une couleur par chapitre), pas de la palette elle-même |
+| 6 couleurs d'accent simultanées | **À ne pas reprendre telles quelles** | Casserait la sobriété de la charte OCTO (2 couleurs d'accent) déjà en place ; seul le *principe* (une couleur par chapitre) a été repris, avec les couleurs déjà en place dans le deck (`D.PALETTE`), pas la palette du gabarit analysé |
 | Format 13,333×7,5in | **Sans objet** | Le deck BMAD IAP est contraint par le format natif du template OCTO (10×5,625in) — changer de format reviendrait à abandonner le template de marque |
 
-**Prochaine étape suggérée (non faite ici, analyse seulement) :** si retenu,
-implémenter d'abord la jauge à points (§4) sur la prochaine slide qui
-illustre un score valeur/complexité — le gain le plus concret pour le moins
-d'effort, sans toucher à la charte de couleur OCTO.
+**Suite donnée (2026-07-09) :** les deux pistes « à reprendre »/« à envisager »
+les plus concrètes ont été implémentées dans `generate_deck.py` et vérifiées
+(géométrie + rendu réel) — voir le tableau ci-dessus. Restent en attente :
+la roadmap déclinée par équipe (bloquée sur des données que ce deck de
+synthèse n'a pas encore) et l'application éventuelle de la couleur de
+chapitre à d'autres éléments que le kicker (accent des cartes, par exemple),
+non faite pour limiter le risque de régression visuelle sur les 11 slides
+déjà vérifiées.

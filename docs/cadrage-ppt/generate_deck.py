@@ -70,11 +70,19 @@ def new_prs():
     return prs
 
 
-def content_slide(prs, kicker, title):
+# Couleur de chapitre par groupe de slides — signal de navigation plus fort
+# que le seul kicker textuel (piste retenue dans analyse-template-alternatif.md).
+# Cadrage/Méthode/Trajectoire reprennent les mêmes 3 couleurs déjà utilisées
+# sur la slide Executive summary (D.PALETTE[0]/[1]/[3]) — pas une palette de
+# plus à mémoriser ; passées explicitement à chaque appel de content_slide().
+
+
+def content_slide(prs, kicker, title, color=None):
     layout = prs.slide_masters[0].slide_layouts[LAYOUT_TITRE_SEUL]
     s = prs.slides.add_slide(layout)
     ph = s.shapes.placeholders[0]
     box_w = Emu(ph.width).inches
+    kicker_color = color or ACCENT
     texte_complet = f"{kicker.upper()}   ·   {title}"
     taille, _ = D.ajuster_police([texte_complet], box_w, 17, 12,
                                   lambda t, lignes_max: lignes_max <= 1)
@@ -85,13 +93,23 @@ def content_slide(prs, kicker, title):
     r1.text = kicker.upper() + "   ·   "
     r1.font.bold = True
     r1.font.size = Pt(taille)
-    r1.font.color.rgb = _rgb(ACCENT)
+    r1.font.color.rgb = _rgb(kicker_color)
     r2 = p.add_run()
     r2.text = title
     r2.font.bold = True
     r2.font.size = Pt(taille)
     r2.font.color.rgb = _rgb(NAVY)
     return s
+
+
+def dot_scale(slide, x, y, n, score, color, d=0.14, gap=0.06, empty_color=None):
+    """Jauge à points 0..n (score plein en `color`, reste en `empty_color`) —
+    pattern repris de la carte de recommandation valeur/complexité observée
+    dans l'autre template analysé (analyse-template-alternatif.md §4)."""
+    empty_color = empty_color or TRACK
+    for i in range(n):
+        fill = color if i < score else empty_color
+        D.add_dot(slide, x + i * (d + gap), y, d, fill)
 
 
 def col_x(i, n, w=CONTENT_W, x0=MARGIN, gap=GAP):
@@ -178,7 +196,7 @@ def slide_executive_summary(prs):
 
 # ---------------------------------------------------------------- slide 3
 def slide_mission(prs):
-    s = content_slide(prs, "Cadrage", "Une double mission : transformer ET assainir")
+    s = content_slide(prs, "Cadrage", "Une double mission : transformer ET assainir", color=D.PALETTE[0])
     cards = [
         ("TRANSFORMER", D.PALETTE[0],
          "Cible produit/plateforme : utilisateurs identifiés, valeur, roadmap, "
@@ -229,7 +247,7 @@ def slide_mission(prs):
 
 # ---------------------------------------------------------------- slide 4
 def slide_gate_ia(prs):
-    s = content_slide(prs, "Cadrage", "Les données du client gouvernent le choix du modèle IA")
+    s = content_slide(prs, "Cadrage", "Les données du client gouvernent le choix du modèle IA", color=D.PALETTE[0])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.35, [
         ("Checkpoint toujours humain avant tout usage IA sur données client — "
          "iap-ai-data-confidentiality-gate, quel que soit le mode (ADR-006 OpenHub).",
@@ -262,7 +280,7 @@ def slide_gate_ia(prs):
 
 # ---------------------------------------------------------------- slide 5
 def slide_maturite(prs):
-    s = content_slide(prs, "Cadrage", "Deux échelles de maturité, jamais confondues")
+    s = content_slide(prs, "Cadrage", "Deux échelles de maturité, jamais confondues", color=D.PALETTE[0])
     x0, w0 = col_x(0, 2)
     x1, w1 = col_x(1, 2)
 
@@ -312,7 +330,7 @@ def slide_maturite(prs):
 
 # ---------------------------------------------------------------- slide 6
 def slide_gaspillages(prs):
-    s = content_slide(prs, "Méthode", "Le gaspillage, traité comme un objet de transformation")
+    s = content_slide(prs, "Méthode", "Le gaspillage, traité comme un objet de transformation", color=D.PALETTE[1])
     familles = [
         ("Flux", "Attentes, validations multiples"),
         ("Humain", "Experts seniors sur tâches répétitives"),
@@ -359,19 +377,42 @@ def slide_gaspillages(prs):
         ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
 
     score_top = step_top + 2 * step_h + 0.08 + 0.2
-    score_h = 0.72
+    score_h = 1.05
     D.add_rect(s, MARGIN, score_top, CONTENT_W, score_h, fill=NAVY, rounded=True, radius=0.08)
-    D.add_text(s, MARGIN + 0.22, score_top, CONTENT_W - 0.44, score_h, [
-        ("Priorité = (impact × faisabilité) − prudence IA", dict(size=D.TYPE["small"], bold=True, color="#ffffff")),
+    text_w = CONTENT_W * 0.5
+    D.add_text(s, MARGIN + 0.22, score_top, text_w - 0.3, score_h, [
+        ("Priorité = (impact × faisabilité) − prudence IA", dict(size=D.TYPE["small"], bold=True, color="#ffffff", line_spacing=1.15)),
         ("Le score ne remplace pas l'arbitrage humain : il rend la discussion explicite.",
-         dict(size=8, color="#c7cbe0", space_before=2)),
+         dict(size=8, color="#c7cbe0", space_before=4, line_spacing=1.2)),
     ], anchor=MSO_ANCHOR.MIDDLE)
+
+    # Jauge à points — pattern repris de l'autre template analysé
+    # (analyse-template-alternatif.md §4) pour illustrer un score 1-5.
+    gauge_x = MARGIN + text_w
+    gauge_w = CONTENT_W - text_w
+    D.add_text(s, gauge_x, score_top + 0.1, gauge_w - 0.15, 0.18, [
+        ("SCORE ILLUSTRATIF", dict(size=7, bold=True, color="#8891b3")),
+    ])
+    rows_top = score_top + 0.32
+    row_h2 = (score_h - 0.32 - 0.08) / 3
+    gauge_rows = [
+        ("Impact", 4, "#ffffff"),
+        ("Faisabilité", 3, ACCENT),
+        ("Prudence IA", 1, SEVERITE[4]),
+    ]
+    for i, (label, score, color) in enumerate(gauge_rows):
+        ry = rows_top + i * row_h2
+        D.add_text(s, gauge_x, ry, 1.2, row_h2, [
+            (label, dict(size=7, color="#c7cbe0")),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+        dot_scale(s, gauge_x + 1.25, ry + row_h2 / 2 - 0.07, 5, score, color,
+                  empty_color="#3a4568")
     return s
 
 
 # ---------------------------------------------------------------- slide 9
 def slide_team_topologies(prs):
-    s = content_slide(prs, "Méthode", "La cible IAP est une Platform Team — agents IA compris")
+    s = content_slide(prs, "Méthode", "La cible IAP est une Platform Team — agents IA compris", color=D.PALETTE[1])
     types = [
         ("Stream-aligned", D.PALETTE[0], "Flux de valeur métier continu",
          "Équipes applicatives clientes de la plateforme infra"),
@@ -420,7 +461,7 @@ def slide_team_topologies(prs):
 # approche ») : badges circulaires connectés par une ligne, chip de durée,
 # description centrée sous chaque étape.
 def slide_trajectoire(prs):
-    s = content_slide(prs, "Trajectoire", "Mise en œuvre du target operating model — brainstorm")
+    s = content_slide(prs, "Trajectoire", "Mise en œuvre du target operating model — brainstorm", color=D.PALETTE[3])
     phases = [
         ("①", "Assessment flash", "1–2 sem.", D.PALETTE[0],
          "= Schéma de fonctionnement déjà cadré (Collecte → Diagnostic → Conception → Restitution)."),
@@ -474,7 +515,7 @@ def slide_trajectoire(prs):
 # template : colonne par étape avec badge + bandeau titre + ligne de
 # séparation + bloc LIVRABLES, plutôt qu'un tableau plat.
 def slide_livrables_ppt(prs):
-    s = content_slide(prs, "Trajectoire", "Livrables PPT par étape — brainstorm")
+    s = content_slide(prs, "Trajectoire", "Livrables PPT par étape — brainstorm", color=D.PALETTE[3])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.4, [
         ("iap-deck-builder est cadré comme un seul deck modulaire 16 sections, produit une fois "
          "à la Restitution — la trajectoire ci-avant implique plusieurs publics et moments de "
@@ -524,7 +565,7 @@ def slide_livrables_ppt(prs):
 
 # ---------------------------------------------------------------- slide 10
 def slide_ambition(prs):
-    s = content_slide(prs, "Trajectoire", "Trois niveaux d'ambition, pas un spectre linéaire")
+    s = content_slide(prs, "Trajectoire", "Trois niveaux d'ambition, pas un spectre linéaire", color=D.PALETTE[3])
     niveaux = [
         ("A", "Aide au coach", D.PALETTE[0],
          "Génère un livrable à la demande — aucune initiative propre. Le consultant pilote à 100 %.",
@@ -567,7 +608,7 @@ def slide_ambition(prs):
 
 # ---------------------------------------------------------------- slide 11
 def slide_kpis(prs):
-    s = content_slide(prs, "Trajectoire", "Trois familles de KPIs, à ne jamais confondre")
+    s = content_slide(prs, "Trajectoire", "Trois familles de KPIs, à ne jamais confondre", color=D.PALETTE[3])
     familles = [
         ("KPIs de mission", D.PALETTE[0], "Côté client",
          ["Gaspillage traité (capacité RUN récupérée)", "Adoption produit (self-service)",
