@@ -39,12 +39,16 @@
 - `docs/cadrage-ppt/` : le deck OCTO annoncé comme « à réactiver si un jour »
   ci-dessus est désormais réel — `template-octo.pptx` (copie du template de
   marque, masters/layouts/thème OCTO) + `pptx_deck.py` (copie synchronisée du
-  skill global `pptx-deck`) + `generate_deck.py` (13 slides de synthèse du
+  skill global `pptx-deck`) + `generate_deck.py` (11 slides de synthèse du
   cadrage BMAD IAP, dessinées sur le vrai template via ses layouts `04 -
   Titre seul` et `40 - Couverture [1]`) → `bmad-iap-cadrage-synthese.pptx`.
   Regénérer avec `python generate_deck.py` depuis ce dossier ; toute nouvelle
   version du cadrage qui change une affirmation déjà reprise en slide doit
   répercuter le changement ici, pas seulement dans le `.md` source.
+  `analyse-template-alternatif.md` : analyse (pas d'implémentation) d'un
+  second template PPT trouvé dans VSCode2 — pistes de design retenues/
+  écartées pour ce générateur, sans copier le template lui-même (contenu
+  client redacté).
 
 ## Optimisation tokens
 

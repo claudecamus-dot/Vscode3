@@ -7,3 +7,6 @@ CLAUDE.local.md
 # Roadmap — .roadmap/roadmap.json est la source de verite versionnee ;
 # le .svg est regenere a la demande par le skill roadmap-keeper.
 .roadmap/*.svg
+
+# Bytecode Python (regenere par toute execution de docs/cadrage-ppt/*.py)
+__pycache__/
