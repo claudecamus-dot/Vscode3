@@ -8,8 +8,10 @@ sans redécouvrir ces réglages depuis zéro. Suit le même gabarit que
 `docs/claude-code-setup-export.md` dans le projet frère VSCode2, en y ajoutant
 ce qui a été établi depuis (wiki d'onboarding, pratiques agentic de cadrage).
 
-**Cible actuelle de réintégration : VSCode1** (voir §8 pour un plan d'action
-concret et daté, basé sur un vrai constat de ce qui y manque).
+**Cibles de réintégration : VSCode1 (§8) et VSCode2 (§9)** — plans d'action
+concrets et datés, basés sur un vrai constat de ce qui manque dans chacun (pas
+un principe générique appliqué à l'aveugle) ; §8 a d'ailleurs déjà dû être
+corrigé une fois après être devenu obsolète, voir la note en tête de §8.
 
 ## 1. Fichiers projet à copier tels quels
 
@@ -197,6 +199,78 @@ ou un moteur de rendu Markdown — utile quand le nouveau projet a, comme
 VSCode1, un document de cadrage volumineux (`cadrage/epics-us.md`,
 `cadrage/experience-map.md`…) à rendre consultable sans quitter le wiki.
 
+### 6.3 — Rubrique TODO — reprise de session (nouveau, 2026-07-15)
+
+À ne pas confondre avec un backlog de contenu (un chantier qualité, une liste
+de tâches produit — chaque projet a déjà son propre mécanisme pour ça,
+`.roadmap/roadmap.json` ou une section « Points ouverts » dédiée). Celle-ci
+répond à un besoin différent et plus étroit : **la continuité entre deux
+sessions Claude Code sur ce dépôt**, lisible par un humain qui ouvre juste
+`docs/wiki.html`, sans dépendre de la mémoire auto de l'agent (qui persiste
+mais n'est ni versionnée dans le dépôt, ni visible sans l'outil).
+
+**Structure HTML** (pas de fichier `.md` source — contrairement au reste du
+wiki d'onboarding §6.1, cette section vit uniquement dans le rendu, éditée
+directement) :
+
+```html
+<section class="doc" id="todo-session">
+  <p class="eyebrow">Projet</p>
+  <h2>TODO — reprise de session</h2>
+  <p>Pense-bête git-versionné, complémentaire à la mémoire auto de Claude
+     Code (~/.claude/projects/.../memory/) : la mémoire survit d'une session
+     à l'autre mais n'est pas visible dans le dépôt ni relue par un humain
+     qui ouvre juste docs/wiki.html. Cette section est la version « lisible
+     dans le repo » du même besoin de continuité.</p>
+
+  <div class="critical">
+    <span class="fact-label">Quand mettre à jour cette section</span>
+    <ul>
+      <li>En fin de session, si le quota d'usage approche ou atteint 100 %
+          et que la session s'arrête avant d'avoir pu conclure une tâche —
+          noter l'état exact d'avancement, pas juste « en cours ».</li>
+      <li>Avant toute fin de session laissant un fichier modifié mais non
+          committé (voir git status), ou une décision prise à l'oral sans
+          être écrite nulle part ailleurs.</li>
+      <li>En reprise de session : lire cette table AVANT de redemander à
+          l'utilisateur où en était le travail — c'est tout l'intérêt de
+          la section.</li>
+    </ul>
+  </div>
+
+  <h3>Items ouverts</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Item</th><th>État</th><th>Contexte / prochaine action</th></tr></thead>
+      <tbody id="todo-session-rows">
+        <!-- une ligne par item ouvert ; table vide = "Aucun item ouvert actuellement." -->
+      </tbody>
+    </table>
+  </div>
+  <p style="color:var(--ink-faint); font-size:0.85rem;">Table volontairement
+     courte — un item sans propriétaire ni prochaine action clairement
+     identifiable ne doit pas y rester : soit il est résolu, soit il migre
+     vers le mécanisme de suivi dédié du projet (roadmap, points ouverts).</p>
+</section>
+```
+
+**Discipline d'usage, pas seulement de structure** :
+- Le contenu de la table doit rester **actionnable** — un item ouvert cite un
+  fichier/une section précise et une prochaine action, jamais une simple
+  humeur ("continuer le travail sur X"). Le closing note ci-dessus l'exige
+  explicitement pour éviter que la table dérive en fourre-tout qui ne serait
+  plus relu par personne.
+- Elle **complète** la mémoire auto de Claude Code, elle ne la remplace pas :
+  la mémoire porte le raisonnement/contexte long ("pourquoi"), cette table
+  porte l'état court terme actionnable ("quoi faire ensuite").
+- Nommer la section différemment du "TODO" éventuel déjà présent pour un
+  chantier de contenu (ex. VSCode1 a un "TODO — Chantier deck PPT" distinct :
+  la reprise de session y a été ajoutée comme un second `<h2>` dans la même
+  section plutôt que de créer une confusion de vocabulaire).
+- Portée sur VSCode1 et VSCode2 le 2026-07-15 (voir §8/§9) — chacun avec une
+  table "Items ouverts" vide au moment du portage (pas de contenu fabriqué),
+  à charge des sessions suivantes de la peupler au fil de l'eau.
+
 ## 7. Pratiques agentic établies pendant le cadrage BMAD IAP
 
 Enseignements de méthode, indépendants du contenu métier, à réappliquer sur
@@ -229,20 +303,49 @@ tout exercice de cadrage/revue similaire :
 
 ## 8. Plan de réintégration concret — VSCode1
 
-Constat réel (pas un principe générique) au moment de la rédaction de ce
-document : VSCode1 n'a **aucun** des fichiers `.claude/` listés en §1, et
-**aucun** `CLAUDE.md` à la racine. Il a en revanche déjà `.roadmap/roadmap.json`
-(avec un modèle Epic/US plus riche que celui de VSCode3, voir §5) et un skill
-projet `.claude/skills/restitution-ppt`.
+> **Mise à jour 2026-07-15 : table d'origine (2026-07-07) obsolète, corrigée
+> ci-dessous.** Au moment de la rédaction initiale, VSCode1 n'avait aucun des
+> fichiers `.claude/` listés en §1 ni de `CLAUDE.md` racine — ce n'est plus le
+> cas : les deux ont depuis été ajoutés (indépendamment de ce plan, entre
+> 2026-07-07 et 2026-07-08). Ne pas se fier à une table de portage sans la
+> revérifier contre l'état réel du dépôt cible avant d'agir dessus — c'est
+> exactement l'erreur que cette note corrige.
 
-| Action | Statut sur VSCode1 | Priorité |
+| Action | Statut sur VSCode1 (vérifié 2026-07-15) | Priorité |
 |---|---|---|
-| Ajouter `.claude/settings.json` (hook + `permissions.deny`) | Absent | Haute — aucun garde-fou destructif actif aujourd'hui |
-| Ajouter `.claude/hooks/guard_destructive_git.py` | Absent | Haute — dépend de l'action précédente |
-| Nettoyer `permissions.allow` existant | Présent mais très bruité (chemins absolus machine-spécifiques, commandes one-off de debug) | Moyenne — pas bloquant, mais à assainir avant qu'il ne serve de modèle à un futur projet |
-| Créer un `CLAUDE.md` racine (voir §2) | Absent | Haute — actuellement rien ne documente pour Claude Code la structure `app/` / `cadrage/` / `.roadmap/` déjà décrite dans `README.md` |
-| Ajouter `docs/wiki/` + `docs/wiki.html` (voir §6) | Absent | Moyenne — VSCode1 a déjà des docs fonctionnelles (`cadrage/*.md`) mais rien au niveau onboarding technique confiance-tagué ; un bon candidat pour transcrire `cadrage/epics-us.md` et `app/README.md` dans le même pattern |
+| `.claude/settings.json` (hook + `permissions.deny`) | ✅ Présent | — |
+| `.claude/hooks/guard_destructive_git.py` | ✅ Présent | — |
+| Nettoyer `permissions.allow` existant | Non revérifié depuis 2026-07-07 (probablement encore bruité — pas revisité) | Basse — pas bloquant |
+| `CLAUDE.md` racine (voir §2) | ✅ Présent | — |
+| `docs/wiki/` + `docs/wiki.html` (voir §6.1/6.2) | ✅ Présent | — |
+| `docs/wiki.html` §6.3 — rubrique "Reprise de session" | ✅ Ajoutée le 2026-07-15 (nouvel `<h2 id="todo-session">` dans la section TODO existante — un "TODO" de contenu y existait déjà pour le chantier PPT, distinct de celui-ci) | — |
 | `.roadmap/` | Déjà conforme, plus riche (Epic/US) que VSCode3 | Aucune action — VSCode3 devrait plutôt s'aligner sur VSCode1 ici |
+
+Reste réellement ouvert sur VSCode1 : le nettoyage de `permissions.allow`
+(seule ligne non vérifiée récemment) et le peuplement de la nouvelle table
+"Items ouverts" au fil des sessions (elle est intentionnellement vide au
+moment du portage).
+
+## 9. Plan de réintégration concret — VSCode2
+
+VSCode2 est la source originelle du pattern wiki d'onboarding (§6.1/6.2,
+`docs/wiki/` + `docs/wiki.html`, format déjà mature) et a son propre système
+d'export PPT réel (`app/services/pptx_export.py`, pytest dédié) — rien à
+répliquer de ce côté. Écart réel constaté le 2026-07-15 :
+
+| Action | Statut sur VSCode2 | Priorité |
+|---|---|---|
+| `docs/wiki.html` — rubrique "TODO — reprise de session" (§6.3) | Absente avant le 2026-07-15 (aucune section TODO d'aucune sorte) — ajoutée ce jour, table "Items ouverts" vide au portage | Faite — à peupler au fil des sessions |
+| `.claude/skills/pptx-framed-image` + `slide-text-polish` | Absents avant le 2026-07-15 — greffés ce jour | Faite |
+| `docs/vscode1-export/ppt-toolkit.md` + `points-amelioration-ppt.md` | Absents avant le 2026-07-15 — miroir local créé ce jour (même convention que le miroir de VSCode3), avec une note VSCode2-spécifique sur ce qui est câblé vs simplement disponible | Faite |
+| `.claude/settings.json` / hook destructif / `CLAUDE.md` racine | Déjà présents (config Claude Code déjà mature sur ce projet) | Aucune action |
+
+VSCode2 a donc reçu, à ce jour, la même chose que VSCode3 a reçue de
+VSCode1 : les skills projet-local et leur documentation de référence — pas
+un portage complet du §1-§5 (déjà globalement couvert par sa propre config),
+et surtout **pas de câblage dans son générateur réel** (`pptx_export.py`) —
+ça resterait une décision produit à part entière, pas une simple greffe de
+kit.
 
 Sur VSCode1, la vraie plus-value immédiate est **HAUTE** : un dépôt avec du
 code applicatif réel (Node.js/Express, base SQLite, exports PPT) et **aucun**

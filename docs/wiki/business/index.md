@@ -25,6 +25,8 @@ Module de transformation consulting à double mission : transformer une organisa
   — `CONFIRMÉ` · onboarder · 2026-07-07 · `docs/bmad-iap-cadrage.md` §Traitement des gaspillages
 - **Modèles de maturité** — deux échelles indépendantes : maturité produit/plateforme (grille VSCode1, pilotée par pilier Excellence Technique / Agilité à l'Échelle) et maturité IA client (pilier IA/Agentic/Organisation Augmentée, remplace l'ancien M0–M4 générique)
   — `CONFIRMÉ` · onboarder · 2026-07-07 · `docs/bmad-iap-cadrage.md` §Modèles de maturité
+- **Export markdown — recommandation agentic ou documentation (v2.0)** — livrable markdown (pas un 5ᵉ profil PPT) qui route sur le pilier Agentic Readiness, la classification des données et le score de gaspillage déjà cadrés pour produire soit un `runbook-<processus>.md` (documentation-first, owner `iap-adoption-plan`) soit un `agentic-implementation-plan.md` (owner `iap-agentic-opportunities`) ; le même fichier est amendé, jamais dupliqué, à chaque boucle de réévaluation
+  — `CONFIRMÉ` · 2026-07-15 · `docs/bmad-iap-cadrage.md` §Trajectoire, "Export markdown — recommandation d'implémentation agentic ou documentation"
 
 ## Utilisateurs cibles
 

@@ -10,3 +10,11 @@ CLAUDE.local.md
 
 # Bytecode Python (regenere par toute execution de docs/cadrage-ppt/*.py)
 __pycache__/
+
+# Images generees a la volee pour les cadres photo du deck (pptx-framed-image
+# + nature_images) - regenerables via generate_deck.py, pas a committer.
+docs/cadrage-ppt/_img/
+
+# Fichier verrou PowerPoint (cree quand le .pptx est ouvert via COM, ex. le
+# script de rendu pptx-verify) - artefact temporaire, jamais du contenu.
+**/~$*.pptx

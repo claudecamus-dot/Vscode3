@@ -1,6 +1,8 @@
 > Miroir local de `c:/Users/claude.camus/Documents/VSCode1/export/ppt-toolkit.md` —
-> extrait le 2026-07-08. Source de vérité : le fichier VSCode1 ; celui-ci est une
-> copie de référence, à re-synchroniser manuellement si l'original évolue.
+> extrait le 2026-07-08, resynchronisé le 2026-07-15 (ajout `stock_images.py`
+> au skill `pptx-framed-image` ; §6 Tests fonctionnels). Source de vérité : le
+> fichier VSCode1 ; celui-ci est une copie de référence, à re-synchroniser
+> manuellement si l'original évolue.
 
 # Kit « export PPT de restitution » — portable sur d'autres projets
 
@@ -32,12 +34,18 @@ tels quels. `restitution-ppt` est la **matérialisation projet** (structure du
 deck, contrat de payload, générateur `export-restitution-ppt.py`, template
 OCTO) : sers-t'en comme **exemple de référence**, pas comme livrable à copier.
 
-> **Note VSCode3** : les trois skills globaux (`pptx-deck`, `pptx-verify`,
-> `restitution-deck-design`) sont déjà disponibles ici (`~/.claude/skills/`,
-> partagés entre postes/projets) — rien à installer pour les utiliser. Les
-> skills projet-local (`pptx-framed-image`, `slide-text-polish`, l'agent
-> `ppt-designer`, le gabarit `restitution-ppt`) n'existent pas dans ce dépôt ;
-> à copier depuis VSCode1 seulement si VSCode3 se met à produire des decks.
+> **Note VSCode3 — greffe faite (2026-07-15) :** les trois skills globaux
+> (`pptx-deck`, `pptx-verify`, `restitution-deck-design`) étaient déjà
+> disponibles ici (`~/.claude/skills/`, partagés entre postes/projets).
+> `pptx-framed-image` et `slide-text-polish` ont maintenant été copiés dans
+> `.claude/skills/` de ce dépôt (tests rejoués après copie : 9/9 et 9/9,
+> verts) et l'agent `ppt-designer` a été recréé en local
+> (`.claude/agents/ppt-designer.md`), adapté au générateur de ce projet
+> (`docs/cadrage-ppt/generate_deck.py`) plutôt qu'à `export-restitution-ppt.py`.
+> Déclencheur : VSCode3 produit désormais un vrai deck (`bmad-iap-cadrage-
+> synthese.pptx`), la condition posée dans la note précédente. `restitution-ppt`
+> reste le gabarit-exemple sur VSCode1, non copié (spécifique à son app) —
+> `generate_deck.py` en est l'équivalent projet ici.
 
 ---
 
@@ -72,9 +80,23 @@ géométrie passe mais que le deck a l'air amateur.
 ### Skill `pptx-framed-image`
 Insère une image dans un **cadre** du template en lui donnant la forme exacte
 du cadre (coins arrondis/diagonaux) via clonage du `prstGeom` du cadre sur la
-picture — pas d'arrondi PIL approximatif. Fournit aussi un générateur d'images
-d'illustration procédurales (scènes nature/été) et un audit des obstructions
-de cadre (bordures, lignes parasites).
+picture — pas d'arrondi PIL approximatif. Fournit aussi un audit des
+obstructions de cadre (bordures, lignes parasites).
+
+Deux sources d'image, dans cet ordre de préférence : **`stock_images.py`**
+(nouveau, 2026-07-15) — vraie photo libre de droit via Openverse
+(`api.openverse.org`, filtré `license=cc0`, pas de clé API) : une vraie photo
+se lit mieux qu'un aplat vectoriel généré à côté d'un contenu client réel ;
+**screener chaque résultat par rendu réel** (la recherche par mot-clé n'a
+aucun jugement — un `"ocean waves aerial"` a renvoyé une photo de plage
+bondée de vacanciers parmi des paysages propres). **`nature_images.py`**
+reste le générateur procédural de secours, hors-ligne.
+
+> **Déjà utilisé dans VSCode3** : ce skill (avec `stock_images.py`) pilote
+> désormais les 3 intercalaires de chapitre + 1 slide « cadre blanc » du deck
+> `bmad-iap-cadrage-synthese.pptx` — voir `docs/cadrage-ppt/generate_deck.py`
+> (`_remplir_cadre`) pour un exemple d'intégration avec repli automatique sur
+> `nature_images` si le réseau n'est pas disponible.
 
 ### Skill `slide-text-polish`
 Qualité rédactionnelle : titre = une affirmation (pas une étiquette), une idée
@@ -95,7 +117,9 @@ retour d'expérience.
 ## 3. Dépendances et environnement
 
 - **Python** : `python-pptx`, `Pillow` (pour `pptx-framed-image` et le
-  générateur d'images). Pas de réseau, pas d'API image.
+  générateur d'images).
+- **Réseau** *(optionnel)* : `stock_images.py` appelle Openverse en HTTPS,
+  sans clé API. Sans réseau, repli automatique sur `nature_images.py`.
 - **Node/Chrome headless** *(optionnel)* : uniquement si un visuel (radar,
   graphe) doit être rasterisé en amont côté serveur — spécifique au projet
   d'origine, pas requis par le kit lui-même.
@@ -149,6 +173,21 @@ retour d'expérience.
      géométrie ne voit pas » de `pptx-deck` + `pptx-verify`).
 5. **Rapporter** ce qui a changé et pointer les images rendues. Ne jamais
    déclarer « qualité / vérifié » sur la seule géométrie.
+
+---
+
+## 6. Tests fonctionnels du deck du projet (recommandé, pas juste "au cas où")
+
+Recette portée sur VSCode3 (2026-07-15), disponible ici :
+[`docs/cadrage-ppt/test_generate_deck.py`](../cadrage-ppt/test_generate_deck.py)
+— un `check(cond, msg)` simple (pas besoin de pytest pour un script autonome) :
+
+1. **Structure** — nombre de slides, `verifier_geometrie` sans problème, fichier écrit d'une taille plausible.
+2. **Cadres photo — alignement exact, pas juste "une image existe quelque part"** : pour chaque slide utilisant `pptx-framed-image`, asserter que l'image posée a **exactement** les bornes du cadre attendu et porte le bon `prstGeom` cloné. Né d'un vrai defect signalé "image pas bien calée" sur une slide — en fait une photo trop pâle se fondant dans le fond (un problème de contenu, pas de géométrie), mais qui a montré qu'aucun test ne pouvait le confirmer/infirmer programmatiquement. Ce test ne juge pas l'esthétique d'une photo (ça reste à l'œil humain) — il garantit que le cadrage géométrique ne dérive jamais silencieusement.
+3. **Aucun cadre laissé vide** — le texte gabarit du template (« ici mettre une Photo ») ne doit apparaître nulle part dans le texte du deck généré.
+4. **Verrous anti-régression** ciblés sur chaque bug déjà trouvé au rendu (ex. l'encart numéro de chapitre qui hérite un retrait de puce).
+5. **`frame_obstructions` en liste blanche** — les obstructions attendues (décor du template) sont nommées explicitement ; toute obstruction NON attendue fait échouer le test.
+6. **Rendu réel automatisé** — conversion PDF via LibreOffice + comptage de pages contre le nombre de slides exportées (même principe que `test_export_pptx_renders_cleanly_in_a_real_engine`, VSCode2).
 
 ---
 
