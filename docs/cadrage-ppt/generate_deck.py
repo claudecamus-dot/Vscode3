@@ -690,7 +690,9 @@ def slide_gaspillages(prs):
         ("Environnemental", "Ressources inutilisées, environnements non éteints"),
         ("IA", "Cas d'usage gadget, automatisation sans garde-fous"),
     ]
-    fam_colors = ["#2c5cc5", "#1e6b34", "#b3261e", "#b8860b", "#6a3d9a", "#138086", "#c1651e", "#4b5563"]
+    # Accent unifié sur la couleur du chapitre Méthode : les 8 familles se
+    # distinguent par leur libellé, pas par 8 teintes décoratives sans clé de
+    # lecture (constat de revue « 8 couleurs sans légende »).
     row_top = CONTENT_TOP + 0.45
     row_h = 0.52
     row_gap = 0.08
@@ -700,7 +702,7 @@ def slide_gaspillages(prs):
         x, w = col_x(col, 4)
         y = row_top + row * (row_h + row_gap)
         D.add_rect(s, x, y, w, row_h, fill="#ffffff", line=LINE, line_w=0.75, rounded=True, radius=0.1)
-        D.add_rect(s, x, y, 0.06, row_h, fill=fam_colors[i], rounded=True, radius=0.5)
+        D.add_rect(s, x, y, 0.06, row_h, fill=D.PALETTE[1], rounded=True, radius=0.5)
         D.add_text(s, x + 0.16, y + 0.04, w - 0.28, row_h - 0.08, [
             (nom, dict(size=D.TYPE["tiny"], bold=True, color=NAVY)),
             (ex, dict(size=8, color=MUTED, space_before=1, line_spacing=1.05)),
@@ -951,7 +953,9 @@ def slide_team_topologies(prs):
         ("Extension — les agents IA comme coéquipiers, et leur mise en œuvre (v1.7)",
          dict(size=D.TYPE["tiny"], bold=True, color=NAVY)),
         ("Un agent peut être membre d'une Stream-aligned team ou capacité exposée par la "
-         "Platform Team (4ᵉ mode candidat : Supervision). L'adoption suit la trajectoire "
+         "Platform Team. Aux 3 modes d'interaction Team Topologies — Collaboration, "
+         "X-as-a-Service, Facilitating — s'ajoute un 4ᵉ candidat : Supervision. "
+         "L'adoption suit la trajectoire "
          "Coach → Délégué (assisté → supervisé → délégué) : mandat écrit (ce que l'agent "
          "décide seul / ce qui escalade / qui répond de ses erreurs) avant tout palier "
          "au-delà de l'assisté — jamais un usage qui dérive à l'implicite.",
@@ -1379,7 +1383,8 @@ def slide_ambition(prs):
         ("Monter de A à C n'est pas qu'une question de fonctionnalités : le niveau C suppose "
          "un accès direct aux données de production du client — risque sécurité/confidentialité "
          "d'un tout autre ordre. Un cabinet peut durablement rester au niveau A ou B par choix "
-         "de gouvernance, pas seulement par contrainte technique transitoire.",
+         "de gouvernance, pas seulement par contrainte technique transitoire. "
+         "MVP0–6 = jalons de la roadmap de mise en œuvre ; MVP6, le « companion connecté », n'est pas engagé.",
          dict(size=8, color=MUTED, italic=True, line_spacing=1.3)),
     ])
     return s
