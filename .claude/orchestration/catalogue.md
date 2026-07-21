@@ -20,8 +20,8 @@
 | Skill | Quand l'utiliser | Mode typique | Modèle | Statut |
 | --- | --- | --- | --- | --- |
 | `revue-increment` | Definition-of-done : fin d'incrément, avant commit | Synchrone, étape terminale obligatoire des plans de dev | (session) | Pas encore mesuré |
-| `pptx-framed-image` | Remplir les cadres photo d'un template PPT (round2DiagRect) — étape conditionnelle du playbook `export-ppt-verifie` | Synchrone | (session) | Pas encore mesuré |
-| `slide-text-polish` | Lint de la qualité rédactionnelle des slides — étape conditionnelle du playbook `export-ppt-verifie` | Synchrone | (session) | Pas encore mesuré |
+| `pptx-framed-image` | Remplir les cadres photo d'un template PPT (round2DiagRect) — étape conditionnelle du playbook `export-ppt-verifie` | Synchrone | (session) | **used-as-library** (arbitrage 2026-07-21) — code vendored du pipeline deck, restera dans `jamais_utilises` par construction : ne pas retirer au tri |
+| `slide-text-polish` | Lint de la qualité rédactionnelle des slides — étape conditionnelle du playbook `export-ppt-verifie` | Synchrone | (session) | **used-as-library** (arbitrage 2026-07-21) — `slide_lint` intégré au pipeline deck : ne pas retirer au tri |
 | `agent-orchestrator` | Point d'entrée des demandes multi-étapes/multi-agents (routé par le hook UserPromptSubmit) | Synchrone | (session) | Pas encore mesuré |
 | `agent-supervisor` | Diagnostic qualitatif des agents (étage 2) — depuis `revue-increment` ou sur signal SessionStart | Synchrone, ≤ 1×/14 j | (session) | Pas encore mesuré |
 
@@ -29,7 +29,7 @@
 
 | Agent | Quand l'utiliser | Mode typique | Modèle | Statut |
 | --- | --- | --- | --- | --- |
-| `ppt-designer` | Génération/amélioration du deck `docs/cadrage-ppt/` — jugement visuel (géométrie, mise en page, vérif par rendu réel) | Synchrone (colonne vertébrale du playbook `export-ppt-verifie`) | hérite du thread principal (pas de bascule — jugement visuel, pas un rapport mécanique) | Pas encore mesuré |
+| `ppt-designer` | Génération/amélioration du deck `docs/cadrage-ppt/` — jugement visuel (géométrie, mise en page, vérif par rendu réel) | Synchrone (colonne vertébrale du playbook `export-ppt-verifie`) | hérite du thread principal (pas de bascule — jugement visuel, pas un rapport mécanique) | **Activé, voie unique deck** (arbitrage 2026-07-21) — l'étape `generation` de `export-ppt-verifie` l'instancie comme **sous-agent** (plus de génération inline) ; `bmad-agent-ux-designer` n'est pas la voie deck |
 
 ## Skills globaux clés
 
@@ -49,6 +49,21 @@
 | `Plan` | Concevoir une stratégie d'implémentation | Synchrone | Opus/Fable (structurant) | Pas encore mesuré |
 | `general-purpose` | Tâche multi-étapes déléguée, sortie volumineuse | Async ou synchrone | Sonnet ; Opus/Fable si structurant | Pas encore mesuré |
 | `claude-code-guide` | Questions sur Claude Code / SDK / API | Synchrone | (défaut) | Pas encore mesuré |
+
+### Règle de routage par défaut (arbitrage 2026-07-21)
+
+Décision suite au constat superviseur « monoculture `general-purpose` » (×21, zéro
+`Explore`/`Plan`). À appliquer d'office à la composition d'un plan :
+
+- **Exploration / inventaire / lecture en lecture seule** → `Explore` (modèle **haiku**),
+  jamais la session principale ni `general-purpose`.
+- **Conception d'un plan / stratégie d'implémentation** → `Plan` (modèle **opus**).
+- **`general-purpose`** (sonnet) → réservé aux tâches multi-étapes **réellement déléguées**
+  produisant une sortie volumineuse — pas le réflexe par défaut.
+
+Caveat mesure : les 21 lancements `general-purpose` sont antérieurs à l'orchestrateur
+(avant 2026-07-08) — le constat reste **ouvert**, à re-confirmer sur `runs.jsonl` une fois
+quelques runs journalisés (pas d'arbitrage de clôture tant que la mesure n'a pas tourné).
 
 ## Familles sous condition
 

@@ -14,6 +14,13 @@ le vrai template OCTO (commit `1cb15fc`, cadres photo réels via `pptx-framed-im
 étapes conditionnelles `slide-text-polish` et `restitution-deck-design` restent, elles,
 `jamais-jouees` sur ce dépôt à ce jour — à proposer avec prudence explicite.
 
+Routage de l'étape `generation` (arbitrage 2026-07-21) : elle s'instancie désormais via le
+**sous-agent `ppt-designer`** (outil `Agent`), pas en génération inline dans la session —
+le constat superviseur avait relevé que le deck avait été rebâti (`1cb15fc`) sans jamais
+passer par cet agent pourtant désigné pilote. Modèle hérité du thread principal (pas de
+bascule : jugement visuel, cf. CLAUDE.md). C'est la voie deck unique — `bmad-agent-ux-designer`
+ne double pas ce rôle.
+
 Frontière avec `dev-verifie` : si la demande est un changement de code générique (un hook,
 un script de supervision/orchestration), c'est `dev-verifie` qui s'applique — ce
 playbook-ci est la version spécialisée quand le **livrable est le deck lui-même** (layout,
@@ -51,7 +58,7 @@ contenu, visuel). Les deux partagent l'obligation de rendu réel et la terminais
       "modele": "(session)",
       "contrat": {
         "type": "deterministe",
-        "critere": "export .pptx produit sans exception, self-check géométrique de pptx_deck.py passé, test_generate_deck.py vert (structure, cadres photo alignés, régression numéro de chapitre)"
+        "critere": "instancié via le sous-agent ppt-designer (outil Agent), pas inline ; export .pptx produit sans exception, self-check géométrique de pptx_deck.py passé, test_generate_deck.py vert (structure, cadres photo alignés, régression numéro de chapitre)"
       },
       "checkpoint": false
     },

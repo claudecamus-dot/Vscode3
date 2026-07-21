@@ -170,6 +170,17 @@ l'orchestrateur applique) :
   dépôt). Ne pas se fier aux statuts « éprouvé » hérités des docs de conception — vérifier
   `docs/wiki/technical/agents-supervision.md` avant de router vers un agent « jamais
   utilisé ».
+- **Premiers arbitrages (2026-07-21, `.claude/supervision/arbitrages.json` — versionné,
+  jamais écrit par le scan)** suite au diagnostic superviseur : (1) `ppt-designer` **activé
+  comme voie unique deck** — l'étape `generation` de `export-ppt-verifie` l'instancie
+  désormais comme **sous-agent** (plus de génération inline), `bmad-agent-ux-designer` ne
+  double pas ce rôle ; (2) `pptx-framed-image` et `slide-text-polish` marqués
+  **`used-as-library`** — code vendored du pipeline deck (invoqué en Python, pas via l'outil
+  Skill), donc *toujours* dans `jamais_utilises` : ne pas les retirer au tri des skills
+  mortes ; (3) **règle de routage** codifiée au catalogue — exploration read-only →
+  `Explore` (haiku), plan → `Plan` (opus), `general-purpose` réservé aux tâches lourdes
+  réellement déléguées (constat laissé **ouvert**, à re-mesurer sur `runs.jsonl`). Une
+  `cible` arbitrée est exclue des TODO/`prudence` du scan mais reste mesurée.
 - Pas d'`.opencode/` (OpenHub) sur ce dépôt — la couverture correspondante de
   `scan_transcripts.py` reste optionnelle et no-op ici (base absente).
 - **Tests** : `tests/test_agent_orchestration.py` + `tests/test_agent_supervision.py`

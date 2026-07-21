@@ -1,0 +1,22 @@
+{
+ "arbitrages": [
+  {
+   "cible": "ppt-designer",
+   "decision": "Conservé et ACTIVÉ comme voie unique de conception/génération du deck. L'étape 'generation' de export-ppt-verifie l'instancie désormais comme sous-agent (modèle hérité du thread principal, pas de bascule — jugement visuel). bmad-agent-ux-designer n'est PAS la voie deck : préférer une seule voie par tâche (CLAUDE.md).",
+   "date": "2026-07-21",
+   "source": "arbitrage utilisateur post-diagnostic agent-supervisor 2026-07-21 (constat agent-mort : jamais routé, tout le sous-agentage passait par general-purpose)"
+  },
+  {
+   "cible": "pptx-framed-image",
+   "decision": "used-as-library — conservée. Portée par le pipeline deck comme code vendored (cadres teardrop du template OCTO via generate_deck.py), pas invoquée via l'outil Skill : elle restera dans jamais_utilises par construction. Ne PAS la retirer au tri des skills mortes.",
+   "date": "2026-07-21",
+   "source": "arbitrage utilisateur post-diagnostic agent-supervisor 2026-07-21 (constat agent-mort : faux positif de skill morte)"
+  },
+  {
+   "cible": "slide-text-polish",
+   "decision": "used-as-library — conservée. Lint de copie (slide_lint) intégré au pipeline deck, invoquée comme code et non via l'outil Skill : elle restera dans jamais_utilises par construction. Ne PAS la retirer au tri des skills mortes.",
+   "date": "2026-07-21",
+   "source": "arbitrage utilisateur post-diagnostic agent-supervisor 2026-07-21 (constat agent-mort : faux positif de skill morte)"
+  }
+ ]
+}
