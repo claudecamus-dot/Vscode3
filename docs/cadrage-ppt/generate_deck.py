@@ -339,9 +339,11 @@ def slide_cover(prs):
     y = 4.55
     for i, (k, v) in enumerate(metas):
         x, w = col_x(i, n, w=CONTENT_W, x0=MARGIN)
+        # Bande basse posée SUR l'overlay photo sombre de la couverture : texte
+        # clair, sinon les valeurs (ex-MUTED sombre) se noyaient dans le fond.
         D.add_text(s, x, y, w, 0.55, [
-            (k, dict(size=D.TYPE["tiny"], bold=True, color=NAVY)),
-            (v, dict(size=D.TYPE["tiny"], color=MUTED, space_before=2, line_spacing=1.1)),
+            (k, dict(size=D.TYPE["tiny"], bold=True, color="#ffffff")),
+            (v, dict(size=D.TYPE["tiny"], color="#c7cbe0", space_before=2, line_spacing=1.1)),
         ])
     return s
 
@@ -455,7 +457,7 @@ def slide_gate_ia(prs):
     s = content_slide(prs, "Cadrage", "Les données du client gouvernent le choix du modèle IA", color=D.PALETTE[0])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.35, [
         ("Checkpoint toujours humain avant tout usage IA sur données client — "
-         "iap-ai-data-confidentiality-gate, quel que soit le mode (ADR-006 OpenHub).",
+         "iap-ai-data-confidentiality-gate, quel que soit le mode d'exécution retenu.",
          dict(size=D.TYPE["tiny"], color=MUTED, line_spacing=1.2)),
     ])
     rows = [
@@ -987,16 +989,16 @@ def slide_schema_fonctionnement(prs):
 
     etapes = [
         ("COLLECTE", D.PALETTE[0],
-         ["Interviews par persona (Trame/Theme/Question)",
+         ["Interviews par persona (trame / thème / question)",
           "Import outils : ServiceNow/Jira/CMDB si accès"]),
         ("DIAGNOSTIC", D.PALETTE[4],
-         ["Synthesis par thème + GlobalSynthesis",
-          "Waste-register (tags CONFIRMÉ/DÉDUIT/INCERTAIN)"]),
+         ["Synthèse par thème puis synthèse globale",
+          "Registre de gaspillage (tags CONFIRMÉ/DÉDUIT/INCERTAIN)"]),
         ("CONCEPTION", D.PALETTE[3],
-         ["Product definition (+ mvp-target-model.md)",
-          "Operating model + waste-treatment (ADR)"]),
+         ["Définition produit (+ cible MVP)",
+          "Operating model + traitement du gaspillage (décisions actées)"]),
         ("RESTITUTION", D.PALETTE[1],
-         ["Deck exécutif : RecommendationAxis",
+         ["Deck exécutif : axes valeur/complexité",
           "+ radar de maturité"]),
     ]
     n = len(etapes)
@@ -1031,14 +1033,14 @@ def slide_schema_fonctionnement(prs):
     loop_h = min(0.55, CONTENT_BOTTOM - loop_top)
     D.add_rect(s, MARGIN, loop_top, CONTENT_W, loop_h, fill=D.PALETTE[2], rounded=True, radius=0.1)
     D.add_text(s, MARGIN + 0.2, loop_top, CONTENT_W - 0.4, loop_h, [
-        ("⟲ Boucle de réévaluation — iap-re-assessment, T+6-12 mois, alimente rex-library.md, "
+        ("⟲ Boucle de réévaluation — iap-re-assessment, T+6-12 mois, alimente la bibliothèque de REX, "
          "reboucle vers la Collecte", dict(size=8, bold=False, color="#ffffff", line_spacing=1.15)),
     ], anchor=MSO_ANCHOR.MIDDLE)
     return s
 
 
 def slide_trajectoire(prs):
-    s = content_slide(prs, "Trajectoire", "Mise en œuvre du target operating model — brainstorm", color=D.PALETTE[3])
+    s = content_slide(prs, "Trajectoire", "Mise en œuvre du target operating model — piste à valider", color=D.PALETTE[3])
     phases = [
         ("①", "Assessment flash", "1–2 sem.", D.PALETTE[0],
          "= Schéma de fonctionnement déjà cadré (Collecte → Diagnostic → Conception → Restitution)."),
@@ -1047,7 +1049,7 @@ def slide_trajectoire(prs):
         ("③", "Implémentation itérative", "→ T+6-12 mois", D.PALETTE[1],
          "Généralisation équipe par équipe, bascule Coach → Délégué. Piste agent IA : supervisé puis délégué."),
         ("⟲", "Boucle de réévaluation", "T+6-12 mois", D.PALETTE[2],
-         "iap-re-assessment reboucle vers la Collecte — alimente rex-library.md."),
+         "iap-re-assessment reboucle vers la Collecte — alimente la bibliothèque de REX."),
     ]
     n = len(phases)
     badge_d = 0.55
@@ -1081,7 +1083,7 @@ def slide_trajectoire(prs):
     D.add_text(s, MARGIN + 0.2, note_top, CONTENT_W - 0.4, note_h, [
         ("Bifurcation avec/sans agents IA déployés", dict(size=8, bold=True, color=NAVY)),
         ("Le tronc commun ①→②→③→⟲ ne change pas de structure — la piste agent IA (si retenue) "
-         "se greffe sur ②/③ via la démarche en 5 phases déjà cadrée (§Modèles d'équipe), plutôt "
+         "se greffe sur ②/③ via la démarche d'accompagnement en 5 phases déjà cadrée, plutôt "
          "que d'être un chemin séparé à maintenir. Owner proposé (non tranché) : "
          "iap-operating-model-architect + iap-change-coach sur le volet humain.",
          dict(size=7, color=NAVY, space_before=3, line_spacing=1.25)),
@@ -1094,7 +1096,7 @@ def slide_trajectoire(prs):
 # template : colonne par étape avec badge + bandeau titre + ligne de
 # séparation + bloc LIVRABLES, plutôt qu'un tableau plat.
 def slide_livrables_ppt(prs):
-    s = content_slide(prs, "Trajectoire", "Livrables PPT par étape — brainstorm", color=D.PALETTE[3])
+    s = content_slide(prs, "Trajectoire", "Livrables PPT par étape — piste à valider", color=D.PALETTE[3])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.4, [
         ("iap-deck-builder est cadré comme un seul deck modulaire 16 sections, produit une fois "
          "à la Restitution — la trajectoire ci-avant implique plusieurs publics et moments de "
@@ -1103,7 +1105,7 @@ def slide_livrables_ppt(prs):
     ])
     cols = [
         ("①", "Assessment flash", D.PALETTE[0], "Sponsor, comité de lancement",
-         "Deck exécutif de restitution", "(déjà cadré) GlobalSynthesis, RecommendationAxis, radar T0"),
+         "Deck exécutif de restitution", "(déjà cadré) synthèse globale, axes valeur/complexité, radar T0"),
         ("②", "Premier déploiement", D.PALETTE[3], "Équipes pilotes + management",
          "Deck de plan de déploiement", "(nouveau) Cible TOM détaillée, backlog Coach/Délégué, mandat agent IA"),
         ("③", "Implémentation itérative", D.PALETTE[1], "Instance de comitologie",
@@ -1270,7 +1272,7 @@ def slide_schema_bout_en_bout(prs):
 # que slide_mission) + un bandeau de routage + une note "pas un aller simple".
 def slide_export_markdown(prs):
     s = content_slide(prs, "Trajectoire",
-                       "Export markdown — agentic ou documentation, selon le contexte client (brainstorm)",
+                       "Export markdown — agentic ou documentation, selon le contexte client (piste à valider)",
                        color=D.PALETTE[3])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.32, [
         ("Pas un 5e deck PPT : un livrable markdown pour l'équipe qui exécute (versionnable, "
@@ -1281,10 +1283,10 @@ def slide_export_markdown(prs):
     cards = [
         ("DOCUMENTATION-FIRST", D.PALETTE[2],
          "Agentic Readiness [0]-[1], données D3-D4 sans LLM local, ou score de gaspillage faible.",
-         "runbook-<processus>.md", "iap-adoption-plan"),
+         "Runbook du processus", "iap-adoption-plan"),
         ("AGENTIC-IMPLEMENTATION", D.PALETTE[0],
          "Agentic Readiness [2]-[3], données D0-D2 (ou D3-D4 avec LLM local), score positif.",
-         "agentic-implementation-plan.md", "iap-agentic-opportunities"),
+         "Plan d'implémentation agentic", "iap-agentic-opportunities"),
     ]
     top0 = CONTENT_TOP + 0.42
     card_h = 1.55
@@ -1325,8 +1327,8 @@ def slide_export_markdown(prs):
     D.add_text(s, MARGIN + 0.22, note_top, CONTENT_W - 0.44, note_h, [
         ("Pas un aller simple", dict(size=D.TYPE["tiny"], bold=True, color="#ffffff")),
         ("À chaque boucle de réévaluation, le même fichier est amendé — jamais dupliqué — sur le "
-         "modèle d'ai-risk-register.md : un client documentation-first peut basculer en agentic si "
-         "son Agentic Readiness progresse, et inversement en cas de deskilling-risk avéré.",
+         "modèle du registre de risques IA : un client documentation-first peut basculer en agentic si "
+         "son Agentic Readiness progresse, et inversement en cas de perte de compétence avérée.",
          dict(size=8, color="#c7cbe0", space_before=4, line_spacing=1.25)),
     ], anchor=MSO_ANCHOR.MIDDLE)
     return s
@@ -1475,10 +1477,10 @@ def slide_kpis_mise_en_place(prs):
     s = content_slide(prs, "Trajectoire", "KPIs : comment on les met en place, concrètement", color=D.PALETTE[3])
     familles = [
         ("KPIs de mission", D.PALETTE[0], "iap-metrics-sre-finops-lead",
-         "ServiceNow/Jira/CMDB si accès (ExternalEvidence), sinon déclaratif — tagué DÉDUIT",
+         "ServiceNow/Jira/CMDB si accès (preuves externes), sinon déclaratif — tagué DÉDUIT",
          "Continu, lu à chaque étape ②③⟲"),
         ("KPIs d'usage du module", D.PALETTE[1], "Le consultant, au fil des missions",
-         "Journal de mission + rex-library.md",
+         "Journal de mission + bibliothèque de REX",
          "Par mission, consolidé à MVP5"),
         ("Grille de maturité", D.PALETTE[3], "iap-strategy-lead",
          "Grille V3.2 repassée en atelier ou en interview",
@@ -1709,7 +1711,7 @@ def slide_architecture_si(prs):
          "Markdown + deck, à la demande"),
         ("B", D.PALETTE[3], "Assistant interactif",
          "Exports + App companion (capture terrain)",
-         "Website centralise, orchestration assistée",
+         "Site web centralisé, orchestration assistée",
          "+ tableau de bord multi-engagements"),
         ("C", D.PALETTE[2], "Companion connecté (non engagé)",
          "ServiceNow/Jira/Confluence/Datadog/CMDB/FinOps",
@@ -1780,7 +1782,7 @@ def slide_architecture_agents(prs):
         ("CONCEPTION", D.PALETTE[3], [
             ("iap-waste-treatment", "Backlog priorisé et scoré des gaspillages"),
             ("iap-product-definition", "Personas, capacités, valeur, roadmap"),
-            ("iap-operating-model", "Rôles, gouvernance, financement (ADR)"),
+            ("iap-operating-model", "Rôles, gouvernance, financement (décisions actées)"),
             ("iap-agentic-opportunities", "Le gaspillage d'abord, l'IA ensuite"),
         ]),
         ("ADOPTION & RESTITUTION", D.PALETTE[1], [
@@ -1874,7 +1876,7 @@ def build():
         "seniors sur un travail répétitif à faible valeur — le gaspillage RUN le plus classique.",
         "Lit chaque ticket entrant, le classe selon un runbook déjà documenté et le route vers "
         "la bonne équipe. Le processus doit être explicite avant l'agent (préalable non "
-        "négociable, §Modèles d'équipe) — jamais l'inverse.",
+        "négociable) — jamais l'inverse.",
         "Capacité RUN récupérée : dans le cas nominal du cadrage, jusqu'à 15 tickets/mois "
         "traités sans intervention humaine, temps de triage divisé par deux.",
         D.PALETTE[2])
