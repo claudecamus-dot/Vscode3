@@ -181,6 +181,13 @@ l'orchestrateur applique) :
   `Explore` (haiku), plan → `Plan` (opus), `general-purpose` réservé aux tâches lourdes
   réellement déléguées (constat laissé **ouvert**, à re-mesurer sur `runs.jsonl`). Une
   `cible` arbitrée est exclue des TODO/`prudence` du scan mais reste mesurée.
+- **Tri BMAD exécuté (2026-07-21, « choix A »)** via inventaire `Explore` + stratégie
+  `Plan` : les 46 `bmad-*` classées A câblées (13, reliées à l'orchestrateur dans le
+  catalogue) / B sous-skill-angle-mort (5, ne jamais qualifier `agent-mort`) / C sur-demande
+  (16) / D candidat-retrait (8, **non décidé** — arbitrage individuel à trancher) / E
+  deprecated-v7 (4, purge par l'updater BMAD). Le jeton **`famille:BMAD`** d'`arbitrages.json`
+  (seul reconnu par `build_todos`) ferme le TODO d'élagage ; les 46 restent mesurées. Ne pas
+  éditer `cycle-produit-bmad.md` à la main (généré) ni `rm _bmad/`.
 - Pas d'`.opencode/` (OpenHub) sur ce dépôt — la couverture correspondante de
   `scan_transcripts.py` reste optionnelle et no-op ici (base absente).
 - **Tests** : `tests/test_agent_orchestration.py` + `tests/test_agent_supervision.py`

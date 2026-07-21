@@ -9,7 +9,7 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 > Conception et phasage : [../../reflexions/agent-superviseur.md](../../reflexions/agent-superviseur.md).
 
-Dernier scan : 2026-07-21T11:49:43+02:00 · **8 sessions** (transcripts) · **9** invocations de skills · **21** lancements de sous-agents.
+Dernier scan : 2026-07-21T12:25:16+02:00 · **8 sessions** (transcripts) · **10** invocations de skills · **25** lancements de sous-agents.
 
 ## Skills — usage réel
 
@@ -21,6 +21,7 @@ Dernier scan : 2026-07-21T11:49:43+02:00 · **8 sessions** (transcripts) · **9*
 | `agent-supervisor` | projet | 1 | 2026-07-21 | 2026-07-21 |
 | `pptx-verify` | global | 1 | 2026-07-08 | 2026-07-08 |
 | `restitution-deck-design` | global | 1 | 2026-07-08 | 2026-07-08 |
+| `revue-increment` | projet | 1 | 2026-07-21 | 2026-07-21 |
 | `roadmap-keeper` | global | 1 | 2026-07-07 | 2026-07-07 |
 
 ## Sous-agents
@@ -28,12 +29,14 @@ Dernier scan : 2026-07-21T11:49:43+02:00 · **8 sessions** (transcripts) · **9*
 | Sous-agent | Lancements | Premier | Dernier |
 | --- | --- | --- | --- |
 | `general-purpose` | 21 | 2026-07-06 | 2026-07-08 |
+| `Explore` | 3 | 2026-07-21 | 2026-07-21 |
+| `Plan` | 1 | 2026-07-21 | 2026-07-21 |
 
 ## Jamais utilisés
 
-**projet** — 3/5 jamais invoqués :
+**projet** — 2/5 jamais invoqués :
 
-`pptx-framed-image`, `revue-increment`, `slide-text-polish`
+`pptx-framed-image`, `slide-text-polish`
 
 **BMAD** — 46/46 jamais invoqués :
 
@@ -49,8 +52,7 @@ Dernier scan : 2026-07-21T11:49:43+02:00 · **8 sessions** (transcripts) · **9*
 
 ## TODO agents (constats automatiques)
 
-1. **Trier les skills BMAD** : 46 installés, 0 invocation à ce jour — décider lesquels garder, customiser ou désinstaller.
-2. **`revue-increment` jamais invoquée** malgré le rappel SessionStart à chaque session — revoir son déclencheur (l'ancrer au flux de commit ?) ou la simplifier.
+_(aucun constat — rien à signaler sur les données actuelles)_
 
 ## Arbitrages enregistrés
 
@@ -59,6 +61,7 @@ _Constats clos par décision humaine (`.claude/supervision/arbitrages.json`) —
 - **`ppt-designer`** (2026-07-21) : Conservé et ACTIVÉ comme voie unique de conception/génération du deck. L'étape 'generation' de export-ppt-verifie l'instancie désormais comme sous-agent (modèle hérité du thread principal, pas de bascule — jugement visuel). bmad-agent-ux-designer n'est PAS la voie deck : préférer une seule voie par tâche (CLAUDE.md).
 - **`pptx-framed-image`** (2026-07-21) : used-as-library — conservée. Portée par le pipeline deck comme code vendored (cadres teardrop du template OCTO via generate_deck.py), pas invoquée via l'outil Skill : elle restera dans jamais_utilises par construction. Ne PAS la retirer au tri des skills mortes.
 - **`slide-text-polish`** (2026-07-21) : used-as-library — conservée. Lint de copie (slide_lint) intégré au pipeline deck, invoquée comme code et non via l'outil Skill : elle restera dans jamais_utilises par construction. Ne PAS la retirer au tri des skills mortes.
+- **`famille:BMAD`** (2026-07-21) : Tri des 46 skills BMAD EXÉCUTÉ (choix A). Classement en 5 catégories via inventaire de câblage (Explore) + stratégie (Plan) : A câblées=13 (5 délégations de revue-increment : bmad-code-review/retrospective/correct-course/checkpoint-preview/help ; 8 étapes du playbook généré cycle-produit-bmad : product-brief/prd/architecture/create-epics-and-stories/check-implementation-readiness/sprint-planning/create-story/dev-story) — reliées à l'orchestrateur comme voie de première intention (catalogue) ; B sous-skill/angle mort=5 (review-adversarial-general, review-edge-case-hunter, advanced-elicitation, party-mode, spec — invoquées en langage naturel par une skill câblée, ne pas qualifier agent-mort) ; C sur-demande=16 (6 personas bmad-agent-* + réserve produit/édition, via bmad-help) ; D candidat-retrait=8 (dev-auto, quick-dev, qa-generate-e2e-tests, market-research, domain-research, prfaq, index-docs, shard-doc — arbitrage retrait individuel à trancher, NON décidé ici) ; E deprecated-v7=4 (create-architecture, create-prd, edit-prd, validate-prd — purge par l'updater BMAD, jamais à la main). Effet : ferme le TODO d'élagage déterministe (jeton famille:BMAD, seul reconnu par build_todos) ; les 46 restent mesurées dans jamais_utilises ; l'étage-2 garde la main par cible exacte. Ne PAS rm _bmad/ ni éditer cycle-produit-bmad.md à la main (généré).
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 

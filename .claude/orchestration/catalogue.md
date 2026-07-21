@@ -67,9 +67,31 @@ quelques runs journalisés (pas d'arbitrage de clôture tant que la mesure n'a p
 
 ## Familles sous condition
 
-| Famille | Règle de routage |
-| --- | --- |
-| **BMAD (~46 skills `bmad-*`, install 2026-07-16, tri jamais exécuté ici)** | Contrairement à VSCode2 (39 skills après tri), aucun tri n'a encore été arbitré sur ce dépôt — ne pas présumer qu'une skill BMAD est morte avant d'avoir des données réelles. Router uniquement sur demande explicite de l'utilisateur, en passant par `bmad-help`. |
+### BMAD — tri arbitré le 2026-07-21 (`arbitrages.json` → `famille:BMAD`)
+
+Les 46 skills `bmad-*` (install 2026-07-16) ont été triées via un inventaire de câblage
+(sous-agent `Explore`) + une stratégie (sous-agent `Plan`), arbitrées « choix A ». Le jeton
+`famille:BMAD` ferme le TODO d'élagage du scan ; les 46 restent **mesurées** (l'étage-2
+garde la main par cible exacte). Routage par catégorie :
+
+| Cat. | Combien | Routage |
+| --- | --- | --- |
+| **A — câblées** | 13 (table ci-dessous) | **routables par nom**, voie de première intention pour leurs workflows |
+| **B — sous-skill / angle mort** | 5 : `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-advanced-elicitation`, `bmad-party-mode`, `bmad-spec` | invoquées en langage naturel par une skill câblée — **ne jamais qualifier `agent-mort`** (0 trace ≠ 0 usage) |
+| **C — sur demande** | 16 : 6 personas `bmad-agent-*` + réserve produit/édition | uniquement sur demande explicite, via `bmad-help` |
+| **D — candidat-retrait** | 8 : `bmad-dev-auto`, `bmad-quick-dev`, `bmad-qa-generate-e2e-tests`, `bmad-market-research`, `bmad-domain-research`, `bmad-prfaq`, `bmad-index-docs`, `bmad-shard-doc` | **non décidé** — arbitrage `retrait` individuel à trancher au cas par cas |
+| **E — deprecated v7** | 4 : `bmad-create-architecture`, `bmad-create-prd`, `bmad-edit-prd`, `bmad-validate-prd` | retirées par l'updater BMAD en v7 — **jamais à la main** |
+
+**Catégorie A — BMAD câblées (reliées à l'orchestrateur, voie de première intention) :**
+
+| Skill BMAD | Câblage | Rôle |
+| --- | --- | --- |
+| `bmad-code-review` | délégation `revue-increment` | revue de code adversariale |
+| `bmad-retrospective` | délégation `revue-increment` | rétrospective de fin d'epic |
+| `bmad-correct-course` | délégation `revue-increment` | changement de cap en cours de sprint |
+| `bmad-checkpoint-preview` | délégation `revue-increment` | revue humaine guidée d'un gros diff |
+| `bmad-help` | `revue-increment` + hook SessionStart | routeur BMAD (doute sur quel skill lancer) |
+| `bmad-product-brief`, `bmad-prd`, `bmad-architecture`, `bmad-create-epics-and-stories`, `bmad-check-implementation-readiness`, `bmad-sprint-planning`, `bmad-create-story`, `bmad-dev-story` (8) | étapes du playbook **généré** `cycle-produit-bmad` | cycle produit BMAD complet — **sur demande explicite** (playbook jamais joué ; ne pas éditer à la main, regénéré par `generate_bmad_playbook.py`) |
 
 > Angle mort de mesure (hérité de la conception d'origine) : les sous-skills invoquées par
 > un sous-agent via un prompt en langage naturel (pattern utilisé par `bmad-code-review`
