@@ -172,6 +172,14 @@ l'orchestrateur applique) :
   utilisé ».
 - Pas d'`.opencode/` (OpenHub) sur ce dépôt — la couverture correspondante de
   `scan_transcripts.py` reste optionnelle et no-op ici (base absente).
+- **Tests** : `tests/test_agent_orchestration.py` + `tests/test_agent_supervision.py`
+  (portés de VSCode2 le 2026-07-21, 28 tests) exercent les scripts en subprocess avec des
+  chemins surchargés par env — aucun accès aux vrais transcripts/wiki. Rejouer après toute
+  modif des scripts superviseur/orchestrateur : `py -m pytest tests/test_agent_*.py`
+  (sur Windows, passer `--basetemp` sur un dossier neuf — le nettoyage du symlink
+  `pytest-current` plante en teardown sinon, sans que ce soit un échec de test).
+  `test_scan_counts_and_generates_page_and_index` a été adapté (échantillon
+  `run-dev-server`, skill projet de VSCode2 inexistante ici → `revue-increment`).
 
 ## Hiérarchie de modèles pour les sous-agents (2026-07-16)
 
