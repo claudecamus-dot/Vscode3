@@ -11,6 +11,10 @@ CLAUDE.local.md
 # Bytecode Python (regenere par toute execution de docs/cadrage-ppt/*.py)
 __pycache__/
 
+# BMAD — sorties generees (planning/implementation artifacts), pas du
+# contenu source ; _bmad/ (le moteur, ~138K) reste versionne a part.
+_bmad-output/
+
 # Images generees a la volee pour les cadres photo du deck (pptx-framed-image
 # + nature_images) - regenerables via generate_deck.py, pas a committer.
 docs/cadrage-ppt/_img/
@@ -18,3 +22,12 @@ docs/cadrage-ppt/_img/
 # Fichier verrou PowerPoint (cree quand le .pptx est ouvert via COM, ex. le
 # script de rendu pptx-verify) - artefact temporaire, jamais du contenu.
 **/~$*.pptx
+
+# Superviseur/orchestrateur des agents - donnees machine generees par
+# scan_transcripts.py/log_usage.py/log_run.py, jamais editees a la main.
+# .claude/supervision/arbitrages.json reste VERSIONNE (decisions humaines).
+.claude/supervision/state.json
+.claude/supervision/usage.jsonl
+.claude/supervision/diagnostic.json
+.claude/orchestration/runs.jsonl
+.claude/orchestration/routing-hints.json

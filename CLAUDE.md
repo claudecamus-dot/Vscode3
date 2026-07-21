@@ -122,3 +122,67 @@ opérationnalisées pour ce dépôt :
 - **Enchaîner les actions sans pause longue** — le cache prompt a un TTL
   d'~5 min ; éviter les silences de plusieurs minutes en plein enchaînement
   d'outils.
+
+## Skills & agents — comment ça se lance (post-BMAD, 2026-07-16)
+
+Depuis l'install de **BMAD-METHOD v6.10.0** (`_bmad/`), `.claude/skills/` contient ~46 skills `bmad-*` en plus des skills projet :
+
+- **Routeur BMAD** : en cas de doute, invoquer **`bmad-help`**.
+- **Agents BMAD (personas)** : par nom — « Amelia » (dev), « John » (PM), « Winston » (architecte), « Sally » (UX), « Mary » (analyste), « Paige » (tech writer) = skills `bmad-agent-*`. Workflows : `bmad-product-brief`/`bmad-prd`/`bmad-architecture`/`bmad-create-story`/`bmad-dev-story`, plus `bmad-code-review`/`bmad-retrospective`. Sorties → `_bmad-output/` (candidat `.gitignore`).
+- **Skills projet** (non-`bmad-`) : `pptx-framed-image`, `slide-text-polish`, `revue-increment` (definition-of-done — délègue à `bmad-code-review`/`bmad-retrospective`).
+- **Agent projet** `.claude/agents/ppt-designer.md` : sous-agent PPT antérieur à BMAD ; recoupe partiellement `bmad-agent-ux-designer` — préférer une seule voie par tâche.
+- Le hook **SessionStart** (`.claude/hooks/remind_revue_increment.py`) rappelle la discipline et route vers `bmad-help`.
+
+## Agent orchestrateur & superviseur (porté depuis VSCode2, 2026-07-21)
+
+Config d'installation complète (skills + scripts + hooks) reprise depuis
+`export/agent-orchestrator/` et `export/agent-supervisor/` de VSCode2, suivant la procédure
+de son `README.md` §7. Deux étages qui se nourrissent mutuellement (le superviseur mesure,
+l'orchestrateur applique) :
+
+- **`agent-orchestrator`** (`.claude/skills/agent-orchestrator/SKILL.md`) : point d'entrée
+  des demandes multi-étapes/multi-agents — qualifie, cherche un playbook matchant avant de
+  composer à vide, exécute (cascade/parallèle/asynchrone), journalise dans
+  `.claude/orchestration/runs.jsonl` (gitignoré). Routé par le hook `UserPromptSubmit`
+  (`.claude/hooks/orchestrator_gate.py`, ~50 tokens, silencieux sur les commandes slash).
+- **`agent-supervisor`** (`.claude/skills/agent-supervisor/SKILL.md`) : diagnostic
+  qualitatif (étage 2) sur les données de l'étage 1 — à lancer depuis `revue-increment` ou
+  quand le SessionStart signale un diagnostic périmé (cadence 14 j). Écrit
+  `.claude/supervision/diagnostic.json` (gitignoré) via `write_diagnostic.py`.
+- **Étage 1 (mesure, 0 token)** : `.claude/supervision/scan_transcripts.py` (hook
+  SessionStart, scan incrémental) + `.claude/supervision/log_usage.py` (hook PostToolUse
+  sur `Skill|Agent|Task`) → régénèrent `docs/wiki/technical/agents-supervision.md` et la
+  section `TODO-AGENTS` de `docs/wiki/index.md`. `docs/wiki.html` a une section
+  `TODO-AGENTS-HTML` prévue par le script mais ses marqueurs n'ont jamais été posés dans ce
+  dépôt — le bloc HTML reste donc silencieusement non mis à jour tant qu'ils n'y sont pas.
+- **`.claude/orchestration/catalogue.md` + `playbooks/`** : **adaptés**, pas copiés
+  verbatim — `dev-verifie` a perdu son étape `run-dev-server` (pas d'app web/dev server
+  ici), `export-ppt-verifie` référence le vrai pipeline (`generate_deck.py`, `pptx_deck.py`,
+  `test_generate_deck.py`), `cycle-produit-bmad` est régénéré depuis le `bmad-help.csv` de
+  **ce** dépôt (`py .claude/orchestration/generate_bmad_playbook.py` — ne jamais l'éditer à
+  la main).
+- **`docs/reflexions/agent-orchestrateur.md` / `agent-superviseur.md`** : conception
+  d'origine, écrite dans le contexte de VSCode2 (précédents, arbitrages, phasage) — le
+  rationale reste valable, mais les statuts d'usage/précédents cités y datent de ce
+  projet-là, pas de celui-ci.
+- Fraîchement installé : aucune mesure réelle n'existe encore côté VSCode3 (premier scan
+  déjà lancé le 2026-07-21 : 46 skills BMAD + les 5 skills projet jamais invoqués sur ce
+  dépôt). Ne pas se fier aux statuts « éprouvé » hérités des docs de conception — vérifier
+  `docs/wiki/technical/agents-supervision.md` avant de router vers un agent « jamais
+  utilisé ».
+- Pas d'`.opencode/` (OpenHub) sur ce dépôt — la couverture correspondante de
+  `scan_transcripts.py` reste optionnelle et no-op ici (base absente).
+
+## Hiérarchie de modèles pour les sous-agents (2026-07-16)
+
+`ppt-designer` n'a pas de champ `model:` en frontmatter (hérite du thread principal) — délibérément laissé ainsi : c'est un rôle de jugement visuel (géométrie, mise en page, vérification par rendu réel), pas un rapport mécanique templaté, donc pas un bon candidat pour une bascule vers un modèle plus léger.
+
+## Discipline de gestion des tokens (2026-07-16, cf. `docs/vscode1-export/optimisation-tokens.md`)
+
+Le contexte est un cache actif facturé à chaque tour, pas une mémoire gratuite (source : OCTO Playbook Agentique, partie « Optimiser la consommation Tokens »). Règles concrètes, pas de changement de ton/style de réponse :
+
+- **Ne pas parcourir** `_bmad/`, `_bmad-output/`, `__pycache__/` sauf demande explicite.
+- **Lire avant d'écrire, grep les appelants avant de modifier** une section partagée (ex. `docs/wiki/`).
+- **Préférer un grep/read ciblé à un dump récursif** — surtout sur `.claude/skills/bmad-*` (~46 skills).
+- **Sous-agent pour toute sortie volumineuse** plutôt que de la laisser polluer le contexte principal.
+- **`/compact` dès ~40 %** de fenêtre de contexte utilisée si la session doit continuer longtemps sur le même sujet.

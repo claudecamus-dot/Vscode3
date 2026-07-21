@@ -49,3 +49,15 @@ Retour utilisateur le même jour (2026-07-15) : (1) le schéma de fonctionnement
 - Pas de CI/CD, pas de tests automatisés (dépôt documentaire, voir [technical/tests.md](technical/tests.md))
 - `.roadmap/` et `.claude/skills/` mentionnés dans `CLAUDE.md` comme "à créer au besoin" — pas encore présents dans l'arborescence
 - Process de redaction du REX source formalisé en principe seulement (voir `docs/bmad-iap-cadrage.md` §Points ouverts) — pas encore une étape de workflow reproductible
+
+<!-- TODO-AGENTS:START — section générée par .claude/supervision/scan_transcripts.py, ne pas éditer à la main -->
+## TODO agents 🤖
+
+Constats automatiques du superviseur d'agents (usage mesuré dans les transcripts de session) :
+
+- **Trier les skills BMAD** : 46 installés, 0 invocation à ce jour — décider lesquels garder, customiser ou désinstaller.
+- **`revue-increment` jamais invoquée** malgré le rappel SessionStart à chaque session — revoir son déclencheur (l'ancrer au flux de commit ?) ou la simplifier.
+- **Skills projet sans usage** : `agent-orchestrator`, `agent-supervisor`, `pptx-framed-image`, `slide-text-polish` — vérifier pertinence et déclencheurs.
+
+Tableau de bord complet : [technical/agents-supervision.md](technical/agents-supervision.md) — régénéré à chaque session.
+<!-- TODO-AGENTS:END -->
