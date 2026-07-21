@@ -3,8 +3,10 @@
   {
    "cible": "ppt-designer",
    "decision": "Conservé et ACTIVÉ comme voie unique de conception/génération du deck. L'étape 'generation' de export-ppt-verifie l'instancie désormais comme sous-agent (modèle hérité du thread principal, pas de bascule — jugement visuel). bmad-agent-ux-designer n'est PAS la voie deck : préférer une seule voie par tâche (CLAUDE.md).",
+   "categories": ["agent-mort", "inefficacite", "ko-repete"],
    "date": "2026-07-21",
-   "source": "arbitrage utilisateur post-diagnostic agent-supervisor 2026-07-21 (constat agent-mort : jamais routé, tout le sous-agentage passait par general-purpose)"
+   "source": "arbitrage utilisateur post-diagnostic agent-supervisor 2026-07-21 (constat agent-mort : jamais routé, tout le sous-agentage passait par general-purpose)",
+   "note": "categories = arbitrage de ROUTAGE : ne ferme que les constats routage/vie-de-l'agent ; un constat verification-manquante/interaction sur ppt-designer remonte quand même (fix cible-suppression 2026-07-21)."
   },
   {
    "cible": "pptx-framed-image",

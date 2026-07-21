@@ -300,6 +300,51 @@ def test_diagnostic_arbitre_disparait_du_todo_et_de_la_prudence_mais_reste_mesur
     assert hints["diagnostic_a_jour"] is True  # toujours à jour : l'arbitrage ne périme rien
 
 
+def test_arbitrage_a_categories_ne_masque_que_ces_categories(tmp_path):
+    """Un arbitrage de routage (`categories` restreint) ferme les constats de ces catégories
+    mais laisse remonter un constat de vérification/qualité sur la MÊME cible — corrige la
+    suppression par cible trop large (friction cible-suppression 2026-07-21). Sans le champ
+    `categories`, l'arbitrage ferme tout (rétro-compatibilité)."""
+    tdir = tmp_path / "transcripts"
+    tdir.mkdir()
+    (tdir / "s1.jsonl").write_text(_line(skill="run-dev-server"), encoding="utf-8")
+    (tmp_path / "diagnostic.json").write_text(
+        json.dumps({
+            "generated": dt.datetime.now().astimezone().isoformat(timespec="seconds"),
+            "findings": [
+                {"categorie": "verification-manquante", "cible": "ppt-designer", "priorite": 3,
+                 "titre": "ppt-designer rend une slide mal composee",
+                 "recommandation": "rendu zoome par nouveau type de slide"},
+                {"categorie": "inefficacite", "cible": "ppt-designer", "priorite": 2,
+                 "titre": "ppt-designer sur-instancie"},
+            ],
+        }),
+        encoding="utf-8",
+    )
+    # Arbitrage de ROUTAGE : ne couvre que les catégories routage/vie-de-l'agent.
+    (tmp_path / "arbitrages.json").write_text(json.dumps({"arbitrages": [
+        {"cible": "ppt-designer", "decision": "active voie unique deck", "date": "2026-07-21",
+         "categories": ["agent-mort", "inefficacite", "ko-repete"]},
+    ]}, ensure_ascii=False), encoding="utf-8")
+    _run(tmp_path)
+    page = (tmp_path / "page.md").read_text(encoding="utf-8")
+    # Le constat de vérification remonte (catégorie non couverte)…
+    assert "ppt-designer rend une slide mal composee" in page
+    # …mais le constat d'inefficacité (catégorie couverte) est fermé.
+    assert "ppt-designer sur-instancie" not in page
+    hints = json.loads((tmp_path / "routing-hints.json").read_text(encoding="utf-8"))
+    assert hints["prudence"] == []  # inefficacite arbitrée → hors routage ; verif jamais en prudence
+
+    # Sans le champ `categories` : l'arbitrage ferme les DEUX constats (comportement historique).
+    (tmp_path / "arbitrages.json").write_text(json.dumps({"arbitrages": [
+        {"cible": "ppt-designer", "decision": "active voie unique deck", "date": "2026-07-21"},
+    ]}, ensure_ascii=False), encoding="utf-8")
+    _run(tmp_path)
+    page = (tmp_path / "page.md").read_text(encoding="utf-8")
+    assert "ppt-designer rend une slide mal composee" not in page
+    assert "ppt-designer sur-instancie" not in page
+
+
 # --- Étage 2 : écriture validée du diagnostic (write_diagnostic.py) ---
 
 

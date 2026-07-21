@@ -226,7 +226,9 @@ def load_jsonl(path: str) -> list:
 
 def load_arbitrages() -> list:
     """Décisions humaines closant des constats automatiques (fichier versionné, jamais écrit ici).
-    Chaque entrée : {cible, decision, date, source} — cible = nom de skill ou famille:<Nom>."""
+    Chaque entrée : {cible, decision, date, source, categories?} — cible = nom de skill ou
+    famille:<Nom> ; `categories` (optionnel) restreint les catégories de constats fermées
+    par cet arbitrage (défaut : toutes, cf. finding_arbitre)."""
     try:
         with open(ARBITRAGES_PATH, encoding="utf-8") as fh:
             entries = json.load(fh).get("arbitrages", [])
@@ -257,16 +259,35 @@ def diagnostic_a_jour(diagnostic, runs: list = None) -> bool:
     return non_couverts < DIAGNOSTIC_STALE_RUNS
 
 
+def finding_arbitre(finding: dict, arbitrages: list = None) -> bool:
+    """Vrai si un arbitrage ferme ce constat : même `cible` ET catégorie couverte.
+
+    Un arbitrage sans champ `categories` couvre toutes les catégories (rétro-compatible :
+    comportement historique). Un arbitrage `categories: [...]` ne ferme QUE ces catégories
+    — ainsi un arbitrage de *routage* (ex. « agent activé ») cesse de masquer un constat de
+    *vérification/qualité* sur la même cible (friction cible-suppression, 2026-07-21)."""
+    cible = finding.get("cible")
+    if not cible:
+        return False
+    cat = finding.get("categorie")
+    for a in arbitrages or []:
+        if a.get("cible") != cible:
+            continue
+        cats = a.get("categories")
+        if not cats or cat in cats:
+            return True
+    return False
+
+
 def diagnostic_todos(diagnostic, arbitrages: list = None) -> list:
     """Top constats qualitatifs (étage 2), triés par priorité, pour fusion dans le TODO wiki.
 
-    Un constat dont la `cible` a été arbitrée (`arbitrages.json`) est exclu — même
-    contrat que `build_todos()` pour les constats déterministes : une décision humaine
-    ferme le TODO affiché, sans effacer la mesure réelle ni le diagnostic lui-même."""
+    Un constat fermé par un arbitrage (`finding_arbitre` : même cible ET catégorie couverte)
+    est exclu — même contrat que `build_todos()` pour les constats déterministes : une
+    décision humaine ferme le TODO affiché, sans effacer la mesure réelle ni le diagnostic."""
     if not diagnostic:
         return []
-    arbitres = {a["cible"] for a in arbitrages or []}
-    findings = [f for f in (diagnostic.get("findings", []) or []) if f.get("cible") not in arbitres]
+    findings = [f for f in (diagnostic.get("findings", []) or []) if not finding_arbitre(f, arbitrages)]
     findings.sort(key=lambda f: -(f.get("priorite") or 0))
     out = []
     for f in findings[:5]:
@@ -374,13 +395,12 @@ def build_routing_hints(state: dict, fam: dict, par_playbook: dict, par_agent: d
             "revue-increment jamais invoquee malgre le rappel SessionStart -> l'inserer d'office en etape terminale des plans de dev"
         )
     prudence = []
-    arbitres = {a["cible"] for a in arbitrages or []}
     if diagnostic:
         for f in diagnostic.get("findings", []) or []:
             if (
                 f.get("categorie") in ("ko-repete", "inefficacite")
                 and f.get("cible")
-                and f["cible"] not in arbitres  # un constat arbitré ne pèse plus sur le routage
+                and not finding_arbitre(f, arbitrages)  # arbitrage couvrant la catégorie -> ne pèse plus sur le routage
             ):
                 prudence.append({"cible": f["cible"], "raison": (f.get("titre") or "").strip()})
     # Incrément C — prudence déterministe : échecs répétés dans le journal d'orchestration,
