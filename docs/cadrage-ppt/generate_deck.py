@@ -3,11 +3,20 @@
 PAR-DESSUS le vrai template de marque OCTO (template-octo.pptx) —
 masters/layouts/thème conservés, pas un deck sur canevas vierge.
 
-Volontairement limité aux résultats du cadrage (mission, doctrine,
-méthode, maturité, ambition, KPIs, schéma de fonctionnement) — pas au
-travail de mise en œuvre de ce cadrage (architecture des 11 agents BMAD,
-roadmap MVP, points ouverts), qui relève d'un support interne, pas
-d'une synthèse exécutive.
+Centré sur les résultats du cadrage (mission, doctrine, méthode, maturité,
+ambition, KPIs, schéma de fonctionnement) plutôt que sur tout le détail de
+mise en œuvre. Le commit 4f0c9b7 avait retiré ce détail d'implémentation ;
+l'arbitrage utilisateur du 2026-07-21 rouvre ce périmètre sur DEUX points
+précis seulement, désormais dans le deck :
+  - l'architecture des 11 agents-workflows (slide_architecture_agents,
+    inventaire des composants — complémentaire du schéma de flux, pas un
+    doublon) ;
+  - l'étude des personas / product discovery (slide_personas, réouverture de
+    la discovery fusionnée en MVP1, §Décision de cadrage ligne 236).
+Restent hors périmètre (toujours du support interne, pas une synthèse
+exécutive) : le schéma des workflows détaillé, la roadmap MVP et les points
+ouverts — les trois autres slides retirées au même commit ne sont PAS
+réintroduites.
 
 Usage : python generate_deck.py
 Sortie : bmad-iap-cadrage-synthese.pptx (à côté de ce script).
@@ -464,6 +473,71 @@ def slide_maturite(prs):
         D.add_text(s, tx, y, tw, row_h, [
             (nom, dict(size=D.TYPE["tiny"], bold=coeur, color=NAVY, line_spacing=1.1)),
             (badge, dict(size=8, color=(color if coeur else MUTED), space_before=1)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+    return s
+
+
+# --- Nouveau (réouverture de périmètre, arbitrage 2026-07-21) : la Product
+# Discovery (personas/parcours/pain points), délibérément fusionnée dans
+# iap-product-definition pour MVP1 (§Décision de cadrage, ligne 236), est
+# rouverte ici en une slide dédiée. Quatre parties prenantes de la couverture
+# d'interview (§Synthesis, "répartition par persona : infra/utilisateur/
+# management/sponsor", ligne 457) — chacune sa voix, sa question directrice
+# (reprise des questions des §Agents), son irritant, son attente. Placée en
+# fin de chapitre Cadrage : on sait qui l'on transforme avant d'attaquer les
+# candidats d'automatisation (slides agent IA) et la méthode (chapitre Méthode).
+def slide_personas(prs):
+    s = content_slide(prs, "Cadrage",
+                       "Chaque persona est interrogé séparément, pour ne pas lisser un faux consensus",
+                       color=D.PALETTE[0])
+    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.55, [
+        ("La Product Discovery (personas, parcours, pain points) reste fusionnée dans "
+         "iap-product-definition en MVP1 — mais chaque partie prenante répond à la même trame, "
+         "pour révéler convergences ET divergences plutôt qu'un diagnostic monolithique.",
+         dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
+    ])
+
+    personas = [
+        ("Infra & RUN", "« Opérable sans sacrifier le delivery ? »", D.PALETTE[0],
+         "Incidents récurrents et astreintes : les experts seniors passent leur temps sur du répétitif.",
+         "Récupérer de la capacité et sortir du RUN subi."),
+        ("Utilisateur applicatif", "« Pourquoi adopterais-je la plateforme ? »", D.PALETTE[5],
+         "Ni self-service ni parcours conçu : tout passe par un guichet, le contournement va plus vite.",
+         "Une plateforme adoptée par choix : self-service, onboarding, valeur perçue."),
+        ("Management", "« Comment piloter avec un signal fiable ? »", D.PALETTE[3],
+         "« Expert devenu manager malgré lui » : reporting miroir et micromanagement, faute de signal fiable.",
+         "Un signal de confiance (métriques de flux), pas plus de contrôle."),
+        ("Sponsor", "« Quel problème business règle-t-on ? »", D.PALETTE[4],
+         "Craint une transformation cosmétique : beaucoup d'activité, peu de valeur démontrée.",
+         "Un problème business réglé, une trajectoire lisible, des KPIs de mission."),
+    ]
+    top0 = CONTENT_TOP + 0.6
+    n = len(personas)
+    row_gap = 0.12
+    row_h = (CONTENT_BOTTOM - top0 - (n - 1) * row_gap) / n
+    name_w = 2.05
+    col_gap = 0.2
+    x_name = MARGIN + 0.2
+    x_pain = x_name + name_w + col_gap
+    txt_total = (MARGIN + CONTENT_W) - x_pain - 0.15
+    colw = (txt_total - col_gap) / 2
+    x_attend = x_pain + colw + col_gap
+    for i, (nom, question, color, pain, attend) in enumerate(personas):
+        y = top0 + i * (row_h + row_gap)
+        D.add_rect(s, MARGIN, y, CONTENT_W, row_h, fill="#ffffff", line=LINE, line_w=0.75,
+                   rounded=True, radius=0.08)
+        D.add_rect(s, MARGIN, y, 0.06, row_h, fill=color, rounded=True, radius=0.5)
+        D.add_text(s, x_name, y + 0.1, name_w, row_h - 0.2, [
+            (nom, dict(size=D.TYPE["tiny"], bold=True, color=color, line_spacing=1.05)),
+            (question, dict(size=7, color=MUTED, italic=True, space_before=3, line_spacing=1.1)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+        D.add_text(s, x_pain, y + 0.1, colw, row_h - 0.2, [
+            ("IRRITANT", dict(size=7, bold=True, color=MUTED)),
+            (pain, dict(size=8, color=NAVY, space_before=3, line_spacing=1.2)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+        D.add_text(s, x_attend, y + 0.1, colw, row_h - 0.2, [
+            ("ATTENTE", dict(size=7, bold=True, color=MUTED)),
+            (attend, dict(size=8, color=NAVY, space_before=3, line_spacing=1.2)),
         ], anchor=MSO_ANCHOR.MIDDLE)
     return s
 
@@ -1495,17 +1569,112 @@ def slide_architecture_si(prs):
     return s
 
 
+# --- Nouveau (réouverture de périmètre, arbitrage 2026-07-21) : l'architecture
+# des 11 agents-workflows (§Workflows, ligne 587+), délibérément retirée du deck
+# au commit 4f0c9b7, est rouverte sur ce seul point. COMPLÉMENTAIRE de
+# slide_schema_fonctionnement (le FLUX de données Collecte→Diagnostic→Conception
+# →Restitution, avec flèches) : ici c'est l'INVENTAIRE des composants — les 11
+# agents nommés, regroupés par étape en cartes (pas de flèches), le gate
+# confidentialité posé comme un socle transversal et bloquant. Couleurs des
+# familles reprises de slide_schema_fonctionnement (Diagnostic=violet,
+# Conception=or, etc.) — cohérence inter-slides voulue, pas un hasard. Ouvre le
+# chapitre Trajectoire : on présente les composants avant leur mise en œuvre.
+def slide_architecture_agents(prs):
+    s = content_slide(prs, "Trajectoire",
+                       "Onze agents spécialisés, un seul bloquant : le gate confidentialité les traverse tous",
+                       color=D.PALETTE[3])
+    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.5, [
+        ("Un mandat unique par agent, regroupés par étape. Le gate confidentialité est le seul "
+         "à pouvoir arrêter la chaîne — transversal, il précède tout usage d'un modèle IA sur "
+         "donnée client.", dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
+    ])
+
+    familles = [
+        ("INTAKE", D.PALETTE[0], [
+            ("iap-intake",
+             "Qualifie le contexte client, le positionne sur les deux échelles de maturité, "
+             "puis choisit le chemin de mission : diagnostic, pilote, adoption ou gate d'abord."),
+        ]),
+        ("DIAGNOSTIC", D.PALETTE[4], [
+            ("iap-diagnostic-systemique", "Structure, flux, RUN, posture management"),
+            ("iap-discovery-gaspillage", "Preuves, causes racines, options de traitement"),
+        ]),
+        ("CONCEPTION", D.PALETTE[3], [
+            ("iap-waste-treatment", "Backlog priorisé et scoré des gaspillages"),
+            ("iap-product-definition", "Personas, capacités, valeur, roadmap"),
+            ("iap-operating-model", "Rôles, gouvernance, financement (ADR)"),
+            ("iap-agentic-opportunities", "Le gaspillage d'abord, l'IA ensuite"),
+        ]),
+        ("ADOPTION & RESTITUTION", D.PALETTE[1], [
+            ("iap-adoption-plan", "Onboarding, documentation, communautés"),
+            ("iap-scenario-playbook", "Adapte la démarche au scénario client"),
+            ("iap-deck-builder", "Deck modulaire, restitution exécutive"),
+        ]),
+    ]
+    n = len(familles)
+    # Slot d'agent de hauteur FIXE (partagée par toutes les cartes, cadence sur
+    # la famille la plus fournie) et entrées alignées EN HAUT : sans cela, une
+    # carte à 1-2 agents centrait son contenu et laissait un grand trou sous
+    # l'en-tête (cf. rendu réel), tandis que la carte à 4 remplissait — lecture
+    # « déséquilibrée ». À cadence fixe, chaque agent occupe la même hauteur et
+    # s'empile sous l'en-tête ; l'espace restant tombe proprement en bas.
+    max_agents = max(len(a) for _, _, a in familles)
+    top0 = CONTENT_TOP + 0.6
+    gate_h = 0.6
+    note_h = 0.36
+    card_h = CONTENT_BOTTOM - top0 - 0.15 - gate_h - 0.12 - note_h
+    for i, (nom, color, agents) in enumerate(familles):
+        x, w = col_x(i, n)
+        D.add_card(s, x, top0, w, card_h, color)
+        pad = 0.14
+        D.add_text(s, x + pad, top0 + 0.12, w - 2 * pad, 0.36, [
+            (nom, dict(size=8, bold=True, color=color, line_spacing=1.0)),
+            (f"{len(agents)} agent" + ("s" if len(agents) > 1 else ""),
+             dict(size=6.5, color=MUTED, space_before=1)),
+        ])
+        region_top = top0 + 0.52
+        region_h = card_h - 0.52 - 0.08
+        slot = region_h / max_agents
+        for j, (agent, role) in enumerate(agents):
+            ay = region_top + j * slot
+            D.add_text(s, x + pad, ay, w - 2 * pad, slot, [
+                (agent, dict(size=7, bold=True, color=NAVY, line_spacing=1.0)),
+                (role, dict(size=6.5, color=MUTED, space_before=2, line_spacing=1.1)),
+            ], anchor=MSO_ANCHOR.TOP)
+
+    gate_top = top0 + card_h + 0.15
+    D.add_rect(s, MARGIN, gate_top, CONTENT_W, gate_h, fill=NAVY, rounded=True, radius=0.1)
+    chip_w = 1.15
+    chip(s, MARGIN + 0.16, gate_top + gate_h / 2 - 0.14, chip_w, 0.28, "BLOQUANT", SEVERITE[4], size=7)
+    D.add_text(s, MARGIN + 0.16 + chip_w + 0.2, gate_top + 0.1, CONTENT_W - chip_w - 0.55, gate_h - 0.2, [
+        ("iap-ai-data-confidentiality-gate", dict(size=8, bold=True, color="#ffffff")),
+        ("Classe les données (D0-D4), décide le mode d'exécution IA et pose les garde-fous — "
+         "transversal, avant tout usage d'un modèle IA sur donnée client.",
+         dict(size=7.5, color="#c7cbe0", space_before=2, line_spacing=1.15)),
+    ], anchor=MSO_ANCHOR.MIDDLE)
+
+    note_top = gate_top + gate_h + 0.12
+    note_h_real = min(note_h, CONTENT_BOTTOM - note_top)
+    D.add_text(s, MARGIN, note_top, CONTENT_W, note_h_real, [
+        ("Onze mandats distincts, un seul peut arrêter la chaîne — tous les autres proposent et "
+         "produisent, la décision finale reste humaine.",
+         dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
+    ])
+    return s
+
+
 def build():
     prs = new_prs()
     slide_cover(prs)
     slide_executive_summary(prs)
     slide_vision_ia(prs)
 
-    slide_chapitre(prs, "01", "Cadrage", "Mission, doctrine, gate IA, modèles de maturité",
+    slide_chapitre(prs, "01", "Cadrage", "Mission, doctrine, gate IA, maturité, personas",
                    D.PALETTE[0], "mountains")
     slide_mission(prs)
     slide_gate_ia(prs)
     slide_maturite(prs)
+    slide_personas(prs)
     slide_agent_ia(
         prs, "Un agent de triage peut absorber le gaspillage RUN le plus répétitif",
         "Agent de triage de tickets", "RUN",
@@ -1550,8 +1719,9 @@ def build():
     slide_exemple_recommandation(prs)
     slide_team_topologies(prs)
 
-    slide_chapitre(prs, "03", "Trajectoire", "Mise en œuvre, livrables par étape, ambition, KPIs",
+    slide_chapitre(prs, "03", "Trajectoire", "Architecture des agents, mise en œuvre, livrables, ambition, KPIs",
                    D.PALETTE[3], "ocean", seed=1)
+    slide_architecture_agents(prs)
     slide_schema_fonctionnement(prs)
     slide_trajectoire(prs)
     slide_schema_bout_en_bout(prs)
