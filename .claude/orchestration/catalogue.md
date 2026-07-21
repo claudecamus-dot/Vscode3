@@ -79,7 +79,7 @@ garde la main par cible exacte). Routage par catégorie :
 | **A — câblées** | 13 (table ci-dessous) | **routables par nom**, voie de première intention pour leurs workflows |
 | **B — sous-skill / angle mort** | 5 : `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-advanced-elicitation`, `bmad-party-mode`, `bmad-spec` | invoquées en langage naturel par une skill câblée — **ne jamais qualifier `agent-mort`** (0 trace ≠ 0 usage) |
 | **C — sur demande** | 16 : 6 personas `bmad-agent-*` + réserve produit/édition | uniquement sur demande explicite, via `bmad-help` |
-| **D — candidat-retrait** | 8 : `bmad-dev-auto`, `bmad-quick-dev`, `bmad-qa-generate-e2e-tests`, `bmad-market-research`, `bmad-domain-research`, `bmad-prfaq`, `bmad-index-docs`, `bmad-shard-doc` | **non décidé** — arbitrage `retrait` individuel à trancher au cas par cas |
+| **D — arbitrée 2026-07-21** | **6 retrait** : `bmad-dev-auto`, `bmad-quick-dev`, `bmad-qa-generate-e2e-tests`, `bmad-market-research`, `bmad-domain-research`, `bmad-prfaq` · **2 dormantes** : `bmad-index-docs`, `bmad-shard-doc` | retrait = arbitrage **documenté** (pas de `rm` physique, geste humain séparé) ; dormantes conservées malgré 0 usage |
 | **E — deprecated v7** | 4 : `bmad-create-architecture`, `bmad-create-prd`, `bmad-edit-prd`, `bmad-validate-prd` | retirées par l'updater BMAD en v7 — **jamais à la main** |
 
 **Catégorie A — BMAD câblées (reliées à l'orchestrateur, voie de première intention) :**

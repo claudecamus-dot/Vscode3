@@ -185,7 +185,9 @@ l'orchestrateur applique) :
   `Plan` : les 46 `bmad-*` classées A câblées (13, reliées à l'orchestrateur dans le
   catalogue) / B sous-skill-angle-mort (5, ne jamais qualifier `agent-mort`) / C sur-demande
   (16) / D candidat-retrait (8, **non décidé** — arbitrage individuel à trancher) / E
-  deprecated-v7 (4, purge par l'updater BMAD). Le jeton **`famille:BMAD`** d'`arbitrages.json`
+  deprecated-v7 (4, purge par l'updater BMAD). D **arbitrée** (2026-07-21) : 6 retrait
+  (`bmad-dev-auto`/`quick-dev`/`qa-generate-e2e-tests`/`market-research`/`domain-research`/`prfaq`
+  — arbitrage documenté, **pas** de `rm`) + 2 dormantes (`bmad-index-docs`/`shard-doc`). Le jeton **`famille:BMAD`** d'`arbitrages.json`
   (seul reconnu par `build_todos`) ferme le TODO d'élagage ; les 46 restent mesurées. Ne pas
   éditer `cycle-produit-bmad.md` à la main (généré) ni `rm _bmad/`.
 - Pas d'`.opencode/` (OpenHub) sur ce dépôt — la couverture correspondante de
