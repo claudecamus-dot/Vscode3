@@ -91,7 +91,7 @@ contenu, visuel). Les deux partagent l'obligation de rendu réel et la terminais
       "modele": "(session)",
       "contrat": {
         "type": "reel",
-        "critere": "export réel rendu en images (LibreOffice/COM) et inspecté visuellement (valeurs alignées, panneaux ni vides ni étirés, pas de collision avec le chrome du template) — jamais retirée à l'instanciation, quelle que soit la taille du changement"
+        "critere": "export réel rendu en images (LibreOffice/COM) et inspecté visuellement, avec un rendu ZOOMÉ sur chaque NOUVEAU type de slide (valeurs alignées, panneaux ni vides ni sur-étirés, ni contenu centré par slot laissant un grand vide sous l'en-tête — défaut « panneau flottant/étiré » récurrent, invisible au self-check géométrique, cf. constat superviseur 2026-07-21 / commit a8b264a, pas de collision avec le chrome du template) — jamais retirée à l'instanciation, quelle que soit la taille du changement"
       },
       "checkpoint": false
     },

@@ -9,16 +9,16 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 > Conception et phasage : [../../reflexions/agent-superviseur.md](../../reflexions/agent-superviseur.md).
 
-Dernier scan : 2026-07-21T14:46:17+02:00 · **8 sessions** (transcripts) · **10** invocations de skills · **26** lancements de sous-agents.
+Dernier scan : 2026-07-21T15:17:38+02:00 · **9 sessions** (transcripts) · **11** invocations de skills · **26** lancements de sous-agents.
 
 ## Skills — usage réel
 
 | Skill | Famille | Invocations | Première | Dernière |
 | --- | --- | --- | --- | --- |
+| `agent-supervisor` | projet | 2 | 2026-07-21 | 2026-07-21 |
 | `artifact-design` | (builtin/session) | 2 | 2026-07-06 | 2026-07-07 |
 | `pptx-deck` | global | 2 | 2026-07-08 | 2026-07-09 |
 | `agent-orchestrator` | projet | 1 | 2026-07-21 | 2026-07-21 |
-| `agent-supervisor` | projet | 1 | 2026-07-21 | 2026-07-21 |
 | `pptx-verify` | global | 1 | 2026-07-08 | 2026-07-08 |
 | `restitution-deck-design` | global | 1 | 2026-07-08 | 2026-07-08 |
 | `revue-increment` | projet | 1 | 2026-07-21 | 2026-07-21 |
@@ -71,13 +71,12 @@ _Constats clos par décision humaine (`.claude/supervision/arbitrages.json`) —
 - **`bmad-prfaq`** (2026-07-21) : retrait (catégorie D) — challenge PRFAQ/Working-Backwards produit, hors mission cadrage/deck. Arbitrage documenté, pas de suppression physique unilatérale.
 - **`bmad-index-docs`** (2026-07-21) : conserver dormante (catégorie D) — utilitaire d'indexation de docs, inoffensif et bon marché ; gardé malgré 0 usage (bruit faible, option conservée). Pas retiré.
 - **`bmad-shard-doc`** (2026-07-21) : conserver dormante (catégorie D) — utilitaire de découpe de gros markdown, inoffensif ; gardé malgré 0 usage (bruit faible). Pas retiré.
+- **`export-ppt-verifie`** (2026-07-21) : Proposition superviseur (diagnostic 2026-07-21, constat prio 3) ACCEPTÉE et APPLIQUÉE : la vérification par rendu réel nomme désormais le défaut « panneau flottant/étiré » comme contrôle explicite par NOUVEAU type de slide (contenu centré par slot laissant un vide sous l'en-tête, ou panneau sur-étiré). Amendés : brief .claude/agents/ppt-designer.md (étape 4 real render) + contrat de l'étape verification-rendu du playbook export-ppt-verifie. Constat clos.
+- **`docs/wiki.html`** (2026-07-21) : Proposition superviseur (diagnostic 2026-07-21, constat prio 1) ACCEPTÉE et APPLIQUÉE : marqueurs TODO-AGENTS-HTML posés dans docs/wiki.html (+ entrée TOC #agents-supervision), option « compléter le câblage » retenue plutôt que retirer le chemin HTML du scan. Le scan peuple désormais le dashboard HTML (plus d'avertissement « sans marqueurs »). Constat clos.
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 
-_Diagnostic ⚠️ à relancer (> 14 j)._
-
-1. **revue-increment jamais invoquee en 7 sessions, y compris avant des commits de code produit** — Executer l'etape terminale revue-increment (checkpoint commit) des playbooks dev-verifie / export-ppt-verifie au prochain commit, au lieu de committer directement. · **Proposition** : Etape revue-increment deja cablee comme terminale non-conditionnelle dans dev-verifie et export-ppt-verifie (checkpoint non-false) : aucune modif de skill necessaire — il reste a l'executer avant le prochain commit plutot qu'a le court-circuiter via un 'commit' direct.
-2. **general-purpose est le seul type de sous-agent jamais lance (x21), zero Explore / zero Plan** — Router les recherches / inventaires / lectures en lecture seule vers Explore (haiku), la conception de plan vers Plan (opus), et reserver general-purpose (sonnet) aux taches multi-etapes reellement deleguees. · **Proposition** : Au prochain besoin d'exploration read-only, instancier Explore (modele haiku) au lieu de general-purpose ; le prochain diagnostic croisera modele x tache x reprises pour confirmer le gain. Caveat mesure : les 21 lancements sont anterieurs au 2026-07-08 (avant l'orchestrateur) — a re-mesurer une fois quelques runs journalises dans runs.jsonl.
+_Diagnostic à jour — rien à signaler, tous les constats précédents ont été arbitrés._
 
 ---
 

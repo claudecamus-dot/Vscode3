@@ -71,6 +71,18 @@
    "decision": "conserver dormante (catégorie D) — utilitaire de découpe de gros markdown, inoffensif ; gardé malgré 0 usage (bruit faible). Pas retiré.",
    "date": "2026-07-21",
    "source": "arbitrage utilisateur catégorie D 2026-07-21 (choix « retrait 6, dormantes 2 »)"
+  },
+  {
+   "cible": "export-ppt-verifie",
+   "decision": "Proposition superviseur (diagnostic 2026-07-21, constat prio 3) ACCEPTÉE et APPLIQUÉE : la vérification par rendu réel nomme désormais le défaut « panneau flottant/étiré » comme contrôle explicite par NOUVEAU type de slide (contenu centré par slot laissant un vide sous l'en-tête, ou panneau sur-étiré). Amendés : brief .claude/agents/ppt-designer.md (étape 4 real render) + contrat de l'étape verification-rendu du playbook export-ppt-verifie. Constat clos.",
+   "date": "2026-07-21",
+   "source": "arbitrage utilisateur « lance les 2 actions et commit » 2026-07-21 (application des propositions du diagnostic agent-supervisor)"
+  },
+  {
+   "cible": "docs/wiki.html",
+   "decision": "Proposition superviseur (diagnostic 2026-07-21, constat prio 1) ACCEPTÉE et APPLIQUÉE : marqueurs TODO-AGENTS-HTML posés dans docs/wiki.html (+ entrée TOC #agents-supervision), option « compléter le câblage » retenue plutôt que retirer le chemin HTML du scan. Le scan peuple désormais le dashboard HTML (plus d'avertissement « sans marqueurs »). Constat clos.",
+   "date": "2026-07-21",
+   "source": "arbitrage utilisateur « lance les 2 actions et commit » 2026-07-21 (application des propositions du diagnostic agent-supervisor)"
   }
  ]
 }

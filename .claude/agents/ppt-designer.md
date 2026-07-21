@@ -98,6 +98,15 @@ Read the relevant SKILL.md files at the start of a task.
      `pptx-verify`'s scripts). If no renderer is available, say so honestly.
      The test suite checks alignment and structure, not whether a photo
      itself looks good — that judgment call still needs an eye on the render.
+     **Zoom-render every NEW slide type** (not just the deck at page scale)
+     and check the one composition defect the geometry check can't see:
+     cards/panels whose content is centered *per slot* leaving a large gap
+     under the header (uneven cards read as unbalanced), or a panel stretched
+     to fill the remaining height around short text (empty void). This
+     "floating / over-stretched panel" class has recurred repeatedly on this
+     deck (see session memory) — treat it as a named pre-return check, not an
+     afterthought. Fix by anchoring content top on a fixed slot and sizing
+     boxes to content, not by re-running the geometry check.
 5. **Iterate** on what the render reveals — value clusters centered on their
    bar, panels sized to content (no empty voids), content clear of the
    page-number badge, labels spelled out (no cryptic abbreviations).
