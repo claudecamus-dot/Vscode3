@@ -1,4 +1,4 @@
-"""Génère une synthèse PPT (29 slides) des RÉSULTATS du cadrage BMAD IAP
+"""Génère une synthèse PPT (32 slides) des RÉSULTATS du cadrage BMAD IAP
 (docs/bmad-iap-cadrage.md) à partir des helpers pptx_deck, dessinée
 PAR-DESSUS le vrai template de marque OCTO (template-octo.pptx) —
 masters/layouts/thème conservés, pas un deck sur canevas vierge.
@@ -170,7 +170,13 @@ def _find_frame_in_group(shapes, group_name, inner_name):
 _REQUETES_PHOTO = {
     "mountains": "mountains landscape",
     "forest": "green forest sunlight",
-    "ocean": "ocean waves aerial",
+    # Littoral rocheux turquoise (chapitre 03) : « ocean waves aerial » (horizon
+    # brumeux délavé en blanc) puis « turquoise sea water aerial » (0 résultat
+    # Openverse -> repli procédural à ciel pâle) échouaient tous deux à ancrer le
+    # haut du cadre teardrop sur le fond blanc de la slide. « turquoise water »
+    # (seed 0) renvoie une vue plongeante roche+eau+écume, texturée et contrastée
+    # sur les quatre bords — VÉRIFIÉE au rendu réel le 2026-07-21.
+    "ocean": "turquoise water",
     "sunset": "sunset sky",
 }
 
@@ -272,6 +278,45 @@ def chip(slide, x, y, w, h, label, color, text_color="#ffffff", size=D.TYPE["tin
                 align=PP_ALIGN.CENTER))], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
 
 
+# Le glyphe "⟲" (U+27F2) n'a pas de variante GRASSE dans la police du template
+# (rendu LibreOffice = case vide/tofu dans un run bold) alors que sa variante
+# normale s'affiche — même correctif que slide_trajectoire/slide_schema_*
+# /slide_livrables_ppt : forcer bold=False pour ce SEUL caractère. Voir
+# CLAUDE.md §docs/cadrage-ppt.
+_GLYPHES_SANS_GRAS = ("⟲",)
+
+
+def _header_cell(slide, x, y, w, h, label, size=7, color=MUTED, bold=True,
+                 anchor=MSO_ANCHOR.TOP):
+    """En-tête de colonne en un seul paragraphe multi-runs : chaque caractère de
+    `_GLYPHES_SANS_GRAS` est posé en bold=False même si le libellé est en gras,
+    pour éviter le tofu du "⟲" en fonte grasse (cf. _GLYPHES_SANS_GRAS)."""
+    import re as _re
+    box = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
+    tf = box.text_frame
+    tf.word_wrap = True
+    tf.vertical_anchor = anchor
+    for m in ("margin_left", "margin_right", "margin_top", "margin_bottom"):
+        setattr(tf, m, 0)
+    p = tf.paragraphs[0]
+    motif = "(" + "|".join(_re.escape(g) for g in _GLYPHES_SANS_GRAS) + ")"
+    for part in _re.split(motif, label):
+        if not part:
+            continue
+        r = p.add_run()
+        r.text = part
+        r.font.size = Pt(size)
+        r.font.bold = bool(bold) and part not in _GLYPHES_SANS_GRAS
+        r.font.color.rgb = _rgb(color)
+    return box
+
+
+def _lignes(texte, largeur_in, taille_pt):
+    """Nombre de lignes estimé pour `texte` (helper de dimensionnement des
+    panneaux à la hauteur de leur contenu — cf. « panneau sur-étiré »)."""
+    return max(1, D.estimer_lignes(texte, largeur_in, taille_pt))
+
+
 # ---------------------------------------------------------------- slide 1
 def slide_cover(prs):
     layout = prs.slide_masters[0].slide_layouts[LAYOUT_COUVERTURE]
@@ -328,17 +373,28 @@ def slide_executive_summary(prs):
          "pas une limite technique subie, mesuré par 3 familles de KPIs distinctes."),
     ]
     n = len(items)
-    top0 = CONTENT_TOP + headline_h + 0.3
-    card_h = CONTENT_BOTTOM - top0
+    pad = 0.18
+    _, cw = col_x(0, n)
+    usable = cw - 2 * pad
+    desc_size = 8
+    line_h = desc_size * 1.3 / 72.0
+    # Hauteur de carte PLAFONNÉE au contenu (max de descriptions) au lieu de
+    # CONTENT_BOTTOM - top0 : sinon la carte s'étire et laisse un grand vide
+    # sous le texte (défaut « panneau sur-étiré », cf. brief ppt-designer).
+    desc_lines = max(_lignes(desc, usable, desc_size) for _, _, desc in items)
+    card_h = 0.65 + desc_lines * line_h + 0.22
+    region_top = CONTENT_TOP + headline_h + 0.3
+    # bande de cartes plaquée sous le chapeau, gap plafonné pour ne pas creuser
+    # un vide sous le chapeau ; le reste tombe en marge basse propre.
+    top0 = region_top + min(0.35, max(0.0, (CONTENT_BOTTOM - region_top - card_h) / 2))
     for i, (titre, color, desc) in enumerate(items):
         x, w = col_x(i, n)
         D.add_card(s, x, top0, w, card_h, color)
-        pad = 0.18
         D.add_text(s, x + pad, top0 + 0.18, w - 2 * pad, 0.4, [
             (titre, dict(size=D.TYPE["h3"], bold=True, color=color)),
         ])
-        D.add_text(s, x + pad, top0 + 0.65, w - 2 * pad, card_h - 0.85, [
-            (desc, dict(size=8, color=NAVY, line_spacing=1.28)),
+        D.add_text(s, x + pad, top0 + 0.65, w - 2 * pad, card_h - 0.8, [
+            (desc, dict(size=desc_size, color=NAVY, line_spacing=1.28)),
         ])
     return s
 
@@ -542,6 +598,83 @@ def slide_personas(prs):
     return s
 
 
+# --- Nouveau (arbitrage cadrage validé) : corollaire direct de slide_personas.
+# Interviewer chaque partie prenante SÉPARÉMENT (§Synthesis) n'a de sens que si
+# l'on garde les divergences au lieu de les lisser en consensus — cette slide
+# les rend explicites. Réutilise les couleurs d'accent persona de
+# slide_personas (Infra=bleu, Utilisateur=teal, Management=or, Sponsor=violet)
+# et introduit le RSSI (porteur du gate) en rouge = criticité/blocage. Le
+# symbole de tension « ⟂ » du cadrage est rendu par le connecteur texte « en
+# tension avec » plutôt que par le glyphe (non garanti dans la fonte du
+# template, cf. _GLYPHES_SANS_GRAS) — même prudence que pour « ⟲ ». Rangées
+# dimensionnées à leur contenu (pas de panneau sur-étiré).
+def slide_personas_divergences(prs):
+    s = content_slide(prs, "Cadrage",
+                       "Interroger chaque persona séparément révèle des tensions "
+                       "qu'un diagnostic fusionné lisserait",
+                       color=D.PALETTE[0])
+    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.4, [
+        ("Interviewer séparément sert précisément à faire ressortir ces divergences, "
+         "pas à produire un consensus lissé.",
+         dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
+    ])
+
+    c_infra = D.PALETTE[0]   # Infra & RUN — bleu (comme slide_personas)
+    c_user = D.PALETTE[5]    # Utilisateur applicatif — teal
+    c_mgmt = D.PALETTE[3]    # Management — or
+    c_spon = D.PALETTE[4]    # Sponsor — violet
+    c_rssi = D.PALETTE[2]    # RSSI — rouge = porteur du gate, criticité/blocage
+    rows = [
+        (("Management", c_mgmt), ("Infra & RUN", c_infra), None,
+         "Le même métrique de flux, lu « signal de pilotage de confiance » d'un côté, "
+         "« surveillance » de l'autre."),
+        (("Sponsor", c_spon), ("Infra & RUN", c_infra), None,
+         "Horizon : valeur business rapide et visible d'un côté, soulagement durable et "
+         "structurel du RUN de l'autre."),
+        (("Utilisateur applicatif", c_user), ("Infra & RUN", c_infra), None,
+         "Self-service adopté par choix face à l'opérabilité sans sacrifier le delivery : "
+         "qui absorbe le coût du self-service ?"),
+        (("Sponsor", c_spon), ("RSSI", c_rssi), "ANGLE MORT",
+         "Vitesse de démonstration face au gate confidentialité, bloquant sur donnée client."),
+    ]
+    top0 = CONTENT_TOP + 0.55
+    n = len(rows)
+    note_reserve = 0.55
+    row_gap = 0.12
+    region_bot = CONTENT_BOTTOM - note_reserve
+    row_h = (region_bot - top0 - (n - 1) * row_gap) / n
+    name_w = 2.7
+    x_name = MARGIN + 0.2
+    x_fric = x_name + name_w + 0.25
+    fric_w = (MARGIN + CONTENT_W) - x_fric - 0.15
+    for i, ((nomA, colA), (nomB, colB), tag, friction) in enumerate(rows):
+        y = top0 + i * (row_h + row_gap)
+        D.add_rect(s, MARGIN, y, CONTENT_W, row_h, fill="#ffffff", line=LINE, line_w=0.75,
+                   rounded=True, radius=0.08)
+        # liseré scindé : moitié haute = couleur A, moitié basse = couleur B
+        D.add_rect(s, MARGIN, y, 0.06, row_h / 2, fill=colA, rounded=True, radius=0.5)
+        D.add_rect(s, MARGIN, y + row_h / 2, 0.06, row_h / 2, fill=colB, rounded=True, radius=0.5)
+        lignes = [
+            (nomA, dict(size=D.TYPE["tiny"], bold=True, color=colA, line_spacing=1.0)),
+            ("en tension avec", dict(size=7, italic=True, color=MUTED, space_before=3, space_after=3)),
+            (nomB, dict(size=D.TYPE["tiny"], bold=True, color=colB, line_spacing=1.0)),
+        ]
+        if tag:
+            lignes.append((tag, dict(size=6.5, bold=True, color=c_rssi, space_before=3)))
+        D.add_text(s, x_name, y + 0.08, name_w, row_h - 0.16, lignes, anchor=MSO_ANCHOR.MIDDLE)
+        D.add_text(s, x_fric, y + 0.08, fric_w, row_h - 0.16, [
+            (friction, dict(size=8, color=NAVY, line_spacing=1.2)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+
+    note_top = top0 + n * row_h + (n - 1) * row_gap + 0.15
+    D.add_text(s, MARGIN, note_top, CONTENT_W, CONTENT_BOTTOM - note_top, [
+        ("Angles morts, non interrogés à ce stade : le client métier consommateur des services, "
+         "le RSSI (porteur du gate), le junior / nouvel arrivant.",
+         dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
+    ])
+    return s
+
+
 # ---------------------------------------------------------------- slide 6
 def slide_gaspillages(prs):
     s = content_slide(prs, "Méthode", "Le gaspillage, traité comme un objet de transformation", color=D.PALETTE[1])
@@ -735,7 +868,7 @@ def slide_exemple_recommandation(prs):
     s = content_slide(prs, "Méthode",
                        "Une recommandation type : valeur/complexité chiffrées, backlog actionnable",
                        color=D.PALETTE[1])
-    top0 = CONTENT_TOP + 0.05
+    top0 = CONTENT_TOP + 0.2
     reco_h = 1.15
     D.add_card(s, MARGIN, top0, CONTENT_W, reco_h, D.PALETTE[1])
     pad = 0.2
@@ -749,8 +882,11 @@ def slide_exemple_recommandation(prs):
         D.add_text(s, gx, gauge_y, 1.3, 0.2, [(label, dict(size=7, bold=True, color=MUTED))])
         dot_scale(s, gx, gauge_y + 0.24, 5, score, color, d=0.12, gap=0.05)
 
-    us_top = top0 + reco_h + 0.18
-    us_h = min(2.2, CONTENT_BOTTOM - us_top)
+    # Carte US plafonnée au contenu (chip → titre → owner → critère collés),
+    # au lieu du min(2.2, …) qui laissait un vide sous le titre d'action et
+    # sous la carte (défaut « panneau sur-étiré », slide 17).
+    us_top = top0 + reco_h + 0.2
+    us_h = 1.78
     backlog = [
         ("Coach", D.PALETTE[3], "Rédiger le runbook de triage",
          "Consultant BMAD IAP", "Runbook validé par l'équipe RUN en atelier"),
@@ -762,14 +898,14 @@ def slide_exemple_recommandation(prs):
         D.add_card(s, x, us_top, w, us_h, color)
         p2 = 0.18
         chip(s, x + p2, us_top + 0.14, 1.0, 0.26, mode.upper(), color, size=7)
-        D.add_text(s, x + p2, us_top + 0.5, w - 2 * p2, 0.55, [
+        D.add_text(s, x + p2, us_top + 0.52, w - 2 * p2, 0.30, [
             (titre, dict(size=8, bold=True, color=NAVY, line_spacing=1.2)),
         ])
-        D.add_text(s, x + p2, us_top + 1.1, w - 2 * p2, 0.3, [
+        D.add_text(s, x + p2, us_top + 0.84, w - 2 * p2, 0.32, [
             ("OWNER", dict(size=7, bold=True, color=MUTED)),
             (owner, dict(size=8, color=NAVY, space_before=1)),
         ])
-        D.add_text(s, x + p2, us_top + 1.55, w - 2 * p2, min(0.6, us_h - 1.55), [
+        D.add_text(s, x + p2, us_top + 1.26, w - 2 * p2, us_h - 1.36, [
             ("CRITÈRE D'ACCEPTATION", dict(size=7, bold=True, color=MUTED)),
             (critere, dict(size=8, color=NAVY, space_before=1, line_spacing=1.2)),
         ])
@@ -976,8 +1112,17 @@ def slide_livrables_ppt(prs):
          "Deck de bilan / ré-évaluation", "(nouveau) Delta maturité T0→T+6-12, REX consolidé"),
     ]
     n = len(cols)
-    top0 = CONTENT_TOP + 0.5
-    card_h = CONTENT_BOTTOM - top0
+    pad = 0.16
+    _, wcol = col_x(0, n)
+    usable = wcol - 2 * pad
+    # Carte plafonnée au contenu (bloc badge/titre → séparateur → audience →
+    # LIVRABLES → contenu) au lieu de CONTENT_BOTTOM - top0 : sinon la colonne
+    # s'étirait sur toute la hauteur et laissait ~60 % de vide sous le texte
+    # (défaut « colonne timeline sur-étirée », slide 24).
+    contenu_lines = max(_lignes(c[5], usable, 7) for c in cols)
+    card_h = 1.56 + contenu_lines * (7 * 1.28 / 72.0) + 0.18
+    region_top = CONTENT_TOP + 0.5
+    top0 = region_top + min(0.45, max(0.0, (CONTENT_BOTTOM - region_top - card_h) / 2))
     badge_d = 0.34
     for i, (sym, titre, color, audience, deck, contenu) in enumerate(cols):
         x, w = col_x(i, n)
@@ -1202,19 +1347,27 @@ def slide_ambition(prs):
          "= MVP6, non engagé"),
     ]
     n = 3
-    card_h = 1.85
+    pad = 0.2
+    _, wcol = col_x(0, n)
+    usable = wcol - 2 * pad
+    # Légende roadmap collée SOUS le texte de rôle (au lieu d'un y fixe en bas
+    # de carte) et carte plafonnée à son contenu : supprime le « trou mort »
+    # entre le rôle et la légende, et le sur-étirement de la carte (slide 26).
+    role_lines = max(_lignes(niv[3], usable, 8) for niv in niveaux)
+    role_h = role_lines * (8 * 1.25 / 72.0) + 0.06
+    roadmap_y = 0.55 + role_h + 0.12
+    card_h = roadmap_y + 0.28 + 0.14
     top0 = CONTENT_TOP + 0.45
     for i, (code, titre, color, role, roadmap) in enumerate(niveaux):
         x, w = col_x(i, n)
         D.add_card(s, x, top0, w, card_h, color)
-        pad = 0.2
         D.add_text(s, x + pad, top0 + 0.15, w - 2 * pad, 0.35, [
             (f"{code} · {titre}", dict(size=D.TYPE["small"], bold=True, color=color)),
         ])
-        D.add_text(s, x + pad, top0 + 0.55, w - 2 * pad, 0.9, [
+        D.add_text(s, x + pad, top0 + 0.55, w - 2 * pad, role_h, [
             (role, dict(size=8, color=NAVY, line_spacing=1.25)),
         ])
-        D.add_text(s, x + pad, top0 + 1.5, w - 2 * pad, 0.3, [
+        D.add_text(s, x + pad, top0 + roadmap_y, w - 2 * pad, 0.3, [
             (roadmap, dict(size=8, bold=True, color=MUTED)),
         ])
 
@@ -1248,12 +1401,22 @@ def slide_kpis(prs):
           "Score de priorisation ≠ KPI de résultat"]),
     ]
     n = 3
-    card_h = CONTENT_H
-    top0 = CONTENT_TOP
+    pad = 0.18
+    _, wcol = col_x(0, n)
+    usable = wcol - 2 * pad
+    # Carte plafonnée au contenu (titre + sous-titre + puces) puis bande de
+    # cartes CENTRÉE verticalement — au lieu de card_h = CONTENT_H qui étirait
+    # chaque colonne sur toute la hauteur et laissait un grand vide sous les
+    # puces (défaut « panneau sur-étiré », slide 28).
+    def _bloc_puces(items):
+        lignes = sum(_lignes("·  " + it, usable, 8) for it in items)
+        return lignes * (8 * 1.15 / 72.0) + len(items) * (4 / 72.0)
+    bullets_h = max(_bloc_puces(items) for *_, items in familles)
+    card_h = 0.8 + bullets_h + 0.22
+    top0 = CONTENT_TOP + max(0.0, (CONTENT_H - card_h) / 2)
     for i, (titre, color, sous, items) in enumerate(familles):
         x, w = col_x(i, n)
         D.add_card(s, x, top0, w, card_h, color)
-        pad = 0.18
         D.add_text(s, x + pad, top0 + 0.16, w - 2 * pad, 0.55, [
             (titre, dict(size=D.TYPE["tiny"], bold=True, color=color, line_spacing=1.05)),
             (sous, dict(size=8, color=MUTED, italic=True, space_before=2)),
@@ -1368,9 +1531,10 @@ def slide_kpis_exemple(prs):
 
     header_y = CONTENT_TOP + 0.4
     for x, w, label in zip(xs, col_widths, headers):
-        D.add_text(s, x, header_y, w, 0.24, [
-            (label, dict(size=7, bold=True, color=MUTED)),
-        ])
+        # _header_cell : le "⟲" de « T+6-12 MOIS · ⟲ RÉÉVALUATION » serait un
+        # tofu en gras (cf. _GLYPHES_SANS_GRAS) — posé bold=False pour ce seul
+        # caractère, le reste du libellé reste en gras.
+        _header_cell(s, x, header_y, w, 0.24, label, size=7, color=MUTED, bold=True)
 
     tagcolor = {"CONFIRMÉ": SEVERITE[0], "DÉDUIT": SEVERITE[2], "—": MUTED}
     rows = [
@@ -1427,25 +1591,39 @@ def slide_agent_ia(prs, titre, nom_agent, famille, why, what, gain, color, note=
         (f"Gaspillage {famille}", dict(size=8, color=MUTED, italic=True, space_before=2)),
     ])
     top0 = CONTENT_TOP + 0.55
-    band_h = 1.0
-    gap = 0.1
     bands = [
         ("POURQUOI", why),
         ("CE QUE FAIT L'AGENT", what),
         ("GAIN", gain),
     ]
+    txt_size = 9
+    line_h = txt_size * 1.25 / 72.0
+    usable = CONTENT_W - 0.44
+    # Chaque bandeau plafonné à SON contenu — le bandeau GAIN (souvent 1 ligne)
+    # ne garde plus la hauteur fixe d'un bandeau à 2 lignes (défaut « panneau
+    # sur-étiré » constaté slides 10/11) — puis les 3 bandeaux sont répartis
+    # pour remplir la zone, donc pas de vide résiduel en bas non plus.
+    heights = [0.42 + _lignes(t, usable, txt_size) * line_h for _, t in bands]
+    n = len(bands)
+    region_bot = CONTENT_BOTTOM - (0.5 if note else 0.0)
+    total = sum(heights)
+    gap = max(0.10, min(0.5, (region_bot - top0 - total) / (n - 1)))
+    y = top0
+    last_bottom = top0
     for i, (label, texte) in enumerate(bands):
-        y = top0 + i * (band_h + gap)
-        D.add_rect(s, MARGIN, y, CONTENT_W, band_h, fill="#ffffff", line=LINE, line_w=0.75, rounded=True, radius=0.08)
-        D.add_rect(s, MARGIN, y, 0.06, band_h, fill=color, rounded=True, radius=0.5)
-        D.add_text(s, MARGIN + 0.22, y + 0.12, CONTENT_W - 0.44, band_h - 0.24, [
+        h = heights[i]
+        D.add_rect(s, MARGIN, y, CONTENT_W, h, fill="#ffffff", line=LINE, line_w=0.75, rounded=True, radius=0.08)
+        D.add_rect(s, MARGIN, y, 0.06, h, fill=color, rounded=True, radius=0.5)
+        D.add_text(s, MARGIN + 0.22, y + 0.12, CONTENT_W - 0.44, h - 0.24, [
             (label, dict(size=7, bold=True, color=color)),
-            (texte, dict(size=9, color=NAVY, space_before=4, line_spacing=1.25)),
+            (texte, dict(size=txt_size, color=NAVY, space_before=4, line_spacing=1.25)),
         ])
+        last_bottom = y + h
+        y = last_bottom + gap
 
     if note:
-        note_top = top0 + 3 * band_h + 2 * gap + 0.12
-        note_h = min(0.4, CONTENT_BOTTOM - note_top)
+        note_top = last_bottom + 0.16
+        note_h = min(0.45, CONTENT_BOTTOM - note_top)
         D.add_text(s, MARGIN, note_top, CONTENT_W, note_h, [
             (note, dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
         ])
@@ -1612,35 +1790,48 @@ def slide_architecture_agents(prs):
         ]),
     ]
     n = len(familles)
-    # Slot d'agent de hauteur FIXE (partagée par toutes les cartes, cadence sur
-    # la famille la plus fournie) et entrées alignées EN HAUT : sans cela, une
-    # carte à 1-2 agents centrait son contenu et laissait un grand trou sous
-    # l'en-tête (cf. rendu réel), tandis que la carte à 4 remplissait — lecture
-    # « déséquilibrée ». À cadence fixe, chaque agent occupe la même hauteur et
-    # s'empile sous l'en-tête ; l'espace restant tombe proprement en bas.
-    max_agents = max(len(a) for _, _, a in familles)
+    # Cartes de MÊME hauteur (cadence sur la colonne la plus fournie, CONCEPTION
+    # à 4 agents) — mais au lieu d'un slot fixe aligné en haut qui laissait un
+    # grand vide sous l'agent unique d'INTAKE, chaque colonne RÉPARTIT ses agents
+    # sur toute la zone : chaque bloc-agent est dimensionné à SON texte, puis les
+    # blocs sont espacés (space-between) pour couvrir la hauteur — colonne à 4 =
+    # remplie ; colonne à 2-3 = espacée régulièrement ; colonne à 1 = centrée. La
+    # rangée se lit ainsi « équilibrée » (cf. brief ppt-designer, défaut INTAKE).
     top0 = CONTENT_TOP + 0.6
     gate_h = 0.6
     note_h = 0.36
     card_h = CONTENT_BOTTOM - top0 - 0.15 - gate_h - 0.12 - note_h
+    _, wcol = col_x(0, n)
+    pad = 0.14
+    usable_col = wcol - 2 * pad
+    region_top = top0 + 0.52
+    region_h = card_h - 0.52 - 0.08
     for i, (nom, color, agents) in enumerate(familles):
         x, w = col_x(i, n)
         D.add_card(s, x, top0, w, card_h, color)
-        pad = 0.14
         D.add_text(s, x + pad, top0 + 0.12, w - 2 * pad, 0.36, [
             (nom, dict(size=8, bold=True, color=color, line_spacing=1.0)),
             (f"{len(agents)} agent" + ("s" if len(agents) > 1 else ""),
              dict(size=6.5, color=MUTED, space_before=1)),
         ])
-        region_top = top0 + 0.52
-        region_h = card_h - 0.52 - 0.08
-        slot = region_h / max_agents
+        blocs = [0.16 + _lignes(role, usable_col, 6.5) * (6.5 * 1.15 / 72.0)
+                 for _, role in agents]
+        na = len(agents)
+        total = sum(blocs)
+        if na == 1:
+            gap_a = 0.0
+            start = region_top  # top-align le bloc unique (INTAKE) sous l'en-tête : le centrer le faisait flotter (défaut « panneau flottant », cf. revue 2026-07-21)
+        else:
+            gap_a = min(0.5, (region_h - total) / (na - 1))
+            span = total + gap_a * (na - 1)
+            start = region_top + max(0.0, (region_h - span) / 2)
+        ay = start
         for j, (agent, role) in enumerate(agents):
-            ay = region_top + j * slot
-            D.add_text(s, x + pad, ay, w - 2 * pad, slot, [
+            D.add_text(s, x + pad, ay, w - 2 * pad, blocs[j], [
                 (agent, dict(size=7, bold=True, color=NAVY, line_spacing=1.0)),
                 (role, dict(size=6.5, color=MUTED, space_before=2, line_spacing=1.1)),
             ], anchor=MSO_ANCHOR.TOP)
+            ay += blocs[j] + gap_a
 
     gate_top = top0 + card_h + 0.15
     D.add_rect(s, MARGIN, gate_top, CONTENT_W, gate_h, fill=NAVY, rounded=True, radius=0.1)
@@ -1675,6 +1866,7 @@ def build():
     slide_gate_ia(prs)
     slide_maturite(prs)
     slide_personas(prs)
+    slide_personas_divergences(prs)
     slide_agent_ia(
         prs, "Un agent de triage peut absorber le gaspillage RUN le plus répétitif",
         "Agent de triage de tickets", "RUN",
@@ -1720,7 +1912,7 @@ def build():
     slide_team_topologies(prs)
 
     slide_chapitre(prs, "03", "Trajectoire", "Architecture des agents, mise en œuvre, livrables, ambition, KPIs",
-                   D.PALETTE[3], "ocean", seed=1)
+                   D.PALETTE[3], "ocean", seed=0)
     slide_architecture_agents(prs)
     slide_schema_fonctionnement(prs)
     slide_trajectoire(prs)

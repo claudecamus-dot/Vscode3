@@ -42,7 +42,7 @@
 - `docs/cadrage-ppt/` : le deck OCTO annoncé comme « à réactiver si un jour »
   ci-dessus est désormais réel — `template-octo.pptx` (copie du template de
   marque, masters/layouts/thème OCTO) + `pptx_deck.py` (copie synchronisée du
-  skill global `pptx-deck`) + `generate_deck.py` (29 slides de synthèse du
+  skill global `pptx-deck`) + `generate_deck.py` (32 slides de synthèse du
   cadrage BMAD IAP v2.1, dessinées sur le vrai template) → `bmad-iap-cadrage-
   synthese.pptx`. Structure : couverture, executive summary, 1 slide « vision »
   (claim + puces + visuel encadré, layout "63 - cadre blanc" — recadrée sur le
@@ -54,6 +54,12 @@
   design du REX "⛱️ L'Été de l'IA" v3 ; un premier essai texte-seul sur ce
   layout avait été abandonné avant d'en comprendre les deux bugs réels — cf.
   mémoire de session et commentaire dans `slide_chapitre`/`_sans_puce`),
+  1 slide « personas » puis, juste après, 1 slide « divergences persona »
+  (`slide_personas_divergences` — rend explicites les tensions révélées par
+  l'interview séparée : Management/Sponsor/Utilisateur applicatif « en tension
+  avec » Infra & RUN, plus l'angle mort Sponsor ⟂ RSSI ; le glyphe ⟂ est rendu
+  par le connecteur texte « en tension avec », pas par le caractère, même
+  prudence que pour ⟲),
   3 slides « agents IA à créer » (why/what/gain, ancrées sur des familles de
   gaspillage déjà cadrées : triage RUN, veille FinOps, documentaire cognitif)
   en fin de chapitre Cadrage, 1 slide « prudence IA » (décompose le facteur
@@ -72,8 +78,9 @@
   police du template (rendu LibreOffice = case vide dans les badges colorés)
   alors que la variante normale s'affiche correctement — tous les badges/
   bandeaux utilisant ce symbole (slide_trajectoire, slide_schema_bout_en_bout,
-  slide_livrables_ppt, slide_schema_fonctionnement) forcent donc `bold=False`
-  spécifiquement pour ce caractère.
+  slide_livrables_ppt, slide_schema_fonctionnement, et l'en-tête de colonne
+  « ⟲ RÉÉVALUATION » de slide_kpis_exemple via l'aide `_header_cell`) forcent
+  donc `bold=False` spécifiquement pour ce caractère.
   Les images encadrées sont de vraies photos libres de droit (Openverse,
   CC0, sans clé API — `stock_images.py`, greffé dans `pptx-framed-image` le
   2026-07-15), avec repli automatique sur le générateur procédural
