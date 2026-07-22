@@ -1,16 +1,16 @@
-"""Génère une synthèse PPT (39 slides) des RÉSULTATS du cadrage BMAD IAP
+"""Génère une synthèse PPT (40 slides) des RÉSULTATS du cadrage BMAD IAP
 (docs/bmad-iap-cadrage.md) à partir des helpers pptx_deck, dessinée
 PAR-DESSUS le vrai template de marque OCTO (template-octo.pptx) —
 masters/layouts/thème conservés, pas un deck sur canevas vierge.
 
-Structure en 7 chapitres de product-discovery : Contexte, Personas, Besoins &
-douleurs, Proposition (avec deux sous-chapitres logiques « Technique IAP » et
-« Exemples », matérialisés par le seul kicker — pas d'intercalaire), Démarche,
-IA, KPI. L'IA reste délibérément tirée APRÈS la proposition (le gate IA l'a
-rejointe) — la doctrine « l'IA amplifie l'organisation, elle n'est jamais la
-réponse à un problème d'abord organisationnel » est protégée en présentant
-personas et douleurs AVANT la proposition, et l'IA en avant-dernier ; les KPIs
-(la mesure) ferment le deck.
+Structure en 7 chapitres de product-discovery : Contexte (mission + POURQUOI on
+propose ça à un client infra), Personas, Besoins & douleurs, Proposition (thèse
+`why_iap` en ouverture, méthode scorée, puis un sous-chapitre logique « Exemples »
+— kicker seul, pas d'intercalaire), Démarche, IA, KPI (ouvert par la maturité, qui
+situe le client). L'IA reste tirée APRÈS la proposition (le gate IA l'a rejointe) —
+la doctrine « l'IA amplifie l'organisation, elle n'est jamais la réponse à un
+problème d'abord organisationnel » est protégée en présentant personas et douleurs
+AVANT la proposition, et l'IA en avant-dernier ; les KPIs (la mesure) ferment le deck.
 
 Centré sur les résultats du cadrage (mission, doctrine, méthode, maturité,
 ambition, KPIs, schéma de fonctionnement) plutôt que sur tout le détail de
@@ -356,25 +356,8 @@ def slide_cover(prs):
     phs[1].text_frame.text = "Infra as a Product Transformation Pack — synthèse de cadrage"
     phs[2].text_frame.text = "OCTO Technology"
     phs[3].text_frame.text = "v2.2 · 2026-07-22"
-
-    # Bandeau de métadonnées sous la zone de couverture du template, dans la
-    # bande basse encore libre (le pied de page/logo du master restent visibles).
-    metas = [
-        ("STATUT", "Draft consolidé v2.2"),
-        ("LANGUE", "FR"),
-        ("CONFIDENTIALITÉ", "Client-data-first"),
-        ("SOURCES", "Grille Assessment V3.2 · Interview-to-Deck"),
-    ]
-    n = len(metas)
-    y = 4.55
-    for i, (k, v) in enumerate(metas):
-        x, w = col_x(i, n, w=CONTENT_W, x0=MARGIN)
-        # Bande basse posée SUR l'overlay photo sombre de la couverture : texte
-        # clair, sinon les valeurs (ex-MUTED sombre) se noyaient dans le fond.
-        D.add_text(s, x, y, w, 0.55, [
-            (k, dict(size=D.TYPE["tiny"], bold=True, color="#ffffff")),
-            (v, dict(size=D.TYPE["tiny"], color="#c7cbe0", space_before=2, line_spacing=1.1)),
-        ])
+    # Bandeau de métadonnées (statut/langue/confidentialité/sources) retiré sur
+    # demande — la couverture ne garde que titre, sous-titre, entité et version.
     return s
 
 
@@ -482,6 +465,56 @@ def slide_mission(prs):
     return s
 
 
+def slide_pourquoi_contexte(prs):
+    """Nouveau (point ②) : dans le chapitre Contexte, le POURQUOI — pourquoi
+    proposer cette transformation à un client infra, et maintenant. Trois
+    déclencheurs + un pont trait-pour-trait vers la double mission (slide_mission)."""
+    s = content_slide(prs, "Contexte",
+                       "Pourquoi cette transformation, pour un client infra — et maintenant",
+                       color=D.PALETTE[0])
+    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.5, [
+        ("Trois bascules rendent l'Infra-as-a-Product pertinente — et urgente — pour un client "
+         "dont l'infrastructure est encore vécue comme un centre de coûts et un guichet.",
+         dict(size=D.TYPE["small"], color=NAVY, italic=True, line_spacing=1.25)),
+    ])
+    triggers = [
+        (D.PALETTE[2], "L'infra subie n'est plus tenable",
+         "RUN subi, experts seniors drainés sur du répétitif, gaspillage cloud non maîtrisé, "
+         "plateforme contournée : le coût du statu quo ne cesse de monter."),
+        (D.PALETTE[1], "Le modèle produit/plateforme est prouvé",
+         "Platform engineering et product operating model ne sont plus un pari mais un "
+         "standard : la cible est connue, outillée, reproductible."),
+        (D.PALETTE[4], "L'IA rebat les cartes — l'organisation d'abord",
+         "L'IA amplifie une organisation mûre, jamais l'inverse. S'y préparer maintenant "
+         "(doctrine confidentialité-first) évite de la subir plus tard."),
+    ]
+    lead_h, bridge_h = 0.55, 0.72
+    top0 = CONTENT_TOP + lead_h + 0.1
+    card_h = (CONTENT_BOTTOM - bridge_h - 0.18) - top0
+    pad = 0.22
+    for i, (color, titre, corps) in enumerate(triggers):
+        x, w = col_x(i, 3)
+        D.add_card(s, x, top0, w, card_h, color)
+        tx = x + 0.08 + pad
+        tw = w - 0.08 - 2 * pad
+        D.add_text(s, tx, top0 + 0.22, tw, card_h - 0.44, [
+            (f"DÉCLENCHEUR {i + 1}", dict(size=6.5, bold=True, color=MUTED)),
+            (titre, dict(size=D.TYPE["small"], bold=True, color=color, space_before=3, line_spacing=1.05)),
+            (corps, dict(size=9, color=NAVY, space_before=8, line_spacing=1.25)),
+        ])
+    bridge_top = CONTENT_BOTTOM - bridge_h
+    D.add_rect(s, MARGIN, bridge_top, CONTENT_W, bridge_h, fill=TRACK, rounded=True, radius=0.1)
+    D.add_rect(s, MARGIN, bridge_top, 0.08, bridge_h, fill=D.PALETTE[0], rounded=True, radius=0.5)
+    D.add_text(s, MARGIN + 0.28, bridge_top, CONTENT_W - 0.46, bridge_h, [
+        ("Et surtout — nos deux missions répondent trait pour trait aux deux douleurs du client.",
+         dict(size=8.5, bold=True, color=NAVY, line_spacing=1.05)),
+        ("Subir le RUN → TRANSFORMER (cible produit/plateforme) ; le gaspillage → ASSAINIR "
+         "(capacité récupérée qui finance la trajectoire).",
+         dict(size=8, color=MUTED, space_before=2, line_spacing=1.15)),
+    ], anchor=MSO_ANCHOR.MIDDLE)
+    return s
+
+
 # ---------------------------------------------------------------- slide 4
 def slide_gate_ia(prs):
     s = content_slide(prs, "IA", "Les données du client gouvernent le choix du modèle IA", color=D.PALETTE[4])
@@ -517,10 +550,11 @@ def slide_gate_ia(prs):
 
 # ---------------------------------------------------------------- slide 5
 def slide_why_iap(prs):
-    """Nouveau (point ⑤) : ouvre le sous-chapitre « Proposition technique IAP ».
-    Le POURQUOI de l'Infra-as-a-Product — trois bascules produit, chacune ancrée
-    sur un persona/une douleur déjà posés (personas → douleurs → proposition)."""
-    s = content_slide(prs, "Technique IAP",
+    """Nouveau (point ⑤) : OUVRE le chapitre Proposition (la thèse). Le POURQUOI de
+    l'Infra-as-a-Product — trois bascules produit, chacune ancrée sur un persona/une
+    douleur déjà posés. (2e passe : la maturité est partie au chapitre KPI, le
+    sous-chapitre « Technique IAP » a donc disparu — why_iap ouvre la Proposition.)"""
+    s = content_slide(prs, "Proposition",
                        "Pourquoi « Infrastructure as a Product » — le socle de la proposition",
                        color=D.PALETTE[1])
     claim_h = 0.95
@@ -566,16 +600,17 @@ def slide_why_iap(prs):
 
 
 def slide_maturite(prs):
-    s = content_slide(prs, "Technique IAP",
-                       "Deux échelles de maturité situent le client — jamais confondues",
-                       color=D.PALETTE[1])
-    # Reworkée (point ③) : recadrée comme l'INSTRUMENT de la proposition (elle
-    # alimente le scoring et le gate), et l'ambiguïté « Remplace le M0–M4 » levée
-    # — les deux échelles mesurent des choses différentes et ne se substituent pas.
+    s = content_slide(prs, "KPI",
+                       "D'abord situer le client : deux échelles de maturité, jamais confondues",
+                       color=D.PALETTE[0])
+    # Déplacée dans le chapitre KPI (point ③, 2e passe) : la grille de maturité EST
+    # une mesure — elle situe le client (T0) et suit sa progression dans le temps
+    # (delta par pilier, T+6-12 mois), soit la 3e famille de KPIs (slide_kpis). Elle
+    # ouvre donc le chapitre KPI. Ambiguïté « Remplace le M0–M4 » toujours levée.
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.34, [
-        ("L'instrument de la proposition : deux lectures complémentaires — la capacité IA du "
-         "client (M0–M4) et sa maturité produit/plateforme (grille V3.2) — qui le situent et "
-         "alimentent le scoring et le gate. On ne confond jamais les deux.",
+        ("Le point de départ que les KPIs feront bouger : deux lectures complémentaires — la "
+         "capacité IA du client (M0–M4) et sa maturité produit/plateforme (grille V3.2) — "
+         "remesurées en boucle (delta par pilier, T0→réévaluation). On ne confond jamais les deux.",
          dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
     ])
     x0, w0 = col_x(0, 2)
@@ -2123,9 +2158,10 @@ def build():
 
     # === Chapitre 01 — CONTEXTE : le problème ===
     slide_chapitre(prs, "01", "Contexte",
-                   "La double mission : transformer l'infrastructure en produit, et assainir le gaspillage.",
+                   "La double mission, et pourquoi cette transformation a du sens pour un client infra maintenant.",
                    D.PALETTE[0], "mountains", seed=0)
     slide_mission(prs)
+    slide_pourquoi_contexte(prs)
 
     # === Chapitre 02 — PERSONAS : qui l'on transforme ===
     slide_chapitre(prs, "02", "Personas",
@@ -2142,23 +2178,21 @@ def build():
     slide_familles(prs)
 
     # === Chapitre 04 — PROPOSITION : notre réponse ===
-    # Ouvre sur gaspillage→backlog (le problème rendu traitable), puis DEUX sous-
-    # chapitres logiques (kicker seul, pas d'intercalaire — cf. arbitrage) :
-    # « Technique IAP » (why + maturité) et « Exemples » (3 cas), avant la cible
-    # et les livrables. gate IA et KPIs ont quitté ce chapitre (→ IA / → KPI) ;
-    # trajectoire et bout-en-bout aussi (→ Démarche).
+    # Fil rouge (2e passe) : la THÈSE (why_iap) ouvre, puis la MÉTHODE scorée
+    # (gaspillages), puis le sous-chapitre logique « Exemples » (kicker seul, pas
+    # d'intercalaire — cf. arbitrage), puis la cible, le fonctionnement, les
+    # livrables, l'ambition et le lien SI. gate IA → IA ; trajectoire + bout-en-bout
+    # → Démarche ; maturité + KPIs → KPI.
     slide_chapitre(prs, "04", "Proposition",
-                   "Du gaspillage au backlog priorisé, la proposition technique IAP, des exemples, la cible et les livrables.",
+                   "Traiter l'infra comme un produit : la thèse, la méthode scorée, des exemples, la cible et les livrables.",
                    D.PALETTE[1], "dunes", seed=0)
-    slide_gaspillages(prs)
-    # -- sous-chapitre « Proposition technique IAP » (kicker « Technique IAP ») --
     slide_why_iap(prs)
-    slide_maturite(prs)
-    # -- sous-chapitre « Exemples » (kicker « Exemples ») --
+    slide_gaspillages(prs)
+    # -- sous-chapitre « Exemples » (kicker « Exemples », pas d'intercalaire) --
     slide_exemple_priorisation(prs)
     slide_exemple_diagnostic(prs)
     slide_exemple_recommandation(prs)
-    # -- suite Proposition --
+    # -- suite Proposition : cible, fonctionnement, livrables, ambition, SI --
     slide_team_topologies(prs)
     slide_schema_fonctionnement(prs)
     slide_livrables_ppt(prs)
@@ -2216,9 +2250,13 @@ def build():
     slide_architecture_agents(prs)
 
     # === Chapitre 07 — KPI : comment on mesure (clôture du deck) ===
+    # slide_maturite l'OUVRE (point ③, 2e passe) : situer le client (T0) avant de
+    # mesurer l'effet de la mission ; puis les 3 familles, leur mise en place, le
+    # cas chiffré.
     slide_chapitre(prs, "07", "KPI",
-                   "Trois familles de KPIs à ne jamais confondre, leur mise en place, et le cas nominal chiffré.",
+                   "Situer le client (maturité), les 3 familles de KPIs, leur mise en place, et le cas chiffré.",
                    D.PALETTE[0], "meadow", seed=1)
+    slide_maturite(prs)
     slide_kpis(prs)
     slide_kpis_pourquoi_quoi(prs)
     slide_kpis_mise_en_place(prs)
