@@ -42,7 +42,7 @@
 - `docs/cadrage-ppt/` : le deck OCTO annoncé comme « à réactiver si un jour »
   ci-dessus est désormais réel — `template-octo.pptx` (copie du template de
   marque, masters/layouts/thème OCTO) + `pptx_deck.py` (copie synchronisée du
-  skill global `pptx-deck`) + `generate_deck.py` (40 slides de synthèse du
+  skill global `pptx-deck`) + `generate_deck.py` (41 slides de synthèse du
   cadrage BMAD IAP v2.2, dessinées sur le vrai template) → `bmad-iap-cadrage-
   synthese.pptx`. **Re-restructuré le 2026-07-22 en 7 chapitres** (les passages
   antérieurs « 5 actes » puis « sous-chapitre Technique IAP » du même jour sont
@@ -52,18 +52,22 @@
   trait-pour-trait vers la double mission). Personas et douleurs AVANT la
   proposition ; l'IA en **avant-dernier** (le `slide_gate_ia` l'a rejointe), la
   **Démarche** (`slide_trajectoire` + `slide_schema_bout_en_bout`) est un chapitre
-  en fin de deck, et le chapitre **KPI** (clôture) est **ouvert par
-  `slide_maturite`** (déplacée : la grille de maturité EST une mesure — situe le
-  client T0, suivie en boucle) puis les `slide_kpis*`. La **Proposition** suit un
-  fil rouge : `slide_why_iap` (la thèse, ouvre) → `slide_gaspillages` (méthode
-  scorée) → sous-chapitre **logique « Exemples »** (kicker seul, pas
-  d'intercalaire — les 3 `slide_exemple_*`) → cible/fonctionnement/livrables/
-  ambition/SI. `slide_cover` : bandeau métadonnées (statut/langue/confidentialité/
-  sources) **retiré**. `slide_personas` en **cartes 2×2 + pastille posture**
-  (allié/sceptique/vigilant, brainstorm PM) ; `slide_personas_divergences` avec
-  une ligne de synthèse « pont » vers la Proposition ; `slide_maturite` clarifiée
-  (ambiguïté « Remplace le M0–M4 » levée → « Où se lit l'axe IA »). Toujours
-  valables du passage 5-actes :
+  en fin de deck, et le chapitre **KPI** (clôture) déroule : 3 familles
+  (`slide_kpis*`) → mise en place → **`slide_maturite`** (la grille de maturité =
+  3e famille détaillée, CLARIFIÉE : une ligne « à quoi sert chaque échelle » sous
+  chaque colonne, message « le KPI = le DELTA T0→réévaluation, pas le niveau ») →
+  cas chiffré. La **Proposition** suit un fil rouge : `slide_why_iap` (la thèse,
+  ouvre) → `slide_gaspillages` (méthode scorée) → sous-chapitre **« Exemples »**
+  → cible/fonctionnement/livrables/ambition/SI. **Deux niveaux de séparateurs** :
+  chapitres = intercalaire teardrop (photo + numéro, `slide_chapitre`) ;
+  sous-chapitres = `slide_sous_chapitre` (bloc-titre léger, sans photo ni numéro) —
+  **l'arbitrage « sous-chapitre = kicker seul, pas d'intercalaire » a été levé pour
+  les Exemples à la demande** (elles ont désormais leur séparateur). `slide_cover` :
+  bandeau métadonnées (statut/langue/confidentialité/sources) **retiré**.
+  `slide_personas` en **cartes 2×2 + pastille posture** (allié/sceptique/vigilant,
+  brainstorm PM) ; `slide_personas_divergences` avec une ligne de synthèse « pont »
+  vers la Proposition ; `slide_maturite` : ambiguïté « Remplace le M0–M4 » levée
+  → « Où se lit l'axe IA ». Toujours valables du passage 5-actes :
   `slide_douleurs` (douleurs par persona, mesurées) + `slide_familles` (8
   familles) ; `slide_gaspillages` splitté (familles → Douleurs, chaîne + score →
   Proposition) ; `slide_vision` (ex-`slide_vision_ia`) à 3 puces. Intercalaires =

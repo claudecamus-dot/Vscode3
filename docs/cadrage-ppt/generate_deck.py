@@ -1,16 +1,20 @@
-"""Génère une synthèse PPT (40 slides) des RÉSULTATS du cadrage BMAD IAP
+"""Génère une synthèse PPT (41 slides) des RÉSULTATS du cadrage BMAD IAP
 (docs/bmad-iap-cadrage.md) à partir des helpers pptx_deck, dessinée
 PAR-DESSUS le vrai template de marque OCTO (template-octo.pptx) —
 masters/layouts/thème conservés, pas un deck sur canevas vierge.
 
 Structure en 7 chapitres de product-discovery : Contexte (mission + POURQUOI on
 propose ça à un client infra), Personas, Besoins & douleurs, Proposition (thèse
-`why_iap` en ouverture, méthode scorée, puis un sous-chapitre logique « Exemples »
-— kicker seul, pas d'intercalaire), Démarche, IA, KPI (ouvert par la maturité, qui
-situe le client). L'IA reste tirée APRÈS la proposition (le gate IA l'a rejointe) —
+`why_iap` en ouverture, méthode scorée, puis le sous-chapitre « Exemples » — désormais
+introduit par un séparateur léger `slide_sous_chapitre`, pas seulement un kicker),
+Démarche, IA, KPI. L'IA reste tirée APRÈS la proposition (le gate IA l'a rejointe) —
 la doctrine « l'IA amplifie l'organisation, elle n'est jamais la réponse à un
 problème d'abord organisationnel » est protégée en présentant personas et douleurs
-AVANT la proposition, et l'IA en avant-dernier ; les KPIs (la mesure) ferment le deck.
+AVANT la proposition, et l'IA en avant-dernier ; le chapitre KPI (la mesure) ferme le
+deck : 3 familles → mise en place → grille de maturité (3e famille détaillée) → cas chiffré.
+
+Séparateurs : chapitres = intercalaire teardrop (photo + numéro, layout dédié) ;
+sous-chapitres = `slide_sous_chapitre` (bloc-titre léger, sans photo ni numéro).
 
 Centré sur les résultats du cadrage (mission, doctrine, méthode, maturité,
 ambition, KPIs, schéma de fonctionnement) plutôt que sur tout le détail de
@@ -134,6 +138,30 @@ def content_slide(prs, kicker, title, color=None):
     r2.font.bold = True
     r2.font.size = Pt(taille)
     r2.font.color.rgb = _rgb(NAVY)
+    return s
+
+
+def slide_sous_chapitre(prs, kicker, titre, sous_titre, color):
+    """Séparateur de SOUS-chapitre (léger) : PAS l'intercalaire teardrop des
+    chapitres (layout dédié + photo), juste un bloc-titre de section sur le layout
+    « titre seul ». Introduit un groupe logique DANS un chapitre — ici « Exemples »
+    dans la Proposition (points ②/③ : l'arbitrage « kicker seul, pas d'intercalaire »
+    est levé pour ce groupe, à la demande). Reste plus léger qu'un chapitre : pas de
+    numéro, pas de photo, garde le pied de page du master."""
+    layout = prs.slide_masters[0].slide_layouts[LAYOUT_TITRE_SEUL]
+    s = prs.slides.add_slide(layout)
+    # Vider le placeholder titre (sinon prompt résiduel) — on pose notre propre bloc.
+    s.shapes.placeholders[0].text_frame.text = ""
+    bar_top, bar_h = 2.05, 1.55
+    D.add_rect(s, MARGIN, bar_top, 0.14, bar_h, fill=color, rounded=True, radius=0.5)
+    tx = MARGIN + 0.45
+    tw = CONTENT_W - 0.45
+    D.add_text(s, tx, bar_top, tw, bar_h, [
+        (kicker.upper() + "  ·  SOUS-CHAPITRE",
+         dict(size=D.TYPE["tiny"], bold=True, color=color, line_spacing=1.0)),
+        (titre, dict(size=34, bold=True, color=NAVY, space_before=8, line_spacing=1.0)),
+        (sous_titre, dict(size=D.TYPE["small"], color=MUTED, italic=True, space_before=12, line_spacing=1.2)),
+    ], anchor=MSO_ANCHOR.MIDDLE)
     return s
 
 
@@ -601,24 +629,27 @@ def slide_why_iap(prs):
 
 def slide_maturite(prs):
     s = content_slide(prs, "KPI",
-                       "D'abord situer le client : deux échelles de maturité, jamais confondues",
+                       "La grille de maturité : deux échelles distinctes, mesurées dans le temps",
                        color=D.PALETTE[0])
-    # Déplacée dans le chapitre KPI (point ③, 2e passe) : la grille de maturité EST
-    # une mesure — elle situe le client (T0) et suit sa progression dans le temps
-    # (delta par pilier, T+6-12 mois), soit la 3e famille de KPIs (slide_kpis). Elle
-    # ouvre donc le chapitre KPI. Ambiguïté « Remplace le M0–M4 » toujours levée.
-    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.34, [
-        ("Le point de départ que les KPIs feront bouger : deux lectures complémentaires — la "
-         "capacité IA du client (M0–M4) et sa maturité produit/plateforme (grille V3.2) — "
-         "remesurées en boucle (delta par pilier, T0→réévaluation). On ne confond jamais les deux.",
+    # Placée en fin de chapitre KPI (juste avant le cas chiffré) et CLARIFIÉE
+    # (point ①) : c'est la 3e famille de KPIs (grille de maturité). Message resserré :
+    # deux échelles ne mesurant PAS la même chose, chacune gouvernant une décision
+    # différente ; le KPI = le DELTA dans le temps, pas le niveau absolu. Ambiguïté
+    # « Remplace le M0–M4 » toujours levée (badge « Où se lit l'axe IA »).
+    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.42, [
+        ("La 3ᵉ famille de KPIs. Deux lectures qui ne mesurent pas la même chose et se lisent "
+         "séparément ; le KPI de progression, c'est le DELTA par pilier entre T0 et chaque "
+         "réévaluation — pas le niveau absolu.",
          dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
     ])
     x0, w0 = col_x(0, 2)
     x1, w1 = col_x(1, 2)
 
-    head_top = CONTENT_TOP + 0.44
-    D.add_text(s, x0, head_top, w0, 0.28, [
-        ("CAPACITÉ IA DU CLIENT (M0–M4)", dict(size=D.TYPE["tiny"], bold=True, color=NAVY))
+    head_top = CONTENT_TOP + 0.5
+    D.add_text(s, x0, head_top, w0, 0.5, [
+        ("CAPACITÉ IA DU CLIENT (M0–M4)", dict(size=D.TYPE["tiny"], bold=True, color=NAVY)),
+        ("→ gouverne le choix du modèle IA et le gate",
+         dict(size=7.5, color=D.PALETTE[0], space_before=2, line_spacing=1.05)),
     ])
     niveaux = [
         ("M0", "Pas d'IA interne utilisable", "Méthodo générique, données anonymisées"),
@@ -627,8 +658,8 @@ def slide_maturite(prs):
         ("M3", "Plateforme IA gouvernée", "Workflows agentic contrôlés"),
         ("M4", "IA industrielle", "Agents spécialisés à fort volume, contrôle humain"),
     ]
-    row_top = head_top + 0.36
-    row_h = 0.62
+    row_top = head_top + 0.52
+    row_h = 0.58
     row_gap = 0.06
     for i, (code, titre, strat) in enumerate(niveaux):
         y = row_top + i * (row_h + row_gap)
@@ -638,8 +669,10 @@ def slide_maturite(prs):
             (strat, dict(size=8, color=MUTED, space_before=1, line_spacing=1.1)),
         ], anchor=MSO_ANCHOR.MIDDLE)
 
-    D.add_text(s, x1, head_top, w1, 0.28, [
-        ("MATURITÉ PRODUIT / PLATEFORME (grille V3.2)", dict(size=D.TYPE["tiny"], bold=True, color=NAVY))
+    D.add_text(s, x1, head_top, w1, 0.5, [
+        ("MATURITÉ PRODUIT / PLATEFORME (grille V3.2)", dict(size=D.TYPE["tiny"], bold=True, color=NAVY)),
+        ("→ gouverne la trajectoire de transformation",
+         dict(size=7.5, color=D.PALETTE[1], space_before=2, line_spacing=1.05)),
     ])
     piliers = [
         ("Équipe Produit", "Adjacent", False),
@@ -2178,9 +2211,10 @@ def build():
     slide_familles(prs)
 
     # === Chapitre 04 — PROPOSITION : notre réponse ===
-    # Fil rouge (2e passe) : la THÈSE (why_iap) ouvre, puis la MÉTHODE scorée
-    # (gaspillages), puis le sous-chapitre logique « Exemples » (kicker seul, pas
-    # d'intercalaire — cf. arbitrage), puis la cible, le fonctionnement, les
+    # Fil rouge : la THÈSE (why_iap) ouvre, puis la MÉTHODE scorée (gaspillages),
+    # puis le sous-chapitre « Exemples » — désormais introduit par un VRAI
+    # séparateur léger (slide_sous_chapitre, points ②/③ : l'arbitrage « kicker seul »
+    # est levé pour ce groupe à la demande) — puis la cible, le fonctionnement, les
     # livrables, l'ambition et le lien SI. gate IA → IA ; trajectoire + bout-en-bout
     # → Démarche ; maturité + KPIs → KPI.
     slide_chapitre(prs, "04", "Proposition",
@@ -2188,7 +2222,11 @@ def build():
                    D.PALETTE[1], "dunes", seed=0)
     slide_why_iap(prs)
     slide_gaspillages(prs)
-    # -- sous-chapitre « Exemples » (kicker « Exemples », pas d'intercalaire) --
+    # -- sous-chapitre « Exemples » (séparateur léger + 3 cas, kicker « Exemples ») --
+    slide_sous_chapitre(prs, "Proposition", "Exemples",
+                        "La méthode en pratique — trois cas illustratifs : priorisation chiffrée, "
+                        "diagnostic tagué, recommandation actionnable.",
+                        D.PALETTE[1])
     slide_exemple_priorisation(prs)
     slide_exemple_diagnostic(prs)
     slide_exemple_recommandation(prs)
@@ -2250,16 +2288,17 @@ def build():
     slide_architecture_agents(prs)
 
     # === Chapitre 07 — KPI : comment on mesure (clôture du deck) ===
-    # slide_maturite l'OUVRE (point ③, 2e passe) : situer le client (T0) avant de
-    # mesurer l'effet de la mission ; puis les 3 familles, leur mise en place, le
-    # cas chiffré.
+    # Les 3 familles ouvrent, puis leur pourquoi/quoi et leur mise en place ; la
+    # grille de maturité (slide_maturite, la 3e famille détaillée) vient ensuite
+    # (déplacée après kpis_mise_en_place, point ①), et le cas nominal chiffré
+    # ferme le deck.
     slide_chapitre(prs, "07", "KPI",
-                   "Situer le client (maturité), les 3 familles de KPIs, leur mise en place, et le cas chiffré.",
+                   "Trois familles de KPIs à ne jamais confondre, leur mise en place, la grille de maturité, et le cas chiffré.",
                    D.PALETTE[0], "meadow", seed=1)
-    slide_maturite(prs)
     slide_kpis(prs)
     slide_kpis_pourquoi_quoi(prs)
     slide_kpis_mise_en_place(prs)
+    slide_maturite(prs)
     slide_kpis_exemple(prs)
 
     problemes = D.verifier_geometrie(prs)
