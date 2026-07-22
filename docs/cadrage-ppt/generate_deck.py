@@ -1,7 +1,14 @@
-"""Génère une synthèse PPT (32 slides) des RÉSULTATS du cadrage BMAD IAP
+"""Génère une synthèse PPT (36 slides) des RÉSULTATS du cadrage BMAD IAP
 (docs/bmad-iap-cadrage.md) à partir des helpers pptx_deck, dessinée
 PAR-DESSUS le vrai template de marque OCTO (template-octo.pptx) —
 masters/layouts/thème conservés, pas un deck sur canevas vierge.
+
+Structure en 5 actes de product-discovery (problème → qui → ce qui fait mal →
+notre réponse → IA) : Contexte, Personas, Besoins & douleurs, Proposition, IA.
+L'IA est délibérément tirée dans son propre chapitre APRÈS la proposition —
+la doctrine « l'IA amplifie l'organisation, elle n'est jamais la réponse à un
+problème d'abord organisationnel » est protégée en présentant personas et
+douleurs AVANT la proposition, et l'IA en dernier.
 
 Centré sur les résultats du cadrage (mission, doctrine, méthode, maturité,
 ambition, KPIs, schéma de fonctionnement) plutôt que sur tout le détail de
@@ -94,9 +101,13 @@ def new_prs():
 
 # Couleur de chapitre par groupe de slides — signal de navigation plus fort
 # que le seul kicker textuel (piste retenue dans analyse-template-alternatif.md).
-# Cadrage/Méthode/Trajectoire reprennent les mêmes 3 couleurs déjà utilisées
-# sur la slide Executive summary (D.PALETTE[0]/[1]/[3]) — pas une palette de
-# plus à mémoriser ; passées explicitement à chaque appel de content_slide().
+# Un code couleur par acte, passé explicitement à chaque appel de
+# content_slide() ET repris sur l'intercalaire du chapitre :
+#   Contexte           = D.PALETTE[0]  (bleu)
+#   Personas           = D.PALETTE[5]  (teal)
+#   Besoins & douleurs = D.PALETTE[2]  (rouge)
+#   Proposition        = D.PALETTE[1]  (vert)
+#   IA                 = D.PALETTE[4]  (violet)
 
 
 def content_slide(prs, kicker, title, color=None):
@@ -178,6 +189,15 @@ _REQUETES_PHOTO = {
     # sur les quatre bords — VÉRIFIÉE au rendu réel le 2026-07-21.
     "ocean": "turquoise water",
     "sunset": "sunset sky",
+    # Chapitre 05 (IA) : scène réelle distincte (astrophoto « starry night sky »),
+    # VÉRIFIÉE au rendu réel — une requête mot-clé n'a aucun jugement (« plage
+    # bondée », ou « desert sand dunes » → photo de fossile de musée), donc chaque
+    # photo est validée à l'œil. Chapitre 04 réutilise une 2ᵉ photo océan réelle
+    # cachée (ocean seed 1) : le fetch d'une nouvelle scène a échoué (SSL cert
+    # expiré côté Openverse, et « desert » = 0 résultat CC0) et le repli
+    # nature_images serait procédural — on préfère une vraie photo cachée à du
+    # procédural. À refetcher une scène distincte pour Ch04 quand le réseau est OK.
+    "nightsky": "starry night sky",
 }
 
 
@@ -325,12 +345,12 @@ def slide_cover(prs):
     phs[0].text_frame.text = "BMAD IAP"
     phs[1].text_frame.text = "Infra as a Product Transformation Pack — synthèse de cadrage"
     phs[2].text_frame.text = "OCTO Technology"
-    phs[3].text_frame.text = "v2.0 · 2026-07-15"
+    phs[3].text_frame.text = "v2.2 · 2026-07-22"
 
     # Bandeau de métadonnées sous la zone de couverture du template, dans la
     # bande basse encore libre (le pied de page/logo du master restent visibles).
     metas = [
-        ("STATUT", "Draft consolidé v2.0"),
+        ("STATUT", "Draft consolidé v2.2"),
         ("LANGUE", "FR"),
         ("CONFIDENTIALITÉ", "Client-data-first"),
         ("SOURCES", "Grille Assessment V3.2 · Interview-to-Deck"),
@@ -403,7 +423,7 @@ def slide_executive_summary(prs):
 
 # ---------------------------------------------------------------- slide 3
 def slide_mission(prs):
-    s = content_slide(prs, "Cadrage", "Une double mission : transformer ET assainir", color=D.PALETTE[0])
+    s = content_slide(prs, "Contexte", "Une double mission : transformer ET assainir", color=D.PALETTE[0])
     cards = [
         ("TRANSFORMER", D.PALETTE[0],
          "Cible produit/plateforme : utilisateurs identifiés, valeur, roadmap, "
@@ -454,7 +474,7 @@ def slide_mission(prs):
 
 # ---------------------------------------------------------------- slide 4
 def slide_gate_ia(prs):
-    s = content_slide(prs, "Cadrage", "Les données du client gouvernent le choix du modèle IA", color=D.PALETTE[0])
+    s = content_slide(prs, "Proposition", "Les données du client gouvernent le choix du modèle IA", color=D.PALETTE[1])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.35, [
         ("Checkpoint toujours humain avant tout usage IA sur données client — "
          "iap-ai-data-confidentiality-gate, quel que soit le mode d'exécution retenu.",
@@ -487,7 +507,7 @@ def slide_gate_ia(prs):
 
 # ---------------------------------------------------------------- slide 5
 def slide_maturite(prs):
-    s = content_slide(prs, "Cadrage", "Deux échelles de maturité, jamais confondues", color=D.PALETTE[0])
+    s = content_slide(prs, "Proposition", "Deux échelles de maturité, jamais confondues", color=D.PALETTE[1])
     x0, w0 = col_x(0, 2)
     x1, w1 = col_x(1, 2)
 
@@ -541,13 +561,13 @@ def slide_maturite(prs):
 # rouverte ici en une slide dédiée. Quatre parties prenantes de la couverture
 # d'interview (§Synthesis, "répartition par persona : infra/utilisateur/
 # management/sponsor", ligne 457) — chacune sa voix, sa question directrice
-# (reprise des questions des §Agents), son irritant, son attente. Placée en
-# fin de chapitre Cadrage : on sait qui l'on transforme avant d'attaquer les
-# candidats d'automatisation (slides agent IA) et la méthode (chapitre Méthode).
+# (reprise des questions des §Agents), son irritant, son attente. Ouvre le
+# chapitre Personas (acte 2) : on sait QUI l'on transforme avant d'exposer ses
+# douleurs (chapitre Besoins & douleurs) puis notre réponse (Proposition).
 def slide_personas(prs):
-    s = content_slide(prs, "Cadrage",
+    s = content_slide(prs, "Personas",
                        "Chaque persona est interrogé séparément, pour ne pas lisser un faux consensus",
-                       color=D.PALETTE[0])
+                       color=D.PALETTE[5])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.55, [
         ("La Product Discovery (personas, parcours, pain points) reste fusionnée dans "
          "iap-product-definition en MVP1 — mais chaque partie prenante répond à la même trame, "
@@ -611,10 +631,10 @@ def slide_personas(prs):
 # template, cf. _GLYPHES_SANS_GRAS) — même prudence que pour « ⟲ ». Rangées
 # dimensionnées à leur contenu (pas de panneau sur-étiré).
 def slide_personas_divergences(prs):
-    s = content_slide(prs, "Cadrage",
+    s = content_slide(prs, "Personas",
                        "Interroger chaque persona séparément révèle des tensions "
                        "qu'un diagnostic fusionné lisserait",
-                       color=D.PALETTE[0])
+                       color=D.PALETTE[5])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.4, [
         ("Interviewer séparément sert précisément à faire ressortir ces divergences, "
          "pas à produire un consensus lissé.",
@@ -677,9 +697,23 @@ def slide_personas_divergences(prs):
     return s
 
 
-# ---------------------------------------------------------------- slide 6
-def slide_gaspillages(prs):
-    s = content_slide(prs, "Méthode", "Le gaspillage, traité comme un objet de transformation", color=D.PALETTE[1])
+# ---------------------------------------------------------------- Besoins & douleurs
+# Nouveau (restructuration 5 actes) : la grille des 8 familles de gaspillage,
+# jusqu'ici empaquetée dans slide_gaspillages avec la chaîne de traitement et le
+# score, est isolée ici — elle appartient au chapitre « Besoins & douleurs » (le
+# langage commun qui rend une douleur nommable, donc détectable et traitable),
+# tandis que la MÉTHODE de traitement (chaîne + score) reste au chapitre
+# Proposition. Accent unifié sur la couleur du chapitre Douleurs (PALETTE[2]) :
+# les 8 familles se distinguent par leur libellé, pas par 8 teintes sans clé.
+def slide_familles(prs):
+    s = content_slide(prs, "Besoins & douleurs",
+                       "Les 8 familles de gaspillage — le langage commun qui rend les douleurs traitables",
+                       color=D.PALETTE[2])
+    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.42, [
+        ("Nommer la famille, c'est déjà pouvoir la détecter, la quantifier et la prioriser "
+         "(méthode de traitement → chapitre Proposition).",
+         dict(size=D.TYPE["small"], color=NAVY, italic=True, line_spacing=1.25)),
+    ])
     familles = [
         ("Flux", "Attentes, validations multiples"),
         ("Humain", "Experts seniors sur tâches répétitives"),
@@ -690,50 +724,75 @@ def slide_gaspillages(prs):
         ("Environnemental", "Ressources inutilisées, environnements non éteints"),
         ("IA", "Cas d'usage gadget, automatisation sans garde-fous"),
     ]
-    # Accent unifié sur la couleur du chapitre Méthode : les 8 familles se
-    # distinguent par leur libellé, pas par 8 teintes décoratives sans clé de
-    # lecture (constat de revue « 8 couleurs sans légende »).
-    row_top = CONTENT_TOP + 0.45
-    row_h = 0.52
-    row_gap = 0.08
+    # 2 colonnes x 4 rangées : remplit la hauteur de la slide dédiée sans étirer
+    # chaque carte (défaut « panneau sur-étiré »). Lecture gauche->droite par
+    # paire (col = i % 2, row = i // 2).
+    n_rows = 4
+    region_top = CONTENT_TOP + 0.55
+    row_gap = 0.14
+    row_h = (CONTENT_BOTTOM - region_top - (n_rows - 1) * row_gap) / n_rows
     for i, (nom, ex) in enumerate(familles):
-        col = i % 4
-        row = i // 4
-        x, w = col_x(col, 4)
-        y = row_top + row * (row_h + row_gap)
+        col = i % 2
+        row = i // 2
+        x, w = col_x(col, 2)
+        y = region_top + row * (row_h + row_gap)
         D.add_rect(s, x, y, w, row_h, fill="#ffffff", line=LINE, line_w=0.75, rounded=True, radius=0.1)
-        D.add_rect(s, x, y, 0.06, row_h, fill=D.PALETTE[1], rounded=True, radius=0.5)
-        D.add_text(s, x + 0.16, y + 0.04, w - 0.28, row_h - 0.08, [
-            (nom, dict(size=D.TYPE["tiny"], bold=True, color=NAVY)),
-            (ex, dict(size=8, color=MUTED, space_before=1, line_spacing=1.05)),
-        ])
+        D.add_rect(s, x, y, 0.06, row_h, fill=D.PALETTE[2], rounded=True, radius=0.5)
+        D.add_text(s, x + 0.2, y + 0.06, w - 0.34, row_h - 0.12, [
+            (f"{i + 1}. {nom}", dict(size=D.TYPE["small"], bold=True, color=NAVY)),
+            (ex, dict(size=8, color=MUTED, space_before=2, line_spacing=1.1)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+    return s
 
-    chain_top = row_top + 2 * row_h + row_gap + 0.22
-    D.add_text(s, MARGIN, chain_top, CONTENT_W, 0.22, [
-        ("CHAÎNE DE TRAITEMENT", dict(size=8, bold=True, color=MUTED))
+
+# ---------------------------------------------------------------- Proposition
+# Reframe (restructuration 5 actes) : la grille des 8 familles est partie au
+# chapitre « Besoins & douleurs » (slide_familles). Ne reste ici que la MÉTHODE
+# de traitement — la chaîne Détecter->Prévenir et le score de priorisation — ré-
+# ancrée vers le haut pour combler l'espace libéré par la grille retirée, avec
+# une accroche en tête pour éviter un vide sous le titre.
+def slide_gaspillages(prs):
+    s = content_slide(prs, "Proposition",
+                       "Du gaspillage au backlog priorisé : chaîne de traitement + score",
+                       color=D.PALETTE[1])
+    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.5, [
+        ("Chaque famille de gaspillage (chapitre précédent) passe par la même chaîne de "
+         "traitement, puis reçoit un score explicite qui la classe dans un backlog priorisé "
+         "— jamais un tri à l'intuition.",
+         dict(size=D.TYPE["small"], color=NAVY, italic=True, line_spacing=1.25)),
+    ])
+
+    chain_top = CONTENT_TOP + 0.65
+    D.add_text(s, MARGIN, chain_top, CONTENT_W, 0.24, [
+        ("CHAÎNE DE TRAITEMENT — de la détection à la prévention",
+         dict(size=8, bold=True, color=MUTED))
     ])
     etapes = ["Détecter", "Qualifier", "Quantifier", "Cause racine", "Pattern",
               "Prioriser", "Expérimenter", "Mesurer", "Industrialiser", "Prévenir"]
-    step_top = chain_top + 0.24
-    step_h = 0.34
+    step_top = chain_top + 0.32
+    step_h = 0.62
+    step_gap = 0.16
     n = 5
     for i, et in enumerate(etapes):
         col = i % n
         row = i // n
         x, w = col_x(col, n)
-        y = step_top + row * (step_h + 0.08)
+        y = step_top + row * (step_h + step_gap)
         D.add_rect(s, x, y, w, step_h, fill=TRACK, rounded=True, radius=0.5)
         D.add_text(s, x, y, w, step_h, [
-            (f"{i+1}. {et}", dict(size=8, bold=True, color=NAVY, align=PP_ALIGN.CENTER))
+            (str(i + 1), dict(size=D.TYPE["small"], bold=True, color=D.PALETTE[1], align=PP_ALIGN.CENTER)),
+            (et, dict(size=8, bold=True, color=NAVY, align=PP_ALIGN.CENTER, space_before=1)),
         ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
 
-    score_top = step_top + 2 * step_h + 0.08 + 0.2
-    score_h = 1.05
+    score_top = step_top + 2 * step_h + step_gap + 0.28
+    score_h = CONTENT_BOTTOM - score_top - 0.12
     D.add_rect(s, MARGIN, score_top, CONTENT_W, score_h, fill=NAVY, rounded=True, radius=0.08)
     text_w = CONTENT_W * 0.5
     D.add_text(s, MARGIN + 0.22, score_top, text_w - 0.3, score_h, [
-        ("Priorité = (impact × faisabilité) − prudence IA", dict(size=D.TYPE["small"], bold=True, color="#ffffff", line_spacing=1.15)),
-        ("Le score ne remplace pas l'arbitrage humain : il rend la discussion explicite.",
+        ("Priorité = (impact × faisabilité) − prudence IA",
+         dict(size=D.TYPE["small"], bold=True, color="#ffffff", line_spacing=1.15)),
+        ("Le score ne remplace pas l'arbitrage humain : il rend la discussion explicite, "
+         "et classe les candidats dans un backlog priorisé.",
          dict(size=8, color="#c7cbe0", space_before=4, line_spacing=1.2)),
     ], anchor=MSO_ANCHOR.MIDDLE)
 
@@ -741,11 +800,11 @@ def slide_gaspillages(prs):
     # (analyse-template-alternatif.md §4) pour illustrer un score 1-5.
     gauge_x = MARGIN + text_w
     gauge_w = CONTENT_W - text_w
-    D.add_text(s, gauge_x, score_top + 0.1, gauge_w - 0.15, 0.18, [
+    D.add_text(s, gauge_x, score_top + 0.12, gauge_w - 0.15, 0.18, [
         ("SCORE ILLUSTRATIF", dict(size=7, bold=True, color="#8891b3")),
     ])
-    rows_top = score_top + 0.32
-    row_h2 = (score_h - 0.32 - 0.08) / 3
+    rows_top = score_top + 0.38
+    row_h2 = (score_h - 0.38 - 0.1) / 3
     gauge_rows = [
         ("Impact", 4, "#ffffff"),
         ("Faisabilité", 3, ACCENT),
@@ -761,12 +820,112 @@ def slide_gaspillages(prs):
     return s
 
 
+# ---------------------------------------------------------------- Besoins & douleurs
+# Nouveau (restructuration 5 actes) : va PLUS LOIN que slide_personas (qui porte
+# un irritant + une attente d'une ligne par persona). Ici chaque douleur est
+# approfondie, dotée d'un signal/mesure qui la rend objectivable, et rattachée à
+# une ou plusieurs familles de gaspillage — le pont direct vers slide_familles.
+# Réutilise les couleurs d'accent persona (Infra=bleu, Utilisateur=teal,
+# Management=or, Sponsor=violet). Rangées dimensionnées à leur contenu.
+def slide_douleurs(prs):
+    s = content_slide(prs, "Besoins & douleurs",
+                       "Les douleurs des clients infra : mesurables, pas des plaintes",
+                       color=D.PALETTE[2])
+    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.4, [
+        ("Chaque douleur appartient à un persona et se range dans une famille de gaspillage "
+         "— c'est ce qui la rend traitable plutôt que subie.",
+         dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
+    ])
+
+    rows = [
+        ("Infra & RUN", D.PALETTE[0],
+         "RUN subi : les mêmes incidents reviennent et mobilisent les experts seniors, le BUILD "
+         "est sacrifié à l'astreinte.",
+         "Tickets récurrents/mois, part du temps en RUN non maîtrisé.",
+         "RUN · Humain"),
+        ("Utilisateur applicatif", D.PALETTE[5],
+         "Aucun self-service ni parcours conçu : tout passe par un guichet, le contournement "
+         "(shadow IT) va plus vite que la demande officielle.",
+         "Taux de contournement, délai de mise à disposition.",
+         "Flux · Cognitif"),
+        ("Management", D.PALETTE[3],
+         "« Expert devenu manager malgré lui » : reporting miroir et micromanagement "
+         "compensatoire, faute de signal fiable sur le flux.",
+         "Ratio temps reporting / temps résolution d'obstacles.",
+         "Décisionnel · Humain"),
+        ("Sponsor", D.PALETTE[4],
+         "Pression à « mettre de l'IA » sans cas d'usage, peur d'une transformation cosmétique : "
+         "beaucoup d'activité, peu de valeur démontrée.",
+         "Valeur / capacité récupérée démontrée vs promise.",
+         "Décisionnel · IA (gadget)"),
+    ]
+
+    # Colonnes (comme slide_architecture_si) : en-têtes une seule fois, puis 4
+    # rangées à liseré = couleur persona, anchor MIDDLE. Hauteur de rangée
+    # calée sur le contenu le plus long (colonne douleur), pas d'étirement.
+    headers = ["PERSONA", "LA DOULEUR, APPROFONDIE", "SIGNAL / MESURE", "FAMILLE(S)"]
+    col_widths = [1.3, 3.6, 1.85, 1.425]
+    col_gap = 0.12
+    xs = []
+    cx = MARGIN
+    for cw in col_widths:
+        xs.append(cx)
+        cx += cw + col_gap
+
+    header_y = CONTENT_TOP + 0.45
+    for x, w, label in zip(xs, col_widths, headers):
+        D.add_text(s, x + (0.12 if x == xs[0] else 0), header_y, w, 0.2, [
+            (label, dict(size=7, bold=True, color=MUTED)),
+        ])
+
+    # Hauteur de rangée calée sur le contenu, MAIS bornée pour toujours réserver
+    # la ligne-pont du bas (« → slide suivante ») — sans ce plafond, 4 rangées de
+    # 4 lignes remplissaient jusqu'au bas et escamotaient la ligne-pont.
+    n = len(rows)
+    row_gap = 0.12
+    note_reserve = 0.5
+    row_top = header_y + 0.26
+    region_bot = CONTENT_BOTTOM - note_reserve
+    size = 8
+    lh = size * 1.2 / 72.0
+    row_lines = max(
+        max(_lignes(r[2], col_widths[1] - 0.2, size), _lignes(r[3], col_widths[2] - 0.15, size))
+        for r in rows)
+    row_h = min(row_lines * lh + 0.26, (region_bot - row_top - (n - 1) * row_gap) / n)
+    for i, (nom, color, douleur, signal, famille) in enumerate(rows):
+        y = row_top + i * (row_h + row_gap)
+        D.add_rect(s, MARGIN, y, CONTENT_W, row_h, fill="#ffffff", line=LINE, line_w=0.75,
+                   rounded=True, radius=0.08)
+        D.add_rect(s, MARGIN, y, 0.06, row_h, fill=color, rounded=True, radius=0.5)
+        D.add_text(s, xs[0] + 0.12, y + 0.08, col_widths[0] - 0.12, row_h - 0.16, [
+            (nom, dict(size=D.TYPE["tiny"], bold=True, color=color, line_spacing=1.1)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+        D.add_text(s, xs[1], y + 0.08, col_widths[1] - 0.15, row_h - 0.16, [
+            (douleur, dict(size=size, color=NAVY, line_spacing=1.2)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+        D.add_text(s, xs[2], y + 0.08, col_widths[2] - 0.12, row_h - 0.16, [
+            (signal, dict(size=size, color=MUTED, italic=True, line_spacing=1.2)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+        D.add_text(s, xs[3], y + 0.08, col_widths[3], row_h - 0.16, [
+            (famille, dict(size=size, bold=True, color=color, line_spacing=1.2)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+
+    note_top = row_top + len(rows) * row_h + (len(rows) - 1) * row_gap + 0.14
+    note_h = min(0.4, CONTENT_BOTTOM - note_top)
+    if note_h > 0.12:
+        D.add_text(s, MARGIN, note_top, CONTENT_W, note_h, [
+            ("Ces douleurs se rangent en 8 familles de gaspillage → slide suivante.",
+             dict(size=8, bold=True, color=D.PALETTE[2], line_spacing=1.15)),
+        ])
+    return s
+
+
 # --- Exemples générés (Méthode) — concrétisent slide_gaspillages avec des
 # instanciations chiffrées des concepts déjà cadrés (formule de priorisation,
 # tags de confiance, RecommendationAxis valeur/complexité, US Coach/Délégué) —
 # aucun nouveau concept, uniquement des exemples fictifs illustratifs.
 def slide_exemple_priorisation(prs):
-    s = content_slide(prs, "Méthode",
+    s = content_slide(prs, "Proposition",
                        "La priorisation en pratique : la faisabilité tempère l'impact brut",
                        color=D.PALETTE[1])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.3, [
@@ -827,7 +986,7 @@ def slide_exemple_priorisation(prs):
 
 
 def slide_exemple_diagnostic(prs):
-    s = content_slide(prs, "Méthode",
+    s = content_slide(prs, "Proposition",
                        "Un exemple de synthèse : des verbatims tagués, pas une intuition",
                        color=D.PALETTE[1])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.28, [
@@ -862,14 +1021,14 @@ def slide_exemple_diagnostic(prs):
     D.add_text(s, MARGIN + 0.22, note_top, CONTENT_W - 0.44, note_h, [
         ("Synthèse", dict(size=D.TYPE["tiny"], bold=True, color="#ffffff")),
         ("Gaspillage RUN récurrent, cause racine = process tacite jamais documenté — "
-         "candidat prioritaire pour la chaîne de traitement (slide précédente).",
+         "candidat prioritaire pour la chaîne de traitement (chapitre Proposition).",
          dict(size=8, color="#c7cbe0", space_before=3, line_spacing=1.2)),
     ], anchor=MSO_ANCHOR.MIDDLE)
     return s
 
 
 def slide_exemple_recommandation(prs):
-    s = content_slide(prs, "Méthode",
+    s = content_slide(prs, "Proposition",
                        "Une recommandation type : valeur/complexité chiffrées, backlog actionnable",
                        color=D.PALETTE[1])
     top0 = CONTENT_TOP + 0.2
@@ -918,7 +1077,7 @@ def slide_exemple_recommandation(prs):
 
 # ---------------------------------------------------------------- slide 9
 def slide_team_topologies(prs):
-    s = content_slide(prs, "Méthode", "La cible IAP est une Platform Team — agents IA compris", color=D.PALETTE[1])
+    s = content_slide(prs, "Proposition", "La cible IAP est une Platform Team — agents IA compris", color=D.PALETTE[1])
     types = [
         ("Stream-aligned", D.PALETTE[0], "Flux de valeur métier continu",
          "Équipes applicatives clientes de la plateforme infra"),
@@ -975,9 +1134,9 @@ def slide_team_topologies(prs):
 # source : bandeau Gate IA transversal, 4 colonnes du pipeline, bandeau
 # iap-risk-reviewer, bandeau boucle de réévaluation.
 def slide_schema_fonctionnement(prs):
-    s = content_slide(prs, "Trajectoire",
+    s = content_slide(prs, "Proposition",
                        "La Gate IA s'applique à chaque étape, de la collecte à la boucle de réévaluation",
-                       color=D.PALETTE[3])
+                       color=D.PALETTE[1])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.26, [
         ("Deux sources de collecte convergent vers un diagnostic structuré ; une boucle de "
          "réévaluation referme le cycle.", dict(size=8, color=MUTED, italic=True, line_spacing=1.1)),
@@ -1044,7 +1203,7 @@ def slide_schema_fonctionnement(prs):
 
 
 def slide_trajectoire(prs):
-    s = content_slide(prs, "Trajectoire", "Mise en œuvre du target operating model — piste à valider", color=D.PALETTE[3])
+    s = content_slide(prs, "Proposition", "Mise en œuvre du target operating model — piste à valider", color=D.PALETTE[1])
     phases = [
         ("①", "Assessment flash", "1–2 sem.", D.PALETTE[0],
          "= Schéma de fonctionnement déjà cadré (Collecte → Diagnostic → Conception → Restitution)."),
@@ -1100,7 +1259,7 @@ def slide_trajectoire(prs):
 # template : colonne par étape avec badge + bandeau titre + ligne de
 # séparation + bloc LIVRABLES, plutôt qu'un tableau plat.
 def slide_livrables_ppt(prs):
-    s = content_slide(prs, "Trajectoire", "Livrables PPT par étape — piste à valider", color=D.PALETTE[3])
+    s = content_slide(prs, "Proposition", "Livrables PPT par étape — piste à valider", color=D.PALETTE[1])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.4, [
         ("iap-deck-builder est cadré comme un seul deck modulaire 16 sections, produit une fois "
          "à la Restitution — la trajectoire ci-avant implique plusieurs publics et moments de "
@@ -1161,13 +1320,13 @@ def slide_livrables_ppt(prs):
 # du template (déjà utilisé dans le REX "⛱️ L'Été de l'IA", VSCode1, en
 # alternance gauche/droite pour chaque slide de contenu) — claim + puces à
 # gauche, illustration encadrée à droite.
-# Révisé (v2.3, retour utilisateur) : slide 3 recadrée sur le pourquoi du
-# projet, les enjeux, un vrai risque et une difficulté de mise en œuvre —
-# plutôt que sur le seul point de doctrine IA (qui reste, mais comme UNE
-# puce parmi d'autres, pas tout l'écran). Contenu puisé dans §Mission &
-# vision (guichet/centre de coûts, 3 tensions), §Doctrine (dette non
-# séquentielle gaspillage/cible) et le callout IA déjà cadré.
-def slide_vision_ia(prs):
+# Révisé (restructuration 5 actes) : slide 3 est l'énoncé de problème qui ouvre
+# le deck — 3 puces d'une seule colonne vertébrale ancrées dans l'utilisateur
+# (le constat → ce que ça coûte → ce qu'un bon diagnostic exige). La puce
+# « l'IA amplifie l'organisation » a été RETIRÉE : elle est implicite dans la
+# puce 2 et son point de doctrine est développé au chapitre IA (acte 5). Le
+# titre et l'image encadrée (sunset, cadre round2DiagRect) sont conservés.
+def slide_vision(prs):
     layout = prs.slide_masters[0].slide_layouts[LAYOUT_VISUEL_DROITE]
     s = prs.slides.add_slide(layout)
     phs = {ph.placeholder_format.idx: ph for ph in s.placeholders}
@@ -1178,31 +1337,35 @@ def slide_vision_ia(prs):
         for r in p.runs:
             r.font.color.rgb = _rgb(NAVY)
 
+    # (amorce en gras, corps normal) — une seule colonne vertébrale utilisateur.
     bullets = [
-        "Pourquoi ce projet : une infrastructure vécue comme un guichet ou un centre de "
-        "coûts n'a ni utilisateurs identifiés, ni feuille de route, ni levier d'adoption "
-        "— elle subit la demande au lieu de la piloter.",
-        "Les enjeux : tenir trois tensions en même temps, jamais une seule — l'efficacité "
-        "du delivery, la robustesse du RUN, et la valeur perçue par les utilisateurs internes.",
-        "La difficulté : gaspillage et cible produit ne sont pas séquentiels — une cible "
-        "sans traitement du gaspillage manque de la capacité pour s'y déployer, l'inverse "
-        "reste une réduction de coûts sans vision.",
-        "Le risque le plus sous-estimé : l'IA amplifie l'organisation existante, elle n'en "
-        "corrige pas les dysfonctionnements — jamais une réponse à un problème d'abord "
-        "organisationnel.",
+        ("Le constat",
+         "Une infrastructure vécue comme un guichet ou un centre de coûts subit la demande "
+         "au lieu de la piloter : ni utilisateurs identifiés, ni feuille de route, ni levier "
+         "d'adoption."),
+        ("Ce que ça coûte",
+         "La capacité disponible part en gaspillage (RUN subi, ressources orphelines, experts "
+         "seniors sur des tâches répétitives) — et le réflexe « plus d'outils » ou « mettons de "
+         "l'IA » l'aggrave au lieu de le traiter."),
+        ("Ce qu'un bon diagnostic exige",
+         "Partir des utilisateurs réels et de leurs douleurs, pas d'une réponse toute faite : "
+         "c'est ce que déroulent les chapitres suivants."),
     ]
     tf = phs[1].text_frame
-    tf.text = bullets[0]
-    for b in bullets[1:]:
-        p = tf.add_paragraph()
-        p.text = b
-    for p in tf.paragraphs:
-        for r in p.runs:
-            r.font.color.rgb = _rgb(NAVY)
+    tf.word_wrap = True
+    for i, (lead, body) in enumerate(bullets):
+        p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+        r1 = p.add_run()
+        r1.text = lead
+        r1.font.bold = True
+        r1.font.color.rgb = _rgb(NAVY)
+        r2 = p.add_run()
+        r2.text = " — " + body
+        r2.font.color.rgb = _rgb(NAVY)
 
     cadre = _find_frame_in_group(s.slide_layout.shapes, "Google Shape;212;p17", "Google Shape;213;p17")
     for pb in frame_obstructions(s, *cadre[:4]) if cadre else []:
-        print("  [obstruction] vision-ia:", pb["source"], pb["name"], pb["reason"])
+        print("  [obstruction] vision:", pb["source"], pb["name"], pb["reason"])
     _remplir_cadre(s, cadre, "sunset", seed=1)
     return s
 
@@ -1212,9 +1375,9 @@ def slide_vision_ia(prs):
 # vue de synthèse bout-en-bout — sert de pont entre les deux, pas un doublon
 # (chaque colonne ne liste QUE le nom des livrables, pas leur contenu).
 def slide_schema_bout_en_bout(prs):
-    s = content_slide(prs, "Trajectoire",
+    s = content_slide(prs, "Proposition",
                        "Comment ça fonctionne, de bout en bout : quels livrables, à quel moment",
-                       color=D.PALETTE[3])
+                       color=D.PALETTE[1])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.3, [
         ("Assemble la trajectoire (slide précédente) et les livrables détaillés (slides suivantes) "
          "en une seule vue d'ensemble.", dict(size=8, color=MUTED, italic=True)),
@@ -1275,12 +1438,12 @@ def slide_schema_bout_en_bout(prs):
 # l'équipe qui exécute, pas pour le sponsor. Deux cartes (mêmes proportions
 # que slide_mission) + un bandeau de routage + une note "pas un aller simple".
 def slide_export_markdown(prs):
-    s = content_slide(prs, "Trajectoire",
+    s = content_slide(prs, "IA",
                        "Export markdown — agentic ou documentation, selon le contexte client (piste à valider)",
-                       color=D.PALETTE[3])
+                       color=D.PALETTE[4])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.32, [
         ("Pas un 5e deck PPT : un livrable markdown pour l'équipe qui exécute (versionnable, "
-         "committable) — les 4 decks ci-dessus restent pour sponsor et comité de pilotage.",
+         "committable) — les 4 decks du chapitre Proposition restent pour sponsor et comité de pilotage.",
          dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
     ])
 
@@ -1340,7 +1503,7 @@ def slide_export_markdown(prs):
 
 # ---------------------------------------------------------------- slide 11
 def slide_ambition(prs):
-    s = content_slide(prs, "Trajectoire", "Trois niveaux d'ambition, pas un spectre linéaire", color=D.PALETTE[3])
+    s = content_slide(prs, "Proposition", "Trois niveaux d'ambition, pas un spectre linéaire", color=D.PALETTE[1])
     niveaux = [
         ("A", "Aide au coach", D.PALETTE[0],
          "Génère un livrable à la demande — aucune initiative propre. Le consultant pilote à 100 %.",
@@ -1392,7 +1555,7 @@ def slide_ambition(prs):
 
 # ---------------------------------------------------------------- slide 12
 def slide_kpis(prs):
-    s = content_slide(prs, "Trajectoire", "Trois familles de KPIs, à ne jamais confondre", color=D.PALETTE[3])
+    s = content_slide(prs, "Proposition", "Trois familles de KPIs, à ne jamais confondre", color=D.PALETTE[1])
     familles = [
         ("KPIs de mission", D.PALETTE[0], "Côté client",
          ["Gaspillage traité (capacité RUN récupérée)", "Adoption produit (self-service)",
@@ -1437,7 +1600,7 @@ def slide_kpis(prs):
 # chaque famille, quoi mesurer précisément, comment la mettre en place, et un
 # exemple chiffré sur le cas nominal déjà posé pour l'export markdown.
 def slide_kpis_pourquoi_quoi(prs):
-    s = content_slide(prs, "Trajectoire", "KPIs : pourquoi chaque famille, et quoi mesurer précisément", color=D.PALETTE[3])
+    s = content_slide(prs, "Proposition", "KPIs : pourquoi chaque famille, et quoi mesurer précisément", color=D.PALETTE[1])
     familles = [
         ("KPIs de mission", D.PALETTE[0],
          "Sans eux, un deck peut être livré dans les règles sans jamais savoir si le client va "
@@ -1479,7 +1642,7 @@ def slide_kpis_pourquoi_quoi(prs):
 
 
 def slide_kpis_mise_en_place(prs):
-    s = content_slide(prs, "Trajectoire", "KPIs : comment on les met en place, concrètement", color=D.PALETTE[3])
+    s = content_slide(prs, "Proposition", "KPIs : comment on les met en place, concrètement", color=D.PALETTE[1])
     familles = [
         ("KPIs de mission", D.PALETTE[0], "iap-metrics-sre-finops-lead",
          "ServiceNow/Jira/CMDB si accès (preuves externes), sinon déclaratif — tagué DÉDUIT",
@@ -1523,9 +1686,9 @@ def slide_kpis_mise_en_place(prs):
 
 
 def slide_kpis_exemple(prs):
-    s = content_slide(prs, "Trajectoire", "KPIs en pratique : le cas nominal RUN massif, avant/après", color=D.PALETTE[3])
+    s = content_slide(prs, "Proposition", "KPIs en pratique : le cas nominal RUN massif, avant/après", color=D.PALETTE[1])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.28, [
-        ("Même fixture illustrative que le cas nominal export markdown (chapitre Trajectoire) — pas un client réel.",
+        ("Même fixture illustrative que le cas nominal de l'export markdown (chapitre IA) — pas un client réel.",
          dict(size=8, color=MUTED, italic=True)),
     ])
     col_widths = [2.85, 1.75, 1.85, 1.725]
@@ -1585,14 +1748,15 @@ def slide_kpis_exemple(prs):
     return s
 
 
-# --- Nouveau (brainstorm) : rendre tangible, dès le chapitre Cadrage, ce que
-# "piste agentique" veut dire concrètement — 3 candidats illustratifs ancrés
-# sur des familles de gaspillage déjà cadrées (§Traitement des gaspillages),
-# pas des exemples inventés hors cadre. Même code couleur que les familles de
-# gaspillage sur la slide dédiée (Méthode) : RUN=rouge, Financier=or,
-# Cognitif=violet — cohérence intentionnelle, pas un hasard de palette.
+# --- Nouveau (brainstorm) : rendre tangible, dans le chapitre IA (acte 5,
+# APRÈS la proposition), ce que "piste agentique" veut dire concrètement — 3
+# candidats illustratifs ancrés sur des familles de gaspillage déjà cadrées
+# (§Traitement des gaspillages), pas des exemples inventés hors cadre. Chaque
+# carte reprend la couleur de sa famille de gaspillage (RUN=rouge, Financier=or,
+# Cognitif=violet) via l'argument `color` — cohérence intentionnelle avec
+# slide_familles, pas un hasard de palette.
 def slide_agent_ia(prs, titre, nom_agent, famille, why, what, gain, color, note=None):
-    s = content_slide(prs, "Cadrage", titre, color=D.PALETTE[0])
+    s = content_slide(prs, "IA", titre, color=D.PALETTE[4])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.45, [
         (nom_agent, dict(size=D.TYPE["h3"], bold=True, color=color)),
         (f"Gaspillage {famille}", dict(size=8, color=MUTED, italic=True, space_before=2)),
@@ -1637,11 +1801,12 @@ def slide_agent_ia(prs, titre, nom_agent, famille, why, what, gain, color, note=
     return s
 
 
-# --- Nouveau (brainstorm) : la formule de priorisation (slide précédente du
-# chapitre Méthode) cite "prudence IA" sans jamais l'expliquer — corrige ça
-# avant que l'exemple chiffré (slide suivante) ne s'en serve.
+# --- Nouveau (brainstorm) : la formule de priorisation (chapitre Proposition)
+# cite "prudence IA" sans jamais l'expliquer — cette slide la décompose. Ouvre
+# le chapitre IA (acte 5), avant les 3 candidats d'agent : on pose d'abord le
+# frein, ensuite seulement les cas d'usage.
 def slide_prudence_ia(prs):
-    s = content_slide(prs, "Méthode", "La prudence IA est un frein chiffré, pas un veto", color=D.PALETTE[1])
+    s = content_slide(prs, "IA", "La prudence IA est un frein chiffré, pas un veto", color=D.PALETTE[4])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.4, [
         ("Prudence IA = confidentialité + besoin de supervision + criticité de la décision",
          dict(size=D.TYPE["small"], bold=True, color=NAVY, line_spacing=1.2)),
@@ -1649,7 +1814,7 @@ def slide_prudence_ia(prs):
 
     facteurs = [
         ("CONFIDENTIALITÉ", D.PALETTE[0],
-         "Reprend directement la classification du gate IA (D0-D4, chapitre Cadrage) — "
+         "Reprend directement la classification du gate IA (D0-D4, chapitre Proposition) — "
          "plus la donnée est sensible, plus le score monte."),
         ("BESOIN DE SUPERVISION", D.PALETTE[3],
          "Le palier d'adoption visé (assisté / supervisé / délégué) — un agent encore "
@@ -1679,7 +1844,7 @@ def slide_prudence_ia(prs):
         ("Un frein, pas un veto automatique", dict(size=D.TYPE["tiny"], bold=True, color="#ffffff")),
         ("Le score est SOUSTRAIT de impact × faisabilité — un candidat facile et à fort "
          "impact peut quand même être écarté si sa prudence IA est trop haute (cf. l'exemple "
-         "chiffré, slide suivante). Le score ne remplace pas l'arbitrage humain : il le rend "
+         "chiffré du chapitre Proposition). Le score ne remplace pas l'arbitrage humain : il le rend "
          "explicite. Avancer malgré un score élevé reste possible, mais se documente comme une "
          "décision à part entière (même discipline que la dérogation du gate DevOps).",
          dict(size=8, color="#c7cbe0", space_before=3, line_spacing=1.25)),
@@ -1692,9 +1857,9 @@ def slide_prudence_ia(prs):
 # cadré (slide précédente) — synthèse d'éléments déjà posés (§Ambition de
 # l'outil, §Solution technique envisagée), pas une nouvelle doctrine.
 def slide_architecture_si(prs):
-    s = content_slide(prs, "Trajectoire",
+    s = content_slide(prs, "Proposition",
                        "Le lien avec le SI du client change avec le niveau d'ambition, pas la méthode",
-                       color=D.PALETTE[3])
+                       color=D.PALETTE[1])
     headers = ["NIVEAU", "SOURCES", "MODE DE CONNEXION", "LIVRABLES"]
     col_widths = [1.1, 2.55, 2.75, 1.95]
     xs = []
@@ -1762,12 +1927,12 @@ def slide_architecture_si(prs):
 # agents nommés, regroupés par étape en cartes (pas de flèches), le gate
 # confidentialité posé comme un socle transversal et bloquant. Couleurs des
 # familles reprises de slide_schema_fonctionnement (Diagnostic=violet,
-# Conception=or, etc.) — cohérence inter-slides voulue, pas un hasard. Ouvre le
-# chapitre Trajectoire : on présente les composants avant leur mise en œuvre.
+# Conception=or, etc.) — cohérence inter-slides voulue, pas un hasard. Clôt le
+# chapitre IA (acte 5) : l'inventaire complet des agents, gate en socle.
 def slide_architecture_agents(prs):
-    s = content_slide(prs, "Trajectoire",
+    s = content_slide(prs, "IA",
                        "Onze agents spécialisés, un seul bloquant : le gate confidentialité les traverse tous",
-                       color=D.PALETTE[3])
+                       color=D.PALETTE[4])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.5, [
         ("Un mandat unique par agent, regroupés par étape. Le gate confidentialité est le seul "
          "à pouvoir arrêter la chaîne — transversal, il précède tout usage d'un modèle IA sur "
@@ -1865,15 +2030,55 @@ def build():
     prs = new_prs()
     slide_cover(prs)
     slide_executive_summary(prs)
-    slide_vision_ia(prs)
+    slide_vision(prs)
 
-    slide_chapitre(prs, "01", "Cadrage", "Mission, doctrine, gate IA, maturité, personas",
-                   D.PALETTE[0], "mountains")
+    # === Acte 1 — CONTEXTE : le problème ===
+    slide_chapitre(prs, "01", "Contexte",
+                   "La double mission : transformer l'infrastructure en produit, et assainir le gaspillage.",
+                   D.PALETTE[0], "mountains", seed=0)
     slide_mission(prs)
-    slide_gate_ia(prs)
-    slide_maturite(prs)
+
+    # === Acte 2 — PERSONAS : qui l'on transforme ===
+    slide_chapitre(prs, "02", "Personas",
+                   "Quatre parties prenantes interrogées séparément — leurs voix, et les tensions révélées.",
+                   D.PALETTE[5], "forest", seed=0)
     slide_personas(prs)
     slide_personas_divergences(prs)
+
+    # === Acte 3 — BESOINS & DOULEURS : ce qui fait mal ===
+    slide_chapitre(prs, "03", "Besoins & douleurs",
+                   "Les douleurs approfondies et mesurables, et les 8 familles de gaspillage qui les rangent.",
+                   D.PALETTE[2], "ocean", seed=0)
+    slide_douleurs(prs)
+    slide_familles(prs)
+
+    # === Acte 4 — PROPOSITION : notre réponse ===
+    slide_chapitre(prs, "04", "Proposition",
+                   "Notre réponse : gate IA, maturité, méthode scorée, trajectoire, livrables, ambition, KPIs.",
+                   D.PALETTE[1], "ocean", seed=1)
+    slide_gate_ia(prs)
+    slide_maturite(prs)
+    slide_gaspillages(prs)
+    slide_exemple_priorisation(prs)
+    slide_exemple_diagnostic(prs)
+    slide_exemple_recommandation(prs)
+    slide_team_topologies(prs)
+    slide_schema_fonctionnement(prs)
+    slide_trajectoire(prs)
+    slide_schema_bout_en_bout(prs)
+    slide_livrables_ppt(prs)
+    slide_ambition(prs)
+    slide_architecture_si(prs)
+    slide_kpis(prs)
+    slide_kpis_pourquoi_quoi(prs)
+    slide_kpis_mise_en_place(prs)
+    slide_kpis_exemple(prs)
+
+    # === Acte 5 — IA : tirée APRÈS la proposition (l'IA amplifie, n'est jamais la réponse) ===
+    slide_chapitre(prs, "05", "IA",
+                   "L'IA au service de la réponse : prudence, agents candidats, export, architecture.",
+                   D.PALETTE[4], "nightsky", seed=0)
+    slide_prudence_ia(prs)
     slide_agent_ia(
         prs, "Un agent de triage peut absorber le gaspillage RUN le plus répétitif",
         "Agent de triage de tickets", "RUN",
@@ -1906,32 +2111,10 @@ def build():
         "Charge cognitive réduite, onboarding plus rapide, moins d'interruptions des experts "
         "seniors pour des questions déjà documentées.",
         D.PALETTE[4],
-        note=("Ces 3 candidats restent soumis au même scoring (chapitre Méthode) et au gate IA "
-              "(ci-dessus) avant toute décision — des exemples illustratifs, pas une liste actée."))
-
-    slide_chapitre(prs, "02", "Méthode", "Traitement des gaspillages, exemples chiffrés, modèles d'équipe",
-                   D.PALETTE[1], "forest")
-    slide_gaspillages(prs)
-    slide_prudence_ia(prs)
-    slide_exemple_priorisation(prs)
-    slide_exemple_diagnostic(prs)
-    slide_exemple_recommandation(prs)
-    slide_team_topologies(prs)
-
-    slide_chapitre(prs, "03", "Trajectoire", "Architecture des agents, mise en œuvre, livrables, ambition, KPIs",
-                   D.PALETTE[3], "ocean", seed=0)
-    slide_architecture_agents(prs)
-    slide_schema_fonctionnement(prs)
-    slide_trajectoire(prs)
-    slide_schema_bout_en_bout(prs)
-    slide_livrables_ppt(prs)
+        note=("Ces 3 candidats restent soumis au même scoring et au gate IA (chapitre Proposition) "
+              "avant toute décision — des exemples illustratifs, pas une liste actée."))
     slide_export_markdown(prs)
-    slide_ambition(prs)
-    slide_architecture_si(prs)
-    slide_kpis(prs)
-    slide_kpis_pourquoi_quoi(prs)
-    slide_kpis_mise_en_place(prs)
-    slide_kpis_exemple(prs)
+    slide_architecture_agents(prs)
 
     problemes = D.verifier_geometrie(prs)
     if problemes:

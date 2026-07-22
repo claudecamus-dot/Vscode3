@@ -42,9 +42,23 @@
 - `docs/cadrage-ppt/` : le deck OCTO annoncé comme « à réactiver si un jour »
   ci-dessus est désormais réel — `template-octo.pptx` (copie du template de
   marque, masters/layouts/thème OCTO) + `pptx_deck.py` (copie synchronisée du
-  skill global `pptx-deck`) + `generate_deck.py` (32 slides de synthèse du
-  cadrage BMAD IAP v2.1, dessinées sur le vrai template) → `bmad-iap-cadrage-
-  synthese.pptx`. Structure : couverture, executive summary, 1 slide « vision »
+  skill global `pptx-deck`) + `generate_deck.py` (36 slides de synthèse du
+  cadrage BMAD IAP v2.2, dessinées sur le vrai template) → `bmad-iap-cadrage-
+  synthese.pptx`. **Restructuré le 2026-07-22 en 5 actes** (flux discovery
+  produit : Contexte · Personas · Besoins & douleurs · Proposition · IA).
+  Personas et douleurs déplacés AVANT la proposition ; l'IA consolidée dans un
+  chapitre dédié FINAL (cohérent avec « l'IA amplifie l'organisation, jamais la
+  réponse à un problème d'abord organisationnel »). Nouveautés : `slide_douleurs`
+  (douleurs par persona, mesurées, mappées aux familles) + `slide_familles`
+  (8 familles) ; `slide_gaspillages` splitté (familles → chapitre Douleurs,
+  chaîne de traitement + score → chapitre Proposition) ; slide « vision »
+  (ex-`slide_vision_ia`, renommée `slide_vision`) resserrée à 3 puces, la puce IA
+  partie au chapitre IA ; intercalaires = 5 vraies photos (mountains / forest /
+  ocean×2 / astrophoto pour l'IA — le fetch d'une scène distincte pour Ch04
+  reste à refaire quand Openverse/SSL sera OK, cf. commentaire `_REQUETES_PHOTO`).
+  ⚠️ La description ci-dessous décrit l'organisation en **3 chapitres AVANT**
+  cette restructuration et n'a pas été réécrite au fil — structure (historique) :
+  couverture, executive summary, 1 slide « vision »
   (claim + puces + visuel encadré, layout "63 - cadre blanc" — recadrée sur le
   pourquoi du projet/les enjeux/une difficulté de mise en œuvre/le risque IA,
   plutôt que le seul point de doctrine IA qui n'en est plus qu'une puce parmi
