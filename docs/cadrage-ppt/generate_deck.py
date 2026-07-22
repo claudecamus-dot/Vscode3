@@ -189,14 +189,16 @@ _REQUETES_PHOTO = {
     # sur les quatre bords — VÉRIFIÉE au rendu réel le 2026-07-21.
     "ocean": "turquoise water",
     "sunset": "sunset sky",
-    # Chapitre 05 (IA) : scène réelle distincte (astrophoto « starry night sky »),
-    # VÉRIFIÉE au rendu réel — une requête mot-clé n'a aucun jugement (« plage
-    # bondée », ou « desert sand dunes » → photo de fossile de musée), donc chaque
-    # photo est validée à l'œil. Chapitre 04 réutilise une 2ᵉ photo océan réelle
-    # cachée (ocean seed 1) : le fetch d'une nouvelle scène a échoué (SSL cert
-    # expiré côté Openverse, et « desert » = 0 résultat CC0) et le repli
-    # nature_images serait procédural — on préfère une vraie photo cachée à du
-    # procédural. À refetcher une scène distincte pour Ch04 quand le réseau est OK.
+    # Chapitres 04 & 05 (restructuration 5 actes) : 2 scènes réelles distinctes,
+    # VÉRIFIÉES au rendu réel — une requête mot-clé n'a aucun jugement (cf. « plage
+    # bondée », ou « desert »/« desert dune » seed 0 → photo de fossile de musée),
+    # donc chaque photo est validée à l'œil. Ch04 « sand dunes » = vue aérienne NASA
+    # (rawpixel CC0) ; Ch05 « starry night sky » = astrophoto. Le repli nature_images
+    # (procédural) ne se déclenche que si Openverse est indisponible (SSL/0-résultat)
+    # ET que le nom de scène est connu du fallback (forest/meadow/mountains/ocean/
+    # sunset/tropical) — sinon le générateur PLANTE (ValueError unknown scene).
+    # Préférer une vraie photo à du procédural ; cf. mémoire reference-deck-image-fetcher.
+    "dunes": "sand dunes",
     "nightsky": "starry night sky",
 }
 
@@ -2055,7 +2057,7 @@ def build():
     # === Acte 4 — PROPOSITION : notre réponse ===
     slide_chapitre(prs, "04", "Proposition",
                    "Notre réponse : gate IA, maturité, méthode scorée, trajectoire, livrables, ambition, KPIs.",
-                   D.PALETTE[1], "ocean", seed=1)
+                   D.PALETTE[1], "dunes", seed=0)
     slide_gate_ia(prs)
     slide_maturite(prs)
     slide_gaspillages(prs)

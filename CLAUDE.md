@@ -53,9 +53,9 @@
   (8 familles) ; `slide_gaspillages` splitté (familles → chapitre Douleurs,
   chaîne de traitement + score → chapitre Proposition) ; slide « vision »
   (ex-`slide_vision_ia`, renommée `slide_vision`) resserrée à 3 puces, la puce IA
-  partie au chapitre IA ; intercalaires = 5 vraies photos (mountains / forest /
-  ocean×2 / astrophoto pour l'IA — le fetch d'une scène distincte pour Ch04
-  reste à refaire quand Openverse/SSL sera OK, cf. commentaire `_REQUETES_PHOTO`).
+  partie au chapitre IA ; intercalaires = 5 vraies photos distinctes (mountains /
+  forest / ocean turquoise / dunes aériennes NASA / astrophoto pour l'IA — toutes
+  fetchées via Openverse CC0 et vérifiées au rendu réel).
   ⚠️ La description ci-dessous décrit l'organisation en **3 chapitres AVANT**
   cette restructuration et n'a pas été réécrite au fil — structure (historique) :
   couverture, executive summary, 1 slide « vision »
