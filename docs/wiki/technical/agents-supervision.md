@@ -1,5 +1,5 @@
 ---
-updated: 2026-07-21
+updated: 2026-07-22
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -9,7 +9,7 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 > Conception et phasage : [../../reflexions/agent-superviseur.md](../../reflexions/agent-superviseur.md).
 
-Dernier scan : 2026-07-21T15:28:42+02:00 · **9 sessions** (transcripts) · **11** invocations de skills · **26** lancements de sous-agents.
+Dernier scan : 2026-07-22T11:15:32+02:00 · **10 sessions** (transcripts) · **12** invocations de skills · **33** lancements de sous-agents.
 
 ## Skills — usage réel
 
@@ -19,6 +19,7 @@ Dernier scan : 2026-07-21T15:28:42+02:00 · **9 sessions** (transcripts) · **11
 | `artifact-design` | (builtin/session) | 2 | 2026-07-06 | 2026-07-07 |
 | `pptx-deck` | global | 2 | 2026-07-08 | 2026-07-09 |
 | `agent-orchestrator` | projet | 1 | 2026-07-21 | 2026-07-21 |
+| `bmad-agent-pm` | BMAD | 1 | 2026-07-22 | 2026-07-22 |
 | `pptx-verify` | global | 1 | 2026-07-08 | 2026-07-08 |
 | `restitution-deck-design` | global | 1 | 2026-07-08 | 2026-07-08 |
 | `revue-increment` | projet | 1 | 2026-07-21 | 2026-07-21 |
@@ -28,10 +29,11 @@ Dernier scan : 2026-07-21T15:28:42+02:00 · **9 sessions** (transcripts) · **11
 
 | Sous-agent | Lancements | Premier | Dernier |
 | --- | --- | --- | --- |
-| `general-purpose` | 21 | 2026-07-06 | 2026-07-08 |
+| `general-purpose` | 24 | 2026-07-06 | 2026-07-21 |
+| `ppt-designer` | 4 | 2026-07-21 | 2026-07-22 |
 | `Explore` | 3 | 2026-07-21 | 2026-07-21 |
 | `Plan` | 1 | 2026-07-21 | 2026-07-21 |
-| `ppt-designer` | 1 | 2026-07-21 | 2026-07-21 |
+| `claude-code-guide` | 1 | 2026-07-21 | 2026-07-21 |
 
 ## Jamais utilisés
 
@@ -39,11 +41,11 @@ Dernier scan : 2026-07-21T15:28:42+02:00 · **9 sessions** (transcripts) · **11
 
 `pptx-framed-image`, `slide-text-polish`
 
-**BMAD** — 46/46 jamais invoqués :
+**BMAD** — 45/46 jamais invoqués :
 
 <details><summary>Voir la liste</summary>
 
-`bmad-advanced-elicitation`, `bmad-agent-analyst`, `bmad-agent-architect`, `bmad-agent-dev`, `bmad-agent-pm`, `bmad-agent-tech-writer`, `bmad-agent-ux-designer`, `bmad-architecture`, `bmad-brainstorming`, `bmad-check-implementation-readiness`, `bmad-checkpoint-preview`, `bmad-code-review`, `bmad-correct-course`, `bmad-create-architecture`, `bmad-create-epics-and-stories`, `bmad-create-prd`, `bmad-create-story`, `bmad-customize`, `bmad-dev-auto`, `bmad-dev-story`, `bmad-document-project`, `bmad-domain-research`, `bmad-edit-prd`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-forge-idea`, `bmad-generate-project-context`, `bmad-help`, `bmad-index-docs`, `bmad-market-research`, `bmad-party-mode`, `bmad-prd`, `bmad-prfaq`, `bmad-product-brief`, `bmad-qa-generate-e2e-tests`, `bmad-quick-dev`, `bmad-retrospective`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-shard-doc`, `bmad-spec`, `bmad-sprint-planning`, `bmad-sprint-status`, `bmad-technical-research`, `bmad-ux`, `bmad-validate-prd`
+`bmad-advanced-elicitation`, `bmad-agent-analyst`, `bmad-agent-architect`, `bmad-agent-dev`, `bmad-agent-tech-writer`, `bmad-agent-ux-designer`, `bmad-architecture`, `bmad-brainstorming`, `bmad-check-implementation-readiness`, `bmad-checkpoint-preview`, `bmad-code-review`, `bmad-correct-course`, `bmad-create-architecture`, `bmad-create-epics-and-stories`, `bmad-create-prd`, `bmad-create-story`, `bmad-customize`, `bmad-dev-auto`, `bmad-dev-story`, `bmad-document-project`, `bmad-domain-research`, `bmad-edit-prd`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-forge-idea`, `bmad-generate-project-context`, `bmad-help`, `bmad-index-docs`, `bmad-market-research`, `bmad-party-mode`, `bmad-prd`, `bmad-prfaq`, `bmad-product-brief`, `bmad-qa-generate-e2e-tests`, `bmad-quick-dev`, `bmad-retrospective`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-shard-doc`, `bmad-spec`, `bmad-sprint-planning`, `bmad-sprint-status`, `bmad-technical-research`, `bmad-ux`, `bmad-validate-prd`
 
 </details>
 
@@ -76,7 +78,7 @@ _Constats clos par décision humaine (`.claude/supervision/arbitrages.json`) —
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 
-_Diagnostic à jour — rien à signaler, tous les constats précédents ont été arbitrés._
+_Diagnostic ⚠️ à relancer (> 14 j) — rien à signaler, tous les constats précédents ont été arbitrés._
 
 ---
 
