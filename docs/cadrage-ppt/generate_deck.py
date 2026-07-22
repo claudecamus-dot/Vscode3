@@ -1481,7 +1481,7 @@ def slide_livrables_ppt(prs):
 # le deck — 3 puces d'une seule colonne vertébrale ancrées dans l'utilisateur
 # (le constat → ce que ça coûte → ce qu'un bon diagnostic exige). La puce
 # « l'IA amplifie l'organisation » a été RETIRÉE : elle est implicite dans la
-# puce 2 et son point de doctrine est développé au chapitre IA (acte 5). Le
+# puce 2 et son point de doctrine est développé au chapitre IA. Le
 # titre et l'image encadrée (sunset, cadre round2DiagRect) sont conservés.
 def slide_vision(prs):
     layout = prs.slide_masters[0].slide_layouts[LAYOUT_VISUEL_DROITE]
@@ -2085,7 +2085,7 @@ def slide_architecture_si(prs):
 # confidentialité posé comme un socle transversal et bloquant. Couleurs des
 # familles reprises de slide_schema_fonctionnement (Diagnostic=violet,
 # Conception=or, etc.) — cohérence inter-slides voulue, pas un hasard. Clôt le
-# chapitre IA (acte 5) : l'inventaire complet des agents, gate en socle.
+# chapitre IA : l'inventaire complet des agents, gate en socle.
 def slide_architecture_agents(prs):
     s = content_slide(prs, "IA",
                        "Onze agents spécialisés, un seul bloquant : le gate confidentialité les traverse tous",
