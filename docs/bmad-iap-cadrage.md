@@ -1,8 +1,8 @@
-> Miroir local de l'artifact claude.ai : https://claude.ai/code/artifact/aea2c16d-101d-475d-afc6-f2f54771872b — extrait le 2026-07-07.
+> Miroir local de l'artifact claude.ai : <https://claude.ai/code/artifact/aea2c16d-101d-475d-afc6-f2f54771872b> — extrait le 2026-07-07.
 
 # BMAD IAP — Infra as a Product Transformation Pack
 
-**Statut :** draft consolidé v2.1 (revu localement le 2026-07-15 : brainstorm sur un export markdown de recommandation d'implémentation — agentic ou documentation, selon le contexte client — en complément des 4 profils de livrables PPT déjà cadrés, plus un cas nominal illustratif traçant une intervention de l'intake à l'amélioration de la recommandation à la boucle de réévaluation ; puis un second brainstorm relancé sur les KPIs — pourquoi, quoi mesurer précisément, comment les mettre en place, exemple chiffré sur le même cas nominal, §Trajectoire)
+**Statut :** draft consolidé v2.2 (v2.1, revue localement le 2026-07-15 : brainstorm sur un export markdown de recommandation d'implémentation — agentic ou documentation, selon le contexte client — en complément des 4 profils de livrables PPT déjà cadrés, plus un cas nominal illustratif traçant une intervention de l'intake à l'amélioration de la recommandation à la boucle de réévaluation ; puis un second brainstorm relancé sur les KPIs — pourquoi, quoi mesurer précisément, comment les mettre en place, exemple chiffré sur le même cas nominal, §Trajectoire. v2.2, revue de fond le 2026-07-22 — cf. `docs/reflexions/revue-cadrage.md` : recomptage de l'inventaire des artefacts, requalification de la thèse de financement croisé en hypothèse à prouver, et cross-walk des échelles pour réduire la charge cognitive ; puis traitement des points porteurs restants de la revue — continuité de la boucle ⟲, plafond de débit du checkpoint humain au Niveau C, phasage QA/MVP, audio D2+ au repos sur mobile, statut ordinal du score de priorisation, l'enveloppe commerciale restant seule hors périmètre)
 **Langue :** FR (vocabulaire technique conservé)
 **Confidentialité :** client-data-first
 **Sources croisées :** VSCode1 (grille de maturité) · VSCode2 (moteur d'assessment + OpenHub)
@@ -19,6 +19,8 @@ Un module BMAD à **double mission**, pas une méthode de transformation avec un
 | **Assainir** | Traitement mesurable des gaspillages (flux, RUN, humain, financier, cognitif, décisionnel, environnemental, IA) | La capacité récupérée qui finance la trajectoire produit — pas un audit de coûts isolé |
 
 Les deux piliers ne sont pas séquentiels ni optionnels l'un par rapport à l'autre : une cible produit sans traitement du gaspillage manque de capacité pour s'y déployer ; un traitement du gaspillage sans cible produit reste un exercice de réduction de coûts sans vision — c'est explicitement l'anti-pattern à éviter (voir doctrine, « ne jamais confondre... »).
+
+> **Hypothèse porteuse à prouver, pas un invariant acquis (v2.2) :** Le lien « la capacité récupérée finance la trajectoire produit » (colonne « Ce qu'il finance » ci-dessus) est le **joint qui tient toute la double mission** — et il n'est aujourd'hui **pas outillé**. Le garde-fou anti-déplacement (§Traitement des gaspillages) vérifie qu'un gain n'est pas *faux* ; rien ne vérifie qu'un gain réel est effectivement **réinvesti** dans la cible produit plutôt qu'absorbé ailleurs (réduction d'effectif, autre incendie, dette repayée). Tant que la mission ne mesure que la capacité *récupérée* (heures/mois, §KPIs) sans **KPI de réinvestissement** ni mécanisme de réallocation budgétaire décrit, cette affirmation reste une **hypothèse à valider sur les premières missions pilotes**, pas un invariant démontré. La proposition de valeur peut rester présentée comme telle au sponsor (elle l'est dans le deck de restitution) ; c'est en interne qu'elle doit porter ce statut d'hypothèse. Point à trancher : ajouter un KPI de réinvestissement à la famille « KPIs de mission » (owner `iap-metrics-sre-finops-lead`, voir §Points ouverts).
 
 La démarche équilibre trois tensions permanentes :
 
@@ -37,10 +39,12 @@ Décision de cadrage : pas de fichier pivot `iap-module-context.md`. Le corpus s
 
 - 11 — Agents
 - 11 — Workflows
-- 14 — Templates
-- 9 — Checklists
+- 14 — Templates *(baseline v1.1 — périmé, voir note de cohérence ci-dessous)*
+- 9 — Checklists *(baseline v1.1 — périmé, voir note de cohérence ci-dessous)*
 - 9+ — Knowledge (dont 2 nouveaux v0.6–0.7)
 - 1 — Gate IA transversal non-automatisable
+
+> **Note de cohérence de l'inventaire (v2.2) :** Les compteurs ci-dessus sont le **snapshot v1.1** et n'ont pas été réconciliés avec les artefacts ajoutés depuis. `automation-action-plan.md` est explicitement le « 14ᵉ template » (v1.3) et `automation-readiness-checklist.md` la « 9ᵉ checklist » — or des templates introduits **après** débordent « 14 » (`manual-synthesis-guide.md` v0.9, `governance-instance-map.md` v1.0, `team-topology-map.md` v1.2, `mvp-target-model.md`, les gabarits `runbook-<processus>.md` et `agentic-implementation-plan.md` v2.0) et `comitologie-coherence.md` est une **10ᵉ** checklist (v1.0). Le total exact n'est pas reconstituable ici faute d'énumération de la base des 13 premiers templates / 8 premières checklists ; le **recompte faisant autorité se fait au scaffolding `bmb`** (énumérer les fichiers réellement générés dans `templates/` et `checklists/`) — porté comme point ouvert (voir §Points ouverts).
 
 ```
 bmad-iap/
@@ -215,6 +219,34 @@ BMAD IAP réutilise des artefacts vivants issus de deux projets frères qui cont
 
 Règle de cadrage : chaque dépendance externe versionnée est revue systématiquement à deux moments — à chaque boucle de réévaluation `iap-re-assessment` (T+6–12 mois, voir §Schéma de fonctionnement) et à chaque passage de MVP gate (voir §Roadmap) — plutôt que laissée sans point de contrôle jusqu'à ce qu'une incohérence soit détectée en mission. Propriétaire de cette revue : `iap-strategy-lead`, consigné dans le même fichier que les décisions ADR de l'operating model.
 
+## [Doctrine] Cross-walk des échelles & vocabulaires (v2.2 — réduction de charge cognitive)
+
+Le cadrage manipule plusieurs échelles à paliers qui se recoupent partiellement — source réelle de charge cognitive, la famille « Gaspillage cognitif » (§Traitement des gaspillages) appliquée à la méthode elle-même. Cette section les remet à plat **une fois**, pour éviter qu'un lecteur les confonde ou croie devoir toutes les tenir en tête séparément. Règle de lecture : ce n'est **pas** un décret d'équivalence — le doc refuse déjà de traiter le spectre A/B/C comme strictement linéaire (§Ambition de l'outil) — mais une aide de lecture des correspondances approximatives.
+
+**Il n'y a pas 6 échelles parallèles, mais 3 natures distinctes :**
+
+| Nature | Échelle(s) | Rôle |
+|---|---|---|
+| **Mesure d'état (input)** | Maturité IA client **M0–M4** · Grille V3.2 **niveaux 0–3** par pilier/objectif (§Modèles de maturité) | Mesure l'état réel du client. **Plafonne** jusqu'où on a le droit de monter dans le gradient de délégation — ne s'y superpose pas. |
+| **Choix d'ambition (cabinet)** | Ambition de l'outil **A / B / C** (§Ambition de l'outil) | Combien d'autonomie on donne à **l'outillage BMAD IAP** lui-même. Indépendant de la maturité client. |
+| **Gradient de délégation (exécution)** | Coach/Délégué · assisté/supervisé/délégué · manuel/semi-auto/auto · Team Topologies Collaboration/Supervision/X-as-a-Service | **Un seul et même gradient** (« l'humain fait / supervise / laisse faire »), décliné selon l'objet gouverné. |
+
+**Le gradient de délégation, unifié — le même mouvement, 4 déclinaisons :**
+
+| Palier | US / posture consultant (§Traitement des gaspillages, §Focus management) | Agent IA dans une équipe (§Modèles d'équipe, v1.8) | Mode de workflow (OpenHub, §Agents) | Mode d'interaction Team Topologies augmenté (§Modèles d'équipe) |
+|---|---|---|---|---|
+| **Bas** — l'humain fait ou valide tout | **Coach** (le consultant fait) | **assisté** (l'humain valide chaque sortie) | **manuel** | **Collaboration** (ad hoc, haute bande passante) |
+| **Milieu** — l'humain supervise / audite | *(transition Coach → Délégué)* | **supervisé** (audit a posteriori par échantillon) | **semi-auto** | **Supervision** (4ᵉ mode candidat) |
+| **Haut** — l'exécutant agit seul dans son mandat | **Délégué** (le client ou un agent fait) | **délégué** (l'agent décide seul dans son mandat) | **auto** | **X-as-a-Service** (self-service sans collaboration continue) |
+
+**La mesure d'état plafonne le palier atteignable** — c'est ce qui relie les deux premières natures au gradient, et c'est déjà le mécanisme des règles dures du cadrage :
+
+- Grille **Excellence Technique / Usine DevOps niveau [0]** → interdit le pattern « Automatiser » (§Traitement des gaspillages) : on ne dépasse pas le palier bas tant que la chaîne n'est pas fiabilisée.
+- Grille **Agentic Readiness [0]–[1]** → force la branche **documentation-first**, interdit le palier « délégué » d'un agent (§Export markdown) : le process doit être explicite *avant* l'agent, pas après.
+- Classification **D3–D4 sans LLM local qualifié** → mode M0 / documentation-first (§Gate IA).
+
+> **Ce que ce cross-walk ne fait pas :** il n'aplatit pas les échelles en une seule. Coach/Délégué reste **binaire** (une US est Coach *ou* Délégué), le gradient agent est à **3 paliers**, l'ambition A/B/C est un **choix de gouvernance non nécessairement linéaire** — les correspondances par ligne sont des repères de lecture, pas des synonymes interchangeables. L'intérêt : un consultant qui a intégré « bas / milieu / haut = qui fait, qui supervise, qui laisse faire » n'a plus qu'**un** mouvement mental à tenir, décliné selon l'objet, au lieu de six vocabulaires à mémoriser séparément.
+
 ## [Méthode] Définition produit infra
 
 Un produit d'infrastructure : ensemble cohérent de capacités techniques, fourni comme service à des clients internes/externes, avec responsable, cycle de vie, roadmap, engagements de qualité.
@@ -267,6 +299,8 @@ Priorité = Score impact × Score faisabilité − Score prudence IA
 ```
 
 Le score ne remplace pas l'arbitrage humain : il rend la discussion explicite.
+
+> **Ce « score » est un support de discussion ordinal, pas une métrique calculée (v2.2) :** La forme `Impact × Faisabilité − Prudence IA` peut faire croire à une mesure — or ses trois termes sont des **sommes ordinales non pondérées**, sans échelle définie, et « produit moins somme » n'a pas de sens dimensionnel strict. Le présenter comme une équation contredirait la vigilance du reste du cadrage contre la **fausse confiance** (KPI sans méthode §KPIs, badge cosmétique §Qualité & test). À lire donc comme un **classement par paliers** (fort / moyen / faible), pas un nombre exact : c'est déjà ce que fait le deck, qui traite la Prudence IA comme **recoloration d'alerte** au-delà d'un seuil plutôt que comme un vrai 3ᵉ axe (§Workflows, `iap-deck-builder`). Deux voies acceptables, à trancher à l'usage : soit assumer le support ordinal tel quel (et le montrer en tiers, jamais en score à la décimale), soit définir explicitement échelles et pondérations avant d'en faire un chiffre communiqué.
 
 > **Garde-fou anti-déplacement :** Avant de déclarer un gain : vérifier qu'il ne crée pas plus de charge utilisateur/support, plus de complexité cognitive, plus de risque sécurité, plus de coûts cachés, plus de dette technique ou de dépendance fournisseur.
 
@@ -416,6 +450,8 @@ CoachNote (v1.5 — réflexion libre hors trame formelle : trajet, debrief à ch
 > **Enregistrement audio (v1.5 — repris de VSCode2 / Interview-to-Deck) :** VSCode2 conserve, par Interview, un `audio_backup_path` (chemin relatif à `data/recordings/`) : la sauvegarde audio complète de l'entretien, jamais transcrite automatiquement — un **filet de sécurité** en cas de souci d'extraction/transcription, l'audio brut n'étant sinon jamais conservé. Repris tel quel pour les Interviews BMAD IAP, et étendu à une nouvelle entité légère **CoachNote** : réflexion vocale libre hors trame formelle (un debrief à chaud dans la voiture entre deux sites, une intuition à noter avant de l'oublier) — capture rapide, pas structurée en Thème/Question.
 
 > **Confidentialité de l'audio — jamais un contournement du gate :** Un enregistrement audio d'interview est par défaut **D2+** (voix identifiable, propos non filtrés) — même règle de classification que le reste (§Gate IA). La transcription automatique d'un audio suit exactement le mode d'exécution IA déjà décidé pour la mission (IA client/LLM local/pas d'IA) ; l'audio brut ne part jamais vers une IA externe au prétexte que « ce n'est qu'une sauvegarde ». En mode M0, l'audio reste un filet de sécurité non exploité activement — pas de transcription du tout, le consultant retranscrit à la main s'il en a besoin.
+
+> **L'audio D2+ au repos sur le mobile est une surface à part entière (v2.2) :** La règle ci-dessus gouverne la *transcription* de l'audio (quel modèle IA), mais l'App de capture terrain (§Solution technique) enregistre de l'audio **D2+ hors connexion puis synchronise en différé** — un téléphone perdu avec de l'audio non synchronisé est une exposition que « le choix du modèle » ne couvre pas. Exigences à cadrer pour l'App, au même rang que le gate lui-même : chiffrement au repos sur l'appareil, **purge automatique après confirmation de synchronisation** (l'audio brut n'est pas conservé sur le mobile au-delà du transfert, cohérent avec « l'audio brut n'étant sinon jamais conservé »), pas de sauvegarde cloud tierce automatique (iCloud/Google Drive), et l'App traitée comme un maillon de confidentialité, pas un simple périphérique de capture. À cadrer avant tout build de l'App (owner `iap-ai-governance-lead`, §Points ouverts).
 
 > **Ce que ça résout :** La doctrine identifie la « multiplicité des utilisateurs internes » comme point d'attention permanent (§2.2 du corpus source), mais rien n'obligeait à interviewer chaque persona séparément. Une `Interview` par partie prenante rend ce principe opérationnel : RUN/infra, utilisateurs applicatifs et management répondent à la même Trame, ce qui permet ensuite de repérer les convergences et divergences entre points de vue plutôt que de produire un diagnostic monolithique.
 
@@ -644,9 +680,11 @@ BMAD IAP n'est pas figé sur un seul niveau d'ambition technique. Trois niveaux 
 |---|---|---|---|
 | **A · Aide au coach** | Génère un livrable à la demande (template rempli, score calculé, deck assemblé) — aucune initiative propre | Pilote à 100 % : lit, décide, ajuste chaque livrable | Correspond à l'état actuel du cadrage (MVP0–MVP5) : agents invoqués un par un, sorties Markdown |
 | **B · Assistant interactif** | Guide pas à pas, pose des questions de clarification, signale les incohérences entre livrables (ex. double scoring waste/recommandation) | Reste décisionnaire, mais délègue l'orchestration entre agents à l'outil | Palier intermédiaire non numéroté dans la roadmap actuelle — à situer entre MVP5 et MVP6 |
-| **C · Companion connecté** | Vision « Transformation Companion » déjà actée : connecté en direct à ServiceNow/Jira/Confluence/Datadog/CMDB/FinOps, quasi autonome sur la collecte | Supervise, arbitre les checkpoints non-automatisables (gate IA — voir §Agents) | = MVP6, toujours non engagé |
+| **C · Companion connecté** | Vision « Transformation Companion » déjà actée : connecté en direct à ServiceNow/Jira/Confluence/Datadog/CMDB/FinOps, quasi autonome sur la collecte **et la préparation — jamais sur l'arbitrage** | Supervise ; arbitre les checkpoints non-automatisables **batchés par risque** (faible risque groupé, revue unitaire au franchissement de seuil, ADR-006) — son jugement reste le plafond de débit (voir §Agents) | = MVP6, toujours non engagé |
 
 > **Pas nécessairement un spectre linéaire :** Monter de A à C n'est pas qu'une question de fonctionnalités en plus : le niveau C suppose un accès direct aux données de production du client (risque sécurité/confidentialité d'un tout autre ordre que A/B, voir le gate IA). Un cabinet peut très bien vouloir rester durablement au niveau A ou B par choix de gouvernance, pas seulement par contrainte technique transitoire.
+
+> **Le checkpoint humain est le plafond de débit du Niveau C — à assumer, pas à masquer (v2.2) :** Le Niveau C promet « quasi autonome sur la collecte », mais le gate IA reste un **checkpoint humain non-automatisable** (ADR-006, §Agents) — donc le consultant reste le goulot sur *le jugement*, quel que soit le degré d'automatisation de la collecte. Conséquence à énoncer clairement pour ne pas survendre C comme une autonomie décisionnelle : ce que C accélère, c'est la **collecte et la préparation** (import continu ServiceNow/Jira/CMDB, pré-synthèse), jamais l'arbitrage. La piste de mise à l'échelle du checkpoint sans violer la règle existe déjà dans le cadrage — le **checkpoint conditionnel au risque** (ADR-006 : « toujours manuel mais pas systématique en mode semi-auto/auto » ; cadence plancher + convocation hors cycle, §Comitologie) : batcher les cas à faible risque, réserver la revue humaine unitaire aux franchissements de seuil (classification de données, désaccord, impact). À valider avant tout engagement Niveau C (owner `iap-ai-governance-lead`, §Points ouverts).
 
 ### Solution technique envisagée (v1.5 — Website en primaire, App en complément)
 
@@ -767,6 +805,8 @@ Un `product-canvas-infra.md` avec les 6 champs remplis peut rester une général
 
 Rattachement roadmap : un sous-dossier `bmad-iap/qa/` (fixtures, pré-check structurel, script de rendu réel du deck-builder — voir §Workflows, `iap-deck-builder`) traité comme un investissement d'industrialisation de MVP5, pas une case cochée en fin de sprint. KPI de qualité candidat : taux de livrables ayant déclenché une correction lors de la revue `iap-risk-reviewer` avant présentation, à suivre dans le temps.
 
+> **Décalage phasage ↔ doctrine qualité, corrigé (v2.2) :** Rattacher toute la QA à MVP5 alors que les premiers **engagements réels** arrivent dès MVP3 (isolation multi-client, §Roadmap) expose des clients avant le filet que cette section désigne pourtant comme le risque principal (livrable structurellement complet mais qualitativement creux). Correction, en s'appuyant sur la séparation structurel/jugement déjà cadrée : la couche **`[STRUCTUREL]`** du pré-check (champs manquants, double-scoring waste/recommandation, tag `DÉDUIT` sous seuil de couverture, décision ADR sans « Alternatives rejetées ») — peu coûteuse et automatisable — est **avancée à MVP3**, en même temps que les premiers diagnostics réels ; seules les **fixtures rejouées de bout en bout, le REX et l'industrialisation** restent à MVP5. Le filet minimal arrive donc avec la première exposition client, pas après (owner `iap-risk-reviewer`, §Points ouverts).
+
 ## [Trajectoire] Schéma de fonctionnement
 
 Vue d'ensemble du mode opératoire : deux sources de collecte convergent vers un diagnostic structuré, le gate IA s'applique transversalement à toute étape qui invoque un LLM, et une boucle de réévaluation referme le cycle.
@@ -801,6 +841,8 @@ Vue d'ensemble du mode opératoire : deux sources de collecte convergent vers un
 ## [Trajectoire] Mise en œuvre du target operating model — brainstorm (v1.9)
 
 **Le trou identifié :** le schéma ci-dessus s'arrête à RESTITUTION (le deck exécutif livré) puis saute directement à la boucle de réévaluation T+6–12 mois — rien ne décrit ce qui se passe **entre les deux**, c'est-à-dire la période où le client déploie réellement la cible operating model définie pendant la mission. Le cadrage a jusqu'ici entièrement porté sur le diagnostic et la conception, jamais sur le déploiement lui-même. Brainstorm ci-dessous, non tranché — à confronter aux premières missions pilotes.
+
+> **Le trou dans le trou : la modalité de retour à T+6–12 mois (v2.2) :** Le brainstorm ci-dessous décrit ce que le client *déploie* entre Restitution et boucle ⟲, mais suppose implicitement que quelqu'un **repasse mesurer la grille** 6–12 mois plus tard — alors qu'une mission de conseil s'arrête normalement à la Restitution. Toute la narration « la recommandation s'améliore » (§Export markdown, §Cas nominal : documentation-first → agentic) **dépend d'une continuité de la relation** qui n'est nulle part décrite : ré-assessment inclus dès le contrat initial, option de suivi contractée séparément, ou relais interne côté client outillé par le module (mode Délégué). Sans cette modalité, la boucle ⟲ — keystone de la vérifiabilité (§KPIs, §Modèles de maturité) — reste un vœu, pas un dispositif. À trancher (owner `iap-strategy-lead`, §Points ouverts) — **la tarification et le packaging de ce retour restent hors périmètre de ce cadrage** ; seule la *mécanique de continuité* (qui repasse l'instrument, sous quel mandat) est à cadrer ici.
 
 ### Trajectoire en 3 temps + boucle, inspirée du gabarit OCTO lui-même
 
@@ -901,13 +943,15 @@ Product-definition gagne l'output optionnel `mvp-target-model.md` ; le deck-buil
 
 ### MVP 3 · Diagnostic & gaspillages — Diagnostic systémique, discovery gaspillage, waste treatment, operating model
 
-Bénéficie de l'isolation multi-client dès les premiers engagements réels.
+Bénéficie de l'isolation multi-client dès les premiers engagements réels. Emporte aussi la couche **`[STRUCTUREL]`** du pré-check qualité (champs manquants, double-scoring waste/recommandation, tag `DÉDUIT` sous seuil de couverture, décision ADR sans « Alternatives rejetées ») — peu coûteuse, automatisable, et livrée ici pour que le filet minimal arrive **avec** la première exposition client, pas seulement à MVP5 (voir §Qualité & test du module).
 
 ### MVP 4 · Spécialisation — Scénario playbook, adoption plan, agentic opportunities, agents restants
 
 Point de réouverture prévu pour la Product Discovery découplée.
 
 ### MVP 5 · Industrialisation — QA, REX, templates slides, connecteurs éventuels
+
+La QA ici = **fixtures rejouées de bout en bout, REX consolidé, industrialisation** du pré-check et du rendu réel du deck-builder. La couche `[STRUCTUREL]` du pré-check a déjà été livrée à MVP3 (voir ci-dessus et §Qualité & test du module) — MVP5 ajoute la couche fixtures/jugement outillé, pas le filet minimal.
 
 ### MVP 6 · Connecteurs — non engagé — « Transformation Companion »
 
@@ -968,6 +1012,11 @@ Consolidation des arbitrages tranchés au fil de l'analyse du corpus (doc d'int�
 | Point ouvert | Owner | Échéance cible |
 |---|---|---|
 | Convention de nommage des `<client-slug>` sous `engagements/` (slug libre vs registre contrôlé) | `iap-intake` | Avant MVP1 |
+| Recompte faisant autorité de l'inventaire du module (templates/checklists réels vs snapshot v1.1, voir §Structure) — et un KPI de réinvestissement de la capacité récupérée (§Vue d'ensemble, hypothèse de financement croisé) | scaffolding `bmb` / `iap-strategy-lead` (inventaire) · `iap-metrics-sre-finops-lead` (KPI) | MVP1 (inventaire, au scaffolding `module.yaml`) · MVP3 (KPI) |
+| Modalité de continuité de la boucle ⟲ à T+6–12 mois — qui repasse l'instrument, sous quel mandat (hors tarification/packaging, laissés hors périmètre du cadrage) | `iap-strategy-lead` | MVP4 |
+| Mise à l'échelle du checkpoint humain au Niveau C sans violer ADR-006 (batch faible risque / revue unitaire au franchissement de seuil) | `iap-ai-governance-lead` | Avant tout engagement Niveau C (MVP6) |
+| Confirmer à l'usage l'avancement à MVP3 de la couche `[STRUCTUREL]` du pré-check — désormais **câblé dans la Roadmap** (§Roadmap MVP3), fixtures/REX/industrialisation restant à MVP5 | `iap-risk-reviewer` | MVP3 (câblé) — validation sur mission pilote |
+| Exigences de sécurité de l'App pour l'audio D2+ au repos (chiffrement, purge post-synchronisation, pas de backup cloud tiers) | `iap-ai-governance-lead` | Avant build de l'App |
 | Process de redaction du REX formalisé en étape de workflow reproductible (au-delà du principe déjà acté) | `iap-ai-governance-lead` | Avant clôture MVP0 |
 | Product Discovery découplée — nouveau workflow vs sous-étape enrichie | `iap-platform-product-pm` | MVP4 |
 | Vecteur d'import de la grille — Excel vendored vs JSON/Markdown portable | `iap-strategy-lead` | MVP0 (avant intégration à `platform-maturity-model.md`) |
