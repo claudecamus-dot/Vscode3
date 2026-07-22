@@ -93,14 +93,15 @@ def main():
     prs = Presentation(out)
 
     print("Structure :")
-    check(len(prs.slides) == 36, f"36 slides — reçu {len(prs.slides)}")
+    check(len(prs.slides) == 39, f"39 slides — reçu {len(prs.slides)}")
     check(not problemes, f"géométrie propre (verifier_geometrie) — {len(problemes or [])} problème(s)")
     check(os.path.exists(out) and os.path.getsize(out) > 500_000,
           f"fichier .pptx écrit, taille plausible ({os.path.getsize(out) if os.path.exists(out) else 0} octets)")
 
     print("Cadres photo bien calés (chapitres — layout '50 - Chapitre', teardrop) :")
-    # 5 actes : Contexte(4) · Personas(6) · Besoins & douleurs(9) · Proposition(12) · IA(30)
-    chapitres = [4, 6, 9, 12, 30]
+    # 7 chapitres : Contexte(4) · Personas(6) · Besoins & douleurs(9) ·
+    # Proposition(12) · Démarche(24) · IA(27) · KPI(35)
+    chapitres = [4, 6, 9, 12, 24, 27, 35]
     for idx in chapitres:
         slide = prs.slides[idx - 1]
         cadre = gen._find_frame_by_geom(slide.slide_layout.shapes, "teardrop")

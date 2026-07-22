@@ -42,20 +42,30 @@
 - `docs/cadrage-ppt/` : le deck OCTO annoncé comme « à réactiver si un jour »
   ci-dessus est désormais réel — `template-octo.pptx` (copie du template de
   marque, masters/layouts/thème OCTO) + `pptx_deck.py` (copie synchronisée du
-  skill global `pptx-deck`) + `generate_deck.py` (36 slides de synthèse du
+  skill global `pptx-deck`) + `generate_deck.py` (39 slides de synthèse du
   cadrage BMAD IAP v2.2, dessinées sur le vrai template) → `bmad-iap-cadrage-
-  synthese.pptx`. **Restructuré le 2026-07-22 en 5 actes** (flux discovery
-  produit : Contexte · Personas · Besoins & douleurs · Proposition · IA).
-  Personas et douleurs déplacés AVANT la proposition ; l'IA consolidée dans un
-  chapitre dédié FINAL (cohérent avec « l'IA amplifie l'organisation, jamais la
-  réponse à un problème d'abord organisationnel »). Nouveautés : `slide_douleurs`
-  (douleurs par persona, mesurées, mappées aux familles) + `slide_familles`
-  (8 familles) ; `slide_gaspillages` splitté (familles → chapitre Douleurs,
-  chaîne de traitement + score → chapitre Proposition) ; slide « vision »
-  (ex-`slide_vision_ia`, renommée `slide_vision`) resserrée à 3 puces, la puce IA
-  partie au chapitre IA ; intercalaires = 5 vraies photos distinctes (mountains /
-  forest / ocean turquoise / dunes aériennes NASA / astrophoto pour l'IA — toutes
-  fetchées via Openverse CC0 et vérifiées au rendu réel).
+  synthese.pptx`. **Re-restructuré le 2026-07-22 en 7 chapitres** (le passage
+  antérieur « 5 actes » le même jour est caduc) : Contexte · Personas · Besoins &
+  douleurs · Proposition · Démarche · IA · KPI. Personas et douleurs AVANT la
+  proposition ; l'IA en **avant-dernier** (le `slide_gate_ia` l'a rejointe depuis
+  la Proposition), les **KPIs** (la mesure, `slide_kpis*`) forment le chapitre de
+  clôture, et la **Démarche** (`slide_trajectoire` + `slide_schema_bout_en_bout`,
+  tirés de la Proposition) est un chapitre en fin de deck. La Proposition porte
+  deux **sous-chapitres LOGIQUES** — kicker seul, pas d'intercalaire (arbitrage) :
+  « Technique IAP » (nouvelle `slide_why_iap` = pourquoi l'Infra-as-a-Product,
+  3 bascules ancrées persona + `slide_maturite` reworkée, ambiguïté « Remplace le
+  M0–M4 » levée) et « Exemples » (les 3 `slide_exemple_*`). `slide_personas`
+  reworkée en **cartes 2×2 + pastille posture** (allié/sceptique/vigilant, issu
+  d'un brainstorm PM) ; `slide_personas_divergences` dotée d'une ligne de synthèse
+  « pont » vers la Proposition. Toujours valables du passage 5-actes :
+  `slide_douleurs` (douleurs par persona, mesurées) + `slide_familles` (8
+  familles) ; `slide_gaspillages` splitté (familles → Douleurs, chaîne + score →
+  Proposition) ; `slide_vision` (ex-`slide_vision_ia`) à 3 puces. Intercalaires =
+  **7 vraies photos distinctes** (mountains / forest / ocean turquoise / dunes
+  NASA / **canyon Horseshoe Bend** pour Démarche / astrophoto pour l'IA /
+  **lavande** pour KPI — Openverse CC0, vérifiées au rendu réel). ⚠️ Le cadre
+  teardrop est **CARRÉ** : le build fetche en aspect `square`, souvent une photo
+  DIFFÉRENTE d'un probe `wide` — juger sur la slide rendue, pas sur un probe.
   ⚠️ La description ci-dessous décrit l'organisation en **3 chapitres AVANT**
   cette restructuration et n'a pas été réécrite au fil — structure (historique) :
   couverture, executive summary, 1 slide « vision »

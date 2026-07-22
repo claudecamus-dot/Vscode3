@@ -1,14 +1,16 @@
-"""Génère une synthèse PPT (36 slides) des RÉSULTATS du cadrage BMAD IAP
+"""Génère une synthèse PPT (39 slides) des RÉSULTATS du cadrage BMAD IAP
 (docs/bmad-iap-cadrage.md) à partir des helpers pptx_deck, dessinée
 PAR-DESSUS le vrai template de marque OCTO (template-octo.pptx) —
 masters/layouts/thème conservés, pas un deck sur canevas vierge.
 
-Structure en 5 actes de product-discovery (problème → qui → ce qui fait mal →
-notre réponse → IA) : Contexte, Personas, Besoins & douleurs, Proposition, IA.
-L'IA est délibérément tirée dans son propre chapitre APRÈS la proposition —
-la doctrine « l'IA amplifie l'organisation, elle n'est jamais la réponse à un
-problème d'abord organisationnel » est protégée en présentant personas et
-douleurs AVANT la proposition, et l'IA en dernier.
+Structure en 7 chapitres de product-discovery : Contexte, Personas, Besoins &
+douleurs, Proposition (avec deux sous-chapitres logiques « Technique IAP » et
+« Exemples », matérialisés par le seul kicker — pas d'intercalaire), Démarche,
+IA, KPI. L'IA reste délibérément tirée APRÈS la proposition (le gate IA l'a
+rejointe) — la doctrine « l'IA amplifie l'organisation, elle n'est jamais la
+réponse à un problème d'abord organisationnel » est protégée en présentant
+personas et douleurs AVANT la proposition, et l'IA en avant-dernier ; les KPIs
+(la mesure) ferment le deck.
 
 Centré sur les résultats du cadrage (mission, doctrine, méthode, maturité,
 ambition, KPIs, schéma de fonctionnement) plutôt que sur tout le détail de
@@ -189,17 +191,23 @@ _REQUETES_PHOTO = {
     # sur les quatre bords — VÉRIFIÉE au rendu réel le 2026-07-21.
     "ocean": "turquoise water",
     "sunset": "sunset sky",
-    # Chapitres 04 & 05 (restructuration 5 actes) : 2 scènes réelles distinctes,
+    # Chapitres à photo (restructuration 7 chapitres) : scènes réelles distinctes,
     # VÉRIFIÉES au rendu réel — une requête mot-clé n'a aucun jugement (cf. « plage
-    # bondée », ou « desert »/« desert dune » seed 0 → photo de fossile de musée),
-    # donc chaque photo est validée à l'œil. Ch04 « sand dunes » = vue aérienne NASA
-    # (rawpixel CC0) ; Ch05 « starry night sky » = astrophoto. Le repli nature_images
-    # (procédural) ne se déclenche que si Openverse est indisponible (SSL/0-résultat)
-    # ET que le nom de scène est connu du fallback (forest/meadow/mountains/ocean/
-    # sunset/tropical) — sinon le générateur PLANTE (ValueError unknown scene).
-    # Préférer une vraie photo à du procédural ; cf. mémoire reference-deck-image-fetcher.
+    # bondée », « desert dune » seed 0 → fossile de musée, « winding river » →
+    # cloître de monastère), donc chaque photo est validée à l'œil (fetch du _brut
+    # puis lecture image avant câblage). Le repli nature_images (procédural) ne se
+    # déclenche que si Openverse est indisponible (SSL/0-résultat) ET que le nom de
+    # scène est connu du fallback (forest/meadow/mountains/ocean/sunset/tropical) —
+    # sinon le générateur PLANTE (ValueError unknown scene). Préférer une vraie photo
+    # à du procédural ; cf. mémoire reference-deck-image-fetcher.
+    #   dunes  (Proposition) = vue aérienne NASA ; nightsky (IA) = astrophoto ;
+    #   canyon (Démarche)    = strates de roche (nom NEUF → repli qui PLANTE, comme
+    #                          dunes/nightsky : dépend d'un vrai fetch) ;
+    #   meadow (KPI, seed 1) = asters/verges d'or (nom CONNU du fallback → sûr).
     "dunes": "sand dunes",
     "nightsky": "starry night sky",
+    "canyon": "canyon landscape",
+    "meadow": "meadow wildflowers",
 }
 
 
@@ -476,7 +484,7 @@ def slide_mission(prs):
 
 # ---------------------------------------------------------------- slide 4
 def slide_gate_ia(prs):
-    s = content_slide(prs, "Proposition", "Les données du client gouvernent le choix du modèle IA", color=D.PALETTE[1])
+    s = content_slide(prs, "IA", "Les données du client gouvernent le choix du modèle IA", color=D.PALETTE[4])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.35, [
         ("Checkpoint toujours humain avant tout usage IA sur données client — "
          "iap-ai-data-confidentiality-gate, quel que soit le mode d'exécution retenu.",
@@ -508,13 +516,74 @@ def slide_gate_ia(prs):
 
 
 # ---------------------------------------------------------------- slide 5
+def slide_why_iap(prs):
+    """Nouveau (point ⑤) : ouvre le sous-chapitre « Proposition technique IAP ».
+    Le POURQUOI de l'Infra-as-a-Product — trois bascules produit, chacune ancrée
+    sur un persona/une douleur déjà posés (personas → douleurs → proposition)."""
+    s = content_slide(prs, "Technique IAP",
+                       "Pourquoi « Infrastructure as a Product » — le socle de la proposition",
+                       color=D.PALETTE[1])
+    claim_h = 0.95
+    D.add_rect(s, MARGIN, CONTENT_TOP, CONTENT_W, claim_h, fill=TRACK, rounded=True, radius=0.1)
+    D.add_rect(s, MARGIN, CONTENT_TOP, 0.08, claim_h, fill=D.PALETTE[1], rounded=True, radius=0.5)
+    D.add_text(s, MARGIN + 0.3, CONTENT_TOP, CONTENT_W - 0.5, claim_h, [
+        ("Traiter l'infrastructure comme un produit, pas comme un guichet de tickets.",
+         dict(size=14, bold=True, color=NAVY, line_spacing=1.05)),
+        ("Un produit a des utilisateurs, un cycle de vie et une valeur mesurée — trois bascules "
+         "qui répondent directement aux personas et à leurs douleurs.",
+         dict(size=9, color=MUTED, space_before=4, line_spacing=1.15)),
+    ], anchor=MSO_ANCHOR.MIDDLE)
+
+    piliers = [
+        (D.PALETTE[5], "Des utilisateurs, pas des tickets",
+         "On conçoit l'adoption — self-service, onboarding, parcours — au lieu de subir un "
+         "guichet que le contournement rend inutile.",
+         "l'Utilisateur applicatif"),
+        (D.PALETTE[0], "Un cycle de vie, une équipe qui en répond",
+         "Le produit a un propriétaire, une roadmap et une dette gérée : on sort du RUN subi "
+         "et on récupère de la capacité.",
+         "Infra & RUN"),
+        (D.PALETTE[3], "Un pilotage par la valeur",
+         "On mesure l'usage et la valeur produite, pas l'activité : un signal de flux fiable, "
+         "des KPIs de mission — pas du reporting-miroir.",
+         "Management & Sponsor"),
+    ]
+    top = CONTENT_TOP + claim_h + 0.25
+    card_h = CONTENT_BOTTOM - top
+    pad = 0.22
+    for i, (color, titre, corps, ancre) in enumerate(piliers):
+        cx, cw = col_x(i, 3)
+        D.add_card(s, cx, top, cw, card_h, color)
+        tx = cx + 0.08 + pad
+        tw = cw - 0.08 - 2 * pad
+        D.add_text(s, tx, top + 0.22, tw, card_h - 0.44, [
+            (titre, dict(size=D.TYPE["small"], bold=True, color=color, line_spacing=1.05)),
+            (corps, dict(size=9, color=NAVY, space_before=8, line_spacing=1.25)),
+            ("RÉPOND À", dict(size=6.5, bold=True, color=MUTED, space_before=12)),
+            (ancre, dict(size=9, bold=True, color=color, space_before=2)),
+        ])
+    return s
+
+
 def slide_maturite(prs):
-    s = content_slide(prs, "Proposition", "Deux échelles de maturité, jamais confondues", color=D.PALETTE[1])
+    s = content_slide(prs, "Technique IAP",
+                       "Deux échelles de maturité situent le client — jamais confondues",
+                       color=D.PALETTE[1])
+    # Reworkée (point ③) : recadrée comme l'INSTRUMENT de la proposition (elle
+    # alimente le scoring et le gate), et l'ambiguïté « Remplace le M0–M4 » levée
+    # — les deux échelles mesurent des choses différentes et ne se substituent pas.
+    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.34, [
+        ("L'instrument de la proposition : deux lectures complémentaires — la capacité IA du "
+         "client (M0–M4) et sa maturité produit/plateforme (grille V3.2) — qui le situent et "
+         "alimentent le scoring et le gate. On ne confond jamais les deux.",
+         dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
+    ])
     x0, w0 = col_x(0, 2)
     x1, w1 = col_x(1, 2)
 
-    D.add_text(s, x0, CONTENT_TOP, w0, 0.3, [
-        ("MATURITÉ IA CLIENT (M0–M4)", dict(size=D.TYPE["tiny"], bold=True, color=NAVY))
+    head_top = CONTENT_TOP + 0.44
+    D.add_text(s, x0, head_top, w0, 0.28, [
+        ("CAPACITÉ IA DU CLIENT (M0–M4)", dict(size=D.TYPE["tiny"], bold=True, color=NAVY))
     ])
     niveaux = [
         ("M0", "Pas d'IA interne utilisable", "Méthodo générique, données anonymisées"),
@@ -523,8 +592,8 @@ def slide_maturite(prs):
         ("M3", "Plateforme IA gouvernée", "Workflows agentic contrôlés"),
         ("M4", "IA industrielle", "Agents spécialisés à fort volume, contrôle humain"),
     ]
-    row_top = CONTENT_TOP + 0.4
-    row_h = 0.72
+    row_top = head_top + 0.36
+    row_h = 0.62
     row_gap = 0.06
     for i, (code, titre, strat) in enumerate(niveaux):
         y = row_top + i * (row_h + row_gap)
@@ -534,7 +603,7 @@ def slide_maturite(prs):
             (strat, dict(size=8, color=MUTED, space_before=1, line_spacing=1.1)),
         ], anchor=MSO_ANCHOR.MIDDLE)
 
-    D.add_text(s, x1, CONTENT_TOP, w1, 0.3, [
+    D.add_text(s, x1, head_top, w1, 0.28, [
         ("MATURITÉ PRODUIT / PLATEFORME (grille V3.2)", dict(size=D.TYPE["tiny"], bold=True, color=NAVY))
     ])
     piliers = [
@@ -542,7 +611,7 @@ def slide_maturite(prs):
         ("Excellence Technique", "Cœur du périmètre", True),
         ("Culture de l'Entreprise Agile", "Adjacent", False),
         ("Agilité à l'Échelle", "Cœur du périmètre", True),
-        ("IA, Agentic et Organisation Augmentée", "Remplace le M0–M4", True),
+        ("IA, Agentic et Organisation Augmentée", "Où se lit l'axe IA (M0–M4)", True),
     ]
     for i, (nom, badge, coeur) in enumerate(piliers):
         y = row_top + i * (row_h + row_gap)
@@ -568,57 +637,63 @@ def slide_maturite(prs):
 # douleurs (chapitre Besoins & douleurs) puis notre réponse (Proposition).
 def slide_personas(prs):
     s = content_slide(prs, "Personas",
-                       "Chaque persona est interrogé séparément, pour ne pas lisser un faux consensus",
+                       "Quatre parties prenantes interrogées séparément — leur voix, leur posture",
                        color=D.PALETTE[5])
-    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.55, [
-        ("La Product Discovery (personas, parcours, pain points) reste fusionnée dans "
-         "iap-product-definition en MVP1 — mais chaque partie prenante répond à la même trame, "
-         "pour révéler convergences ET divergences plutôt qu'un diagnostic monolithique.",
+    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.5, [
+        ("Product Discovery fusionnée dans iap-product-definition en MVP1 — mais chaque partie "
+         "prenante répond à la même trame, pour révéler convergences ET divergences plutôt qu'un "
+         "diagnostic monolithique.",
          dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
     ])
 
+    P = D.PALETTE
+    # 2×2 cartes persona. Tuple : nom, accent, rôle (1 ligne), verbatim, ce qu'il
+    # SUBIT, ce qu'il VISE, posture face à la transformation + sa couleur (feu
+    # tricolore sémantique : allié=vert, sceptique=rouge, vigilant=or). La posture
+    # est l'ajout du brainstorm — le comité lit le paysage politique, pas 4 listes.
     personas = [
-        ("Infra & RUN", "« Opérable sans sacrifier le delivery ? »", D.PALETTE[0],
-         "Incidents récurrents et astreintes : les experts seniors passent leur temps sur du répétitif.",
-         "Récupérer de la capacité et sortir du RUN subi."),
-        ("Utilisateur applicatif", "« Pourquoi adopterais-je la plateforme ? »", D.PALETTE[5],
-         "Ni self-service ni parcours conçu : tout passe par un guichet, le contournement va plus vite.",
-         "Une plateforme adoptée par choix : self-service, onboarding, valeur perçue."),
-        ("Management", "« Comment piloter avec un signal fiable ? »", D.PALETTE[3],
-         "« Expert devenu manager malgré lui » : reporting miroir et micromanagement, faute de signal fiable.",
-         "Un signal de confiance (métriques de flux), pas plus de contrôle."),
-        ("Sponsor", "« Quel problème business règle-t-on ? »", D.PALETTE[4],
-         "Craint une transformation cosmétique : beaucoup d'activité, peu de valeur démontrée.",
-         "Un problème business réglé, une trajectoire lisible, des KPIs de mission."),
+        ("Infra & RUN", P[0], "Tient l'exploitation, subit les astreintes.",
+         "« Opérable sans sacrifier le delivery ? »",
+         "Experts seniors mobilisés sur du répétitif.",
+         "Capacité récupérée, RUN maîtrisé.",
+         "Vigilant", P[3]),
+        ("Utilisateur applicatif", P[5], "Consomme la plateforme — ou la contourne.",
+         "« Pourquoi adopterais-je la plateforme ? »",
+         "Guichet unique, contournement plus rapide.",
+         "Un self-service adopté par choix.",
+         "Sceptique", P[2]),
+        ("Management", P[3], "Expert devenu manager, pilote à vue.",
+         "« Comment piloter avec un signal fiable ? »",
+         "Reporting-miroir et micromanagement.",
+         "Un signal de flux de confiance.",
+         "Allié", P[1]),
+        ("Sponsor", P[4], "Porte le budget et la promesse business.",
+         "« Quel problème business règle-t-on ? »",
+         "Craint une transformation cosmétique.",
+         "Problème business réglé, KPIs de mission.",
+         "Allié exigeant", P[1]),
     ]
-    top0 = CONTENT_TOP + 0.6
-    n = len(personas)
-    row_gap = 0.12
-    row_h = (CONTENT_BOTTOM - top0 - (n - 1) * row_gap) / n
-    name_w = 2.05
-    col_gap = 0.2
-    x_name = MARGIN + 0.2
-    x_pain = x_name + name_w + col_gap
-    txt_total = (MARGIN + CONTENT_W) - x_pain - 0.15
-    colw = (txt_total - col_gap) / 2
-    x_attend = x_pain + colw + col_gap
-    for i, (nom, question, color, pain, attend) in enumerate(personas):
-        y = top0 + i * (row_h + row_gap)
-        D.add_rect(s, MARGIN, y, CONTENT_W, row_h, fill="#ffffff", line=LINE, line_w=0.75,
-                   rounded=True, radius=0.08)
-        D.add_rect(s, MARGIN, y, 0.06, row_h, fill=color, rounded=True, radius=0.5)
-        D.add_text(s, x_name, y + 0.1, name_w, row_h - 0.2, [
-            (nom, dict(size=D.TYPE["tiny"], bold=True, color=color, line_spacing=1.05)),
-            (question, dict(size=7, color=MUTED, italic=True, space_before=3, line_spacing=1.1)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
-        D.add_text(s, x_pain, y + 0.1, colw, row_h - 0.2, [
-            ("IRRITANT", dict(size=7, bold=True, color=MUTED)),
-            (pain, dict(size=8, color=NAVY, space_before=3, line_spacing=1.2)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
-        D.add_text(s, x_attend, y + 0.1, colw, row_h - 0.2, [
-            ("ATTENTE", dict(size=7, bold=True, color=MUTED)),
-            (attend, dict(size=8, color=NAVY, space_before=3, line_spacing=1.2)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
+    top0 = CONTENT_TOP + 0.62
+    row_gap = 0.18
+    card_h = (CONTENT_BOTTOM - top0 - row_gap) / 2
+    pad = 0.2
+    chip_w, chip_h = 1.2, 0.24
+    for i, (nom, accent, role, verbatim, subit, vise, posture, cposture) in enumerate(personas):
+        r, c = divmod(i, 2)
+        cx, cw = col_x(c, 2)
+        cy = top0 + r * (card_h + row_gap)
+        D.add_card(s, cx, cy, cw, card_h, accent)
+        tx = cx + 0.07 + pad
+        tw = cw - 0.07 - 2 * pad
+        D.add_text(s, tx, cy + 0.15, tw, card_h - 0.15 - chip_h - 0.18, [
+            (nom, dict(size=D.TYPE["tiny"], bold=True, color=accent, line_spacing=1.0)),
+            (role, dict(size=8, color=MUTED, space_before=1, line_spacing=1.1)),
+            (verbatim, dict(size=8, italic=True, color=NAVY, space_before=5, line_spacing=1.1)),
+            ("Subit — " + subit, dict(size=8, color=MUTED, space_before=6, line_spacing=1.1)),
+            ("Vise — " + vise, dict(size=8, color=accent, space_before=3, line_spacing=1.1)),
+        ])
+        chip(s, cx + cw - pad - chip_w, cy + card_h - 0.14 - chip_h, chip_w, chip_h,
+             posture.upper(), cposture, size=6.5)
     return s
 
 
@@ -637,12 +712,8 @@ def slide_personas_divergences(prs):
                        "Interroger chaque persona séparément révèle des tensions "
                        "qu'un diagnostic fusionné lisserait",
                        color=D.PALETTE[5])
-    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.4, [
-        ("Interviewer séparément sert précisément à faire ressortir ces divergences, "
-         "pas à produire un consensus lissé.",
-         dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
-    ])
-
+    # Note d'intro retirée (redondante avec le sous-titre) : les rangées démarrent
+    # plus haut pour laisser place, en bas, à la synthèse « pont » vers la Proposition.
     c_infra = D.PALETTE[0]   # Infra & RUN — bleu (comme slide_personas)
     c_user = D.PALETTE[5]    # Utilisateur applicatif — teal
     c_mgmt = D.PALETTE[3]    # Management — or
@@ -661,11 +732,12 @@ def slide_personas_divergences(prs):
         (("Sponsor", c_spon), ("RSSI", c_rssi), "ANGLE MORT",
          "Vitesse de démonstration face au gate confidentialité, bloquant sur donnée client."),
     ]
-    top0 = CONTENT_TOP + 0.55
+    top0 = CONTENT_TOP + 0.1
     n = len(rows)
-    note_reserve = 0.55
+    synth_h, note_h = 0.56, 0.34
+    bottom_reserve = synth_h + 0.14 + note_h + 0.10
     row_gap = 0.12
-    region_bot = CONTENT_BOTTOM - note_reserve
+    region_bot = CONTENT_BOTTOM - bottom_reserve
     row_h = (region_bot - top0 - (n - 1) * row_gap) / n
     name_w = 2.7
     x_name = MARGIN + 0.2
@@ -690,11 +762,26 @@ def slide_personas_divergences(prs):
             (friction, dict(size=8, color=NAVY, line_spacing=1.2)),
         ], anchor=MSO_ANCHOR.MIDDLE)
 
-    note_top = top0 + n * row_h + (n - 1) * row_gap + 0.15
-    D.add_text(s, MARGIN, note_top, CONTENT_W, CONTENT_BOTTOM - note_top, [
+    # Ligne de synthèse « pont » (issue du brainstorm) : les divergences ne se
+    # tranchent pas, la méthode (ch. Proposition) les tient des deux bouts —
+    # transforme la slide de « voici des conflits » en « voici pourquoi on n'a pas
+    # à choisir un camp », et donne l'élan vers la suite.
+    synth_top = top0 + n * row_h + (n - 1) * row_gap + 0.14
+    D.add_rect(s, MARGIN, synth_top, CONTENT_W, synth_h, fill=TRACK, rounded=True, radius=0.12)
+    D.add_rect(s, MARGIN, synth_top, 0.07, synth_h, fill=c_user, rounded=True, radius=0.5)
+    D.add_text(s, MARGIN + 0.26, synth_top, CONTENT_W - 0.42, synth_h, [
+        ("Ces tensions ne se tranchent pas — on les tient des deux bouts.",
+         dict(size=8.5, bold=True, color=c_user, line_spacing=1.05)),
+        ("La méthode (ch. Proposition) : la métrique de flux = signal partagé, le gate "
+         "confidentialité = non négociable.",
+         dict(size=8, color=NAVY, space_before=2, line_spacing=1.1)),
+    ], anchor=MSO_ANCHOR.MIDDLE)
+
+    note_top = synth_top + synth_h + 0.10
+    D.add_text(s, MARGIN, note_top, CONTENT_W, note_h, [
         ("Angles morts, non interrogés à ce stade : le client métier consommateur des services, "
          "le RSSI (porteur du gate), le junior / nouvel arrivant.",
-         dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
+         dict(size=7.5, color=MUTED, italic=True, line_spacing=1.15)),
     ])
     return s
 
@@ -927,11 +1014,11 @@ def slide_douleurs(prs):
 # tags de confiance, RecommendationAxis valeur/complexité, US Coach/Délégué) —
 # aucun nouveau concept, uniquement des exemples fictifs illustratifs.
 def slide_exemple_priorisation(prs):
-    s = content_slide(prs, "Proposition",
+    s = content_slide(prs, "Exemples",
                        "La priorisation en pratique : la faisabilité tempère l'impact brut",
                        color=D.PALETTE[1])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.3, [
-        ("Exemple illustratif — 3 gaspillages fictifs notés sur la même formule que la slide précédente.",
+        ("Exemple illustratif — 3 gaspillages fictifs notés sur la formule de la chaîne de traitement (plus haut dans la Proposition).",
          dict(size=8, color=MUTED, italic=True)),
     ])
 
@@ -988,7 +1075,7 @@ def slide_exemple_priorisation(prs):
 
 
 def slide_exemple_diagnostic(prs):
-    s = content_slide(prs, "Proposition",
+    s = content_slide(prs, "Exemples",
                        "Un exemple de synthèse : des verbatims tagués, pas une intuition",
                        color=D.PALETTE[1])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.28, [
@@ -1030,7 +1117,7 @@ def slide_exemple_diagnostic(prs):
 
 
 def slide_exemple_recommandation(prs):
-    s = content_slide(prs, "Proposition",
+    s = content_slide(prs, "Exemples",
                        "Une recommandation type : valeur/complexité chiffrées, backlog actionnable",
                        color=D.PALETTE[1])
     top0 = CONTENT_TOP + 0.2
@@ -1205,7 +1292,7 @@ def slide_schema_fonctionnement(prs):
 
 
 def slide_trajectoire(prs):
-    s = content_slide(prs, "Proposition", "Mise en œuvre du target operating model — piste à valider", color=D.PALETTE[1])
+    s = content_slide(prs, "Démarche", "Mise en œuvre du target operating model — piste à valider", color=D.PALETTE[3])
     phases = [
         ("①", "Assessment flash", "1–2 sem.", D.PALETTE[0],
          "= Schéma de fonctionnement déjà cadré (Collecte → Diagnostic → Conception → Restitution)."),
@@ -1377,12 +1464,12 @@ def slide_vision(prs):
 # vue de synthèse bout-en-bout — sert de pont entre les deux, pas un doublon
 # (chaque colonne ne liste QUE le nom des livrables, pas leur contenu).
 def slide_schema_bout_en_bout(prs):
-    s = content_slide(prs, "Proposition",
+    s = content_slide(prs, "Démarche",
                        "Comment ça fonctionne, de bout en bout : quels livrables, à quel moment",
-                       color=D.PALETTE[1])
+                       color=D.PALETTE[3])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.3, [
-        ("Assemble la trajectoire (slide précédente) et les livrables détaillés (slides suivantes) "
-         "en une seule vue d'ensemble.", dict(size=8, color=MUTED, italic=True)),
+        ("Assemble la trajectoire (slide précédente) et les livrables détaillés (chapitre "
+         "Proposition) en une seule vue d'ensemble.", dict(size=8, color=MUTED, italic=True)),
     ])
     phases = [
         ("①", "Assessment flash", "1-2 sem.", D.PALETTE[0],
@@ -1557,7 +1644,7 @@ def slide_ambition(prs):
 
 # ---------------------------------------------------------------- slide 12
 def slide_kpis(prs):
-    s = content_slide(prs, "Proposition", "Trois familles de KPIs, à ne jamais confondre", color=D.PALETTE[1])
+    s = content_slide(prs, "KPI", "Trois familles de KPIs, à ne jamais confondre", color=D.PALETTE[0])
     familles = [
         ("KPIs de mission", D.PALETTE[0], "Côté client",
          ["Gaspillage traité (capacité RUN récupérée)", "Adoption produit (self-service)",
@@ -1602,7 +1689,7 @@ def slide_kpis(prs):
 # chaque famille, quoi mesurer précisément, comment la mettre en place, et un
 # exemple chiffré sur le cas nominal déjà posé pour l'export markdown.
 def slide_kpis_pourquoi_quoi(prs):
-    s = content_slide(prs, "Proposition", "KPIs : pourquoi chaque famille, et quoi mesurer précisément", color=D.PALETTE[1])
+    s = content_slide(prs, "KPI", "KPIs : pourquoi chaque famille, et quoi mesurer précisément", color=D.PALETTE[0])
     familles = [
         ("KPIs de mission", D.PALETTE[0],
          "Sans eux, un deck peut être livré dans les règles sans jamais savoir si le client va "
@@ -1644,7 +1731,7 @@ def slide_kpis_pourquoi_quoi(prs):
 
 
 def slide_kpis_mise_en_place(prs):
-    s = content_slide(prs, "Proposition", "KPIs : comment on les met en place, concrètement", color=D.PALETTE[1])
+    s = content_slide(prs, "KPI", "KPIs : comment on les met en place, concrètement", color=D.PALETTE[0])
     familles = [
         ("KPIs de mission", D.PALETTE[0], "iap-metrics-sre-finops-lead",
          "ServiceNow/Jira/CMDB si accès (preuves externes), sinon déclaratif — tagué DÉDUIT",
@@ -1688,7 +1775,7 @@ def slide_kpis_mise_en_place(prs):
 
 
 def slide_kpis_exemple(prs):
-    s = content_slide(prs, "Proposition", "KPIs en pratique : le cas nominal RUN massif, avant/après", color=D.PALETTE[1])
+    s = content_slide(prs, "KPI", "KPIs en pratique : le cas nominal RUN massif, avant/après", color=D.PALETTE[0])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.28, [
         ("Même fixture illustrative que le cas nominal de l'export markdown (chapitre IA) — pas un client réel.",
          dict(size=8, color=MUTED, italic=True)),
@@ -1804,9 +1891,9 @@ def slide_agent_ia(prs, titre, nom_agent, famille, why, what, gain, color, note=
 
 
 # --- Nouveau (brainstorm) : la formule de priorisation (chapitre Proposition)
-# cite "prudence IA" sans jamais l'expliquer — cette slide la décompose. Ouvre
-# le chapitre IA (acte 5), avant les 3 candidats d'agent : on pose d'abord le
-# frein, ensuite seulement les cas d'usage.
+# cite "prudence IA" sans jamais l'expliquer — cette slide la décompose. Dans le
+# chapitre IA, juste après le gate IA (qui l'a rejoint) et avant les 3 candidats
+# d'agent : on pose d'abord le frein, ensuite seulement les cas d'usage.
 def slide_prudence_ia(prs):
     s = content_slide(prs, "IA", "La prudence IA est un frein chiffré, pas un veto", color=D.PALETTE[4])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.4, [
@@ -1816,7 +1903,7 @@ def slide_prudence_ia(prs):
 
     facteurs = [
         ("CONFIDENTIALITÉ", D.PALETTE[0],
-         "Reprend directement la classification du gate IA (D0-D4, chapitre Proposition) — "
+         "Reprend directement la classification du gate IA (D0-D4, slide précédente) — "
          "plus la donnée est sensible, plus le score monte."),
         ("BESOIN DE SUPERVISION", D.PALETTE[3],
          "Le palier d'adoption visé (assisté / supervisé / délégué) — un agent encore "
@@ -2034,52 +2121,62 @@ def build():
     slide_executive_summary(prs)
     slide_vision(prs)
 
-    # === Acte 1 — CONTEXTE : le problème ===
+    # === Chapitre 01 — CONTEXTE : le problème ===
     slide_chapitre(prs, "01", "Contexte",
                    "La double mission : transformer l'infrastructure en produit, et assainir le gaspillage.",
                    D.PALETTE[0], "mountains", seed=0)
     slide_mission(prs)
 
-    # === Acte 2 — PERSONAS : qui l'on transforme ===
+    # === Chapitre 02 — PERSONAS : qui l'on transforme ===
     slide_chapitre(prs, "02", "Personas",
-                   "Quatre parties prenantes interrogées séparément — leurs voix, et les tensions révélées.",
+                   "Quatre parties prenantes interrogées séparément — leurs voix, leurs postures, les tensions.",
                    D.PALETTE[5], "forest", seed=0)
     slide_personas(prs)
     slide_personas_divergences(prs)
 
-    # === Acte 3 — BESOINS & DOULEURS : ce qui fait mal ===
+    # === Chapitre 03 — BESOINS & DOULEURS : ce qui fait mal ===
     slide_chapitre(prs, "03", "Besoins & douleurs",
                    "Les douleurs approfondies et mesurables, et les 8 familles de gaspillage qui les rangent.",
                    D.PALETTE[2], "ocean", seed=0)
     slide_douleurs(prs)
     slide_familles(prs)
 
-    # === Acte 4 — PROPOSITION : notre réponse ===
+    # === Chapitre 04 — PROPOSITION : notre réponse ===
+    # Ouvre sur gaspillage→backlog (le problème rendu traitable), puis DEUX sous-
+    # chapitres logiques (kicker seul, pas d'intercalaire — cf. arbitrage) :
+    # « Technique IAP » (why + maturité) et « Exemples » (3 cas), avant la cible
+    # et les livrables. gate IA et KPIs ont quitté ce chapitre (→ IA / → KPI) ;
+    # trajectoire et bout-en-bout aussi (→ Démarche).
     slide_chapitre(prs, "04", "Proposition",
-                   "Notre réponse : gate IA, maturité, méthode scorée, trajectoire, livrables, ambition, KPIs.",
+                   "Du gaspillage au backlog priorisé, la proposition technique IAP, des exemples, la cible et les livrables.",
                    D.PALETTE[1], "dunes", seed=0)
-    slide_gate_ia(prs)
-    slide_maturite(prs)
     slide_gaspillages(prs)
+    # -- sous-chapitre « Proposition technique IAP » (kicker « Technique IAP ») --
+    slide_why_iap(prs)
+    slide_maturite(prs)
+    # -- sous-chapitre « Exemples » (kicker « Exemples ») --
     slide_exemple_priorisation(prs)
     slide_exemple_diagnostic(prs)
     slide_exemple_recommandation(prs)
+    # -- suite Proposition --
     slide_team_topologies(prs)
     slide_schema_fonctionnement(prs)
-    slide_trajectoire(prs)
-    slide_schema_bout_en_bout(prs)
     slide_livrables_ppt(prs)
     slide_ambition(prs)
     slide_architecture_si(prs)
-    slide_kpis(prs)
-    slide_kpis_pourquoi_quoi(prs)
-    slide_kpis_mise_en_place(prs)
-    slide_kpis_exemple(prs)
 
-    # === Acte 5 — IA : tirée APRÈS la proposition (l'IA amplifie, n'est jamais la réponse) ===
-    slide_chapitre(prs, "05", "IA",
-                   "L'IA au service de la réponse : prudence, agents candidats, export, architecture.",
+    # === Chapitre 05 — DÉMARCHE : comment on la mène (placée plutôt vers la fin) ===
+    slide_chapitre(prs, "05", "Démarche",
+                   "La trajectoire de mise en œuvre, et la vue bout-en-bout des livrables.",
+                   D.PALETTE[3], "canyon", seed=0)
+    slide_trajectoire(prs)
+    slide_schema_bout_en_bout(prs)
+
+    # === Chapitre 06 — IA : tirée APRÈS la proposition (l'IA amplifie, n'est jamais la réponse) ===
+    slide_chapitre(prs, "06", "IA",
+                   "L'IA au service de la réponse : le gate confidentialité, la prudence, les agents candidats, l'export.",
                    D.PALETTE[4], "nightsky", seed=0)
+    slide_gate_ia(prs)
     slide_prudence_ia(prs)
     slide_agent_ia(
         prs, "Un agent de triage peut absorber le gaspillage RUN le plus répétitif",
@@ -2113,10 +2210,19 @@ def build():
         "Charge cognitive réduite, onboarding plus rapide, moins d'interruptions des experts "
         "seniors pour des questions déjà documentées.",
         D.PALETTE[4],
-        note=("Ces 3 candidats restent soumis au même scoring et au gate IA (chapitre Proposition) "
+        note=("Ces 3 candidats restent soumis au scoring (chapitre Proposition) et au gate IA (ouverture de ce chapitre) "
               "avant toute décision — des exemples illustratifs, pas une liste actée."))
     slide_export_markdown(prs)
     slide_architecture_agents(prs)
+
+    # === Chapitre 07 — KPI : comment on mesure (clôture du deck) ===
+    slide_chapitre(prs, "07", "KPI",
+                   "Trois familles de KPIs à ne jamais confondre, leur mise en place, et le cas nominal chiffré.",
+                   D.PALETTE[0], "meadow", seed=1)
+    slide_kpis(prs)
+    slide_kpis_pourquoi_quoi(prs)
+    slide_kpis_mise_en_place(prs)
+    slide_kpis_exemple(prs)
 
     problemes = D.verifier_geometrie(prs)
     if problemes:
