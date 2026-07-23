@@ -1,6 +1,13 @@
 {
  "arbitrages": [
   {
+   "cible": "tri-BMAD-retraits-D",
+   "decision": "Constat agent-mort 2026-07-23 CLOS par décision utilisateur (« oublie les 4 retraits bmad ») : les 4 skills restantes arbitrées retrait (bmad-dev-auto, bmad-quick-dev, bmad-qa-generate-e2e-tests, bmad-prfaq) RESTENT sur disque — le retrait demeure documenté (pas de réactivation), la suppression physique est abandonnée comme geste. L'écart décision/terrain est assumé et ne doit plus remonter en constat. Rappel : bmad-market-research et bmad-domain-research requalifiées sur-demande le même jour (entrées dédiées).",
+   "categories": ["agent-mort"],
+   "date": "2026-07-23",
+   "source": "arbitrage utilisateur « oublie les 4 retraits bmad » 2026-07-23 (clôture du constat 3 du diagnostic agent-supervisor 2026-07-23)"
+  },
+  {
    "cible": "ppt-designer",
    "decision": "Constat verification-manquante 2026-07-23 CLOS : fix shell 82db57a confirmé en conditions réelles le 2026-07-23 (spawn préflight-only : PowerShell ET Bash opérationnels, Python 3.14.5, python-pptx 1.0.2, verdict SHELL OK, zéro édition). La voie unique deck arbitrée le 2026-07-21 est donc effective : l'étape generation d'export-ppt-verifie s'instancie via le sous-agent ppt-designer. Le précédent inline des runs du 2026-07-22 (motivé par le shell non vérifié) ne fait plus jurisprudence pour la génération structurelle ; une passe de contenu ciblée reste possible inline avec rendu réel, en le notant au run.",
    "categories": ["verification-manquante"],
@@ -27,6 +34,13 @@
    "decision": "used-as-library — conservée. Portée par le pipeline deck comme code vendored (cadres teardrop du template OCTO via generate_deck.py), pas invoquée via l'outil Skill : elle restera dans jamais_utilises par construction. Ne PAS la retirer au tri des skills mortes.",
    "date": "2026-07-21",
    "source": "arbitrage utilisateur post-diagnostic agent-supervisor 2026-07-21 (constat agent-mort : faux positif de skill morte)"
+  },
+  {
+   "cible": "deck-design-library",
+   "decision": "used-as-reference — greffée depuis VSCode2 le 2026-07-23 (SKILL.md adapté + catalogue-restitution.md verbatim, 22 patterns de decks de soutenance OCTO). Consultée comme documentation de référence par la session et le sous-agent ppt-designer (lecture de fichiers, pas invocation Skill) : elle peut rester dans jamais_utilises par construction, même en usage actif. Ne PAS la retirer au tri des skills mortes. Copie de référence dans VSCode2 — resynchroniser manuellement si le catalogue y évolue (même règle que docs/vscode1-export/).",
+   "categories": ["agent-mort"],
+   "date": "2026-07-23",
+   "source": "greffe + première utilisation le jour même (passe design deck guidée par la bibliothèque, demande utilisateur « réintègre la bibliothèque de design de VSCode2 pour maj du ppt »)"
   },
   {
    "cible": "slide-text-polish",

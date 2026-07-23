@@ -9,7 +9,7 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 > Conception et phasage : [../../reflexions/agent-superviseur.md](../../reflexions/agent-superviseur.md).
 
-Dernier scan : 2026-07-23T09:44:15+02:00 · **12 sessions** (transcripts) · **12** invocations de skills · **37** lancements de sous-agents.
+Dernier scan : 2026-07-23T10:14:30+02:00 · **12 sessions** (transcripts) · **12** invocations de skills · **39** lancements de sous-agents.
 
 ## Skills — usage réel
 
@@ -29,17 +29,17 @@ Dernier scan : 2026-07-23T09:44:15+02:00 · **12 sessions** (transcripts) · **1
 
 | Sous-agent | Lancements | Premier | Dernier |
 | --- | --- | --- | --- |
-| `general-purpose` | 27 | 2026-07-06 | 2026-07-23 |
-| `ppt-designer` | 5 | 2026-07-21 | 2026-07-23 |
+| `general-purpose` | 28 | 2026-07-06 | 2026-07-23 |
+| `ppt-designer` | 6 | 2026-07-21 | 2026-07-23 |
 | `Explore` | 3 | 2026-07-21 | 2026-07-21 |
 | `Plan` | 1 | 2026-07-21 | 2026-07-21 |
 | `claude-code-guide` | 1 | 2026-07-21 | 2026-07-21 |
 
 ## Jamais utilisés
 
-**projet** — 2/5 jamais invoqués :
+**projet** — 3/6 jamais invoqués :
 
-`pptx-framed-image`, `slide-text-polish`
+`deck-design-library`, `pptx-framed-image`, `slide-text-polish`
 
 **BMAD** — 45/46 jamais invoqués :
 
@@ -61,10 +61,12 @@ _(aucun constat — rien à signaler sur les données actuelles)_
 
 _Constats clos par décision humaine (`.claude/supervision/arbitrages.json`) — l'usage réel reste mesuré ci-dessus._
 
+- **`tri-BMAD-retraits-D`** (2026-07-23) : Constat agent-mort 2026-07-23 CLOS par décision utilisateur (« oublie les 4 retraits bmad ») : les 4 skills restantes arbitrées retrait (bmad-dev-auto, bmad-quick-dev, bmad-qa-generate-e2e-tests, bmad-prfaq) RESTENT sur disque — le retrait demeure documenté (pas de réactivation), la suppression physique est abandonnée comme geste. L'écart décision/terrain est assumé et ne doit plus remonter en constat. Rappel : bmad-market-research et bmad-domain-research requalifiées sur-demande le même jour (entrées dédiées).
 - **`ppt-designer`** (2026-07-23) : Constat verification-manquante 2026-07-23 CLOS : fix shell 82db57a confirmé en conditions réelles le 2026-07-23 (spawn préflight-only : PowerShell ET Bash opérationnels, Python 3.14.5, python-pptx 1.0.2, verdict SHELL OK, zéro édition). La voie unique deck arbitrée le 2026-07-21 est donc effective : l'étape generation d'export-ppt-verifie s'instancie via le sous-agent ppt-designer. Le précédent inline des runs du 2026-07-22 (motivé par le shell non vérifié) ne fait plus jurisprudence pour la génération structurelle ; une passe de contenu ciblée reste possible inline avec rendu réel, en le notant au run.
 - **`agent-orchestrator`** (2026-07-23) : Constat interaction 2026-07-23 CLOS : règle de journalisation codifiée au catalogue (section routage par défaut) — tout travail inline multi-étapes sur un livrable suivi (deck) journalise un run minimal via log_run.py (étapes inline), même sans sous-agent. Pas de rétro-journalisation des sessions du 2026-07-22 matin.
 - **`ppt-designer`** (2026-07-21) : Conservé et ACTIVÉ comme voie unique de conception/génération du deck. L'étape 'generation' de export-ppt-verifie l'instancie désormais comme sous-agent (modèle hérité du thread principal, pas de bascule — jugement visuel). bmad-agent-ux-designer n'est PAS la voie deck : préférer une seule voie par tâche (CLAUDE.md).
 - **`pptx-framed-image`** (2026-07-21) : used-as-library — conservée. Portée par le pipeline deck comme code vendored (cadres teardrop du template OCTO via generate_deck.py), pas invoquée via l'outil Skill : elle restera dans jamais_utilises par construction. Ne PAS la retirer au tri des skills mortes.
+- **`deck-design-library`** (2026-07-23) : used-as-reference — greffée depuis VSCode2 le 2026-07-23 (SKILL.md adapté + catalogue-restitution.md verbatim, 22 patterns de decks de soutenance OCTO). Consultée comme documentation de référence par la session et le sous-agent ppt-designer (lecture de fichiers, pas invocation Skill) : elle peut rester dans jamais_utilises par construction, même en usage actif. Ne PAS la retirer au tri des skills mortes. Copie de référence dans VSCode2 — resynchroniser manuellement si le catalogue y évolue (même règle que docs/vscode1-export/).
 - **`slide-text-polish`** (2026-07-21) : used-as-library — conservée. Lint de copie (slide_lint) intégré au pipeline deck, invoquée comme code et non via l'outil Skill : elle restera dans jamais_utilises par construction. Ne PAS la retirer au tri des skills mortes.
 - **`famille:BMAD`** (2026-07-21) : Tri des 46 skills BMAD EXÉCUTÉ (choix A). Classement en 5 catégories via inventaire de câblage (Explore) + stratégie (Plan) : A câblées=13 (5 délégations de revue-increment : bmad-code-review/retrospective/correct-course/checkpoint-preview/help ; 8 étapes du playbook généré cycle-produit-bmad : product-brief/prd/architecture/create-epics-and-stories/check-implementation-readiness/sprint-planning/create-story/dev-story) — reliées à l'orchestrateur comme voie de première intention (catalogue) ; B sous-skill/angle mort=5 (review-adversarial-general, review-edge-case-hunter, advanced-elicitation, party-mode, spec — invoquées en langage naturel par une skill câblée, ne pas qualifier agent-mort) ; C sur-demande=16 (6 personas bmad-agent-* + réserve produit/édition, via bmad-help) ; D candidat-retrait=8 (dev-auto, quick-dev, qa-generate-e2e-tests, market-research, domain-research, prfaq, index-docs, shard-doc — arbitrage retrait individuel à trancher, NON décidé ici) ; E deprecated-v7=4 (create-architecture, create-prd, edit-prd, validate-prd — purge par l'updater BMAD, jamais à la main). Effet : ferme le TODO d'élagage déterministe (jeton famille:BMAD, seul reconnu par build_todos) ; les 46 restent mesurées dans jamais_utilises ; l'étage-2 garde la main par cible exacte. Ne PAS rm _bmad/ ni éditer cycle-produit-bmad.md à la main (généré).
 - **`bmad-dev-auto`** (2026-07-21) : retrait (catégorie D) — redondant avec bmad-dev-story (câblée, cat. A) + les builtins code-review/simplify ; boucle de dev non attendue sur ce dépôt (livrable = deck + outillage superviseur). Arbitrage documenté : suppression physique = geste humain séparé, aucun rm unilatéral, aucune édition de _bmad/.
@@ -80,9 +82,7 @@ _Constats clos par décision humaine (`.claude/supervision/arbitrages.json`) —
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 
-_Diagnostic à jour._
-
-1. **6 retraits BMAD arbitrés le 2026-07-21 toujours physiquement présents** — Un geste humain unique : supprimer les 6 dossiers, ou re-arbitrer en « dormantes » si le geste est refusé — l'écart décision/terrain fait re-remonter ces 6 skills dans jamais_utilises à chaque scan. · **Proposition** : Suppression des 6 dossiers listés, à valider et exécuter par l'humain (jamais auto). À défaut, requalifier l'arbitrage de « retrait » à « dormante » pour que l'état documenté colle au terrain.
+_Diagnostic ⚠️ à relancer (> 14 j) — rien à signaler, tous les constats précédents ont été arbitrés._
 
 ---
 

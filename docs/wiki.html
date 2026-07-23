@@ -541,10 +541,10 @@
     <section class="doc" id="agents-supervision">
       <p class="eyebrow">Projet</p>
       <h2>Supervision des agents — tableau de bord d'usage</h2>
-      <p class="file-meta"><span>docs/wiki/technical/agents-supervision.md</span><span>généré : 2026-07-23T09:44:15+02:00</span></p>
+      <p class="file-meta"><span>docs/wiki/technical/agents-supervision.md</span><span>généré : 2026-07-23T10:14:30+02:00</span></p>
 
       <div class="fact">
-        <p><strong>Bloc généré automatiquement</strong> à chaque session (hook SessionStart → <code>.claude/supervision/scan_transcripts.py</code>, scan incrémental des transcripts, 0 token LLM) — ne pas éditer à la main. <strong>12 sessions</strong> couvertes · <strong>12</strong> invocations de skills · <strong>37</strong> lancements de sous-agents. Conception : <code>docs/reflexions/agent-superviseur.md</code> (étage 2 : skill <code>agent-supervisor</code>, section diagnostic ci-dessous).</p>
+        <p><strong>Bloc généré automatiquement</strong> à chaque session (hook SessionStart → <code>.claude/supervision/scan_transcripts.py</code>, scan incrémental des transcripts, 0 token LLM) — ne pas éditer à la main. <strong>12 sessions</strong> couvertes · <strong>12</strong> invocations de skills · <strong>39</strong> lancements de sous-agents. Conception : <code>docs/reflexions/agent-superviseur.md</code> (étage 2 : skill <code>agent-supervisor</code>, section diagnostic ci-dessous).</p>
         <span class="tag tag-confirme">CONFIRMÉ</span>
         <div class="tag-source">scan_transcripts.py · 2026-07-23 · ~/.claude/projects/&lt;slug&gt;/*.jsonl</div>
       </div>
@@ -572,8 +572,8 @@
         <table>
           <thead><tr><th>Sous-agent</th><th>Lancements</th><th>Premier</th><th>Dernier</th></tr></thead>
           <tbody>
-            <tr><td><code>general-purpose</code></td><td>27</td><td>2026-07-06</td><td>2026-07-23</td></tr>
-            <tr><td><code>ppt-designer</code></td><td>5</td><td>2026-07-21</td><td>2026-07-23</td></tr>
+            <tr><td><code>general-purpose</code></td><td>28</td><td>2026-07-06</td><td>2026-07-23</td></tr>
+            <tr><td><code>ppt-designer</code></td><td>6</td><td>2026-07-21</td><td>2026-07-23</td></tr>
             <tr><td><code>Explore</code></td><td>3</td><td>2026-07-21</td><td>2026-07-21</td></tr>
             <tr><td><code>Plan</code></td><td>1</td><td>2026-07-21</td><td>2026-07-21</td></tr>
             <tr><td><code>claude-code-guide</code></td><td>1</td><td>2026-07-21</td><td>2026-07-21</td></tr>
@@ -582,7 +582,7 @@
       </div>
 
       <h3>Jamais utilisés</h3>
-      <p><strong>projet</strong> — 2/5 jamais invoqués : <code>pptx-framed-image</code>, <code>slide-text-polish</code></p>
+      <p><strong>projet</strong> — 3/6 jamais invoqués : <code>deck-design-library</code>, <code>pptx-framed-image</code>, <code>slide-text-polish</code></p>
       <p><strong>BMAD</strong> — 45/46 jamais invoqués : <details><summary>Voir la liste (45)</summary><p><code>bmad-advanced-elicitation</code>, <code>bmad-agent-analyst</code>, <code>bmad-agent-architect</code>, <code>bmad-agent-dev</code>, <code>bmad-agent-tech-writer</code>, <code>bmad-agent-ux-designer</code>, <code>bmad-architecture</code>, <code>bmad-brainstorming</code>, <code>bmad-check-implementation-readiness</code>, <code>bmad-checkpoint-preview</code>, <code>bmad-code-review</code>, <code>bmad-correct-course</code>, <code>bmad-create-architecture</code>, <code>bmad-create-epics-and-stories</code>, <code>bmad-create-prd</code>, <code>bmad-create-story</code>, <code>bmad-customize</code>, <code>bmad-dev-auto</code>, <code>bmad-dev-story</code>, <code>bmad-document-project</code>, <code>bmad-domain-research</code>, <code>bmad-edit-prd</code>, <code>bmad-editorial-review-prose</code>, <code>bmad-editorial-review-structure</code>, <code>bmad-forge-idea</code>, <code>bmad-generate-project-context</code>, <code>bmad-help</code>, <code>bmad-index-docs</code>, <code>bmad-market-research</code>, <code>bmad-party-mode</code>, <code>bmad-prd</code>, <code>bmad-prfaq</code>, <code>bmad-product-brief</code>, <code>bmad-qa-generate-e2e-tests</code>, <code>bmad-quick-dev</code>, <code>bmad-retrospective</code>, <code>bmad-review-adversarial-general</code>, <code>bmad-review-edge-case-hunter</code>, <code>bmad-shard-doc</code>, <code>bmad-spec</code>, <code>bmad-sprint-planning</code>, <code>bmad-sprint-status</code>, <code>bmad-technical-research</code>, <code>bmad-ux</code>, <code>bmad-validate-prd</code></p></details></p>
       <p><strong>global</strong> — 1/5 jamais invoqués : <code>skill-creator</code></p>
 
@@ -593,10 +593,12 @@
       <h3>Arbitrages enregistrés</h3>
       <p><em>Constats clos par décision humaine (<code>.claude/supervision/arbitrages.json</code>) — l'usage réel reste mesuré ci-dessus.</em></p>
       <ul>
+        <li><strong><code>tri-BMAD-retraits-D</code></strong> (2026-07-23) : Constat agent-mort 2026-07-23 CLOS par décision utilisateur (« oublie les 4 retraits bmad ») : les 4 skills restantes arbitrées retrait (bmad-dev-auto, bmad-quick-dev, bmad-qa-generate-e2e-tests, bmad-prfaq) RESTENT sur disque — le retrait demeure documenté (pas de réactivation), la suppression physique est abandonnée comme geste. L'écart décision/terrain est assumé et ne doit plus remonter en constat. Rappel : bmad-market-research et bmad-domain-research requalifiées sur-demande le même jour (entrées dédiées).</li>
         <li><strong><code>ppt-designer</code></strong> (2026-07-23) : Constat verification-manquante 2026-07-23 CLOS : fix shell 82db57a confirmé en conditions réelles le 2026-07-23 (spawn préflight-only : PowerShell ET Bash opérationnels, Python 3.14.5, python-pptx 1.0.2, verdict SHELL OK, zéro édition). La voie unique deck arbitrée le 2026-07-21 est donc effective : l'étape generation d'export-ppt-verifie s'instancie via le sous-agent ppt-designer. Le précédent inline des runs du 2026-07-22 (motivé par le shell non vérifié) ne fait plus jurisprudence pour la génération structurelle ; une passe de contenu ciblée reste possible inline avec rendu réel, en le notant au run.</li>
         <li><strong><code>agent-orchestrator</code></strong> (2026-07-23) : Constat interaction 2026-07-23 CLOS : règle de journalisation codifiée au catalogue (section routage par défaut) — tout travail inline multi-étapes sur un livrable suivi (deck) journalise un run minimal via log_run.py (étapes inline), même sans sous-agent. Pas de rétro-journalisation des sessions du 2026-07-22 matin.</li>
         <li><strong><code>ppt-designer</code></strong> (2026-07-21) : Conservé et ACTIVÉ comme voie unique de conception/génération du deck. L'étape 'generation' de export-ppt-verifie l'instancie désormais comme sous-agent (modèle hérité du thread principal, pas de bascule — jugement visuel). bmad-agent-ux-designer n'est PAS la voie deck : préférer une seule voie par tâche (CLAUDE.md).</li>
         <li><strong><code>pptx-framed-image</code></strong> (2026-07-21) : used-as-library — conservée. Portée par le pipeline deck comme code vendored (cadres teardrop du template OCTO via generate_deck.py), pas invoquée via l'outil Skill : elle restera dans jamais_utilises par construction. Ne PAS la retirer au tri des skills mortes.</li>
+        <li><strong><code>deck-design-library</code></strong> (2026-07-23) : used-as-reference — greffée depuis VSCode2 le 2026-07-23 (SKILL.md adapté + catalogue-restitution.md verbatim, 22 patterns de decks de soutenance OCTO). Consultée comme documentation de référence par la session et le sous-agent ppt-designer (lecture de fichiers, pas invocation Skill) : elle peut rester dans jamais_utilises par construction, même en usage actif. Ne PAS la retirer au tri des skills mortes. Copie de référence dans VSCode2 — resynchroniser manuellement si le catalogue y évolue (même règle que docs/vscode1-export/).</li>
         <li><strong><code>slide-text-polish</code></strong> (2026-07-21) : used-as-library — conservée. Lint de copie (slide_lint) intégré au pipeline deck, invoquée comme code et non via l'outil Skill : elle restera dans jamais_utilises par construction. Ne PAS la retirer au tri des skills mortes.</li>
         <li><strong><code>famille:BMAD</code></strong> (2026-07-21) : Tri des 46 skills BMAD EXÉCUTÉ (choix A). Classement en 5 catégories via inventaire de câblage (Explore) + stratégie (Plan) : A câblées=13 (5 délégations de revue-increment : bmad-code-review/retrospective/correct-course/checkpoint-preview/help ; 8 étapes du playbook généré cycle-produit-bmad : product-brief/prd/architecture/create-epics-and-stories/check-implementation-readiness/sprint-planning/create-story/dev-story) — reliées à l'orchestrateur comme voie de première intention (catalogue) ; B sous-skill/angle mort=5 (review-adversarial-general, review-edge-case-hunter, advanced-elicitation, party-mode, spec — invoquées en langage naturel par une skill câblée, ne pas qualifier agent-mort) ; C sur-demande=16 (6 personas bmad-agent-* + réserve produit/édition, via bmad-help) ; D candidat-retrait=8 (dev-auto, quick-dev, qa-generate-e2e-tests, market-research, domain-research, prfaq, index-docs, shard-doc — arbitrage retrait individuel à trancher, NON décidé ici) ; E deprecated-v7=4 (create-architecture, create-prd, edit-prd, validate-prd — purge par l'updater BMAD, jamais à la main). Effet : ferme le TODO d'élagage déterministe (jeton famille:BMAD, seul reconnu par build_todos) ; les 46 restent mesurées dans jamais_utilises ; l'étage-2 garde la main par cible exacte. Ne PAS rm _bmad/ ni éditer cycle-produit-bmad.md à la main (généré).</li>
         <li><strong><code>bmad-dev-auto</code></strong> (2026-07-21) : retrait (catégorie D) — redondant avec bmad-dev-story (câblée, cat. A) + les builtins code-review/simplify ; boucle de dev non attendue sur ce dépôt (livrable = deck + outillage superviseur). Arbitrage documenté : suppression physique = geste humain séparé, aucun rm unilatéral, aucune édition de _bmad/.</li>
@@ -611,12 +613,7 @@
         <li><strong><code>docs/wiki.html</code></strong> (2026-07-21) : Proposition superviseur (diagnostic 2026-07-21, constat prio 1) ACCEPTÉE et APPLIQUÉE : marqueurs TODO-AGENTS-HTML posés dans docs/wiki.html (+ entrée TOC #agents-supervision), option « compléter le câblage » retenue plutôt que retirer le chemin HTML du scan. Le scan peuple désormais le dashboard HTML (plus d'avertissement « sans marqueurs »). Constat clos.</li>
       </ul>
       <h3>Diagnostic qualitatif (étage 2 — agent-supervisor)</h3>
-      <p><em>Diagnostic à jour.</em></p>
-      <div class="critical">
-        <p><strong>6 retraits BMAD arbitrés le 2026-07-21 toujours physiquement présents</strong> — Un geste humain unique : supprimer les 6 dossiers, ou re-arbitrer en « dormantes » si le geste est refusé — l'écart décision/terrain fait re-remonter ces 6 skills dans jamais_utilises à chaque scan. · <strong>Proposition</strong> : Suppression des 6 dossiers listés, à valider et exécuter par l'humain (jamais auto). À défaut, requalifier l'arbitrage de « retrait » à « dormante » pour que l'état documenté colle au terrain.</p>
-        <span class="tag tag-confirme">CONFIRMÉ</span>
-        <div class="tag-source">agent-supervisor · étage 2</div>
-      </div>
+      <p><em>Diagnostic ⚠️ à relancer (&gt; 14 j) — rien à signaler, tous les constats précédents ont été arbitrés.</em></p>
     </section>
 <!-- TODO-AGENTS-HTML:END -->
 

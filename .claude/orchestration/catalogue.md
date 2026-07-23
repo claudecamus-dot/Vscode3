@@ -22,6 +22,7 @@
 | `revue-increment` | Definition-of-done : fin d'incrément, avant commit | Synchrone, étape terminale obligatoire des plans de dev | (session) | Pas encore mesuré |
 | `pptx-framed-image` | Remplir les cadres photo d'un template PPT (round2DiagRect) — étape conditionnelle du playbook `export-ppt-verifie` | Synchrone | (session) | **used-as-library** (arbitrage 2026-07-21) — code vendored du pipeline deck, restera dans `jamais_utilises` par construction : ne pas retirer au tri |
 | `slide-text-polish` | Lint de la qualité rédactionnelle des slides — étape conditionnelle du playbook `export-ppt-verifie` | Synchrone | (session) | **used-as-library** (arbitrage 2026-07-21) — `slide_lint` intégré au pipeline deck : ne pas retirer au tri |
+| `deck-design-library` | Choisir la FORME d'une slide depuis son INTENTION (22 patterns de soutenance OCTO catalogués par situation) — à consulter avant de dessiner/améliorer une slide du deck | Consultation (référence), en amont de l'étape `generation` d'`export-ppt-verifie` | (session) | **used-as-reference** (arbitrage 2026-07-23) — greffée de VSCode2, lue comme fichiers : restera dans `jamais_utilises` par construction, ne pas retirer au tri |
 | `agent-orchestrator` | Point d'entrée des demandes multi-étapes/multi-agents (routé par le hook UserPromptSubmit) | Synchrone | (session) | Pas encore mesuré |
 | `agent-supervisor` | Diagnostic qualitatif des agents (étage 2) — depuis `revue-increment` ou sur signal SessionStart | Synchrone, ≤ 1×/14 j | (session) | Pas encore mesuré |
 

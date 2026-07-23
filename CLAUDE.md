@@ -170,7 +170,7 @@ Depuis l'install de **BMAD-METHOD v6.10.0** (`_bmad/`), `.claude/skills/` contie
 
 - **Routeur BMAD** : en cas de doute, invoquer **`bmad-help`**.
 - **Agents BMAD (personas)** : par nom — « Amelia » (dev), « John » (PM), « Winston » (architecte), « Sally » (UX), « Mary » (analyste), « Paige » (tech writer) = skills `bmad-agent-*`. Workflows : `bmad-product-brief`/`bmad-prd`/`bmad-architecture`/`bmad-create-story`/`bmad-dev-story`, plus `bmad-code-review`/`bmad-retrospective`. Sorties → `_bmad-output/` (candidat `.gitignore`).
-- **Skills projet** (non-`bmad-`) : `pptx-framed-image`, `slide-text-polish`, `revue-increment` (definition-of-done — délègue à `bmad-code-review`/`bmad-retrospective`).
+- **Skills projet** (non-`bmad-`) : `pptx-framed-image`, `slide-text-polish`, `revue-increment` (definition-of-done — délègue à `bmad-code-review`/`bmad-retrospective`), `deck-design-library` (greffée de VSCode2 le 2026-07-23 — 22 patterns de slides de soutenance OCTO catalogués par situation, consultée comme référence avant de dessiner/améliorer une slide ; copie de référence dans VSCode2, resynchroniser manuellement).
 - **Agent projet** `.claude/agents/ppt-designer.md` : sous-agent PPT antérieur à BMAD ; recoupe partiellement `bmad-agent-ux-designer` — préférer une seule voie par tâche.
 - Le hook **SessionStart** (`.claude/hooks/remind_revue_increment.py`) rappelle la discipline et route vers `bmad-help`.
 

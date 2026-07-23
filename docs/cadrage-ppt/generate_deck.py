@@ -785,6 +785,11 @@ def slide_personas_divergences(prs):
                        color=D.PALETTE[5])
     # Note d'intro retirée (redondante avec le sous-titre) : les rangées démarrent
     # plus haut pour laisser place, en bas, à la synthèse « pont » vers la Proposition.
+    # Passe de design 2026-07-23 — pattern 7 du catalogue deck-design-library
+    # (« rangée de cartes, une en accent ») : la rangée ANGLE MORT (Sponsor ⟂ RSSI)
+    # est la seule teintée (fond rouge très pâle + contour rouge) — rouge =
+    # sémantique d'alerte, pas décoration ; les 3 tensions instruites restent
+    # des cartes blanches identiques.
     c_infra = D.PALETTE[0]   # Infra & RUN — bleu (comme slide_personas)
     c_user = D.PALETTE[5]    # Utilisateur applicatif — teal
     c_mgmt = D.PALETTE[3]    # Management — or
@@ -816,7 +821,11 @@ def slide_personas_divergences(prs):
     fric_w = (MARGIN + CONTENT_W) - x_fric - 0.15
     for i, ((nomA, colA), (nomB, colB), tag, friction) in enumerate(rows):
         y = top0 + i * (row_h + row_gap)
-        D.add_rect(s, MARGIN, y, CONTENT_W, row_h, fill="#ffffff", line=LINE, line_w=0.75,
+        accent = tag is not None   # « un sur N » : l'angle mort, seul non instruit
+        D.add_rect(s, MARGIN, y, CONTENT_W, row_h,
+                   fill="#fbeeed" if accent else "#ffffff",
+                   line=c_rssi if accent else LINE,
+                   line_w=1.0 if accent else 0.75,
                    rounded=True, radius=0.08)
         # liseré scindé : moitié haute = couleur A, moitié basse = couleur B
         D.add_rect(s, MARGIN, y, 0.06, row_h / 2, fill=colA, rounded=True, radius=0.5)
@@ -865,6 +874,11 @@ def slide_personas_divergences(prs):
 # tandis que la MÉTHODE de traitement (chaîne + score) reste au chapitre
 # Proposition. Accent unifié sur la couleur du chapitre Douleurs (PALETTE[2]) :
 # les 8 familles se distinguent par leur libellé, pas par 8 teintes sans clé.
+# Passe de design 2026-07-23 — règle « un sur N en accent » (principes
+# transversaux + pattern 3 du catalogue deck-design-library) : la famille IA,
+# seule famille que cette méthode NOMME comme gaspillage (cas gadget,
+# automatisation sans garde-fous — la doctrine du deck), reçoit un fill navy
+# plein ; les 7 autres restent des cartes blanches identiques.
 def slide_familles(prs):
     s = content_slide(prs, "Besoins & douleurs",
                        "Les 8 familles de gaspillage — le langage commun qui rend les douleurs traitables",
@@ -896,11 +910,18 @@ def slide_familles(prs):
         row = i // 2
         x, w = col_x(col, 2)
         y = region_top + row * (row_h + row_gap)
-        D.add_rect(s, x, y, w, row_h, fill="#ffffff", line=LINE, line_w=0.75, rounded=True, radius=0.1)
+        accent = (nom == "IA")   # « un sur N » : la famille portée par la doctrine
+        if accent:
+            D.add_rect(s, x, y, w, row_h, fill=NAVY, rounded=True, radius=0.1)
+        else:
+            D.add_rect(s, x, y, w, row_h, fill="#ffffff", line=LINE, line_w=0.75,
+                       rounded=True, radius=0.1)
         D.add_rect(s, x, y, 0.06, row_h, fill=D.PALETTE[2], rounded=True, radius=0.5)
         D.add_text(s, x + 0.2, y + 0.06, w - 0.34, row_h - 0.12, [
-            (f"{i + 1}. {nom}", dict(size=D.TYPE["small"], bold=True, color=NAVY)),
-            (ex, dict(size=8, color=MUTED, space_before=2, line_spacing=1.1)),
+            (f"{i + 1}. {nom}", dict(size=D.TYPE["small"], bold=True,
+                                     color="#ffffff" if accent else NAVY)),
+            (ex, dict(size=8, color="#c7cbe0" if accent else MUTED,
+                      space_before=2, line_spacing=1.1)),
         ], anchor=MSO_ANCHOR.MIDDLE)
     return s
 
@@ -911,6 +932,13 @@ def slide_familles(prs):
 # de traitement — la chaîne Détecter->Prévenir et le score de priorisation — ré-
 # ancrée vers le haut pour combler l'espace libéré par la grille retirée, avec
 # une accroche en tête pour éviter un vide sous le titre.
+# Passe de design 2026-07-23 : la chaîne, jusqu'ici 10 pilules grises identiques
+# en grille 2×5 (effet « tableau de chips »), est redessinée selon le pattern 4
+# du catalogue deck-design-library (« flux numéroté en quinconce, badges +
+# connecteur, sans cadres ») : badges numérotés reliés par un fil, 2e rangée
+# décalée d'un demi-slot, et « un sur N en accent » — seule l'étape 6 (Prioriser)
+# est remplie en couleur pleine, car c'est elle qui produit le score détaillé
+# dans le panneau navy juste en dessous.
 def slide_gaspillages(prs):
     s = content_slide(prs, "Proposition",
                        "Du gaspillage au backlog priorisé : chaîne de traitement + score",
@@ -929,22 +957,39 @@ def slide_gaspillages(prs):
     ])
     etapes = ["Détecter", "Qualifier", "Quantifier", "Cause racine", "Pattern",
               "Prioriser", "Expérimenter", "Mesurer", "Industrialiser", "Prévenir"]
-    step_top = chain_top + 0.32
-    step_h = 0.62
-    step_gap = 0.16
+    step_top = chain_top + 0.34
     n = 5
-    for i, et in enumerate(etapes):
-        col = i % n
-        row = i // n
-        x, w = col_x(col, n)
-        y = step_top + row * (step_h + step_gap)
-        D.add_rect(s, x, y, w, step_h, fill=TRACK, rounded=True, radius=0.5)
-        D.add_text(s, x, y, w, step_h, [
-            (str(i + 1), dict(size=D.TYPE["small"], bold=True, color=D.PALETTE[1], align=PP_ALIGN.CENTER)),
-            (et, dict(size=8, bold=True, color=NAVY, align=PP_ALIGN.CENTER, space_before=1)),
-        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+    slot = CONTENT_W / (n + 0.5)   # 2e rangée décalée d'un demi-slot (quinconce)
+    badge_d = 0.32
+    unit_h = 0.62                  # badge + libellé
+    row_gap2 = 0.10
+    accent_idx = 5                 # « Prioriser » — l'étape qui produit le score
+    for row in range(2):
+        x0 = MARGIN + (slot / 2 if row == 1 else 0.0)
+        y = step_top + row * (unit_h + row_gap2)
+        cy = y + badge_d / 2
+        # fil du flux : connecteur horizontal reliant les badges de la rangée
+        D.add_rect(s, x0 + slot / 2, cy - 0.01, (n - 1) * slot, 0.02, fill=LINE)
+        for col in range(n):
+            i = row * n + col
+            accent = (i == accent_idx)
+            bx = x0 + col * slot + slot / 2 - badge_d / 2
+            D.add_rect(s, bx, y, badge_d, badge_d,
+                       fill=D.PALETTE[1] if accent else "#ffffff",
+                       line=None if accent else D.PALETTE[1], line_w=1.0,
+                       rounded=True, radius=0.5)
+            D.add_text(s, bx, y, badge_d, badge_d, [
+                (str(i + 1), dict(size=8, bold=True,
+                                  color="#ffffff" if accent else D.PALETTE[1],
+                                  align=PP_ALIGN.CENTER)),
+            ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+            D.add_text(s, x0 + col * slot, y + badge_d + 0.04, slot, 0.22, [
+                (etapes[i], dict(size=8, bold=True,
+                                 color=D.PALETTE[1] if accent else NAVY,
+                                 align=PP_ALIGN.CENTER)),
+            ], align=PP_ALIGN.CENTER)
 
-    score_top = step_top + 2 * step_h + step_gap + 0.28
+    score_top = step_top + 2 * unit_h + row_gap2 + 0.30
     score_h = CONTENT_BOTTOM - score_top - 0.12
     D.add_rect(s, MARGIN, score_top, CONTENT_W, score_h, fill=NAVY, rounded=True, radius=0.08)
     text_w = CONTENT_W * 0.5
@@ -1682,22 +1727,33 @@ def slide_ambition(prs):
     # Légende roadmap collée SOUS le texte de rôle (au lieu d'un y fixe en bas
     # de carte) et carte plafonnée à son contenu : supprime le « trou mort »
     # entre le rôle et la légende, et le sur-étirement de la carte (slide 26).
+    # Passe de design 2026-07-23 — pattern 7 du catalogue deck-design-library
+    # (« un sur N en accent ») : le niveau A, ÉTAT ACTUEL assumé du cadrage
+    # (cf. executive summary, posture de gouvernance), est la seule carte en
+    # fill navy plein — B et C restent des cartes blanches identiques.
     role_lines = max(_lignes(niv[3], usable, 8) for niv in niveaux)
     role_h = role_lines * (8 * 1.25 / 72.0) + 0.06
     roadmap_y = 0.55 + role_h + 0.12
     card_h = roadmap_y + 0.28 + 0.14
     top0 = CONTENT_TOP + 0.45
+    accent_idx = 0   # A · Aide au coach — l'état actuel
     for i, (code, titre, color, role, roadmap) in enumerate(niveaux):
         x, w = col_x(i, n)
-        D.add_card(s, x, top0, w, card_h, color)
+        accent = (i == accent_idx)
+        if accent:
+            D.add_rect(s, x, top0, w, card_h, fill=NAVY, rounded=True, radius=0.06)
+            D.add_rect(s, x, top0, 0.07, card_h, fill=color, rounded=True, radius=0.5)
+        else:
+            D.add_card(s, x, top0, w, card_h, color)
         D.add_text(s, x + pad, top0 + 0.15, w - 2 * pad, 0.35, [
-            (f"{code} · {titre}", dict(size=D.TYPE["small"], bold=True, color=color)),
+            (f"{code} · {titre}", dict(size=D.TYPE["small"], bold=True,
+                                       color="#ffffff" if accent else color)),
         ])
         D.add_text(s, x + pad, top0 + 0.55, w - 2 * pad, role_h, [
-            (role, dict(size=8, color=NAVY, line_spacing=1.25)),
+            (role, dict(size=8, color="#e8ebf5" if accent else NAVY, line_spacing=1.25)),
         ])
         D.add_text(s, x + pad, top0 + roadmap_y, w - 2 * pad, 0.3, [
-            (roadmap, dict(size=8, bold=True, color=MUTED)),
+            (roadmap, dict(size=8, bold=True, color="#ffffff" if accent else MUTED)),
         ])
 
     note_top = top0 + card_h + 0.18
@@ -1738,20 +1794,34 @@ def slide_kpis(prs):
     # cartes CENTRÉE verticalement — au lieu de card_h = CONTENT_H qui étirait
     # chaque colonne sur toute la hauteur et laissait un grand vide sous les
     # puces (défaut « panneau sur-étiré », slide 28).
+    # Passe de design 2026-07-23 — pattern 3 du catalogue deck-design-library
+    # (« grille de cartes stat, une en accent ») : la Grille de maturité est la
+    # seule carte en fill navy plein — c'est la famille que le chapitre détaille
+    # ensuite (slide_maturite + message « le KPI = le delta T0→réévaluation ») ;
+    # corps monté à 8.5pt (la densité s'absorbe par la police, pas par le vide).
+    accent_idx = 2   # « Grille de maturité »
     def _bloc_puces(items):
-        lignes = sum(_lignes("·  " + it, usable, 8) for it in items)
-        return lignes * (8 * 1.15 / 72.0) + len(items) * (4 / 72.0)
+        lignes = sum(_lignes("·  " + it, usable, 8.5) for it in items)
+        return lignes * (8.5 * 1.15 / 72.0) + len(items) * (4 / 72.0)
     bullets_h = max(_bloc_puces(items) for *_, items in familles)
     card_h = 0.8 + bullets_h + 0.22
     top0 = CONTENT_TOP + max(0.0, (CONTENT_H - card_h) / 2)
     for i, (titre, color, sous, items) in enumerate(familles):
         x, w = col_x(i, n)
-        D.add_card(s, x, top0, w, card_h, color)
+        accent = (i == accent_idx)
+        if accent:
+            D.add_rect(s, x, top0, w, card_h, fill=NAVY, rounded=True, radius=0.06)
+            D.add_rect(s, x, top0, 0.07, card_h, fill=color, rounded=True, radius=0.5)
+        else:
+            D.add_card(s, x, top0, w, card_h, color)
         D.add_text(s, x + pad, top0 + 0.16, w - 2 * pad, 0.55, [
-            (titre, dict(size=D.TYPE["tiny"], bold=True, color=color, line_spacing=1.05)),
-            (sous, dict(size=8, color=MUTED, italic=True, space_before=2)),
+            (titre, dict(size=D.TYPE["small"], bold=True,
+                         color="#ffffff" if accent else color, line_spacing=1.05)),
+            (sous, dict(size=8.5, color="#aeb6d4" if accent else MUTED,
+                        italic=True, space_before=2)),
         ])
-        lignes = [(f"·  {it}", dict(size=8, color=NAVY, space_after=4, line_spacing=1.15))
+        lignes = [(f"·  {it}", dict(size=8.5, color="#e8ebf5" if accent else NAVY,
+                                    space_after=4, line_spacing=1.15))
                   for it in items]
         D.add_text(s, x + pad, top0 + 0.8, w - 2 * pad, card_h - 0.95, lignes)
     return s
