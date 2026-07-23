@@ -541,10 +541,10 @@
     <section class="doc" id="agents-supervision">
       <p class="eyebrow">Projet</p>
       <h2>Supervision des agents — tableau de bord d'usage</h2>
-      <p class="file-meta"><span>docs/wiki/technical/agents-supervision.md</span><span>généré : 2026-07-23T06:54:07+02:00</span></p>
+      <p class="file-meta"><span>docs/wiki/technical/agents-supervision.md</span><span>généré : 2026-07-23T09:44:15+02:00</span></p>
 
       <div class="fact">
-        <p><strong>Bloc généré automatiquement</strong> à chaque session (hook SessionStart → <code>.claude/supervision/scan_transcripts.py</code>, scan incrémental des transcripts, 0 token LLM) — ne pas éditer à la main. <strong>12 sessions</strong> couvertes · <strong>12</strong> invocations de skills · <strong>34</strong> lancements de sous-agents. Conception : <code>docs/reflexions/agent-superviseur.md</code> (étage 2 : skill <code>agent-supervisor</code>, section diagnostic ci-dessous).</p>
+        <p><strong>Bloc généré automatiquement</strong> à chaque session (hook SessionStart → <code>.claude/supervision/scan_transcripts.py</code>, scan incrémental des transcripts, 0 token LLM) — ne pas éditer à la main. <strong>12 sessions</strong> couvertes · <strong>12</strong> invocations de skills · <strong>37</strong> lancements de sous-agents. Conception : <code>docs/reflexions/agent-superviseur.md</code> (étage 2 : skill <code>agent-supervisor</code>, section diagnostic ci-dessous).</p>
         <span class="tag tag-confirme">CONFIRMÉ</span>
         <div class="tag-source">scan_transcripts.py · 2026-07-23 · ~/.claude/projects/&lt;slug&gt;/*.jsonl</div>
       </div>
@@ -572,7 +572,7 @@
         <table>
           <thead><tr><th>Sous-agent</th><th>Lancements</th><th>Premier</th><th>Dernier</th></tr></thead>
           <tbody>
-            <tr><td><code>general-purpose</code></td><td>24</td><td>2026-07-06</td><td>2026-07-21</td></tr>
+            <tr><td><code>general-purpose</code></td><td>27</td><td>2026-07-06</td><td>2026-07-23</td></tr>
             <tr><td><code>ppt-designer</code></td><td>5</td><td>2026-07-21</td><td>2026-07-23</td></tr>
             <tr><td><code>Explore</code></td><td>3</td><td>2026-07-21</td><td>2026-07-21</td></tr>
             <tr><td><code>Plan</code></td><td>1</td><td>2026-07-21</td><td>2026-07-21</td></tr>
@@ -602,8 +602,8 @@
         <li><strong><code>bmad-dev-auto</code></strong> (2026-07-21) : retrait (catégorie D) — redondant avec bmad-dev-story (câblée, cat. A) + les builtins code-review/simplify ; boucle de dev non attendue sur ce dépôt (livrable = deck + outillage superviseur). Arbitrage documenté : suppression physique = geste humain séparé, aucun rm unilatéral, aucune édition de _bmad/.</li>
         <li><strong><code>bmad-quick-dev</code></strong> (2026-07-21) : retrait (catégorie D) — redondant avec bmad-dev-story (câblée) + builtins ; pas de flux d'implémentation code récurrent ici. Arbitrage documenté, pas de suppression physique unilatérale.</li>
         <li><strong><code>bmad-qa-generate-e2e-tests</code></strong> (2026-07-21) : retrait (catégorie D) — pas d'application ni de harnais e2e sur ce dépôt (cf. catalogue : pas d'app web/dev server). Sans objet. Arbitrage documenté, pas de suppression physique unilatérale.</li>
-        <li><strong><code>bmad-market-research</code></strong> (2026-07-21) : retrait (catégorie D) — veille marché hors mission (cadrage BMAD IAP / deck de restitution, pas de discovery marché). Arbitrage documenté, pas de suppression physique unilatérale.</li>
-        <li><strong><code>bmad-domain-research</code></strong> (2026-07-21) : retrait (catégorie D) — recherche domaine/industrie hors mission de ce dépôt. Arbitrage documenté, pas de suppression physique unilatérale.</li>
+        <li><strong><code>bmad-market-research</code></strong> (2026-07-23) : REQUALIFIÉE sur-demande (2026-07-23, annule le retrait du 21/07) — le retrait était motivé par « veille marché hors mission » ; la demande utilisateur du 23/07 (revue produit + research + market-research du projet global, cf. docs/reflexions/revue-produit-marche.md) est le contre-exemple exact. Substance exécutée via sous-agent general-purpose + web (les workflows BMAD interactifs restent une voie possible sur demande). Rejoint la catégorie C (sur-demande, via bmad-help).</li>
+        <li><strong><code>bmad-domain-research</code></strong> (2026-07-23) : REQUALIFIÉE sur-demande (2026-07-23, annule le retrait du 21/07) — même motif que bmad-market-research : la revue research domaine/technique du 23/07 (état de l'art vs paris IAP, cf. docs/reflexions/revue-produit-marche.md) est exactement une recherche domaine/industrie sur la mission de ce dépôt. Rejoint la catégorie C (sur-demande, via bmad-help).</li>
         <li><strong><code>bmad-prfaq</code></strong> (2026-07-21) : retrait (catégorie D) — challenge PRFAQ/Working-Backwards produit, hors mission cadrage/deck. Arbitrage documenté, pas de suppression physique unilatérale.</li>
         <li><strong><code>bmad-index-docs</code></strong> (2026-07-21) : conserver dormante (catégorie D) — utilitaire d'indexation de docs, inoffensif et bon marché ; gardé malgré 0 usage (bruit faible, option conservée). Pas retiré.</li>
         <li><strong><code>bmad-shard-doc</code></strong> (2026-07-21) : conserver dormante (catégorie D) — utilitaire de découpe de gros markdown, inoffensif ; gardé malgré 0 usage (bruit faible). Pas retiré.</li>

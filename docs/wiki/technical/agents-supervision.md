@@ -9,7 +9,7 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 > Conception et phasage : [../../reflexions/agent-superviseur.md](../../reflexions/agent-superviseur.md).
 
-Dernier scan : 2026-07-23T06:54:07+02:00 · **12 sessions** (transcripts) · **12** invocations de skills · **34** lancements de sous-agents.
+Dernier scan : 2026-07-23T09:44:15+02:00 · **12 sessions** (transcripts) · **12** invocations de skills · **37** lancements de sous-agents.
 
 ## Skills — usage réel
 
@@ -29,7 +29,7 @@ Dernier scan : 2026-07-23T06:54:07+02:00 · **12 sessions** (transcripts) · **1
 
 | Sous-agent | Lancements | Premier | Dernier |
 | --- | --- | --- | --- |
-| `general-purpose` | 24 | 2026-07-06 | 2026-07-21 |
+| `general-purpose` | 27 | 2026-07-06 | 2026-07-23 |
 | `ppt-designer` | 5 | 2026-07-21 | 2026-07-23 |
 | `Explore` | 3 | 2026-07-21 | 2026-07-21 |
 | `Plan` | 1 | 2026-07-21 | 2026-07-21 |
@@ -70,8 +70,8 @@ _Constats clos par décision humaine (`.claude/supervision/arbitrages.json`) —
 - **`bmad-dev-auto`** (2026-07-21) : retrait (catégorie D) — redondant avec bmad-dev-story (câblée, cat. A) + les builtins code-review/simplify ; boucle de dev non attendue sur ce dépôt (livrable = deck + outillage superviseur). Arbitrage documenté : suppression physique = geste humain séparé, aucun rm unilatéral, aucune édition de _bmad/.
 - **`bmad-quick-dev`** (2026-07-21) : retrait (catégorie D) — redondant avec bmad-dev-story (câblée) + builtins ; pas de flux d'implémentation code récurrent ici. Arbitrage documenté, pas de suppression physique unilatérale.
 - **`bmad-qa-generate-e2e-tests`** (2026-07-21) : retrait (catégorie D) — pas d'application ni de harnais e2e sur ce dépôt (cf. catalogue : pas d'app web/dev server). Sans objet. Arbitrage documenté, pas de suppression physique unilatérale.
-- **`bmad-market-research`** (2026-07-21) : retrait (catégorie D) — veille marché hors mission (cadrage BMAD IAP / deck de restitution, pas de discovery marché). Arbitrage documenté, pas de suppression physique unilatérale.
-- **`bmad-domain-research`** (2026-07-21) : retrait (catégorie D) — recherche domaine/industrie hors mission de ce dépôt. Arbitrage documenté, pas de suppression physique unilatérale.
+- **`bmad-market-research`** (2026-07-23) : REQUALIFIÉE sur-demande (2026-07-23, annule le retrait du 21/07) — le retrait était motivé par « veille marché hors mission » ; la demande utilisateur du 23/07 (revue produit + research + market-research du projet global, cf. docs/reflexions/revue-produit-marche.md) est le contre-exemple exact. Substance exécutée via sous-agent general-purpose + web (les workflows BMAD interactifs restent une voie possible sur demande). Rejoint la catégorie C (sur-demande, via bmad-help).
+- **`bmad-domain-research`** (2026-07-23) : REQUALIFIÉE sur-demande (2026-07-23, annule le retrait du 21/07) — même motif que bmad-market-research : la revue research domaine/technique du 23/07 (état de l'art vs paris IAP, cf. docs/reflexions/revue-produit-marche.md) est exactement une recherche domaine/industrie sur la mission de ce dépôt. Rejoint la catégorie C (sur-demande, via bmad-help).
 - **`bmad-prfaq`** (2026-07-21) : retrait (catégorie D) — challenge PRFAQ/Working-Backwards produit, hors mission cadrage/deck. Arbitrage documenté, pas de suppression physique unilatérale.
 - **`bmad-index-docs`** (2026-07-21) : conserver dormante (catégorie D) — utilitaire d'indexation de docs, inoffensif et bon marché ; gardé malgré 0 usage (bruit faible, option conservée). Pas retiré.
 - **`bmad-shard-doc`** (2026-07-21) : conserver dormante (catégorie D) — utilitaire de découpe de gros markdown, inoffensif ; gardé malgré 0 usage (bruit faible). Pas retiré.

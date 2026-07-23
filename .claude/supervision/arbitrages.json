@@ -60,15 +60,15 @@
   },
   {
    "cible": "bmad-market-research",
-   "decision": "retrait (catégorie D) — veille marché hors mission (cadrage BMAD IAP / deck de restitution, pas de discovery marché). Arbitrage documenté, pas de suppression physique unilatérale.",
-   "date": "2026-07-21",
-   "source": "arbitrage utilisateur catégorie D 2026-07-21 (choix « retrait 6, dormantes 2 »)"
+   "decision": "REQUALIFIÉE sur-demande (2026-07-23, annule le retrait du 21/07) — le retrait était motivé par « veille marché hors mission » ; la demande utilisateur du 23/07 (revue produit + research + market-research du projet global, cf. docs/reflexions/revue-produit-marche.md) est le contre-exemple exact. Substance exécutée via sous-agent general-purpose + web (les workflows BMAD interactifs restent une voie possible sur demande). Rejoint la catégorie C (sur-demande, via bmad-help).",
+   "date": "2026-07-23",
+   "source": "arbitrage utilisateur « lance les 3 points » 2026-07-23 (proposition de requalification post-revue produit/marché) ; retrait initial : catégorie D 2026-07-21"
   },
   {
    "cible": "bmad-domain-research",
-   "decision": "retrait (catégorie D) — recherche domaine/industrie hors mission de ce dépôt. Arbitrage documenté, pas de suppression physique unilatérale.",
-   "date": "2026-07-21",
-   "source": "arbitrage utilisateur catégorie D 2026-07-21 (choix « retrait 6, dormantes 2 »)"
+   "decision": "REQUALIFIÉE sur-demande (2026-07-23, annule le retrait du 21/07) — même motif que bmad-market-research : la revue research domaine/technique du 23/07 (état de l'art vs paris IAP, cf. docs/reflexions/revue-produit-marche.md) est exactement une recherche domaine/industrie sur la mission de ce dépôt. Rejoint la catégorie C (sur-demande, via bmad-help).",
+   "date": "2026-07-23",
+   "source": "arbitrage utilisateur « lance les 3 points » 2026-07-23 (proposition de requalification post-revue produit/marché) ; retrait initial : catégorie D 2026-07-21"
   },
   {
    "cible": "bmad-prfaq",
