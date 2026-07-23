@@ -541,10 +541,10 @@
     <section class="doc" id="agents-supervision">
       <p class="eyebrow">Projet</p>
       <h2>Supervision des agents — tableau de bord d'usage</h2>
-      <p class="file-meta"><span>docs/wiki/technical/agents-supervision.md</span><span>généré : 2026-07-23T06:37:41+02:00</span></p>
+      <p class="file-meta"><span>docs/wiki/technical/agents-supervision.md</span><span>généré : 2026-07-23T06:47:48+02:00</span></p>
 
       <div class="fact">
-        <p><strong>Bloc généré automatiquement</strong> à chaque session (hook SessionStart → <code>.claude/supervision/scan_transcripts.py</code>, scan incrémental des transcripts, 0 token LLM) — ne pas éditer à la main. <strong>11 sessions</strong> couvertes · <strong>12</strong> invocations de skills · <strong>33</strong> lancements de sous-agents. Conception : <code>docs/reflexions/agent-superviseur.md</code> (étage 2 : skill <code>agent-supervisor</code>, section diagnostic ci-dessous).</p>
+        <p><strong>Bloc généré automatiquement</strong> à chaque session (hook SessionStart → <code>.claude/supervision/scan_transcripts.py</code>, scan incrémental des transcripts, 0 token LLM) — ne pas éditer à la main. <strong>12 sessions</strong> couvertes · <strong>12</strong> invocations de skills · <strong>33</strong> lancements de sous-agents. Conception : <code>docs/reflexions/agent-superviseur.md</code> (étage 2 : skill <code>agent-supervisor</code>, section diagnostic ci-dessous).</p>
         <span class="tag tag-confirme">CONFIRMÉ</span>
         <div class="tag-source">scan_transcripts.py · 2026-07-23 · ~/.claude/projects/&lt;slug&gt;/*.jsonl</div>
       </div>
@@ -609,7 +609,22 @@
         <li><strong><code>docs/wiki.html</code></strong> (2026-07-21) : Proposition superviseur (diagnostic 2026-07-21, constat prio 1) ACCEPTÉE et APPLIQUÉE : marqueurs TODO-AGENTS-HTML posés dans docs/wiki.html (+ entrée TOC #agents-supervision), option « compléter le câblage » retenue plutôt que retirer le chemin HTML du scan. Le scan peuple désormais le dashboard HTML (plus d'avertissement « sans marqueurs »). Constat clos.</li>
       </ul>
       <h3>Diagnostic qualitatif (étage 2 — agent-supervisor)</h3>
-      <p><em>Diagnostic ⚠️ à relancer (&gt; 14 j) — rien à signaler, tous les constats précédents ont été arbitrés.</em></p>
+      <p><em>Diagnostic à jour.</em></p>
+      <div class="critical">
+        <p><strong>Fix shell ppt-designer jamais confirmé — la voie unique deck arbitrée est contournée par précédent</strong> — Au prochain mandat deck, spawner ppt-designer une fois avec son étape 0 Preflight (python --version) pour trancher : shell OK → restaurer le routage arbitré ; NO SHELL → escalade claude-code-guide. · <strong>Proposition</strong> : Si le préflight passe : l'étape generation d'export-ppt-verifie redevient sous-agent ppt-designer (arbitrage 2026-07-21 respecté). Si l'inline est préféré pour les passes de contenu : amender l'arbitrage ppt-designer + l'étape generation du playbook en « génération structurelle = ppt-designer, passe de contenu ciblée = inline + rendu réel » — la pratique et le contrat cessent de diverger.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">agent-supervisor · étage 2</div>
+      </div>
+      <div class="critical">
+        <p><strong>Le travail deck le plus lourd échappe au journal d'orchestration</strong> — Pas de rétro-journalisation. Règle à codifier : une session deck qui enchaîne revue + restructure + rendu (≥ 2 étapes dépendantes) journalise un run via log_run.py même quand tout est inline — les runs 11-12 montrent que 2 étapes suffisent, coût quasi nul. · <strong>Proposition</strong> : Ajouter une ligne à la section routage du catalogue : « travail inline multi-étapes sur un livrable suivi (deck) = journaliser un run minimal (étapes inline, log_run.py) ». Sans ça, la boucle superviseur mesure surtout les petites passes et rate les grosses.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">agent-supervisor · étage 2</div>
+      </div>
+      <div class="critical">
+        <p><strong>6 retraits BMAD arbitrés le 2026-07-21 toujours physiquement présents</strong> — Un geste humain unique : supprimer les 6 dossiers, ou re-arbitrer en « dormantes » si le geste est refusé — l'écart décision/terrain fait re-remonter ces 6 skills dans jamais_utilises à chaque scan. · <strong>Proposition</strong> : Suppression des 6 dossiers listés, à valider et exécuter par l'humain (jamais auto). À défaut, requalifier l'arbitrage de « retrait » à « dormante » pour que l'état documenté colle au terrain.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">agent-supervisor · étage 2</div>
+      </div>
     </section>
 <!-- TODO-AGENTS-HTML:END -->
 

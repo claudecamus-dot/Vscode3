@@ -9,7 +9,7 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 > Conception et phasage : [../../reflexions/agent-superviseur.md](../../reflexions/agent-superviseur.md).
 
-Dernier scan : 2026-07-23T06:37:41+02:00 · **11 sessions** (transcripts) · **12** invocations de skills · **33** lancements de sous-agents.
+Dernier scan : 2026-07-23T06:47:48+02:00 · **12 sessions** (transcripts) · **12** invocations de skills · **33** lancements de sous-agents.
 
 ## Skills — usage réel
 
@@ -78,7 +78,11 @@ _Constats clos par décision humaine (`.claude/supervision/arbitrages.json`) —
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 
-_Diagnostic ⚠️ à relancer (> 14 j) — rien à signaler, tous les constats précédents ont été arbitrés._
+_Diagnostic à jour._
+
+1. **Fix shell ppt-designer jamais confirmé — la voie unique deck arbitrée est contournée par précédent** — Au prochain mandat deck, spawner ppt-designer une fois avec son étape 0 Preflight (python --version) pour trancher : shell OK → restaurer le routage arbitré ; NO SHELL → escalade claude-code-guide. · **Proposition** : Si le préflight passe : l'étape generation d'export-ppt-verifie redevient sous-agent ppt-designer (arbitrage 2026-07-21 respecté). Si l'inline est préféré pour les passes de contenu : amender l'arbitrage ppt-designer + l'étape generation du playbook en « génération structurelle = ppt-designer, passe de contenu ciblée = inline + rendu réel » — la pratique et le contrat cessent de diverger.
+2. **Le travail deck le plus lourd échappe au journal d'orchestration** — Pas de rétro-journalisation. Règle à codifier : une session deck qui enchaîne revue + restructure + rendu (≥ 2 étapes dépendantes) journalise un run via log_run.py même quand tout est inline — les runs 11-12 montrent que 2 étapes suffisent, coût quasi nul. · **Proposition** : Ajouter une ligne à la section routage du catalogue : « travail inline multi-étapes sur un livrable suivi (deck) = journaliser un run minimal (étapes inline, log_run.py) ». Sans ça, la boucle superviseur mesure surtout les petites passes et rate les grosses.
+3. **6 retraits BMAD arbitrés le 2026-07-21 toujours physiquement présents** — Un geste humain unique : supprimer les 6 dossiers, ou re-arbitrer en « dormantes » si le geste est refusé — l'écart décision/terrain fait re-remonter ces 6 skills dans jamais_utilises à chaque scan. · **Proposition** : Suppression des 6 dossiers listés, à valider et exécuter par l'humain (jamais auto). À défaut, requalifier l'arbitrage de « retrait » à « dormante » pour que l'état documenté colle au terrain.
 
 ---
 
