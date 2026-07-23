@@ -541,10 +541,10 @@
     <section class="doc" id="agents-supervision">
       <p class="eyebrow">Projet</p>
       <h2>Supervision des agents — tableau de bord d'usage</h2>
-      <p class="file-meta"><span>docs/wiki/technical/agents-supervision.md</span><span>généré : 2026-07-23T10:38:29+02:00</span></p>
+      <p class="file-meta"><span>docs/wiki/technical/agents-supervision.md</span><span>généré : 2026-07-23T20:23:43+02:00</span></p>
 
       <div class="fact">
-        <p><strong>Bloc généré automatiquement</strong> à chaque session (hook SessionStart → <code>.claude/supervision/scan_transcripts.py</code>, scan incrémental des transcripts, 0 token LLM) — ne pas éditer à la main. <strong>12 sessions</strong> couvertes · <strong>12</strong> invocations de skills · <strong>39</strong> lancements de sous-agents. Conception : <code>docs/reflexions/agent-superviseur.md</code> (étage 2 : skill <code>agent-supervisor</code>, section diagnostic ci-dessous).</p>
+        <p><strong>Bloc généré automatiquement</strong> à chaque session (hook SessionStart → <code>.claude/supervision/scan_transcripts.py</code>, scan incrémental des transcripts, 0 token LLM) — ne pas éditer à la main. <strong>14 sessions</strong> couvertes · <strong>14</strong> invocations de skills · <strong>48</strong> lancements de sous-agents. Conception : <code>docs/reflexions/agent-superviseur.md</code> (étage 2 : skill <code>agent-supervisor</code>, section diagnostic ci-dessous).</p>
         <span class="tag tag-confirme">CONFIRMÉ</span>
         <div class="tag-source">scan_transcripts.py · 2026-07-23 · ~/.claude/projects/&lt;slug&gt;/*.jsonl</div>
       </div>
@@ -554,10 +554,10 @@
         <table>
           <thead><tr><th>Skill</th><th>Famille</th><th>Invocations</th><th>Première</th><th>Dernière</th></tr></thead>
           <tbody>
+            <tr><td><code>agent-orchestrator</code></td><td>projet</td><td>3</td><td>2026-07-21</td><td>2026-07-23</td></tr>
             <tr><td><code>agent-supervisor</code></td><td>projet</td><td>2</td><td>2026-07-21</td><td>2026-07-21</td></tr>
             <tr><td><code>artifact-design</code></td><td>(builtin/session)</td><td>2</td><td>2026-07-06</td><td>2026-07-07</td></tr>
             <tr><td><code>pptx-deck</code></td><td>global</td><td>2</td><td>2026-07-08</td><td>2026-07-09</td></tr>
-            <tr><td><code>agent-orchestrator</code></td><td>projet</td><td>1</td><td>2026-07-21</td><td>2026-07-21</td></tr>
             <tr><td><code>bmad-agent-pm</code></td><td>BMAD</td><td>1</td><td>2026-07-22</td><td>2026-07-22</td></tr>
             <tr><td><code>pptx-verify</code></td><td>global</td><td>1</td><td>2026-07-08</td><td>2026-07-08</td></tr>
             <tr><td><code>restitution-deck-design</code></td><td>global</td><td>1</td><td>2026-07-08</td><td>2026-07-08</td></tr>
@@ -572,8 +572,8 @@
         <table>
           <thead><tr><th>Sous-agent</th><th>Lancements</th><th>Premier</th><th>Dernier</th></tr></thead>
           <tbody>
-            <tr><td><code>general-purpose</code></td><td>28</td><td>2026-07-06</td><td>2026-07-23</td></tr>
-            <tr><td><code>ppt-designer</code></td><td>6</td><td>2026-07-21</td><td>2026-07-23</td></tr>
+            <tr><td><code>general-purpose</code></td><td>31</td><td>2026-07-06</td><td>2026-07-23</td></tr>
+            <tr><td><code>ppt-designer</code></td><td>12</td><td>2026-07-21</td><td>2026-07-23</td></tr>
             <tr><td><code>Explore</code></td><td>3</td><td>2026-07-21</td><td>2026-07-21</td></tr>
             <tr><td><code>Plan</code></td><td>1</td><td>2026-07-21</td><td>2026-07-21</td></tr>
             <tr><td><code>claude-code-guide</code></td><td>1</td><td>2026-07-21</td><td>2026-07-21</td></tr>

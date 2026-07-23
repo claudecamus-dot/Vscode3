@@ -9,16 +9,16 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 > Conception et phasage : [../../reflexions/agent-superviseur.md](../../reflexions/agent-superviseur.md).
 
-Dernier scan : 2026-07-23T10:38:29+02:00 · **12 sessions** (transcripts) · **12** invocations de skills · **39** lancements de sous-agents.
+Dernier scan : 2026-07-23T20:23:43+02:00 · **14 sessions** (transcripts) · **14** invocations de skills · **48** lancements de sous-agents.
 
 ## Skills — usage réel
 
 | Skill | Famille | Invocations | Première | Dernière |
 | --- | --- | --- | --- | --- |
+| `agent-orchestrator` | projet | 3 | 2026-07-21 | 2026-07-23 |
 | `agent-supervisor` | projet | 2 | 2026-07-21 | 2026-07-21 |
 | `artifact-design` | (builtin/session) | 2 | 2026-07-06 | 2026-07-07 |
 | `pptx-deck` | global | 2 | 2026-07-08 | 2026-07-09 |
-| `agent-orchestrator` | projet | 1 | 2026-07-21 | 2026-07-21 |
 | `bmad-agent-pm` | BMAD | 1 | 2026-07-22 | 2026-07-22 |
 | `pptx-verify` | global | 1 | 2026-07-08 | 2026-07-08 |
 | `restitution-deck-design` | global | 1 | 2026-07-08 | 2026-07-08 |
@@ -29,8 +29,8 @@ Dernier scan : 2026-07-23T10:38:29+02:00 · **12 sessions** (transcripts) · **1
 
 | Sous-agent | Lancements | Premier | Dernier |
 | --- | --- | --- | --- |
-| `general-purpose` | 28 | 2026-07-06 | 2026-07-23 |
-| `ppt-designer` | 6 | 2026-07-21 | 2026-07-23 |
+| `general-purpose` | 31 | 2026-07-06 | 2026-07-23 |
+| `ppt-designer` | 12 | 2026-07-21 | 2026-07-23 |
 | `Explore` | 3 | 2026-07-21 | 2026-07-21 |
 | `Plan` | 1 | 2026-07-21 | 2026-07-21 |
 | `claude-code-guide` | 1 | 2026-07-21 | 2026-07-21 |
