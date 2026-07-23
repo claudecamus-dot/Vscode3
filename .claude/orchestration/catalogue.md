@@ -29,7 +29,7 @@
 
 | Agent | Quand l'utiliser | Mode typique | Modèle | Statut |
 | --- | --- | --- | --- | --- |
-| `ppt-designer` | Génération/amélioration du deck `docs/cadrage-ppt/` — jugement visuel (géométrie, mise en page, vérif par rendu réel) | Synchrone (colonne vertébrale du playbook `export-ppt-verifie`) | hérite du thread principal (pas de bascule — jugement visuel, pas un rapport mécanique) | **Activé, voie unique deck** (arbitrage 2026-07-21) — l'étape `generation` de `export-ppt-verifie` l'instancie comme **sous-agent** (plus de génération inline) ; `bmad-agent-ux-designer` n'est pas la voie deck |
+| `ppt-designer` | Génération/amélioration du deck `docs/cadrage-ppt/` — jugement visuel (géométrie, mise en page, vérif par rendu réel) | Synchrone (colonne vertébrale du playbook `export-ppt-verifie`) | hérite du thread principal (pas de bascule — jugement visuel, pas un rapport mécanique) | **Activé, voie unique deck** (arbitrage 2026-07-21) — l'étape `generation` de `export-ppt-verifie` l'instancie comme **sous-agent** (plus de génération inline) ; `bmad-agent-ux-designer` n'est pas la voie deck. **Shell confirmé le 2026-07-23** (préflight réel : PowerShell + Bash OK, python-pptx accessible) — la voie est effective, plus d'excuse inline « par précédent » pour la génération structurelle |
 
 ## Skills globaux clés
 
@@ -60,6 +60,12 @@ Décision suite au constat superviseur « monoculture `general-purpose` » (×21
 - **Conception d'un plan / stratégie d'implémentation** → `Plan` (modèle **opus**).
 - **`general-purpose`** (sonnet) → réservé aux tâches multi-étapes **réellement déléguées**
   produisant une sortie volumineuse — pas le réflexe par défaut.
+- **Journalisation du travail inline** (arbitrage 2026-07-23, constat superviseur
+  « le travail deck le plus lourd échappe au journal ») : un travail **inline
+  multi-étapes sur un livrable suivi** (le deck, l'outillage superviseur) journalise un
+  run minimal via `log_run.py` (étapes `inline`, 2 étapes suffisent), même sans
+  sous-agent — sinon la boucle superviseur ne mesure que les petites passes et rate
+  les grosses (5 commits deck du 2026-07-22 matin sans aucune entrée `runs.jsonl`).
 
 Caveat mesure : les 21 lancements `general-purpose` sont antérieurs à l'orchestrateur
 (avant 2026-07-08) — le constat reste **ouvert**, à re-confirmer sur `runs.jsonl` une fois

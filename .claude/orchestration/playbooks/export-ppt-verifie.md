@@ -19,7 +19,11 @@ Routage de l'étape `generation` (arbitrage 2026-07-21) : elle s'instancie déso
 le constat superviseur avait relevé que le deck avait été rebâti (`1cb15fc`) sans jamais
 passer par cet agent pourtant désigné pilote. Modèle hérité du thread principal (pas de
 bascule : jugement visuel, cf. CLAUDE.md). C'est la voie deck unique — `bmad-agent-ux-designer`
-ne double pas ce rôle.
+ne double pas ce rôle. Shell du sous-agent **confirmé le 2026-07-23** (préflight réel
+post-fix 82db57a : PowerShell + Bash OK, python-pptx accessible) — l'agent peut désormais
+exécuter lui-même `generate_deck.py`/`test_generate_deck.py` ; l'étape `verification-rendu`
+de la session reste néanmoins obligatoire (l'œil final ne se délègue pas). Une passe de
+contenu ciblée peut rester inline avec rendu réel, en le notant dans le run journalisé.
 
 Frontière avec `dev-verifie` : si la demande est un changement de code générique (un hook,
 un script de supervision/orchestration), c'est `dev-verifie` qui s'applique — ce

@@ -9,7 +9,7 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 > Conception et phasage : [../../reflexions/agent-superviseur.md](../../reflexions/agent-superviseur.md).
 
-Dernier scan : 2026-07-23T06:47:48+02:00 · **12 sessions** (transcripts) · **12** invocations de skills · **33** lancements de sous-agents.
+Dernier scan : 2026-07-23T06:54:07+02:00 · **12 sessions** (transcripts) · **12** invocations de skills · **34** lancements de sous-agents.
 
 ## Skills — usage réel
 
@@ -30,7 +30,7 @@ Dernier scan : 2026-07-23T06:47:48+02:00 · **12 sessions** (transcripts) · **1
 | Sous-agent | Lancements | Premier | Dernier |
 | --- | --- | --- | --- |
 | `general-purpose` | 24 | 2026-07-06 | 2026-07-21 |
-| `ppt-designer` | 4 | 2026-07-21 | 2026-07-22 |
+| `ppt-designer` | 5 | 2026-07-21 | 2026-07-23 |
 | `Explore` | 3 | 2026-07-21 | 2026-07-21 |
 | `Plan` | 1 | 2026-07-21 | 2026-07-21 |
 | `claude-code-guide` | 1 | 2026-07-21 | 2026-07-21 |
@@ -61,6 +61,8 @@ _(aucun constat — rien à signaler sur les données actuelles)_
 
 _Constats clos par décision humaine (`.claude/supervision/arbitrages.json`) — l'usage réel reste mesuré ci-dessus._
 
+- **`ppt-designer`** (2026-07-23) : Constat verification-manquante 2026-07-23 CLOS : fix shell 82db57a confirmé en conditions réelles le 2026-07-23 (spawn préflight-only : PowerShell ET Bash opérationnels, Python 3.14.5, python-pptx 1.0.2, verdict SHELL OK, zéro édition). La voie unique deck arbitrée le 2026-07-21 est donc effective : l'étape generation d'export-ppt-verifie s'instancie via le sous-agent ppt-designer. Le précédent inline des runs du 2026-07-22 (motivé par le shell non vérifié) ne fait plus jurisprudence pour la génération structurelle ; une passe de contenu ciblée reste possible inline avec rendu réel, en le notant au run.
+- **`agent-orchestrator`** (2026-07-23) : Constat interaction 2026-07-23 CLOS : règle de journalisation codifiée au catalogue (section routage par défaut) — tout travail inline multi-étapes sur un livrable suivi (deck) journalise un run minimal via log_run.py (étapes inline), même sans sous-agent. Pas de rétro-journalisation des sessions du 2026-07-22 matin.
 - **`ppt-designer`** (2026-07-21) : Conservé et ACTIVÉ comme voie unique de conception/génération du deck. L'étape 'generation' de export-ppt-verifie l'instancie désormais comme sous-agent (modèle hérité du thread principal, pas de bascule — jugement visuel). bmad-agent-ux-designer n'est PAS la voie deck : préférer une seule voie par tâche (CLAUDE.md).
 - **`pptx-framed-image`** (2026-07-21) : used-as-library — conservée. Portée par le pipeline deck comme code vendored (cadres teardrop du template OCTO via generate_deck.py), pas invoquée via l'outil Skill : elle restera dans jamais_utilises par construction. Ne PAS la retirer au tri des skills mortes.
 - **`slide-text-polish`** (2026-07-21) : used-as-library — conservée. Lint de copie (slide_lint) intégré au pipeline deck, invoquée comme code et non via l'outil Skill : elle restera dans jamais_utilises par construction. Ne PAS la retirer au tri des skills mortes.
@@ -80,9 +82,7 @@ _Constats clos par décision humaine (`.claude/supervision/arbitrages.json`) —
 
 _Diagnostic à jour._
 
-1. **Fix shell ppt-designer jamais confirmé — la voie unique deck arbitrée est contournée par précédent** — Au prochain mandat deck, spawner ppt-designer une fois avec son étape 0 Preflight (python --version) pour trancher : shell OK → restaurer le routage arbitré ; NO SHELL → escalade claude-code-guide. · **Proposition** : Si le préflight passe : l'étape generation d'export-ppt-verifie redevient sous-agent ppt-designer (arbitrage 2026-07-21 respecté). Si l'inline est préféré pour les passes de contenu : amender l'arbitrage ppt-designer + l'étape generation du playbook en « génération structurelle = ppt-designer, passe de contenu ciblée = inline + rendu réel » — la pratique et le contrat cessent de diverger.
-2. **Le travail deck le plus lourd échappe au journal d'orchestration** — Pas de rétro-journalisation. Règle à codifier : une session deck qui enchaîne revue + restructure + rendu (≥ 2 étapes dépendantes) journalise un run via log_run.py même quand tout est inline — les runs 11-12 montrent que 2 étapes suffisent, coût quasi nul. · **Proposition** : Ajouter une ligne à la section routage du catalogue : « travail inline multi-étapes sur un livrable suivi (deck) = journaliser un run minimal (étapes inline, log_run.py) ». Sans ça, la boucle superviseur mesure surtout les petites passes et rate les grosses.
-3. **6 retraits BMAD arbitrés le 2026-07-21 toujours physiquement présents** — Un geste humain unique : supprimer les 6 dossiers, ou re-arbitrer en « dormantes » si le geste est refusé — l'écart décision/terrain fait re-remonter ces 6 skills dans jamais_utilises à chaque scan. · **Proposition** : Suppression des 6 dossiers listés, à valider et exécuter par l'humain (jamais auto). À défaut, requalifier l'arbitrage de « retrait » à « dormante » pour que l'état documenté colle au terrain.
+1. **6 retraits BMAD arbitrés le 2026-07-21 toujours physiquement présents** — Un geste humain unique : supprimer les 6 dossiers, ou re-arbitrer en « dormantes » si le geste est refusé — l'écart décision/terrain fait re-remonter ces 6 skills dans jamais_utilises à chaque scan. · **Proposition** : Suppression des 6 dossiers listés, à valider et exécuter par l'humain (jamais auto). À défaut, requalifier l'arbitrage de « retrait » à « dormante » pour que l'état documenté colle au terrain.
 
 ---
 

@@ -2,6 +2,20 @@
  "arbitrages": [
   {
    "cible": "ppt-designer",
+   "decision": "Constat verification-manquante 2026-07-23 CLOS : fix shell 82db57a confirmé en conditions réelles le 2026-07-23 (spawn préflight-only : PowerShell ET Bash opérationnels, Python 3.14.5, python-pptx 1.0.2, verdict SHELL OK, zéro édition). La voie unique deck arbitrée le 2026-07-21 est donc effective : l'étape generation d'export-ppt-verifie s'instancie via le sous-agent ppt-designer. Le précédent inline des runs du 2026-07-22 (motivé par le shell non vérifié) ne fait plus jurisprudence pour la génération structurelle ; une passe de contenu ciblée reste possible inline avec rendu réel, en le notant au run.",
+   "categories": ["verification-manquante"],
+   "date": "2026-07-23",
+   "source": "arbitrage utilisateur « traite 1 » post-diagnostic agent-supervisor 2026-07-23 ; préflight sous-agent réel exécuté en séance"
+  },
+  {
+   "cible": "agent-orchestrator",
+   "decision": "Constat interaction 2026-07-23 CLOS : règle de journalisation codifiée au catalogue (section routage par défaut) — tout travail inline multi-étapes sur un livrable suivi (deck) journalise un run minimal via log_run.py (étapes inline), même sans sous-agent. Pas de rétro-journalisation des sessions du 2026-07-22 matin.",
+   "categories": ["interaction"],
+   "date": "2026-07-23",
+   "source": "arbitrage utilisateur « traite 2 » post-diagnostic agent-supervisor 2026-07-23"
+  },
+  {
+   "cible": "ppt-designer",
    "decision": "Conservé et ACTIVÉ comme voie unique de conception/génération du deck. L'étape 'generation' de export-ppt-verifie l'instancie désormais comme sous-agent (modèle hérité du thread principal, pas de bascule — jugement visuel). bmad-agent-ux-designer n'est PAS la voie deck : préférer une seule voie par tâche (CLAUDE.md).",
    "categories": ["agent-mort", "inefficacite", "ko-repete"],
    "date": "2026-07-21",
