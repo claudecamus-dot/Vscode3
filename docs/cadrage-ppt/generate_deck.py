@@ -453,7 +453,10 @@ def slide_mission(prs):
         ("ASSAINIR", D.PALETTE[2],
          "Traitement mesurable des gaspillages : flux, RUN, humain, financier, "
          "cognitif, décisionnel, environnemental, IA.",
-         "La capacité récupérée qui finance la trajectoire produit."),
+         # v2.3 : promesse instrumentée, pas un acquis — même honnêteté que le
+         # statut interne du cadrage (fin du double discours, finding C1).
+         "La capacité récupérée finance la trajectoire produit — mécanisme "
+         "instrumenté dès la première mission (KPI de réinvestissement)."),
     ]
     card_h = 1.75
     top0 = CONTENT_TOP + 0.5
@@ -537,7 +540,7 @@ def slide_pourquoi_contexte(prs):
         ("Et surtout — nos deux missions répondent trait pour trait aux deux douleurs du client.",
          dict(size=8.5, bold=True, color=NAVY, line_spacing=1.05)),
         ("Subir le RUN → TRANSFORMER (cible produit/plateforme) ; le gaspillage → ASSAINIR "
-         "(capacité récupérée qui finance la trajectoire).",
+         "(capacité récupérée réinvestie dans la trajectoire — mesuré par KPI).",
          dict(size=8, color=MUTED, space_before=2, line_spacing=1.15)),
     ], anchor=MSO_ANCHOR.MIDDLE)
     return s
