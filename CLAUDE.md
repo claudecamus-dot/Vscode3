@@ -42,17 +42,19 @@
 - `docs/cadrage-ppt/` : le deck OCTO annoncé comme « à réactiver si un jour »
   ci-dessus est désormais réel — `template-octo.pptx` (copie du template de
   marque, masters/layouts/thème OCTO) + `pptx_deck.py` (copie synchronisée du
-  skill global `pptx-deck`) + `generate_deck.py` (41 slides de synthèse du
-  cadrage BMAD IAP v2.2, dessinées sur le vrai template) → `bmad-iap-cadrage-
-  synthese.pptx`. **Re-restructuré le 2026-07-22 en 7 chapitres** (les passages
+  skill global `pptx-deck`) + `generate_deck.py` (42 slides de synthèse du
+  cadrage BMAD IAP v2.4, dessinées sur le vrai template) → `bmad-iap-cadrage-
+  synthese.pptx` (la version v2.3 antérieure est archivée telle quelle en
+  `bmad-iap-cadrage-synthese-v2.3.pptx`, ne pas la régénérer). **Re-restructuré le 2026-07-22 en 7 chapitres** (les passages
   antérieurs « 5 actes » puis « sous-chapitre Technique IAP » du même jour sont
   caducs) : Contexte · Personas · Besoins & douleurs · Proposition · Démarche ·
   IA · KPI. **Contexte** = `slide_mission` + `slide_pourquoi_contexte` (nouvelle,
   3 déclencheurs « pourquoi proposer ça à un client infra maintenant » + pont
   trait-pour-trait vers la double mission). Personas et douleurs AVANT la
   proposition ; l'IA en **avant-dernier** (le `slide_gate_ia` l'a rejointe), la
-  **Démarche** (`slide_trajectoire` + `slide_schema_bout_en_bout`) est un chapitre
-  en fin de deck, et le chapitre **KPI** (clôture) déroule : 3 familles
+  **Démarche** (`slide_trajectoire` + `slide_fil_humain` — v2.4, fil humain
+  ①②③⟲ transposé de l'offre SCALE, accroche Kotter 70 % — + `slide_schema_bout_en_bout`)
+  est un chapitre en fin de deck, et le chapitre **KPI** (clôture) déroule : 3 familles
   (`slide_kpis*`) → mise en place → **`slide_maturite`** (la grille de maturité =
   3e famille détaillée, CLARIFIÉE : une ligne « à quoi sert chaque échelle » sous
   chaque colonne, message « le KPI = le DELTA T0→réévaluation, pas le niveau ») →

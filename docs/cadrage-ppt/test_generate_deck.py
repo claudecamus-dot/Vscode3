@@ -93,16 +93,18 @@ def main():
     prs = Presentation(out)
 
     print("Structure :")
-    check(len(prs.slides) == 41, f"41 slides — reçu {len(prs.slides)}")
+    check(len(prs.slides) == 42, f"42 slides — reçu {len(prs.slides)}")
     check(not problemes, f"géométrie propre (verifier_geometrie) — {len(problemes or [])} problème(s)")
     check(os.path.exists(out) and os.path.getsize(out) > 500_000,
           f"fichier .pptx écrit, taille plausible ({os.path.getsize(out) if os.path.exists(out) else 0} octets)")
 
     print("Cadres photo bien calés (chapitres — layout '50 - Chapitre', teardrop) :")
     # 7 chapitres : Contexte(4) · Personas(7) · Besoins & douleurs(10) ·
-    # Proposition(13) · Démarche(25) · IA(28) · KPI(36)
-    # (le séparateur de sous-chapitre « Exemples » à la slide 16 décale +1 la suite)
-    chapitres = [4, 7, 10, 13, 25, 28, 36]
+    # Proposition(13) · Démarche(25) · IA(29) · KPI(37)
+    # (le séparateur de sous-chapitre « Exemples » à la slide 16 décale +1 la
+    # suite ; la slide fil humain v2.4, insérée après slide_trajectoire en 27,
+    # décale +1 IA et KPI)
+    chapitres = [4, 7, 10, 13, 25, 29, 37]
     for idx in chapitres:
         slide = prs.slides[idx - 1]
         cadre = gen._find_frame_by_geom(slide.slide_layout.shapes, "teardrop")

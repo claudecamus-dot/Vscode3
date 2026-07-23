@@ -1,0 +1,793 @@
+                  ENGAGER LA TRANSFORMATION AGILE
+
+                                           Présentation de l'offre OCTO
+
+                                                - NOM DU CLIENT -
+
+                                                                                            Juillet 2019
+
+                                                                                                                                                              1
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved
+Introduction - disclaimer
+
+Merci d'avoir consulté OCTO Technology pour vous appuyer dans votre transformation agile.
+
+OCTO intervient depuis longtemps auprès d'acteurs de premier plan sur ces questions, en les conseillant, en accompagnant le
+changement, et en réalisant des produits remarquables à leur côté.
+
+L'agilité n'est pour nous ni une expertise, ni une finalité. C'est un moyen d'offrir une expérience utilisateur plus qualitative, plus fluide et
+plus rapide. C'est aussi un moyen de mieux travailler ensemble et de rendre plus épanouissantes et efficaces les collaborations internes
+et externes. C'est une façon accélérée de partager et d'acquérir l'expertise incontournable pour faire évoluer le coeur de votre offre à
+la vitesse exigée par votre environnement en mutation.
+
+En vous aidant à prendre votre transformation agile au bon niveau et en co-construction, nous savons pouvoir répondre aux enjeux
+que vous vous fixez : devenir partenaires entre IT et métiers, améliorer la satisfaction des utilisateurs et collaborateurs, en pilotant par la
+mesure de la valeur, en proximité, et en se dotant des outils pour mesurer les progrès réalisés dans une démarche d'amélioration
+continue.
+
+Nous espérons que notre approche éprouvée vous convaincra du bien-fondé « d'engager et d'expérimenter » ; ce sont les
+maîtres-mots du chemin que vous allez tracer.
+
+                                                                           L'équipe d'OCTO Technology
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved                                                                                       2
+Table des matières
+
+01                                                           02               03              04
+
+Contexte et demande                                          Nos convictions  Notre démarche  Notre proposition
+
+05                                                           06               07              08
+
+Dispositif                                                   Livrables        Références      A propos d'OCTO
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved                                                      3
+01
+
+CONTEXTE ET DEMANDE
+
+                     THERE IS A BETTER WAY
+Notre compréhension de votre situation
+
+Contexte   Xxxxx                                                  Demande   Xxxxx
+
+                > Xxxxx                                                          > Xxxxx
+
+                         + Xxxxx                                                          + Xxxxx
+
+                                     Xxxxx                                                            Xxxxx
+
+                                                             xxx
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved                                                  5
+02
+
+ NOS CONVICTIONS
+
+                 THERE IS A BETTER WAY
+Travailler différemment pour fabriquer des produits différents
+
+Mettre en oeuvre l'Agilité à l'échelle de l'organisation pour :
+
+                                             Des livraisons plus fréquentes
+
+                                                              < Aller au plus vite sur le marché et s'adapter rapidement
+
+                                                Des solutions plus simples et efficientes
+
+                                                                  < Se concentrer sur ce qui a le plus de valeur et d'impact
+
+                                          Une dynamique d'amélioration collective continue
+
+                                                           < S'engager ensemble autour d'objectifs clairs et partagés
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved
+Passer du mode "Projet" au mode "Produit"
+
+De manière itérative et incrémentale
+
+ORGANISATION "PROJET"                                                                          ÉCOSYSTÈMES "PRODUIT"
+
+ Pilotage par les coûts                                      PLANIFICATION   Pilotage par la valeur et le profit      ADAPTATION
+ Planification complète en amont                                             Planification itérative
+ Suivi du plan projet                                                        Décisions rapides
+ Décisions anticipées                                                        Feedback et adaptation
+
+                                                             Création d'équipes Agile dédiées
+                                                                   à un objectif stratégique
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved                                                                       8
+Questionner le management intermédiaire
+
+L'accompagner vers le "FAIRE" au sein des équipes ou vers le "CADRE" au sein de la gouvernance
+
+                                                                ?
+
+            Quelle est mon expertise ?                       ?     ?                       Quelle est ma légitimité ?
+      En quoi est-elle utile aux équipes ?                                     En quoi me permet-elle de fixer le cadre ?
+Est-ce que je veux revenir dans le "FAIRE" ?                       MANAGER
+   À quel objectif je souhaite me dédier ?                      INTERMÉDIAIRE                Quelle est ma vision ?
+                                                                                       En quoi donne-t-elle du sens ?
+
+               ÉCOSYSTÈME "PRODUIT"                             LIEN DIRECT    Gouvernance
+                                                             PAS D'INTERFACE
+        Fabrication                                                             Donne la vision
+                                                                                Définit et fait évoluer le cadre
+              Équipes agiles dédiées à                                          Cherche l'autonomie par la
+                un objectif stratégique
+                                                                                     délégation
+OCTO Part of Accenture Digital © 2019 - All rights reserved                     Permet l'échec par la confiance
+
+                                                                                                                                                                                                         9
+ Suivre les 6 règles d'or de la transformation
+
+1.Vous êtes les acteurs clés de la transformation
+1.Des personnes sont dédiées à cette transformation
+1.Des ateliers collaboratifs permettent de co-construire le chemin
+1.Vos décideurs participent à ces ateliers collaboratifs
+1.La transformation est contextualisée à votre organisation, voire à chaque entité
+1.Vous vous lancez pour apprendre de vos expériences et découvrir comment réussir
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved                         10
+S'inscrire dans une démarche à long terme
+
+     Engager                                                  Expérimenter           Passer à l'échelle          Pérenniser         Et au-delà ?
+
+S'aligner sur le sens,                                       Tester les intentions,   Diffuser, réduire les     Culture produit,         Évolution
+       la cible, le                                              les impacts et         dépendances et        portefeuille agile,   permanente et
+                                                                                     amender le modèle                             auto-organisation
+    vocabulaire et                                           provoquer le point                                  innovation et
+mettre en discussion                                              de bascule              opérationnel       meilleures pratiques
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved                                                                                           11
+03
+
+ NOTRE DÉMARCHE
+
+                 THERE IS A BETTER WAY
+Commencer par le QUI
+
+Le rôle majeur du Leader de la transformation
+
+   La transformation ne peut pas aller plus loin que ce que le
+      Leader peut porter
+
+   L'autorité du Leader le positionne au-dessus des sphères de
+      décisions et d'exécution
+
+SPHÈRE DES                                                                Le leader de la transformation
+DÉCISIONS                                                                  a été identifié, son intention
+                                                                                partagée, il est prêt à
+                                                              SPHÈRE DE    s'engager personnellement
+                                                             L'EXÉCUTION               sur la durée.
+
+        IMPACTS DE LA TRANSFORMATION                                                                                                                                                             13
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved
+Clarifier le POURQUOI
+
+Donner du sens à la transformation
+
+                                                             Pourquoi se transformer ?
+
+  Aligner la stratégie et                                                               Des solutions plus simples
+                 l'exécution                                                            livrées au bon moment
+
+Sortir de la sur-mutualisation, des                                                     Apprendre à maximiser la valeur
+    dépendances et du matriciel                                                         en se concentrant sur des
+                                                                                        solutions simples à fort impact
+pour des équipes dédiées à des                                                          Limiter l'endettement et les
+    objectifs clairement définis et                                                     défauts de qualité
+           alignés avec la stratégie
+
+                                                             Une organisation adaptable
+
+                                                                    Comprendre que l'organisation est au service des
+                                                                    enjeux, que ces enjeux évoluent et que l'organisation
+                                                                    doit apprendre à se réinventer en continue
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved                                                                14
+Comprendre le QUOI
+
+Un Framework Agile simple et éprouvé
+
+                                                             ÉCOSYSTÈME (domaine métier, expérience client, ...) 150 PERSONNES
+
+                                                                                              GOUVERNANCE
+                                                                                  Instance décisionnelle fréquente
+                                                                             (GO, NOGO, STOP, ENCORE, CAPACITÉ)
+
+                                                                Vision technique                   Leader              Vision produit
+
+                                                              Porte l'évolution du SI en         Vision et enjeux  Porte la déclinaison des
+                                                             cohérence avec les enjeux                                enjeux en objectifs
+                                                                                                Fabrication          produits mesurables
+
+                                                                                               Porte l'efficience
+                                                                                          des équipes, la méthode
+
+                                                             Équipes agiles  Équipes projets       Équipes          Communautés
+                                                                 dédiées     à durée limitée     transverses,        produit, tech,
+                                                                                              experts, métiers
+                                                              à un objectif                                            managers
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved                                                                                                           15
+Accompagner le COMMENT                                                                                                                   FABRICATION  INDIVIDUS  CHANGE
+
+Une démarche progressive basée sur une approche 360°
+
+ ACCULTURATION                                                 MANAGEMENT              ACCOMPAGNER DES ÉQUIPES DÉDIÉES                            PASSAGE À L'ÉCHELLE
+
+- Aligner IT/Métier                                          - Identifier les  - Identifier les objectifs - Lancer des équipes           - Déploiement du modèle
+- Sensibiliser à                                              décideurs                                                                   opérationnel
+ l'Agile                                                     - Aligner leurs           stratégiques              - Réaliser un cadrage   - Mettre en oeuvre la gestion de
+- Expérimenter                                                objectifs avec                                                              la demande
+ des Ateliers                                                 ceux de la       - Identifier les personnes Agile                          - Adapter le processus budgétaire
+- Se former à                                                 transformation                                                             - Faire du nouveau modèle la
+ l'Agilité                                                   - Accompagner             (Métier/IT) pour les - Évaluer les besoins         norme
+
+                                                                                       porter                    d'accompagnement
+
+                                                                               - Travailler les ambitions - Former, Coacher,
+
+                                                                                       et le dispositif (pré-    Mentorer
+
+                                                                                       cadrage)
+
+KICK-OFF                                                                                             3 À 6 MOIS                PLÉNIÈRE                          ORGANISATION
+                                                                                                                                                                 AUTONOME
+                 LEADERSHIP
+                                                             DESIGN DE L'ORGANISATION CIBLE                                RH            INSTANCES DE COLLABORATION
+            - Évaluer la
+              légitimité des                                 - Mélanger les acteurs    - Restituer et prendre    - Adapter les           - Établir les rituels Produits, Tech et
+              décideurs                                       IT et métier              du Feedback auprès        Fiches de               Managers
+            - Nommer les                                     - Définir les rôles, les   des parties prenantes     postes, staffing,      - Poser la gouvernance Agile
+              acteurs clés de                                 processus, les           - Se nourrir des           carrière, éval         - Gérer les dépendances en
+              la 1ère                                         objectifs, les équipes    expérimentations en      - Coacher                collectif
+              gouvernance                                                               cours                     individuellement       - Évaluer l'accompagnement des
+                                                                                                                  les acteurs clés        équipes avec les managers
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved                                                                                                                       16
+Projeter le RÉSULTAT
+
+Une transformation Agile mène à des résultats concrets et visibles
+
+1. Un leadership très engagé                                                                                  7. Des managers exemplaires
+
+             Product Owner, Technical Leader,                                                                 Les managers démontrent au quotidien qu'ils
+            Gouvernance, ... ces éléments de                                                                  favorisent l'autonomie et la responsabilité des
+   l'organisation favorisent l'émergence de                                                                   équipes, et qu'ils font évoluer le cadre et les
+                                                                                                              processus pour faciliter la transformation
+                                    nouveaux Leader
+
+          2. Une Vision partagée                                LES RÉSULTATS                                 6. De l'amélioration continue
+                                                                VISIBLES DE LA
+    La transformation est concrétisée par une                TRANSFORMATION                                   L'ensemble s'inscrit dans une démarche
+        Vision claire et partagée par toutes les                                                              d'amélioration continue basée sur la
+                                                                                                              transparence et le feedback, qui produit des
+parties prenantes utilisée pour communiquer                                                                   actions concrètes et suivies dans la
+                                                 largement,                                                   durée...ce qui implique le droit à l'erreur !
+
+      et déclinée sous forme d'un Backlog de
+                   chantiers priorisés par la valeur
+
+    3. La culture du Test (TTM)                              4. Apprentissage en continue                     5. Un pilotage par la mesure
+
+            Une ambition forte et authentique                 La transformation est vue comme un processus    Les chantiers sont pilotés par des objectifs et
+       de réaliser différemment des produits                 continu dont chaque étape apporte de la valeur,  des critères de mesure.
+différents en démarrant vite pour tester un                                                                   Exemple des KPIs : Time To Market, Qualité,
+      nouveau modèle et apprendre ce qui                               donnent du rythme et de la visibilité  Satisfaction Clients, Satisfaction
+                                                                                                              Collaborateurs...
+                  convient à votre organisation
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved                                                                                                    17
+04
+
+NOTRE PROPOSITION
+
+                 THERE IS A BETTER WAY
+Objectifs de la phase : Engager
+
+Prendre le temps d'identifier les pré-requis à la transformation
+
+           Alignement                                        Une organisation   Point de départ
+                                                             prête à lancer sa
+      Une vision claire et partagée                                             Un point de départ clairement défini
+      Un Leader engagé avec une                                transformation   Des impacts identifiés et assumés
+                                                                                Des moyens à la hauteur des
+                            intention forte                                     ambitions
+Des objectifs définis, ambitieux et                                             Une transformation engagée, auprès
+                                                                                de tous
+                                     réalistes
+
+                                                                Vocabulaire
+
+                                                             Un vocabulaire clair et compris (sans buzzword)
+                                                             Des éléments de langage qui ont du sens et qui
+                                                             facilitent la transformation
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved                                                           19
+Des ateliers de travail collaboratif
+
+Se préparer à la transformation en collaborant est déjà un premier changement
+
+1. Une salle fixe dédiée aux travaux
+2. Des sessions bloquées à l'avance
+3. Un rythme bi-hebdomadaire
+4. Des ateliers sur des matinées
+5. Des participants engagés et en capacité de
+
+   décider
+6. Des prises de feedbacks régulières
+
+                         10 à 12 ateliers
+
+               Adaptable en fonction des feedbacks
+
+KICK-OFF        2 SEM                                        RESTITUTION    Atelier de travail collaboratif : apprendre à travailler
+                                                                                                        différemment
+Planification  Rythme à                                           Plénière
+des ateliers     valider                                                                                                                                                                                                                        20
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved
+Vue d'ensemble de la phase : Engager
+
+4 étapes pour structurer un discours clair et partagé
+
+                     Inspiration                             Intention                           Trajectoire                     Partage
+
+                                                                                         3 MOIS
+
+ATELIERS DE TRAVAIL   Acculturation à l'Agilité               Présentation de l'intention et    Synthèse des ateliers               Session plénière
+                                                                   du framework OCTO                 précédents, écriture du        Restitution de
+                      Présentation de REX                                                            pitch
+                                                              Projection, prise de                                                        l'ambition de
+                      Rencontre avec                               feedbacks, brainstorming     Identification des scénarios              transformation
+                           d'autres clients d'OCTO                                                   de transformation              Présentation de REX
+                           qui ont vécu cette                 Identification des impacts,                                           Présentation de la
+                           transformation                          interviews, audits           Interviews des acteurs                    démarche
+                                                                                                     concernés pour évaluer la      Vote de confiance
+                      Échange avec le                         Prises des idées, questions et         faisabilité                    Feedbacks
+                           Leader sur son intention                premières réponses
+                                                                                                                                           Tout le monde
+                      Écriture du WHY
+                                                                                                                                  Vote de confiance sur la
+                     Comex, acteurs clés                     Groupe de réflexion,                Groupe de réflexion                transformation
+                                                             Opérationnels, RH, Finance
+                                                                                                                                  Feedbacks des personnes
+LIVRABLES             Leader de la                            Cartographie des différents       Définition de la transformation     concernées
+                        Transformation identifié                écosystèmes possibles           Scénarios de mise en oeuvre
+                                                                                                Nominations à valider
+                      Pitch de la transformation              Identification des impacts
+                                                              Définition du vocabulaire Agile
+                      Groupe de réflexion
+                        identifié
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved                                                                                                 21
+Focus sur les premiers ateliers
+
+La présence du Leader de la transformation est indispensable
+
+Sem 1                                                        Sem 2  Sem 3                       Sem 4                              Sem 5
+
+    KICK-OFF                                                 ACCULTURATION                       INSPIRATION                       INTENTION
+
+     CALER LES AGENDAS                                        COMPRENDRE L'AGILITÉ                S'OUVRIR À D'AUTRES EXPÉRIENCES  DÉFINIR LE WHY DE LA TRANSFO
+
+     · Identifier les participants (Leader                   · Présentation de l'histoire de    · Prendre du recul en repensant    · Synthétiser l'intention en
+        et premier groupe de réflexion)                         l'Agilité depuis les débuts de     le rôle du COMEX dans la           une phrase claire
+                                                                l'IT                               transformation
+     · Dédier une salle pour tous les                                                                                              · Nommer l'équipe de
+        ateliers                                             · Comprendre le sens et            · Se nourrir d'un retour              transformation
+                                                                notamment la notion de             d'expérience
+     · Valider le déroulé des premiers                          complexité                                                         · Proposer un WHY pour
+        ateliers                                                                                                                      cette transformation
+                                                             · Faire le lien avec la situation
+     · Bloquer les Agendas                                      actuelle                                                           · Identifier des résultats
+                                                                                                                                      attendus concrets
+OCTO Part of Accenture Digital © 2019 - All rights reserved
+                                                                                                                                                                 22
+05
+
+        DISPOSITIF
+
+                 THERE IS A BETTER WAY
+Équipe Octo de 3 personnes
+
+              Prénom Nom                                             Prénom Nom                           Prénom Nom
+                    RÔLE                                                  RÔLE                                 RÔLE
+
+                     Description du rôle                                Description du rôle                  Description du rôle
+            Lorem Ipsum. Ex quod recteque                      Lorem Ipsum. Ex quod recteque        Lorem Ipsum. Ex quod recteque
+           interrogatus eas ardenter curant                   interrogatus eas ardenter curant     interrogatus eas ardenter curant
+             eas ob plus Censorius quidam                       eas ob plus Censorius quidam         eas ob plus Censorius quidam
+         honeste sensu inquit delatum ad sit                 honeste sensu inquit delatum ad sit  honeste sensu inquit delatum ad sit
+          his superasset commendari est his                   his superasset commendari est his    his superasset commendari est his
+           figmentis regem autem figmentis                    figmentis regem autem figmentis      figmentis regem autem figmentis
+
+                       per recteque his.                                  per recteque his.                    per recteque his.
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved                                                                                                                                         24
+Proposition financière (au forfait)
+
+OCTO propose                         Le montant global                                    Cette proposition
+un engagement                        forfaitaire est de                                   est valide jusqu'au
+forfaitaire pour                                                                          xx/xx/xxxx
+la réalisation                       xxx  HT
+de cette mission                                                                          Les frais de déplacement
+                                                                                          hors région parisienne
+           Conditions de facturation et de paiement                                       sont facturés en sus,
+                                                                                          sur justification des frais
+                         Échéances de facturation                                         réels.
+
+                                         30% du montant à la commande                                                                                                            25
+                  xx% à la fin de l'étape x, sur validation du livrable « xxx » (via PV)
+           Le solde à la recette définitive des livrables (signature d'un PV de recette)
+
+                   Paiement à 30 jours fin de mois
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved
+06
+
+        LIVRABLES
+
+                 THERE IS A BETTER WAY
+Séminaire                                                                      Toute l'entreprise
+                                                                                  opérationnels
+            Se forger des convictions communes                                    métier / IT
+            Lancer une transformation
+                                                                                                                                                     27
+   Préparation :
+
+            > Identifier l'objectif, l'agenda et les outputs
+            > Identifier les participants, le lieu , la durée
+
+   Événement (½ à 1j) :
+
+            > Acculturation Agile
+            > Présentation du diagnostic et des recommandations
+            > Travail sur des hypothèses (organisation, rôles, premiers
+
+                  sujets)
+            > Identification des acteurs de la transformation (leader,
+
+                  groupe de travail sur le modèle opérationnel, experts clés)
+
+                                             LIVRABLES
+
+   Une ambition commune
+   Des actions identifiées et partagées
+   Des porteurs pour mener les actions
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved
+Acculturation Agile                                                    Toute l'entreprise
+                                                                          COMEX
+            Comprendre le Why de l'Agilité                                Management
+            Se donner des ambitions
+            Prendre du recul                                                                                                                 28
+
+   Session (1h à 2h) :
+
+            > Histoire de la gestion de projet IT (de 70 à nos jours)
+            > Les valeurs et les principes de l'Agile
+            > La complexité
+            > La gestion de projet Agile
+            > La prise de décisions
+            > Le flux
+            > L'évolution du rôle hiérarchique dans un contexte Agile
+            > L'écosystème Agile et ses mises en oeuvre
+            > Questions & réponses
+
+                                             LIVRABLES
+
+   Support de slides de la présentation
+   Photos de la session
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved
+Inspiration                                                  COMEX
+                                                             Équipe de
+            S'inspirer des expériences des autres            transformation
+            Prendre du recul sur les enjeux
+                                                                                                                                   29
+   Présentation d'un acteur qui vit une transformation
+        similaire
+
+   Questions/réponses
+   Séance d'inspiration avec un Partner Octo
+   Réflexion autour des grands enjeux des organisations
+   Les organisations apprenantes
+
+                                             LIVRABLES
+
+   De nouvelles idées
+   Des causes d'échec
+   Des éléments de succès
+   Des bonnes pratiques
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved
+Ambitions de la transformation                                Toute l'organisation
+                                                              Les sponsors
+            Communiquer une vision concrète
+            Permettre aux personnes de se projeter                                                                                30
+            Sortir du flou
+
+   Présentation de l'ambition et du WHY par le Leader
+   Présentation du chemin de transformation (point de
+
+        départ et critères de succès)
+   Communication des premières décisions (périmètre
+
+        concerné, leader identifié, ....)
+
+                                             LIVRABLES
+
+     Un support de présentation autoportant et apte à
+          circuler en interne
+
+     Un vote de confiance sur la transformation
+     Des feedbacks des personnes concernées
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved
+07
+
+      RÉFÉRENCES
+
+                 THERE IS A BETTER WAY
+MISE EN OEUVRE DE LA DIGITAL FACTORY X-COMMERCE
+Rassembler le Métier et l'IT dans une gouvernance commune
+
+  CONTEXTE                                                         FACTEURS DE RÉUSSITE
+
+ Une fusion récente entre deux géants du retail                    Une transformation portée par l'IT et le métier
+ Une volonté de travailler différemment                            Une forte participation du COMEX
+ Une organisation qui n'est pas lisible                            Des équipes légitimées et motivées
+                                                                   Transformation vue comme globale (RH, Budget,
+  ENJEUX
+                                                                        Gouvernance...)
+ Sortir d'une architecture Legacy
+ Augmenter le CA Web                                          Manifeste de la DIGITAL FACTORY, vision cible et modèle
+ Fidéliser et attirer les talents                             opérationnel revu
+
+  MISSION OCTO
+
+ Dispositif d'accompagnement Organisation, Architecture et
+     Delivery
+            Mettre en place une organisation en Feature Team
+                 dans un écosystème de type Factory
+            Modulariser le SI
+            Améliorer les pratiques de Delivery
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved                                                            32
+TRANSFORMATION FEATURE TEAM
+En incluant la gouvernance, les RH et le management
+
+ CONTEXTE                                                             FACTEURS DE RÉUSSITE
+
+ Dans le cadre du rapprochement IT et Métier sous une                 Une transformation portée par l'IT et le métier
+     direction Digital                                                Un Leader impliqué avec des convictions fortes
+                                                                      Des équipes en lien direct avec les enjeux de l'entreprise
+ Manque de visibilité sur la progression, rôles inadaptés,            Un PMO à plein temps pour créer une gouvernance efficace
+     décision lente
+                                                                 Modèle d'organisation incluant la gouvernance et les métiers
+  ENJEUX                                                         transverses
+
+ Maximiser le revenue publicitaire et préserver l'expérience
+     client
+
+ Améliorer la Qualité de service
+
+  MISSION OCTO
+
+ Dispositif d'accompagnement en 3 streams
+            La mise en place d'une nouvelle organisation
+                 incluant toutes les composantes (transverse,
+                 management, projet, produit, gouvernance)
+            L'accompagnement individuel en lien avec la RH
+                 des personnes clés, l'accompagnement d'équipes
+            L'apport d'expertises ponctuelles sur le rôle du PO
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved                                                                       33
+ACCOMPAGNEMENT DE LA TRANSFORMATION AGILE
+À l'échelle d'écosystèmes et de tribus
+
+ CONTEXTE                                                            FACTEURS DE RÉUSSITE
+
+ Organisation complexe avec un fonctionnement très siloté             Sponsor présent et impliqué, leader de la transformation dédié
+ Difficulté à s'adapter aux besoins du marché                         Un lieu dédié à la transformation permettant la colocalisation
+ Travail en mode urgence
+ Un SI historique très imbriqué et des projets Groupe très                des acteurs
+                                                                      Mise en mouvement provoquée, 1er "PI planning" non reporté
+     impactants                                                       Création d'une dynamique de transition par la mise en place
+ Expertises rares et très sollicitées
+ Peu de ressources IT internes en développement                           d'une Communauté de coachs internes
+                                                                      Optimisation du run des squads permettant de créer un espace
+ ENJEUX
+ Accompagner Allianz dans le déploiement de sa stratégie Agile            pour l'innovation et le change
+ Promouvoir une culture centrée utilisateur
+ Simplifier et optimiser les méthodes de travail
+ Donner confiance dans la capacité collective à délivrer
+
+     régulièrement de la valeur
+ Faciliter le run (IT et métier : bug, évolutions et assistance...)
+
+  MISSION OCTO
+ Coaching quotidien des squads
+ Accompagnement de la montée en compétence des coachs
+
+     internes
+ Rythme donné à la transformation grâce à des thèmes communs
+ Evolution de l'organisation grâce au feedback terrain
+ Amélioration continue de l'accompagnement et de notre façon de
+
+     travailler ensemble
+ Facilitation de la mise en place d'événements de synchro inter
+
+     squads (PI Planning)
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved                                                                           34
+ACCOMPAGNEMENT DE LA TRANSFORMATION AGILE
+Production mutualisée
+
+ CONTEXTE                                                       FACTEURS DE RÉUSSITE
+ Production mutualisée de la banque
+ Fonctionnement très siloté et en mode ticket                    Sponsor présent et impliqué
+ Legacy important                                                Leader de la transformation dédié
+ Expertises rares et très sollicités                             Nombreuses expérimentations en parallèle
+                                                                 Un lieu dédié à la transformation
+ ENJEUX
+
+ Besoin de créer la production mutualisée de demain orientée
+     service
+
+ Accélérer les mises en production
+ Faciliter le run
+
+MISSION OCTO
+
+ Accompagner le lancement d'un mode d'organisation Factory
+     interne
+
+ Lancer des expérimentations sur les rôles et processus cibles
+ Animer la réflexion sur la vision de la transformation
+ Coacher le travail de réflexion sur une organisation cible
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved                                                35
+RÉORGANISATION EN FEATURE TEAMS
+
+CONTEXTE                                                                                 BENEFICES OBSERVÉS
+                                                                                             Discours du management ajusté grâce au regard extérieur
+   Dans le cadre de son initiative "Réinventer la relation client",                               apporté sur le sens de la transformation capté auprès des équipes
+        Orange souhaite renforcer son Espace Client pour devenir une                         Mise en mouvement provoquée, 1er "PI planning" non reporté
+        référence de l'expérience client et de l'excellence                                  Lancement facilité des équipes et communautés
+        d'exécution au sein du groupe.                                                       A valider ultérieurement avec davantage de recul :
+                                                                                                         Culture Produit
+   Les équipes, réparties sur 5 sites en France, ont déjà engagé une                                     Apprentissages sur la gouvernance de la transformation
+        refonte technique depuis plusieurs mois pour supporter cette
+        initiative mais peinent à lancer leur réorganisation.                           Plan d'accompagnement de l'équipe de transformation, des
+                                                                                        Feature Teams et des Communautés de pratiques sur les 4
+ENJEUX                                                                                  premiers mois
+
+   Mettre l'écoute client au centre du processus de delivery
+   S'organiser en "Feature teams" pour développer la culture
+
+        "produit"
+   Tout en répondant à des objectifs forts de delivery des
+
+        roadmaps métier et technique
+   Et en assurant une bonne cohérence transverse du produit et
+
+        des pratiques
+
+MISSION OCTO
+
+   Analyser la situation actuelle, aider à lever les freins à la mise
+        en mouvement de la transformation
+
+    Faciliter l'organisation des premiers événements de type "PI
+        plannings"
+
+    Accompagner les différentes Feature Teams au démarrage
+    Soutenir le lancement des communautés de pratiques
+
+        transverses et développer la culture "produit"
+    Challenger la gouvernance de la transformation et formaliser les
+
+        patterns de transformation pour diffusion au sein du groupe
+
+OOCCTOTOPaTrEt CofHANcOceLnOtGurYe D>igTiHtaEl R©E20IS19A- BAEll rTigThEtsRreWseArYved
+LANCEMENT DE LA DIGITAL FACTORY
+
+ CONTEXTE                                                         FACTEURS DE RÉUSSITE
+
+ THALES lance une digital Factory pour accélérer la création de    Colocalisation des acteurs
+     nouveaux produits digitaux                                    Sponsorship fort et présent
+                                                                   Volonté de privilégier la qualité par dessus tout
+ 150 personnes colocalisés sur un plateau dans le centre de        Pression managériale faible
+     Paris
+
+ Une grande majorité de développeurs
+
+ ENJEUX
+
+ Initier une transformation de Thales
+ Prouver la capacité à livrer des MVP avec de la valeur pour les
+
+     clients
+ Assurer la meilleure qualité technique et sécurité dans un
+
+     environnement hors sol
+
+  MISSION OCTO
+
+ Accompagner le lancement de la Factory avec une équipe de 4
+     Coachs
+
+ Définir un processus Agile pour le cadrage des MVP
+ Mettre en place les outils de pilotage @scale
+ Former et Coacher les rôles clés de la factory (PO, SM, Leader)
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved                                                           37
+TRANSFORMATION AGILE                                                 POINTS CLÉSa
+                                                                      Cadrage d'une démarche de déploiement Agile
+ à l'échelle de l'entreprise                                         a Organisation d'équipes cross-fonctionnelles (avec de l'off-shore)a
+                                                                      Rôles et responsabilités (place d'un chef de projet dans une
+     CONTEXTE
+                                                                           organisation agile)
+    Dans un contexte de croissance, Meetic souhaite améliorer son     Créer une dynamique de transition par une Communauté de
+        Time-To-Market, fluidifier son innovation et répondre à des
+        problématiques d'exécution de projets stratégiques                 changement
+        multi-acteurs
+                                                                                        Culture
+    Meetic demande à OCTO de l'accompagner dans un déploiement
+        de ses pratiques agiles à l'IT et au Produit                                                               Autonomie & responsabilité
+                                                                                                                    Confiance & transparence
+     ENJEUX
+    Comprendre l'organisation initiale de Meetic et faire une                                                                  Feedback
+                                                                                                                            Droit à l'erreur
+         analyse de son niveau d'Agilité                                                                                 Manager as coach
+    Proposer une démarche de déploiement des pratiques agiles                                                              Plaisir au travail
+
+         en adéquation avec la stratégie de l'entreprise                                                                                                                                                             38
+    Accompagner Meetic dans le déploiement de sa stratégie à
+
+         l'issue du cadrage
+
+     MISSION OCTO
+
+   Interviews de 30 personnes, analyse de processus, suivi d'une
+        équipe projet
+
+   Etablissement d'un état des lieux du niveau d'agilité de Meetic
+        sur les 5 piliers d'une entreprise Agile
+
+   Proposition d'une stratégie de déploiement et de
+        recommandations adaptées au contexte de l'entreprise
+
+   Accompagnement des différents interlocuteurs sur leurs sujets de
+        réflexion autour de la transition (nouveaux rôles et
+        responsabilités, nouvelles interactions dans les équipes)
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved
+08
+
+ À PROPOS D'OCTO
+
+                 THERE IS A BETTER WAY
+La mission de notre tribu Scaling Agile : simplifier par l'agilité
+
+         Pour les organisations qui souhaitent s'adapter
+
+                                et saisir rapidement de nouvelles opportunités
+                               face à un marché en perpétuelle accélération,
+
+       nous employons les principes d'Agilité à large échelle
+
+                 pour impulser le changement
+
+      par la confiance et la collaboration
+
+           avec la performance comme conséquence
+
+OCTO Part of Accenture Digital © 2019 - All rights reserved                     40
+

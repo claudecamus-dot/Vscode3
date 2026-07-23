@@ -23,6 +23,11 @@ docs/cadrage-ppt/_img/
 # script de rendu pptx-verify) - artefact temporaire, jamais du contenu.
 **/~$*.pptx
 
+# Documents importes pour analyse (decks commerciaux internes OCTO avec
+# references clients et tarifs) - ne jamais pousser sur le depot public ;
+# seules les notes d'extraction redactees (*.md) sont versionnees.
+docs/Import/*.pdf
+
 # Superviseur/orchestrateur des agents - donnees machine generees par
 # scan_transcripts.py/log_usage.py/log_run.py, jamais editees a la main.
 # .claude/supervision/arbitrages.json reste VERSIONNE (decisions humaines).

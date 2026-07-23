@@ -1,17 +1,24 @@
-"""Génère une synthèse PPT (41 slides) des RÉSULTATS du cadrage BMAD IAP
+"""Génère une synthèse PPT (44 slides) des RÉSULTATS du cadrage BMAD IAP
 (docs/bmad-iap-cadrage.md) à partir des helpers pptx_deck, dessinée
 PAR-DESSUS le vrai template de marque OCTO (template-octo.pptx) —
 masters/layouts/thème conservés, pas un deck sur canevas vierge.
 
-Structure en 7 chapitres de product-discovery : Contexte (mission + POURQUOI on
-propose ça à un client infra), Personas, Besoins & douleurs, Proposition (thèse
-`why_iap` en ouverture, méthode scorée, puis le sous-chapitre « Exemples » — désormais
-introduit par un séparateur léger `slide_sous_chapitre`, pas seulement un kicker),
-Démarche, IA, KPI. L'IA reste tirée APRÈS la proposition (le gate IA l'a rejointe) —
-la doctrine « l'IA amplifie l'organisation, elle n'est jamais la réponse à un
-problème d'abord organisationnel » est protégée en présentant personas et douleurs
-AVANT la proposition, et l'IA en avant-dernier ; le chapitre KPI (la mesure) ferme le
-deck : 3 familles → mise en place → grille de maturité (3e famille détaillée) → cas chiffré.
+Structure v2.5 en 8 chapitres, sur le fil rouge narratif des decks SCALE
+(docs/Import/notes-extraction-scale.md : POURQUOI → QUI → QUOI → COMMENT →
+RÉSULTAT) : 01 Contexte (pourquoi) · 02 Personas (qui) · 03 Besoins & douleurs
+(le pourquoi, mesuré) · 04 Proposition (quoi — thèse `why_iap` en ouverture,
+méthode scorée, sous-chapitre « Exemples » introduit par `slide_sous_chapitre`)
+· 05 IA (le quoi, côté IA — sous gate) · 06 Démarche (comment — trajectoire
+fusionnée avec la vue bout-en-bout, fil humain, schéma de fonctionnement,
+inventaire des agents, livrables, conditions de réussite) · 07 Outillage IAP
+(avec quoi — ce que le module met dans les mains du consultant, ambition A/B/C,
+lien SI) · 08 KPI (la preuve — 3 familles → mise en place → grille de maturité
+→ cas chiffré, clôture). L'IA reste tirée APRÈS la proposition (doctrine :
+« l'IA amplifie l'organisation, elle n'est jamais la réponse à un problème
+d'abord organisationnel ») ; la Démarche vient APRÈS l'IA pour que le
+« comment » enchaîne directement sur l'outillage puis la preuve.
+L'executive summary (slide 2) reprend le même fil en 4 blocs
+POURQUOI/QUOI/COMMENT/RÉSULTAT avec renvoi aux chapitres.
 
 Séparateurs : chapitres = intercalaire teardrop (photo + numéro, layout dédié) ;
 sous-chapitres = `slide_sous_chapitre` (bloc-titre léger, sans photo ni numéro).
@@ -107,13 +114,16 @@ def new_prs():
 
 # Couleur de chapitre par groupe de slides — signal de navigation plus fort
 # que le seul kicker textuel (piste retenue dans analyse-template-alternatif.md).
-# Un code couleur par acte, passé explicitement à chaque appel de
-# content_slide() ET repris sur l'intercalaire du chapitre :
-#   Contexte           = D.PALETTE[0]  (bleu)
-#   Personas           = D.PALETTE[5]  (teal)
-#   Besoins & douleurs = D.PALETTE[2]  (rouge)
-#   Proposition        = D.PALETTE[1]  (vert)
-#   IA                 = D.PALETTE[4]  (violet)
+# Un code couleur par chapitre, passé explicitement à chaque appel de
+# content_slide() ET repris sur l'intercalaire du chapitre (v2.5, 8 chapitres) :
+#   01 Contexte           = D.PALETTE[0]  (bleu)
+#   02 Personas           = D.PALETTE[5]  (teal)
+#   03 Besoins & douleurs = D.PALETTE[2]  (rouge)
+#   04 Proposition        = D.PALETTE[1]  (vert)
+#   05 IA                 = D.PALETTE[4]  (violet)
+#   06 Démarche           = D.PALETTE[3]  (or)
+#   07 Outillage IAP      = D.PALETTE[5]  (teal — réutilisé, comme KPI réutilise le bleu)
+#   08 KPI                = D.PALETTE[0]  (bleu)
 
 
 def content_slide(prs, kicker, title, color=None):
@@ -236,6 +246,10 @@ _REQUETES_PHOTO = {
     "nightsky": "starry night sky",
     "canyon": "canyon landscape",
     "meadow": "meadow wildflowers",
+    # tropical (Outillage IAP, chapitre 07 — v2.5) : nom CONNU du fallback
+    # procédural (forest/meadow/mountains/ocean/sunset/tropical), donc sûr même
+    # hors ligne. Photo à VÉRIFIER au rendu réel comme les autres.
+    "tropical": "tropical palm leaves",
 }
 
 
@@ -383,62 +397,95 @@ def slide_cover(prs):
     phs[0].text_frame.text = "BMAD IAP"
     phs[1].text_frame.text = "Infra as a Product Transformation Pack — synthèse de cadrage"
     phs[2].text_frame.text = "OCTO Technology"
-    phs[3].text_frame.text = "v2.2 · 2026-07-22"
+    # v2.5 (2026-07-23) : restructuration 8 chapitres sur le fil rouge SCALE
+    # (POURQUOI→QUI→QUOI→COMMENT→RÉSULTAT) — fusion trajectoire/bout-en-bout,
+    # executive summary réancré sur le fil, nouveau chapitre Outillage IAP,
+    # slide Conditions de réussite. (v2.4 : fil humain de la trajectoire.)
+    phs[3].text_frame.text = "v2.5 · 2026-07-23"
     # Bandeau de métadonnées (statut/langue/confidentialité/sources) retiré sur
     # demande — la couverture ne garde que titre, sous-titre, entité et version.
     return s
 
 
 # ---------------------------------------------------------------- slide 2
+# Réancré (v2.5, chantier ②) sur le fil rouge narratif SCALE
+# (docs/Import/notes-extraction-scale.md) : 4 blocs POURQUOI → QUOI → COMMENT →
+# RÉSULTAT, chacun une claim d'une ligne + le renvoi aux chapitres — pattern 7
+# du catalogue deck-design-library (« rangée de cartes sur bandeau, une en
+# accent ») : le RÉSULTAT (la preuve, ce que le sponsor achète in fine) est la
+# seule carte en fill navy plein.
 def slide_executive_summary(prs):
-    s = content_slide(prs, "Executive summary", "Une transformation à deux piliers, cadrée et mesurable")
+    s = content_slide(prs, "Executive summary",
+                       "Du pourquoi à la preuve : une transformation cadrée de bout en bout")
 
-    headline_h = 0.85
+    headline_h = 0.62
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, headline_h, [
         ("Transformer l'infrastructure en plateforme opérée comme un produit, ET traiter "
-         "structurellement le gaspillage qui l'en empêche — deux piliers non séquentiels, "
-         "cadrés par une doctrine non négociable et mesurés par des KPIs dédiés.",
+         "structurellement le gaspillage qui l'en empêche — le deck suit le fil : pourquoi, "
+         "qui, quoi, comment, avec quoi, la preuve.",
          dict(size=D.TYPE["small"], color=NAVY, italic=True, line_spacing=1.3)),
     ])
 
     items = [
-        ("Doctrine", D.PALETTE[0],
-         "Gate IA non négociable : checkpoint humain systématique sur toute donnée client, "
-         "quel que soit le mode d'exécution IA retenu."),
-        ("Méthode", D.PALETTE[1],
-         "Gaspillage traité avec un score explicite (impact × faisabilité − prudence IA) ; "
-         "modèles d'équipe Team Topologies étendus aux agents IA, mandat écrit avant délégation."),
-        ("Maturité", D.PALETTE[3],
-         "Deux échelles jamais confondues : maturité IA client (M0-M4) et grille produit/"
-         "plateforme V3.2 — chacune sa lecture, son usage."),
-        ("Posture", D.PALETTE[2],
-         "Niveau d'ambition A (aide au coach) assumé aujourd'hui — un choix de gouvernance, "
-         "pas une limite technique subie, mesuré par 3 familles de KPIs distinctes."),
+        ("POURQUOI", D.PALETTE[0], "L'infra subie coûte de plus en plus cher.",
+         "Trois déclencheurs, quatre personas interrogés séparément, des douleurs "
+         "mesurables plutôt que des plaintes.",
+         "Chapitres 01–03"),
+        ("QUOI", D.PALETTE[1], "Traiter l'infra comme un produit — et assainir.",
+         "Double mission, méthode scorée (impact × faisabilité − prudence IA), IA sous "
+         "gate : jamais la réponse à un problème d'abord organisationnel.",
+         "Chapitres 04–05"),
+        ("COMMENT", D.PALETTE[3], "Trois temps et une boucle, personnes comprises.",
+         "Démarche ①②③⟲ avec son fil humain de bout en bout ; l'outillage IAP au "
+         "service de la démarche — jamais l'inverse.",
+         "Chapitres 06–07"),
+        ("RÉSULTAT", NAVY, "Le delta instrumenté T0 → réévaluation.",
+         "Trois familles de KPIs, même instrument aux deux instants — la preuve, "
+         "pas une opinion.",
+         "Chapitre 08"),
     ]
     n = len(items)
-    pad = 0.18
+    pad = 0.16
     _, cw = col_x(0, n)
     usable = cw - 2 * pad
     desc_size = 8
     line_h = desc_size * 1.3 / 72.0
-    # Hauteur de carte PLAFONNÉE au contenu (max de descriptions) au lieu de
-    # CONTENT_BOTTOM - top0 : sinon la carte s'étire et laisse un grand vide
-    # sous le texte (défaut « panneau sur-étiré », cf. brief ppt-designer).
-    desc_lines = max(_lignes(desc, usable, desc_size) for _, _, desc in items)
-    card_h = 0.65 + desc_lines * line_h + 0.22
-    region_top = CONTENT_TOP + headline_h + 0.3
-    # bande de cartes plaquée sous le chapeau, gap plafonné pour ne pas creuser
-    # un vide sous le chapeau ; le reste tombe en marge basse propre.
-    top0 = region_top + min(0.35, max(0.0, (CONTENT_BOTTOM - region_top - card_h) / 2))
-    for i, (titre, color, desc) in enumerate(items):
+    claim_h = max(_lignes(c, usable, 9) for _, _, c, _, _ in items) * (9 * 1.2 / 72.0) + 0.06
+    desc_h = max(_lignes(d, usable, desc_size) for _, _, _, d, _ in items) * line_h + 0.06
+    # étages : label (0.24) + claim + desc + renvoi chapitres (0.26) + respirations
+    card_h = 0.14 + 0.24 + claim_h + 0.10 + desc_h + 0.14 + 0.26 + 0.14
+    top0 = CONTENT_TOP + headline_h + 0.30
+    # bandeau de fond commun (pattern 7) : regroupe les 4 blocs en un seul
+    # « bloc de lecture » — le fil se lit d'un trait, flèches dans les inter-colonnes.
+    D.add_rect(s, MARGIN - 0.08, top0 - 0.16, CONTENT_W + 0.16, card_h + 0.32,
+               fill=TRACK, rounded=True, radius=0.06)
+    for i, (etape, color, claim, desc, renvoi) in enumerate(items):
         x, w = col_x(i, n)
-        D.add_card(s, x, top0, w, card_h, color)
-        D.add_text(s, x + pad, top0 + 0.18, w - 2 * pad, 0.4, [
-            (titre, dict(size=D.TYPE["h3"], bold=True, color=color)),
+        accent = (etape == "RÉSULTAT")   # « un sur N » : la preuve
+        if accent:
+            D.add_rect(s, x, top0, w, card_h, fill=NAVY, rounded=True, radius=0.08)
+        else:
+            D.add_rect(s, x, top0, w, card_h, fill="#ffffff", line=LINE, line_w=0.75,
+                       rounded=True, radius=0.08)
+        D.add_text(s, x + pad, top0 + 0.14, w - 2 * pad, 0.24, [
+            (etape, dict(size=8, bold=True, color="#8fd6db" if accent else color)),
         ])
-        D.add_text(s, x + pad, top0 + 0.65, w - 2 * pad, card_h - 0.8, [
-            (desc, dict(size=desc_size, color=NAVY, line_spacing=1.28)),
+        D.add_text(s, x + pad, top0 + 0.38, w - 2 * pad, claim_h, [
+            (claim, dict(size=9, bold=True, color="#ffffff" if accent else NAVY,
+                         line_spacing=1.2)),
         ])
+        D.add_text(s, x + pad, top0 + 0.38 + claim_h + 0.10, w - 2 * pad, desc_h, [
+            (desc, dict(size=desc_size, color="#c7cbe0" if accent else MUTED,
+                        line_spacing=1.3)),
+        ])
+        D.add_text(s, x + pad, top0 + card_h - 0.38, w - 2 * pad, 0.26, [
+            (renvoi, dict(size=7.5, bold=True, color="#8fd6db" if accent else
+                          (D.PALETTE[0] if etape == "RÉSULTAT" else color))),
+        ], anchor=MSO_ANCHOR.BOTTOM)
+        if i < n - 1:   # le fil : flèche dans l'inter-colonne
+            D.add_text(s, x + w - 0.02, top0 + card_h / 2 - 0.12, GAP + 0.04, 0.24, [
+                ("→", dict(size=11, bold=True, color=MUTED, align=PP_ALIGN.CENTER)),
+            ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
     return s
 
 
@@ -458,33 +505,42 @@ def slide_mission(prs):
          "La capacité récupérée finance la trajectoire produit — mécanisme "
          "instrumenté dès la première mission (KPI de réinvestissement)."),
     ]
-    card_h = 1.75
-    top0 = CONTENT_TOP + 0.5
+    # v2.5 (chantier ③) : les cartes flottaient à CONTENT_TOP+0.5 sans rien
+    # au-dessus (~0.5in de blanc sous le titre). La note « ni séquentiels ni
+    # optionnels » devient le CHAPEAU (à CONTENT_TOP), les cartes suivent, et
+    # la rangée de tensions gagne son étiquette — l'espace se redistribue dans
+    # le contenu, pas en vide.
+    chapeau_h = 0.5
+    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, chapeau_h, [
+        ("Deux piliers ni séquentiels ni optionnels : une cible produit sans traitement du "
+         "gaspillage manque de capacité pour s'y déployer ; l'inverse reste une réduction "
+         "de coûts sans vision.",
+         dict(size=D.TYPE["small"], color=NAVY, italic=True, line_spacing=1.25)),
+    ])
+    card_h = 1.95
+    top0 = CONTENT_TOP + chapeau_h + 0.12
     for i, (titre, color, vise, finance) in enumerate(cards):
         x, w = col_x(i, 2)
         D.add_card(s, x, top0, w, card_h, color)
         pad = 0.22
-        D.add_text(s, x + pad, top0 + 0.15, w - 2 * pad, 0.3, [
+        D.add_text(s, x + pad, top0 + 0.18, w - 2 * pad, 0.3, [
             (titre, dict(size=D.TYPE["h3"], bold=True, color=color))
         ])
-        D.add_text(s, x + pad, top0 + 0.5, w - 2 * pad, 0.6, [
+        D.add_text(s, x + pad, top0 + 0.58, w - 2 * pad, 0.62, [
             ("CE QU'IL VISE", dict(size=D.TYPE["tiny"], bold=True, color=MUTED)),
-            (vise, dict(size=D.TYPE["tiny"], color=NAVY, space_before=2, line_spacing=1.2)),
+            (vise, dict(size=D.TYPE["tiny"], color=NAVY, space_before=2, line_spacing=1.25)),
         ])
-        D.add_text(s, x + pad, top0 + 1.15, w - 2 * pad, 0.55, [
+        D.add_text(s, x + pad, top0 + 1.28, w - 2 * pad, 0.58, [
             ("CE QU'IL FINANCE", dict(size=D.TYPE["tiny"], bold=True, color=MUTED)),
-            (finance, dict(size=D.TYPE["tiny"], color=NAVY, space_before=2, line_spacing=1.2)),
+            (finance, dict(size=D.TYPE["tiny"], color=NAVY, space_before=2, line_spacing=1.25)),
         ])
 
-    note_top = top0 + card_h + 0.2
-    D.add_text(s, MARGIN, note_top, CONTENT_W, 0.55, [
-        ("Les deux piliers ne sont ni séquentiels ni optionnels l'un par rapport à "
-         "l'autre : une cible produit sans traitement du gaspillage manque de "
-         "capacité pour s'y déployer ; l'inverse reste une réduction de coûts sans vision.",
-         dict(size=D.TYPE["tiny"], color=MUTED, italic=True, line_spacing=1.25)),
+    label_top = top0 + card_h + 0.22
+    D.add_text(s, MARGIN, label_top, CONTENT_W, 0.22, [
+        ("L'ÉQUILIBRE QUE LA DOUBLE MISSION TIENT EN PERMANENCE",
+         dict(size=7.5, bold=True, color=MUTED)),
     ])
-
-    tens_top = note_top + 0.62
+    tens_top = label_top + 0.26
     tens_h = 0.62
     tensions = ["Efficacité du delivery", "Robustesse du RUN", "Valeur perçue (utilisateurs internes)"]
     for i, t in enumerate(tensions):
@@ -1339,9 +1395,11 @@ def slide_team_topologies(prs):
 # source : bandeau Gate IA transversal, 4 colonnes du pipeline, bandeau
 # iap-risk-reviewer, bandeau boucle de réévaluation.
 def slide_schema_fonctionnement(prs):
-    s = content_slide(prs, "Proposition",
+    # v2.5 (chantier ④) : déplacée de la Proposition vers la Démarche — c'est
+    # « comment la mission tourne », pas ce qu'on propose.
+    s = content_slide(prs, "Démarche",
                        "La Gate IA s'applique à chaque étape, de la collecte à la boucle de réévaluation",
-                       color=D.PALETTE[1])
+                       color=D.PALETTE[3])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.26, [
         ("Deux sources de collecte convergent vers un diagnostic structuré ; une boucle de "
          "réévaluation referme le cycle.", dict(size=8, color=MUTED, italic=True, line_spacing=1.1)),
@@ -1407,25 +1465,38 @@ def slide_schema_fonctionnement(prs):
     return s
 
 
+# Fusion v2.5 (chantier ①) : slide_trajectoire et slide_schema_bout_en_bout
+# déroulaient la même trame ①②③⟲ sur deux slides — fusionnées ici. La ligne de
+# badges + durées + actions clés (de l'ancienne trajectoire) est enrichie du
+# LIVRABLE-CLÉ par phase en une ligne (l'apport de la vue bout-en-bout — les
+# NOMS seulement ; le détail des 4 profils de deck reste à slide_livrables_ppt).
 def slide_trajectoire(prs):
-    s = content_slide(prs, "Démarche", "Mise en œuvre du target operating model — piste à valider", color=D.PALETTE[3])
+    s = content_slide(prs, "Démarche",
+                       "Trois temps et une boucle — chaque phase produit son livrable de décision",
+                       color=D.PALETTE[3])
     phases = [
         ("①", "Assessment flash", "1–2 sem.", D.PALETTE[0],
-         "= Schéma de fonctionnement déjà cadré (Collecte → Diagnostic → Conception → Restitution)."),
+         "= Schéma de fonctionnement déjà cadré (Collecte → Diagnostic → Conception → Restitution).",
+         "Deck exécutif de restitution"),
         ("②", "Premier déploiement", "4–5 sem.", D.PALETTE[3],
-         "1-2 équipes pilotes, mode Coach dominant. Piste agent IA (si retenue) : qualifier, cadrer, mandater."),
+         "1-2 équipes pilotes, mode Coach dominant. Piste agent IA (si retenue) : qualifier, cadrer, mandater.",
+         "Deck de plan de déploiement · export markdown (1re version)"),
         ("③", "Implémentation itérative", "→ T+6-12 mois", D.PALETTE[1],
-         "Généralisation équipe par équipe, bascule Coach → Délégué. Piste agent IA : supervisé puis délégué."),
+         "Généralisation équipe par équipe, bascule Coach → Délégué. Piste agent IA : supervisé puis délégué.",
+         "Deck de comité de pilotage (périodique)"),
         ("⟲", "Boucle de réévaluation", "T+6-12 mois", D.PALETTE[2],
-         "iap-re-assessment reboucle vers la Collecte — alimente la bibliothèque de REX."),
+         "iap-re-assessment reboucle vers la Collecte — alimente la bibliothèque de REX.",
+         "Deck de bilan / ré-évaluation · markdown amendé"),
     ]
     n = len(phases)
     badge_d = 0.55
     top0 = CONTENT_TOP + 0.1
     line_y = top0 + badge_d / 2 - 0.012
     D.add_rect(s, MARGIN + badge_d / 2, line_y, CONTENT_W - badge_d, 0.024, fill=LINE)
-    desc_h = 0.95
-    for i, (sym, titre, duree, color, desc) in enumerate(phases):
+    _, wcol = col_x(0, n)
+    desc_h = max(_lignes(p[4], wcol - 0.1, 7) for p in phases) * (7 * 1.2 / 72.0) + 0.05
+    livr_h = max(_lignes(p[5], wcol - 0.2, 7.5) for p in phases) * (7.5 * 1.2 / 72.0) + 0.24
+    for i, (sym, titre, duree, color, desc, livrable) in enumerate(phases):
         x, w = col_x(i, n)
         cx = x + w / 2 - badge_d / 2
         D.add_rect(s, cx, top0, badge_d, badge_d, fill=color, rounded=True, radius=0.5)
@@ -1440,13 +1511,22 @@ def slide_trajectoire(prs):
         ], align=PP_ALIGN.CENTER)
         chip_y = ty + 0.36
         chip(s, x + w / 2 - 0.55, chip_y, 1.1, 0.24, duree, color, size=7)
-        desc_y = chip_y + 0.32
+        desc_y = chip_y + 0.34
         D.add_text(s, x + 0.05, desc_y, w - 0.1, desc_h, [
             (desc, dict(size=7, color=MUTED, align=PP_ALIGN.CENTER, line_spacing=1.2)),
         ], align=PP_ALIGN.CENTER)
+        # Livrable-clé (fusion bout-en-bout) : le NOM du livrable, encadré,
+        # au pied de chaque colonne — le détail vit dans slide_livrables_ppt.
+        livr_y = desc_y + desc_h + 0.10
+        D.add_rect(s, x, livr_y, w, livr_h, fill=TRACK, rounded=True, radius=0.1)
+        D.add_text(s, x + 0.1, livr_y, w - 0.2, livr_h, [
+            ("LIVRABLE-CLÉ", dict(size=6.5, bold=True, color=MUTED, align=PP_ALIGN.CENTER)),
+            (livrable, dict(size=7.5, bold=True, color=color, space_before=2,
+                            align=PP_ALIGN.CENTER, line_spacing=1.15)),
+        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
 
-    note_top = top0 + badge_d + 0.12 + 0.36 + 0.32 + desc_h + 0.12
-    note_h = min(1.4, CONTENT_BOTTOM - note_top)
+    note_top = top0 + badge_d + 0.12 + 0.36 + 0.34 + desc_h + 0.10 + livr_h + 0.18
+    note_h = min(1.05, CONTENT_BOTTOM - note_top)
     D.add_rect(s, MARGIN, note_top, CONTENT_W, note_h, fill=TRACK, rounded=True, radius=0.08)
     D.add_text(s, MARGIN + 0.2, note_top, CONTENT_W - 0.4, note_h, [
         ("Bifurcation avec/sans agents IA déployés", dict(size=8, bold=True, color=NAVY)),
@@ -1459,12 +1539,129 @@ def slide_trajectoire(prs):
     return s
 
 
+# Nouveau (v2.4) : le fil humain de la trajectoire (§Accompagnement de
+# l'humain dans la trajectoire, transposé de l'offre SCALE). Décline la même
+# trame ①②③⟲ que slide_trajectoire côté personnes — pattern 14 du catalogue
+# deck-design-library (« processus en 4 étapes numérotées, colonnes de détail
+# dans UNE carte », fil rouge transversal repérable en diagonale : ici
+# iap-change-coach répété en pied de chaque colonne) + badge chevauchant le
+# bord haut de la carte (pattern 10). L'accroche Kotter (70 %) est LE seul
+# élément en aplat plein de la slide (« un sur N en accent »).
+def slide_fil_humain(prs):
+    s = content_slide(prs, "Démarche",
+                       "La trajectoire accompagne aussi les personnes, de bout en bout",
+                       color=D.PALETTE[3])
+
+    # --- Accroche argumentaire : le chiffre Kotter en bloc accent + intro.
+    stat_w, stat_h = 1.05, 0.62
+    strip_top = CONTENT_TOP + 0.02
+    D.add_rect(s, MARGIN, strip_top, stat_w, stat_h, fill=NAVY, rounded=True, radius=0.12)
+    D.add_text(s, MARGIN, strip_top, stat_w, stat_h, [
+        ("70 %", dict(size=18, bold=True, color="#ffffff", align=PP_ALIGN.CENTER)),
+    ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+    tx = MARGIN + stat_w + 0.18
+    tw = CONTENT_W - stat_w - 0.18
+    D.add_text(s, tx, strip_top, tw, stat_h, [
+        ("des transformations sont inachevées ou échouent parce que les facteurs humains "
+         "et culturels sont mal pris en compte (Kotter, Harvard Business Review).",
+         dict(size=8, bold=True, color=NAVY, line_spacing=1.15)),
+        # ⟲ en run NON gras (paragraphe italic non-bold) — cf. _GLYPHES_SANS_GRAS.
+        ("Le fil humain suit la même trame ①②③⟲ que la trajectoire — un fil dans les "
+         "phases, pas un stream séparé, porté par iap-change-coach de bout en bout.",
+         dict(size=7.5, italic=True, color=MUTED, space_before=3, line_spacing=1.15)),
+    ], anchor=MSO_ANCHOR.MIDDLE)
+
+    phases = [
+        ("①", "ASSESSMENT FLASH", "Engager", D.PALETTE[0],
+         "L'engagement personnel du sponsor est testé dès l'intake, avant signature ; "
+         "les interviews écoutent les tensions ; la restitution revient aux interviewés, "
+         "pas au seul sponsor.",
+         "iap-change-coach · iap-intake"),
+        ("②", "PREMIER DÉPLOIEMENT", "Expérimenter", D.PALETTE[3],
+         "Équipes pilotes volontaires, jamais désignées d'office ; formation sur les cas "
+         "réels de l'équipe — « pas de formation sans coaching ».",
+         "iap-change-coach · équipe pilote"),
+        ("③", "IMPLÉMENTATION ITÉRATIVE", "Outiller & relayer", D.PALETTE[1],
+         "Les résistances sont un signal à écouter ; communauté de managers (N+1/N+2 "
+         "embarqués) ; relais internes formés — le consultant se rend dispensable.",
+         "iap-change-coach · operating-model-architect"),
+        ("⟲", "BOUCLE DE RÉÉVALUATION", "Mesurer", D.PALETTE[2],
+         "Satisfaction et adhésion mesurées au même instrument à T0 et à la réévaluation — "
+         "le delta humain se lit à côté du delta de maturité.",
+         "iap-change-coach · metrics-sre-finops-lead"),
+    ]
+    n = len(phases)
+    badge_d = 0.45
+    pad = 0.16
+    _, col_w = col_x(0, n, gap=0)
+    usable = col_w - 2 * pad
+
+    # Hauteurs dérivées du CONTENU (jamais « jusqu'à CONTENT_BOTTOM ») —
+    # défaut récurrent « panneau étiré vide », cf. slide_livrables_ppt.
+    body_lines = max(_lignes(p[4], usable, 7.5) for p in phases)
+    body_h = body_lines * (7.5 * 1.25 / 72.0) + 0.04
+    owner_lines = max(_lignes(p[5], usable, 6.5) for p in phases)
+    owner_h = owner_lines * (6.5 * 1.2 / 72.0) + 0.03
+    # card_h relatif au bord haut de la carte : demi-badge + en-têtes + corps
+    # + séparateur + owner + respiration basse.
+    card_h = badge_d / 2 + 0.10 + 0.44 + body_h + 0.14 + owner_h + 0.14
+    band_h = 0.60
+    group_h = badge_d / 2 + card_h + 0.18 + band_h
+    region_top = strip_top + stat_h + 0.16
+    top1 = region_top + min(0.30, max(0.0, (CONTENT_BOTTOM - region_top - group_h) / 2))
+    card_top = top1 + badge_d / 2
+
+    D.add_rect(s, MARGIN, card_top, CONTENT_W, card_h, fill="#ffffff",
+               line=LINE, line_w=0.75, rounded=True, radius=0.06)
+    for i, (sym, phase, verbe, color, desc, owner) in enumerate(phases):
+        x, w = col_x(i, n, gap=0)
+        if i > 0:  # séparateurs fins internes — UNE carte, pas 4 (pattern 14)
+            D.add_rect(s, x, card_top + 0.14, 0.012, card_h - 0.28, fill=LINE)
+        cx = x + w / 2 - badge_d / 2
+        D.add_rect(s, cx, top1, badge_d, badge_d, fill=color, rounded=True, radius=0.5)
+        D.add_text(s, cx, top1, badge_d, badge_d, [
+            # bold=False pour "⟲" : variante grasse absente de la police du
+            # template (tofu au rendu) — même correctif que slide_trajectoire.
+            (sym, dict(size=13, bold=(sym != "⟲"), color="#ffffff", align=PP_ALIGN.CENTER)),
+        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+        head_y = top1 + badge_d + 0.10
+        D.add_text(s, x + pad, head_y, usable, 0.22, [
+            (verbe, dict(size=9, bold=True, color=color, align=PP_ALIGN.CENTER)),
+        ], align=PP_ALIGN.CENTER)
+        D.add_text(s, x + pad, head_y + 0.22, usable, 0.16, [
+            (phase, dict(size=6, bold=True, color=MUTED, align=PP_ALIGN.CENTER)),
+        ], align=PP_ALIGN.CENTER)
+        body_y = head_y + 0.44
+        D.add_text(s, x + pad, body_y, usable, body_h, [
+            (desc, dict(size=7.5, color=NAVY, line_spacing=1.25)),
+        ])
+        sep_y = body_y + body_h + 0.06
+        D.add_rect(s, x + pad, sep_y, usable, 0.012, fill=LINE)
+        D.add_text(s, x + pad, sep_y + 0.06, usable, owner_h, [
+            (owner, dict(size=6.5, bold=True, color=color, line_spacing=1.2)),
+        ])
+
+    band_top = card_top + card_h + 0.18
+    D.add_rect(s, MARGIN, band_top, CONTENT_W, band_h, fill=TRACK, rounded=True, radius=0.08)
+    D.add_text(s, MARGIN + 0.2, band_top, CONTENT_W - 0.4, band_h, [
+        ("Ce que ça ne crée pas", dict(size=8, bold=True, color=NAVY)),
+        ("Pas de nouvel agent (iap-change-coach porte le fil de bout en bout), pas de phase "
+         "en plus — et jamais d'évaluation individuelle des personnes (déontologie du "
+         "consultant, transposée telle quelle).",
+         dict(size=7, color=NAVY, space_before=3, line_spacing=1.25)),
+    ], anchor=MSO_ANCHOR.MIDDLE)
+    return s
+
+
 # ---------------------------------------------------------------- slide 9
 # Formes inspirées de la slide d'exemple « Une approche contextualisée » du
 # template : colonne par étape avec badge + bandeau titre + ligne de
 # séparation + bloc LIVRABLES, plutôt qu'un tableau plat.
 def slide_livrables_ppt(prs):
-    s = content_slide(prs, "Proposition", "Livrables PPT par étape — piste à valider", color=D.PALETTE[1])
+    # v2.5 (chantier ④) : déplacée de la Proposition vers la Démarche, avec la
+    # trajectoire fusionnée qui ne porte que les NOMS de livrables — ici le
+    # détail des 4 profils (audience, contenu).
+    s = content_slide(prs, "Démarche", "Livrables PPT par étape — piste à valider", color=D.PALETTE[3])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.4, [
         ("iap-deck-builder est cadré comme un seul deck modulaire 16 sections, produit une fois "
          "à la Restitution — la trajectoire ci-avant implique plusieurs publics et moments de "
@@ -1575,66 +1772,9 @@ def slide_vision(prs):
     return s
 
 
-# Nouveau : assemble slide_trajectoire (phases) et slide_livrables_ppt/
-# slide_export_markdown (contenu détaillé de chaque livrable) en une seule
-# vue de synthèse bout-en-bout — sert de pont entre les deux, pas un doublon
-# (chaque colonne ne liste QUE le nom des livrables, pas leur contenu).
-def slide_schema_bout_en_bout(prs):
-    s = content_slide(prs, "Démarche",
-                       "Comment ça fonctionne, de bout en bout : quels livrables, à quel moment",
-                       color=D.PALETTE[3])
-    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.3, [
-        ("Assemble la trajectoire (slide précédente) et les livrables détaillés (chapitre "
-         "Proposition) en une seule vue d'ensemble.", dict(size=8, color=MUTED, italic=True)),
-    ])
-    phases = [
-        ("①", "Assessment flash", "1-2 sem.", D.PALETTE[0],
-         ["Deck exécutif de restitution"]),
-        ("②", "Premier déploiement", "4-5 sem.", D.PALETTE[3],
-         ["Deck de plan de déploiement", "Export markdown (1re version)"]),
-        ("③", "Implémentation itérative", "→ T+6-12 mois", D.PALETTE[1],
-         ["Deck de comité de pilotage (périodique)"]),
-        ("⟲", "Boucle de réévaluation", "T+6-12 mois", D.PALETTE[2],
-         ["Deck de bilan / ré-évaluation", "Export markdown amendé"]),
-    ]
-    n = 4
-    badge_d = 0.45
-    top0 = CONTENT_TOP + 0.42
-    line_y = top0 + badge_d / 2 - 0.01
-    D.add_rect(s, MARGIN + badge_d / 2, line_y, CONTENT_W - badge_d, 0.02, fill=LINE)
-    card_h = 1.1
-    card_top = None
-    for i, (sym, titre, duree, color, livrables) in enumerate(phases):
-        x, w = col_x(i, n)
-        cx = x + w / 2 - badge_d / 2
-        D.add_rect(s, cx, top0, badge_d, badge_d, fill=color, rounded=True, radius=0.5)
-        D.add_text(s, cx, top0, badge_d, badge_d, [
-            (sym, dict(size=13, bold=(sym != "⟲"), color="#ffffff", align=PP_ALIGN.CENTER)),
-        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-        ty = top0 + badge_d + 0.1
-        D.add_text(s, x, ty, w, 0.3, [
-            (titre, dict(size=8, bold=True, color=NAVY, align=PP_ALIGN.CENTER, line_spacing=1.0)),
-        ], align=PP_ALIGN.CENTER)
-        chip_y = ty + 0.3
-        chip(s, x + w / 2 - 0.5, chip_y, 1.0, 0.22, duree, color, size=7)
-        card_top = chip_y + 0.32
-        D.add_rect(s, x, card_top, w, card_h, fill=TRACK, rounded=True, radius=0.08)
-        D.add_text(s, x + 0.1, card_top + 0.08, w - 0.2, 0.2, [
-            ("LIVRABLES", dict(size=7, bold=True, color=MUTED)),
-        ])
-        lignes = [(f"·  {l}", dict(size=7, color=NAVY, space_after=3, line_spacing=1.15)) for l in livrables]
-        D.add_text(s, x + 0.1, card_top + 0.3, w - 0.2, card_h - 0.4, lignes)
-
-    note_top = card_top + card_h + 0.15
-    note_h = min(1.3, CONTENT_BOTTOM - note_top)
-    D.add_rect(s, MARGIN, note_top, CONTENT_W, note_h, fill=NAVY, rounded=True, radius=0.08)
-    D.add_text(s, MARGIN + 0.22, note_top, CONTENT_W - 0.44, note_h, [
-        ("Deux flux de livrables, une seule trajectoire", dict(size=D.TYPE["tiny"], bold=True, color="#ffffff")),
-        ("Le flux PPT (sponsor, comité de pilotage) et le flux markdown (équipe qui exécute) avancent "
-         "en parallèle sur le même calendrier ①→②→③→⟲ — jamais deux trajectoires séparées à maintenir.",
-         dict(size=8, color="#c7cbe0", space_before=3, line_spacing=1.25)),
-    ], anchor=MSO_ANCHOR.MIDDLE)
-    return s
+# (v2.5 — slide_schema_bout_en_bout supprimée, chantier ① : sa trame ①②③⟲
+# doublonnait slide_trajectoire ; son apport — le livrable-clé par phase — est
+# fusionné dans slide_trajectoire ci-dessus.)
 
 
 # ---------------------------------------------------------------- slide 10
@@ -2312,9 +2452,12 @@ def build():
 
     # === Chapitre 05 — DÉMARCHE : comment on la mène (placée plutôt vers la fin) ===
     slide_chapitre(prs, "05", "Démarche",
-                   "La trajectoire de mise en œuvre, et la vue bout-en-bout des livrables.",
+                   "La trajectoire de mise en œuvre, son fil humain, et la vue bout-en-bout des livrables.",
                    D.PALETTE[3], "canyon", seed=0)
     slide_trajectoire(prs)
+    # v2.4 : le fil humain décline la trame ①②③⟲ de slide_trajectoire côté
+    # personnes — placé juste après elle, avant la vue bout-en-bout.
+    slide_fil_humain(prs)
     slide_schema_bout_en_bout(prs)
 
     # === Chapitre 06 — IA : tirée APRÈS la proposition (l'IA amplifie, n'est jamais la réponse) ===
