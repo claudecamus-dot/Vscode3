@@ -42,29 +42,54 @@
 - `docs/cadrage-ppt/` : le deck OCTO annoncé comme « à réactiver si un jour »
   ci-dessus est désormais réel — `template-octo.pptx` (copie du template de
   marque, masters/layouts/thème OCTO) + `pptx_deck.py` (copie synchronisée du
-  skill global `pptx-deck`) + `generate_deck.py` (42 slides de synthèse du
-  cadrage BMAD IAP v2.4, dessinées sur le vrai template) → `bmad-iap-cadrage-
-  synthese.pptx` (la version v2.3 antérieure est archivée telle quelle en
-  `bmad-iap-cadrage-synthese-v2.3.pptx`, ne pas la régénérer). **Re-restructuré le 2026-07-22 en 7 chapitres** (les passages
-  antérieurs « 5 actes » puis « sous-chapitre Technique IAP » du même jour sont
-  caducs) : Contexte · Personas · Besoins & douleurs · Proposition · Démarche ·
-  IA · KPI. **Contexte** = `slide_mission` + `slide_pourquoi_contexte` (nouvelle,
-  3 déclencheurs « pourquoi proposer ça à un client infra maintenant » + pont
+  skill global `pptx-deck`) + `generate_deck.py` (40 slides de synthèse du
+  cadrage BMAD IAP **v2.6**, dessinées sur le vrai template) → `bmad-iap-cadrage-
+  synthese.pptx` (les versions v2.3 et v2.4 antérieures sont archivées telles
+  quelles en `bmad-iap-cadrage-synthese-v2.3.pptx` / `-v2.4.pptx`, ne pas les
+  régénérer). **Re-restructuré le 2026-07-23 en 8 chapitres sur le fil rouge
+  narratif SCALE** POURQUOI→QUI→QUOI→COMMENT→RÉSULTAT (les passages antérieurs
+  « 5 actes », « sous-chapitre Technique IAP » et « 7 chapitres » sont caducs) :
+  01 Contexte · 02 Personas · 03 Besoins & douleurs · 04 Proposition · 05 IA ·
+  06 Démarche · 07 Outillage IAP · 08 KPI. ⚠️ Le commit 26461d9 avait laissé
+  cette v2.5 à moitié faite (docstring/exec summary v2.5 mais `build()` v2.4
+  appelant une fonction supprimée — deck ingénérable) ; réparée le 2026-07-23 :
+  `build()` 8 chapitres, deck régénéré, 66 tests verts. L'executive summary
+  (slide 2) reprend le fil en **4 blocs POURQUOI/QUOI/COMMENT/RÉSULTAT** avec
+  renvois aux chapitres. **Contexte** = `slide_mission` + `slide_pourquoi_contexte`
+  (3 déclencheurs « pourquoi proposer ça à un client infra maintenant » + pont
   trait-pour-trait vers la double mission). Personas et douleurs AVANT la
-  proposition ; l'IA en **avant-dernier** (le `slide_gate_ia` l'a rejointe), la
-  **Démarche** (`slide_trajectoire` + `slide_fil_humain` — v2.4, fil humain
-  ①②③⟲ transposé de l'offre SCALE, accroche Kotter 70 % — + `slide_schema_bout_en_bout`)
-  est un chapitre en fin de deck, et le chapitre **KPI** (clôture) déroule : 3 familles
-  (`slide_kpis*`) → mise en place → **`slide_maturite`** (la grille de maturité =
-  3e famille détaillée, CLARIFIÉE : une ligne « à quoi sert chaque échelle » sous
-  chaque colonne, message « le KPI = le DELTA T0→réévaluation, pas le niveau ») →
-  cas chiffré. La **Proposition** suit un fil rouge : `slide_why_iap` (la thèse,
-  ouvre) → `slide_gaspillages` (méthode scorée) → sous-chapitre **« Exemples »**
-  → cible/fonctionnement/livrables/ambition/SI. **Deux niveaux de séparateurs** :
+  proposition ; l'IA reste tirée APRÈS la proposition (doctrine « jamais la
+  réponse à un problème d'abord organisationnel », `slide_gate_ia` dans ce
+  chapitre) ; la **Démarche** (06) enchaîne : `slide_trajectoire` (**fusionnée
+  v2.5 avec l'ex-`slide_schema_bout_en_bout`, supprimée** : timeline ①②③⟲ +
+  ligne LIVRABLE-CLÉ + note bifurcation) → `slide_fil_humain` (v2.4, fil humain
+  transposé de l'offre SCALE, accroche Kotter 70 %) → `slide_activites_humaines`
+  (**v2.6** : grille 2 registres × 4 temps — activités outillées par IAP vs
+  purement humaines, pattern 11 du catalogue) → `slide_schema_fonctionnement`
+  → `slide_architecture_agents` (déplacée depuis l'IA) → `slide_livrables_ppt` ;
+  **Outillage IAP** (07, nouveau) ouvre sur `slide_iap_contexte_client` (**v2.6** :
+  schéma d'architecture en contexte client — poste du consultant/flux/contexte
+  client, zone violette « déploiement agentic chez le client » renvoyant au
+  chapitre 05 · IA, dont les 4 slides de proposition agentic — 3 agents
+  candidats et `slide_export_markdown` — portent en retour un badge de série violet « cf.
+  schéma d'architecture · chapitre 07 » ; renvois par CHAPITRE, jamais par numéro
+  de page) puis `slide_ambition` + `slide_architecture_si`
+  (déplacées depuis la Proposition, kickers teal) ; le chapitre **KPI** (08,
+  clôture) déroule : 3 familles (`slide_kpis*`) → mise en place → **`slide_maturite`**
+  (la grille de maturité = 3e famille détaillée, une ligne « à quoi sert chaque
+  échelle » sous chaque colonne, message « le KPI = le DELTA T0→réévaluation,
+  pas le niveau ») → cas chiffré. La **Proposition** (04) suit un fil rouge :
+  `slide_why_iap` (la thèse, ouvre) → `slide_gaspillages` (méthode scorée) →
+  `slide_team_topologies` — le sous-chapitre **« Exemples »** (séparateur + 3
+  slides illustratives) a été **supprimé en v2.6 à la demande** (git garde les
+  fonctions, v2.5). Des deux slides du plan v2.5 jamais écrites, « Outillage
+  consultant » est couverte depuis la v2.6 par `slide_iap_contexte_client` ;
+  « Conditions de réussite » reste à décider, pas un oubli de
+  build. **Deux niveaux de séparateurs** :
   chapitres = intercalaire teardrop (photo + numéro, `slide_chapitre`) ;
   sous-chapitres = `slide_sous_chapitre` (bloc-titre léger, sans photo ni numéro) —
-  **l'arbitrage « sous-chapitre = kicker seul, pas d'intercalaire » a été levé pour
-  les Exemples à la demande** (elles ont désormais leur séparateur). `slide_cover` :
+  **sans appelant depuis la v2.6** (l'arbitrage 2026-07-22 « un séparateur pour
+  les Exemples » est caduc ; helper conservé). `slide_cover` :
   bandeau métadonnées (statut/langue/confidentialité/sources) **retiré**.
   `slide_personas` en **cartes 2×2 + pastille posture** (allié/sceptique/vigilant,
   brainstorm PM) ; `slide_personas_divergences` avec une ligne de synthèse « pont »
@@ -73,9 +98,10 @@
   `slide_douleurs` (douleurs par persona, mesurées) + `slide_familles` (8
   familles) ; `slide_gaspillages` splitté (familles → Douleurs, chaîne + score →
   Proposition) ; `slide_vision` (ex-`slide_vision_ia`) à 3 puces. Intercalaires =
-  **7 vraies photos distinctes** (mountains / forest / ocean turquoise / dunes
-  NASA / **canyon Horseshoe Bend** pour Démarche / astrophoto pour l'IA /
-  **lavande** pour KPI — Openverse CC0, vérifiées au rendu réel). ⚠️ Le cadre
+  **8 vraies photos distinctes** (mountains / forest / ocean turquoise / dunes
+  NASA / astrophoto pour l'IA / **canyon Horseshoe Bend** pour Démarche /
+  **palmier tropical** pour Outillage IAP / **lavande** pour KPI — Openverse
+  CC0, vérifiées au rendu réel). ⚠️ Le cadre
   teardrop est **CARRÉ** : le build fetche en aspect `square`, souvent une photo
   DIFFÉRENTE d'un probe `wide` — juger sur la slide rendue, pas sur un probe.
   ⚠️ La description ci-dessous décrit l'organisation en **3 chapitres AVANT**

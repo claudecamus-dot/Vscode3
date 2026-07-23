@@ -93,18 +93,19 @@ def main():
     prs = Presentation(out)
 
     print("Structure :")
-    check(len(prs.slides) == 42, f"42 slides — reçu {len(prs.slides)}")
+    check(len(prs.slides) == 40, f"40 slides — reçu {len(prs.slides)}")
     check(not problemes, f"géométrie propre (verifier_geometrie) — {len(problemes or [])} problème(s)")
     check(os.path.exists(out) and os.path.getsize(out) > 500_000,
           f"fichier .pptx écrit, taille plausible ({os.path.getsize(out) if os.path.exists(out) else 0} octets)")
 
     print("Cadres photo bien calés (chapitres — layout '50 - Chapitre', teardrop) :")
-    # 7 chapitres : Contexte(4) · Personas(7) · Besoins & douleurs(10) ·
-    # Proposition(13) · Démarche(25) · IA(29) · KPI(37)
-    # (le séparateur de sous-chapitre « Exemples » à la slide 16 décale +1 la
-    # suite ; la slide fil humain v2.4, insérée après slide_trajectoire en 27,
-    # décale +1 IA et KPI)
-    chapitres = [4, 7, 10, 13, 25, 29, 37]
+    # 8 chapitres (v2.6) : Contexte(4) · Personas(7) · Besoins & douleurs(10) ·
+    # Proposition(13) · IA(17) · Démarche(24) · Outillage IAP(31) · KPI(35)
+    # (v2.6 : le sous-chapitre « Exemples » — séparateur + 3 slides — est
+    # supprimé, d'où IA/Démarche qui remontent de 4 ; la Démarche gagne les
+    # activités humaines avec/sans l'outil, et l'Outillage IAP ouvre sur le
+    # schéma d'architecture en contexte client — 3 slides de contenu)
+    chapitres = [4, 7, 10, 13, 17, 24, 31, 35]
     for idx in chapitres:
         slide = prs.slides[idx - 1]
         cadre = gen._find_frame_by_geom(slide.slide_layout.shapes, "teardrop")
