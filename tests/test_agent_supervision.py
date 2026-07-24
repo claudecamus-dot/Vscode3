@@ -486,9 +486,14 @@ def test_arbitrages_closent_les_todos_et_restent_affiches(tmp_path):
 
     # Avec arbitrages : le TODO correspondant disparaît, la décision reste visible
     # (page + bloc HTML) et part dans routing-hints.json pour l'orchestrateur.
+    # Exemple = une skill projet SANS dossier scripts/ et non citée par chemin dans un
+    # agent : le canon P1 (non_invocation_skills) reclasse les skills-bibliothèques
+    # (avec scripts/ ou citées par chemin, ex. pptx-framed-image) hors des « jamais
+    # utilisés ». Il faut donc une skill authentiquement non invoquée — même fix que
+    # VSCode2 (priority-matrix), adapté aux skills réelles de CE dépôt.
     (tmp_path / "arbitrages.json").write_text(json.dumps({"arbitrages": [
         {"cible": "famille:BMAD", "decision": "tri exécuté le 2026-07-18", "date": "2026-07-18"},
-        {"cible": "pptx-framed-image", "decision": "conservée — playbook export-ppt-verifie", "date": "2026-07-18"},
+        {"cible": "deck-design-library", "decision": "conservée — catalogue de design consulté à la demande", "date": "2026-07-18"},
         {"cible": "sans-decision"},  # entrée invalide : ignorée, jamais bloquante
     ]}, ensure_ascii=False), encoding="utf-8")
     html = tmp_path / "wiki.html"
@@ -503,10 +508,10 @@ def test_arbitrages_closent_les_todos_et_restent_affiches(tmp_path):
     assert "tri exécuté le 2026-07-18" in page
     # La skill arbitrée sort de la ligne TODO « Skills projet sans usage »…
     todo_projet = [l for l in page.splitlines() if "Skills projet sans usage" in l]
-    assert all("pptx-framed-image" not in l for l in todo_projet)
+    assert all("deck-design-library" not in l for l in todo_projet)
     # …mais l'usage réel reste mesuré : toujours listée en « Jamais utilisés ».
-    assert page.count("pptx-framed-image") >= 2  # section jamais-utilisés + section arbitrages
+    assert page.count("deck-design-library") >= 2  # section jamais-utilisés + section arbitrages
     assert "Arbitrages enregistrés" in html.read_text(encoding="utf-8")
     hints = json.loads((tmp_path / "routing-hints.json").read_text(encoding="utf-8"))
-    assert [a["cible"] for a in hints["arbitrages"]] == ["famille:BMAD", "pptx-framed-image"]
-    assert "pptx-framed-image" in hints["jamais_utilises"]
+    assert [a["cible"] for a in hints["arbitrages"]] == ["famille:BMAD", "deck-design-library"]
+    assert "deck-design-library" in hints["jamais_utilises"]
