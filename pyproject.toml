@@ -1,0 +1,14 @@
+# Configuration ruff — 2026-07-28, finding pratique-dev du superviseur de flotte.
+# Le périmètre d'exclusion « VSCode3 = peu de code » de l'arbitrage du 2026-07-23
+# était démenti par la mesure : docs/cadrage-ppt/generate_deck.py fait 2767 lignes.
+# Baseline alignée sur celle du hub et de VSCode2 : on MESURE d'abord, aucun seuil
+# imposé, et surtout pas de `ruff --fix` aveugle (un --fix a cassé un ré-export sur
+# VSCode2 le 2026-07-23).
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = [".claude/skills", "_bmad", "_bmad-output"]
+
+[tool.ruff.lint]
+# F = pyflakes (vrais bugs)  ·  I = imports  ·  UP = modernisations  ·  B = bugbear
+select = ["F", "I", "UP", "B"]

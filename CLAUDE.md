@@ -14,6 +14,10 @@ Cadrage BMAD IAP : le livrable est un deck de synthèse (`docs/cadrage-ppt/`,
 - Scripts superviseur/orchestrateur : `py -m pytest tests/test_agent_*.py` (sur Windows,
   passer `--basetemp` sur un dossier neuf — le nettoyage du symlink `pytest-current`
   plante en teardown sinon, sans que ce soit un échec de test).
+- Linter : `py -m ruff check .` (config `pyproject.toml`, baseline F/I/UP/B). Première
+  mesure 2026-07-28 : 11 points, aucun seuil imposé — on mesure d'abord. **Jamais
+  `--fix` en aveugle** : sur VSCode2 un `--fix` a supprimé un ré-export et cassé un
+  import ; corriger au fil de l'eau, en vérifiant le rendu du deck après coup.
 
 ## Claude Code project setup
 
