@@ -93,6 +93,19 @@ CONTENT_W = BORD_DROIT - MARGIN
 CONTENT_H = CONTENT_BOTTOM - CONTENT_TOP
 GAP = 0.2
 
+def _exiger_template():
+    """Garde à l'import (finding robustesse, audit 2026-07-23) : sans elle, un
+    template absent remontait en FileNotFoundError brute depuis python-pptx. Le
+    générateur est lancé à la main — l'échec doit nommer le fichier attendu et
+    son emplacement, sans exiger de lire la stack."""
+    if not os.path.isfile(TEMPLATE):
+        raise SystemExit(
+            "generate_deck : template introuvable — placer template-octo.pptx "
+            f"à côté du générateur (attendu : {TEMPLATE})"
+        )
+
+
+_exiger_template()
 TH = D.theme_colors(Presentation(TEMPLATE))
 NAVY = TH.get("dk1", D.INK)          # #0E2356 — texte principal, titres
 WHITE = TH.get("lt1", "#FFFFFF")
@@ -109,6 +122,7 @@ def _rgb(hexcolor):
 
 
 def new_prs():
+    _exiger_template()
     prs = Presentation(TEMPLATE)
     # Retire les 9 slides d'exemple du template — masters/layouts/thème conservés.
     # Il faut aussi supprimer la relation (drop_rel), sinon les parties
