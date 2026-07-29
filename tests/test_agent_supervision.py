@@ -172,12 +172,15 @@ def test_routing_hints_croisent_usage_et_runs(tmp_path):
         _run_line()
         + _run_line(resultat="echec", reprises=2, plan=[
             {"etape": "revue", "agent": "Explore", "mode": "parallele", "modele": "haiku"}
-        ]),
+        ])
+        # Run journalisé à la composition du plan, pas encore soldé : compté à
+        # part, jamais dans `n` (sinon il ferait chuter le taux de réussite).
+        + _run_line(resultat="en-cours", reprises=0),
         encoding="utf-8",
     )
     result = _run(tmp_path)
     assert result.returncode == 0, result.stderr
-    assert "2 run(s) orchestrateur" in result.stdout
+    assert "3 run(s) orchestrateur" in result.stdout
     assert "routing-hints.json a jour" in result.stdout
 
     hints = json.loads((tmp_path / "routing-hints.json").read_text(encoding="utf-8"))
@@ -185,8 +188,12 @@ def test_routing_hints_croisent_usage_et_runs(tmp_path):
     assert "revue-increment" in hints["jamais_utilises"]
     assert any("revue-increment" in v for v in hints["verifications_oubliees"])
     # Plan vs réel : stats par playbook et par agent héritées du résultat du run.
-    assert hints["playbooks"]["dev-verifie"] == {"n": 2, "succes": 1, "echecs": 1, "reprises": 2}
-    assert hints["agents"]["Explore"] == {"n": 1, "succes": 0, "echecs": 1, "reprises": 2}
+    assert hints["playbooks"]["dev-verifie"] == {
+        "n": 2, "succes": 1, "echecs": 1, "reprises": 2, "en_cours": 1,
+    }
+    assert hints["agents"]["Explore"] == {
+        "n": 1, "succes": 0, "echecs": 1, "reprises": 2, "en_cours": 0,
+    }
     # Pas de diagnostic étage 2 : signalé comme à lancer.
     assert hints["diagnostic_a_jour"] is False
     assert "diagnostic agent-supervisor a lancer ou perime" in result.stdout
@@ -285,19 +292,27 @@ def test_diagnostic_arbitre_disparait_du_todo_et_de_la_prudence_mais_reste_mesur
     assert result.returncode == 0, result.stderr
 
     page = (tmp_path / "page.md").read_text(encoding="utf-8")
-    assert "pptx-verify échoue sans LibreOffice" not in page
+    # Plus un constat ACTIF (ni numéroté ni en gras) — mais nommé comme écarté depuis
+    # le 2026-07-28, le filtrage ne devant plus être silencieux (cf.
+    # test_un_constat_ecarte_par_arbitrage_reste_visible_comme_ecarte).
+    assert "1. **pptx-verify échoue sans LibreOffice**" not in page
+    assert "~~pptx-verify échoue sans LibreOffice~~" in page
     assert "Jamais lancé" not in page
     assert "rien à signaler, tous les constats précédents ont été arbitrés" in page
     assert "soffice installé sur le poste dev depuis le 2026-07-19" in page  # section Arbitrages
 
     html_txt = html.read_text(encoding="utf-8")
-    assert "pptx-verify échoue sans LibreOffice" not in html_txt
+    assert '<p>pptx-verify échoue sans LibreOffice' not in html_txt  # pas un constat actif
+    assert "<s>pptx-verify échoue sans LibreOffice</s>" in html_txt
     assert "Jamais lancé" not in html_txt
     assert "rien à signaler" in html_txt
 
     hints = json.loads((tmp_path / "routing-hints.json").read_text(encoding="utf-8"))
     assert hints["prudence"] == []
     assert hints["diagnostic_a_jour"] is True  # toujours à jour : l'arbitrage ne périme rien
+
+
+# --- Étage 2 : écriture validée du diagnostic (write_diagnostic.py) ---
 
 
 def test_arbitrage_a_categories_ne_masque_que_ces_categories(tmp_path):
@@ -328,10 +343,13 @@ def test_arbitrage_a_categories_ne_masque_que_ces_categories(tmp_path):
     ]}, ensure_ascii=False), encoding="utf-8")
     _run(tmp_path)
     page = (tmp_path / "page.md").read_text(encoding="utf-8")
-    # Le constat de vérification remonte (catégorie non couverte)…
-    assert "ppt-designer rend une slide mal composee" in page
-    # …mais le constat d'inefficacité (catégorie couverte) est fermé.
-    assert "ppt-designer sur-instancie" not in page
+    # Le constat de vérification remonte comme constat ACTIF (catégorie non couverte)…
+    assert "1. **ppt-designer rend une slide mal composee**" in page
+    # …et celui d'inefficacité (catégorie couverte) est fermé : il sort des constats
+    # actifs mais reste affiché BARRÉ — le filtrage par arbitrage n'est jamais
+    # silencieux (contrat du canon, cf. constat prio 5 du 2026-07-28).
+    assert "1. **ppt-designer sur-instancie**" not in page
+    assert "~~ppt-designer sur-instancie~~" in page
     hints = json.loads((tmp_path / "routing-hints.json").read_text(encoding="utf-8"))
     assert hints["prudence"] == []  # inefficacite arbitrée → hors routage ; verif jamais en prudence
 
@@ -341,8 +359,10 @@ def test_arbitrage_a_categories_ne_masque_que_ces_categories(tmp_path):
     ]}, ensure_ascii=False), encoding="utf-8")
     _run(tmp_path)
     page = (tmp_path / "page.md").read_text(encoding="utf-8")
-    assert "ppt-designer rend une slide mal composee" not in page
-    assert "ppt-designer sur-instancie" not in page
+    assert "1. **ppt-designer rend une slide mal composee**" not in page
+    assert "1. **ppt-designer sur-instancie**" not in page
+    assert "~~ppt-designer rend une slide mal composee~~" in page
+    assert "~~ppt-designer sur-instancie~~" in page
 
 
 # --- Étage 2 : écriture validée du diagnostic (write_diagnostic.py) ---
