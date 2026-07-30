@@ -14,6 +14,14 @@ Cadrage BMAD IAP : le livrable est un deck de synthèse (`docs/cadrage-ppt/`,
 - Scripts superviseur/orchestrateur : `py -m pytest tests/test_agent_*.py` (sur Windows,
   passer `--basetemp` sur un dossier neuf — le nettoyage du symlink `pytest-current`
   plante en teardown sinon, sans que ce soit un échec de test).
+- Couverture (`requirements-dev.txt` : pytest-cov épinglé) : `py -m pytest tests/ --cov=docs/cadrage-ppt`.
+  PREMIÈRE MESURE 2026-07-30 : 10 % total (generate_deck.py 8 %, pptx_deck.py 24 %) —
+  attendu : `tests/test_agent_*.py` exercent `.claude/orchestration/` **en subprocess**
+  (invisible à `--cov`, qui ne voit que le code chargé dans le process pytest) ; seul
+  `tests/test_generate_deck_garde.py` (import direct) contribue au chiffre. Aucun seuil
+  imposé — on mesure d'abord (modèle VSCode1/VSCode2, arbitrage famille:tests 2026-07-23,
+  réouvert pour VSCode3 le 2026-07-30 : l'exclusion « peu de code » était déjà démentie
+  côté linter/CI par la mesure du 2026-07-28, jamais réappliquée au test).
 - Linter : `py -m ruff check .` (config `pyproject.toml`, baseline F/I/UP/B). Première
   mesure 2026-07-28 : 11 points, aucun seuil imposé — on mesure d'abord. **Jamais
   `--fix` en aveugle** : sur VSCode2 un `--fix` a supprimé un ré-export et cassé un

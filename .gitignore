@@ -11,6 +11,10 @@ CLAUDE.local.md
 # Bytecode Python (regenere par toute execution de docs/cadrage-ppt/*.py)
 __pycache__/
 
+# Artefact de mesure pytest-cov (py -m pytest tests/ --cov=docs/cadrage-ppt) -
+# regenere a chaque run, jamais du contenu source.
+.coverage
+
 # BMAD — sorties generees (planning/implementation artifacts), pas du
 # contenu source ; _bmad/ (le moteur, ~138K) reste versionne a part.
 _bmad-output/
