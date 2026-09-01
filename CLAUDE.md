@@ -1,7 +1,7 @@
 # VSCode3
 
 Cadrage BMAD IAP : le livrable est un deck de synthèse (`docs/cadrage-ppt/`,
-40 slides sur le vrai template OCTO) — l'historique de ses versions vit dans
+42 slides sur le vrai template OCTO) — l'historique de ses versions vit dans
 `git log docs/cadrage-ppt/`, pas ici.
 
 ## Commandes

@@ -1,7 +1,7 @@
 # VSCode3 — cadrage BMAD IAP
 
-Le livrable de ce dépôt est un **deck de synthèse** (`docs/cadrage-ppt/`, v2.6,
-8 chapitres, 40 slides) qui restitue les résultats du cadrage BMAD IAP
+Le livrable de ce dépôt est un **deck de synthèse** (`docs/cadrage-ppt/`, v2.7,
+8 chapitres, 42 slides) qui restitue les résultats du cadrage BMAD IAP
 (`docs/bmad-iap-cadrage.md`), dessiné par-dessus le vrai template de marque
 OCTO (`template-octo.pptx`) — masters/layouts/thème conservés.
 

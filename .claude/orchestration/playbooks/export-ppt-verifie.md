@@ -101,12 +101,12 @@ contenu, visuel). Les deux partagent l'obligation de rendu réel et la terminais
     },
     {
       "id": "design-review",
-      "agent": "restitution-deck-design",
+      "agent": "deck-design-review",
       "mode": "cascade",
       "modele": "(session)",
       "contrat": {
         "type": "reel",
-        "critere": "SI le rendu passe la géométrie mais reste visuellement pauvre (mur de boîtes, hiérarchie absente) : passe design appliquée puis retour à verification-rendu (skill jamais utilisée à ce jour sur ce dépôt — prudence)"
+        "critere": "OBLIGATOIRE dès qu'une version AJOUTE ou RESTRUCTURE des slides (pas seulement quand le rendu « paraît pauvre ») : deck régénéré, rendu ENTIER en images via LibreOffice, chaque fonction slide_* passée contre son contrat de la table de la skill. Verdict = la liste des slides hors contrat, ou « aucune ». La skill déclare elle-même les 13 fonctions qu'elle NE couvre pas encore : les signaler comme non revues plutôt que les taire."
       },
       "checkpoint": false
     },

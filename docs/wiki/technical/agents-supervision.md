@@ -8,7 +8,7 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-09-01T13:15:35+02:00 · **15 sessions** (transcripts) · **24** invocations de skills · **53** lancements de sous-agents.
+Dernier scan : 2026-09-01T16:45:15+02:00 · **15 sessions** (transcripts) · **24** invocations de skills · **53** lancements de sous-agents.
 
 ## Skills — usage réel
 
@@ -88,13 +88,13 @@ _Constats clos par décision humaine (`.claude/supervision/arbitrages.json`) —
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 
-_Diagnostic ⚠️ à relancer (> 14 j) — rien à signaler, tous les constats précédents ont été arbitrés._
+_Diagnostic à jour._
 
-_3 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir un, demander au superviseur un `re_challenge` avec des données nouvelles :_
-
-- ~~Fix shell ppt-designer jamais confirmé — la voie unique deck arbitrée est contournée par précédent~~ (`ppt-designer`)
-- ~~Le travail deck le plus lourd échappe au journal d'orchestration~~ (`agent-orchestrator`)
-- ~~6 retraits BMAD arbitrés le 2026-07-21 toujours physiquement présents~~ (`tri-BMAD-retraits-D`)
+1. **Un correctif de sécurité ne vit que dans la copie locale : la resynchronisation documentée le supprimerait** — Ne pas resynchroniser stock_images.py depuis VSCode1 en l'état. Faire remonter la garde vers le canon (hub) pour qu'elle reparte par export/, plutôt que de la laisser dans une copie feuille. · **Proposition** : Deux gestes, à arbitrer ensemble : (1) annoter docs/vscode1-export/ppt-toolkit.md d'une ligne « stock_images.py : VSCode3 est EN AVANCE (garde schéma + plafond taille, 2026-09-01) — ne pas re-synchroniser depuis VSCode1 tant que le correctif n'est pas remonté au hub » ; (2) porter le correctif au hub (.claude/skills/ puis export_agentic.py) pour que les 6 copies vulnérables soient servies corrigées. À défaut de (2), ajouter à la doctrine de resynchro une vérification préalable « la copie est-elle en avance ? » (diff avant tout resync) : sans elle, la prochaine resynchro est une régression de sécurité silencieuse.
+2. **La discipline tokens et 4 autres sections de CLAUDE.md ont été supprimées le 2026-09-01 sans arbitrage, dont un correctif flotte adopté** — Restaurer les seules sections qui portent une règle non redite ailleurs, corriger le compte de slides, et tracer la coupe si elle était voulue. · **Proposition** : Restaurer depuis git show c465ea7:CLAUDE.md les deux sections orphelines : « Optimisation tokens » (à réaligner sur la « Discipline de gestion des tokens » du hub, re-mesurée depuis) et « Deck — contraintes durables » (cible du renvoi README) ; corriger « 40 slides » en 42. Laisser supprimées les 3 autres (skills/agents, orchestrateur, hiérarchie de modèles) : elles sont couvertes par .claude/orchestration/catalogue.md et playbooks/FORMAT.md. Si la coupe était délibérée, l'inverse est requis : tracer l'entrée dans arbitrages.json et retirer le renvoi mort du README — l'état actuel n'est ni l'un ni l'autre.
+3. **Le générateur monolithique a crû de 13 % depuis l'audit : la pastille « risque technique moyen » repose sur un chiffre périmé** — Re-coter le risque sur le fichier réel avant d'agir : la pastille actuelle s'appuie sur un chiffre faux de 382 lignes. · **Proposition** : Relancer audit-technique sur VSCode3 (skill installée et jamais utilisée d'après routing-hints) pour re-coter risque_technique sur les 3149 lignes réelles. Puis, seulement si l'audit le confirme, acter un plafond au prochain incrément deck : extraire les fonctions slide_* par chapitre en modules chap0X.py importés par build(), le test fonctionnel existant servant de filet de non-régression. Ne rien découper avant arbitrage — le fichier est en évolution active (v2.7 du jour).
+4. **Deux instruments de revue de design, zéro exécution en 23 runs — dont une skill réécrite pour CE deck et câblée nulle part** — Trancher entre les deux instruments plutôt que d'en garder deux morts. · **Proposition** : Option A — l'étape design-review d'export-ppt-verifie pointe sur deck-design-review (la version réécrite pour ce deck, pas la skill générique) et cesse d'être conditionnelle une fois par version majeure : le déclencheur devient « toute version qui ajoute ou restructure des slides », pour que la revue ne soit plus auto-délivrée par le producteur. Option B — deck-design-review est désinstallée comme doublon de restitution-deck-design et l'étape reste conditionnelle. Le statu quo cumule le coût des deux (deux skills à maintenir) et le bénéfice d'aucune.
+5. **Le diagnostic a affiché 3 constats déjà clos pendant 40 jours, et le journal des arbitrages est figé depuis autant** — Coupler l'écriture de l'arbitrage au solde du run, et la réécriture du diagnostic à l'arbitrage — aucun des deux ne doit attendre le passage suivant du superviseur. · **Proposition** : Ajouter au contrat de clôture des playbooks (étape revue-increment / solde) : « un run dont la demande est une décision utilisateur appliquée écrit son entrée arbitrages.json dans le même geste que log_run.py --solde ; un constat arbitré est retiré de diagnostic.json à ce moment-là, pas au diagnostic suivant ». Sans ce couplage, la péremption à 14 jours du diagnostic ne protège de rien : elle signale un fichier vieux, pas un fichier faux.
 
 ---
 

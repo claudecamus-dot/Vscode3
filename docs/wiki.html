@@ -541,7 +541,7 @@
     <section class="doc" id="agents-supervision">
       <p class="eyebrow">Projet</p>
       <h2>Supervision des agents — tableau de bord d'usage</h2>
-      <p class="file-meta"><span>docs/wiki/technical/agents-supervision.md</span><span>généré : 2026-09-01T13:15:35+02:00</span></p>
+      <p class="file-meta"><span>docs/wiki/technical/agents-supervision.md</span><span>généré : 2026-09-01T16:45:15+02:00</span></p>
 
       <div class="fact">
         <p><strong>Bloc généré automatiquement</strong> à chaque session (hook SessionStart → <code>.claude/supervision/scan_transcripts.py</code>, scan incrémental des transcripts, 0 token LLM) — ne pas éditer à la main. <strong>15 sessions</strong> couvertes · <strong>24</strong> invocations de skills · <strong>53</strong> lancements de sous-agents. Diagnostic qualitatif : skill <code>agent-supervisor</code> (étage 2, section diagnostic ci-dessous).</p>
@@ -623,9 +623,32 @@
         <li><strong><code>docs/wiki.html</code></strong> (2026-07-21) : Proposition superviseur (diagnostic 2026-07-21, constat prio 1) ACCEPTÉE et APPLIQUÉE : marqueurs TODO-AGENTS-HTML posés dans docs/wiki.html (+ entrée TOC #agents-supervision), option « compléter le câblage » retenue plutôt que retirer le chemin HTML du scan. Le scan peuple désormais le dashboard HTML (plus d'avertissement « sans marqueurs »). Constat clos.</li>
       </ul>
       <h3>Diagnostic qualitatif (étage 2 — agent-supervisor)</h3>
-      <p><em>Diagnostic ⚠️ à relancer (&gt; 14 j) — rien à signaler, tous les constats précédents ont été arbitrés.</em></p>
-      <p><em>3 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir un, demander au superviseur un <code>re_challenge</code> avec des données nouvelles :</em></p>
-      <ul><li><s>Fix shell ppt-designer jamais confirmé — la voie unique deck arbitrée est contournée par précédent</s> (<code>ppt-designer</code>)</li><li><s>Le travail deck le plus lourd échappe au journal d'orchestration</s> (<code>agent-orchestrator</code>)</li><li><s>6 retraits BMAD arbitrés le 2026-07-21 toujours physiquement présents</s> (<code>tri-BMAD-retraits-D</code>)</li></ul>
+      <p><em>Diagnostic à jour.</em></p>
+      <div class="critical">
+        <p><strong>Un correctif de sécurité ne vit que dans la copie locale : la resynchronisation documentée le supprimerait</strong> — Ne pas resynchroniser stock_images.py depuis VSCode1 en l'état. Faire remonter la garde vers le canon (hub) pour qu'elle reparte par export/, plutôt que de la laisser dans une copie feuille. · <strong>Proposition</strong> : Deux gestes, à arbitrer ensemble : (1) annoter docs/vscode1-export/ppt-toolkit.md d'une ligne « stock_images.py : VSCode3 est EN AVANCE (garde schéma + plafond taille, 2026-09-01) — ne pas re-synchroniser depuis VSCode1 tant que le correctif n'est pas remonté au hub » ; (2) porter le correctif au hub (.claude/skills/ puis export_agentic.py) pour que les 6 copies vulnérables soient servies corrigées. À défaut de (2), ajouter à la doctrine de resynchro une vérification préalable « la copie est-elle en avance ? » (diff avant tout resync) : sans elle, la prochaine resynchro est une régression de sécurité silencieuse.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">agent-supervisor · étage 2</div>
+      </div>
+      <div class="critical">
+        <p><strong>La discipline tokens et 4 autres sections de CLAUDE.md ont été supprimées le 2026-09-01 sans arbitrage, dont un correctif flotte adopté</strong> — Restaurer les seules sections qui portent une règle non redite ailleurs, corriger le compte de slides, et tracer la coupe si elle était voulue. · <strong>Proposition</strong> : Restaurer depuis git show c465ea7:CLAUDE.md les deux sections orphelines : « Optimisation tokens » (à réaligner sur la « Discipline de gestion des tokens » du hub, re-mesurée depuis) et « Deck — contraintes durables » (cible du renvoi README) ; corriger « 40 slides » en 42. Laisser supprimées les 3 autres (skills/agents, orchestrateur, hiérarchie de modèles) : elles sont couvertes par .claude/orchestration/catalogue.md et playbooks/FORMAT.md. Si la coupe était délibérée, l'inverse est requis : tracer l'entrée dans arbitrages.json et retirer le renvoi mort du README — l'état actuel n'est ni l'un ni l'autre.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">agent-supervisor · étage 2</div>
+      </div>
+      <div class="critical">
+        <p><strong>Le générateur monolithique a crû de 13 % depuis l'audit : la pastille « risque technique moyen » repose sur un chiffre périmé</strong> — Re-coter le risque sur le fichier réel avant d'agir : la pastille actuelle s'appuie sur un chiffre faux de 382 lignes. · <strong>Proposition</strong> : Relancer audit-technique sur VSCode3 (skill installée et jamais utilisée d'après routing-hints) pour re-coter risque_technique sur les 3149 lignes réelles. Puis, seulement si l'audit le confirme, acter un plafond au prochain incrément deck : extraire les fonctions slide_* par chapitre en modules chap0X.py importés par build(), le test fonctionnel existant servant de filet de non-régression. Ne rien découper avant arbitrage — le fichier est en évolution active (v2.7 du jour).</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">agent-supervisor · étage 2</div>
+      </div>
+      <div class="critical">
+        <p><strong>Deux instruments de revue de design, zéro exécution en 23 runs — dont une skill réécrite pour CE deck et câblée nulle part</strong> — Trancher entre les deux instruments plutôt que d'en garder deux morts. · <strong>Proposition</strong> : Option A — l'étape design-review d'export-ppt-verifie pointe sur deck-design-review (la version réécrite pour ce deck, pas la skill générique) et cesse d'être conditionnelle une fois par version majeure : le déclencheur devient « toute version qui ajoute ou restructure des slides », pour que la revue ne soit plus auto-délivrée par le producteur. Option B — deck-design-review est désinstallée comme doublon de restitution-deck-design et l'étape reste conditionnelle. Le statu quo cumule le coût des deux (deux skills à maintenir) et le bénéfice d'aucune.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">agent-supervisor · étage 2</div>
+      </div>
+      <div class="critical">
+        <p><strong>Le diagnostic a affiché 3 constats déjà clos pendant 40 jours, et le journal des arbitrages est figé depuis autant</strong> — Coupler l'écriture de l'arbitrage au solde du run, et la réécriture du diagnostic à l'arbitrage — aucun des deux ne doit attendre le passage suivant du superviseur. · <strong>Proposition</strong> : Ajouter au contrat de clôture des playbooks (étape revue-increment / solde) : « un run dont la demande est une décision utilisateur appliquée écrit son entrée arbitrages.json dans le même geste que log_run.py --solde ; un constat arbitré est retiré de diagnostic.json à ce moment-là, pas au diagnostic suivant ». Sans ce couplage, la péremption à 14 jours du diagnostic ne protège de rien : elle signale un fichier vieux, pas un fichier faux.</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">agent-supervisor · étage 2</div>
+      </div>
     </section>
 <!-- TODO-AGENTS-HTML:END -->
 

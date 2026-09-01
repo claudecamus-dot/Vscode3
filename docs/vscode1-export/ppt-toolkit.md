@@ -3,6 +3,24 @@
 > au skill `pptx-framed-image` ; §6 Tests fonctionnels). Source de vérité : le
 > fichier VSCode1 ; celui-ci est une copie de référence, à re-synchroniser
 > manuellement si l'original évolue.
+>
+> ⚠️ **EXCEPTION — `stock_images.py` : VSCode3 est EN AVANCE, ne pas
+> re-synchroniser depuis VSCode1.** La copie locale
+> (`.claude/skills/pptx-framed-image/scripts/stock_images.py`, 90 l) porte une garde
+> de sécurité ajoutée le 2026-09-01 et absente de la source (VSCode1, 70 l) :
+> `_SCHEMES_AUTORISES` refuse les URL non-http(s) renvoyées par Openverse
+> (`urlopen` suit `file://` — vérifié par exécution : une entrée à `url` non-http
+> faisait copier un fichier local arbitraire dans le cache d'images du deck) et
+> `_TAILLE_MAX` plafonne le téléchargement à 25 Mo, là où `r.read()` était sans borne.
+> Mesuré le 2026-09-01 sur la flotte (`grep -c _SCHEMES_AUTORISES`) : **1 copie sur 7**
+> porte la garde, et c'est celle-ci. Appliquer la doctrine de resynchro ci-dessus la
+> remplacerait par la version vulnérable.
+>
+> **Avant TOUTE resynchro depuis VSCode1** (ce fichier comme les scripts du kit) :
+> `diff` d'abord, la copie peut être en avance. Lever cette exception quand la garde
+> aura été remontée au hub (VScode5 `.claude/skills/pptx-framed-image/` puis
+> `export_agentic.py`) et redescendue dans VSCode1 — remontée demandée le 2026-09-01,
+> non encore appliquée.
 
 # Kit « export PPT de restitution » — portable sur d'autres projets
 

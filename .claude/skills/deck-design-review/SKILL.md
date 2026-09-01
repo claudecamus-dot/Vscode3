@@ -1,6 +1,6 @@
 ---
 name: deck-design-review
-description: Revue de design slide-par-slide du deck de synthèse de CE projet (cadrage BMAD IAP, docs/cadrage-ppt/generate_deck.py, ~40 slides sur 8 chapitres, template OCTO rendu via LibreOffice) — régénérer le vrai export, rendre TOUTES les slides, et confronter chaque type de slide à son propre contrat de design (couverture, exec summary 4 blocs, intercalaires teardrop, personas, douleurs, gaspillages, gate IA, trajectoire, schémas, KPI, maturité). À lancer avant de déclarer « fait » un changement de design du deck, quand le PPT exporté « n'est pas au niveau », ou comme étape de revue du playbook export-ppt-verifie.
+description: Revue de design slide-par-slide du deck de synthèse de CE projet (cadrage BMAD IAP, docs/cadrage-ppt/generate_deck.py, 42 slides sur 8 chapitres, template OCTO rendu via LibreOffice) — régénérer le vrai export, rendre TOUTES les slides, et confronter chaque type de slide à son propre contrat de design (couverture, exec summary 4 blocs, intercalaires teardrop, personas, douleurs, gaspillages, gate IA, trajectoire, schémas, KPI, maturité). C'est L'ÉTAPE design-review du playbook export-ppt-verifie — obligatoire dès qu'une version ajoute ou restructure des slides — et elle se lance aussi à la demande quand le PPT exporté « n'est pas au niveau ».
 ---
 
 # deck-design-review — la revue de design du deck ENTIER (cadrage IAP)
@@ -27,6 +27,23 @@ traiter ») — réécrit pour le canal réel de ce projet, pas copié.
 Le deck suit le fil rouge **SCALE en 8 chapitres** (01 Contexte · 02 Personas ·
 03 Besoins & douleurs · 04 Proposition · 05 IA · 06 Démarche · 07 Outillage IAP ·
 08 KPI), chaque chapitre = une couleur `D.PALETTE` (mapping en tête de `generate_deck.py`).
+
+**Recâblée le 2026-09-01**, après 40 jours à zéro invocation : l'étape `design-review`
+du playbook `export-ppt-verifie` nommait une AUTRE skill (`restitution-deck-design`),
+elle-même jamais utilisée sur ce dépôt. Le projet payait deux instruments de revue de
+design et n'en lançait aucun. L'étape pointe désormais ici, et n'est plus conditionnelle.
+
+**TROU CONNU, à dire au lieu de le taire.** La table ci-dessous couvre **21 des 34**
+fonctions `slide_*` du générateur (compte mesuré le 2026-09-01, pas estimé). Les 13
+suivantes n'ont PAS de contrat écrit : `slide_ambition`, `slide_architecture_si`,
+`slide_conditions_reussite`, `slide_export_markdown`, `slide_fil_humain`,
+`slide_kpis_mise_en_place`, `slide_kpis_pourquoi_quoi`, `slide_mission`,
+`slide_pourquoi_contexte`, `slide_qui_achete`, `slide_team_topologies`, `slide_vision`,
+`slide_why_iap`. Une revue qui les traverse en silence rendrait un « tout va bien » qui
+ne porte que sur les deux tiers du deck : les signaler comme NON REVUES fait partie du
+verdict. Leur écrire un contrat est un travail à part, qui appartient à ce projet — il
+n'a pas été fait ici, pour ne pas inventer des exigences de design sur des slides
+qu'aucune mesure n'a instruites.
 
 | Slide (fonction) | Contrat (au rendu) |
 | --- | --- |
