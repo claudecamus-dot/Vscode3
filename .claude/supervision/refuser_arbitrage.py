@@ -21,7 +21,11 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ARBITRAGES_PATH = os.environ.get("AGENT_SUPERVISION_ARBITRAGES") or os.path.join(
     ROOT, ".claude", "supervision", "arbitrages.json")
-SCAN_SCRIPT = os.path.join(ROOT, "scripts", "scan_projets.py")
+# Le scanner de CE depot. Pointait vers ROOT/scripts/scan_projets.py — le
+# scanner du hub, absent ici : le refus etait bien ecrit dans arbitrages.json
+# puis la regeneration echouait en FileNotFoundError avalee, et le message de
+# secours affichait une commande introuvable (revue du 2026-09-01).
+SCAN_SCRIPT = os.path.join(ROOT, ".claude", "supervision", "scan_transcripts.py")
 
 
 def main(argv=None) -> int:
@@ -56,13 +60,13 @@ def main(argv=None) -> int:
     if os.environ.get("AGENT_SUPERVISION_SKIP_SCAN"):
         return 0   # tests : la régénération du wiki n'est pas leur objet
     try:
-        r = subprocess.run([sys.executable, "-X", "utf8", SCAN_SCRIPT, "--no-refresh"],
+        r = subprocess.run([sys.executable, "-X", "utf8", SCAN_SCRIPT],
                            cwd=ROOT, capture_output=True, text=True, timeout=60)
         print(r.stdout.strip())
         if r.returncode != 0:
             print(r.stderr.strip(), file=sys.stderr)
     except (OSError, subprocess.TimeoutExpired) as exc:
-        print(f"refuser_arbitrage : wiki non régénéré ({exc}) — relancer scripts/scan_projets.py", file=sys.stderr)
+        print(f"refuser_arbitrage : wiki non régénéré ({exc}) — relancer py .claude/supervision/scan_transcripts.py", file=sys.stderr)
     return 0
 
 

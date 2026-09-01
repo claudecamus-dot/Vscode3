@@ -8,13 +8,13 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-09-01T10:09:39+02:00 · **15 sessions** (transcripts) · **23** invocations de skills · **48** lancements de sous-agents.
+Dernier scan : 2026-09-01T11:57:12+02:00 · **15 sessions** (transcripts) · **24** invocations de skills · **53** lancements de sous-agents.
 
 ## Skills — usage réel
 
 | Skill | Famille | Invocations | Première | Dernière |
 | --- | --- | --- | --- | --- |
-| `agent-orchestrator` | projet | 7 | 2026-07-21 | 2026-07-23 |
+| `agent-orchestrator` | projet | 8 | 2026-07-21 | 2026-09-01 |
 | `agent-supervisor` | projet | 6 | 2026-07-21 | 2026-07-23 |
 | `artifact-design` | (builtin/session) | 2 | 2026-07-06 | 2026-07-07 |
 | `pptx-deck` | global | 2 | 2026-07-08 | 2026-07-09 |
@@ -29,8 +29,8 @@ Dernier scan : 2026-09-01T10:09:39+02:00 · **15 sessions** (transcripts) · **2
 | Sous-agent | Lancements | Premier | Dernier |
 | --- | --- | --- | --- |
 | `general-purpose` | 31 | 2026-07-06 | 2026-07-23 |
-| `ppt-designer` | 12 | 2026-07-21 | 2026-07-23 |
-| `Explore` | 3 | 2026-07-21 | 2026-07-21 |
+| `ppt-designer` | 13 | 2026-07-21 | 2026-09-01 |
+| `Explore` | 7 | 2026-07-21 | 2026-09-01 |
 | `Plan` | 1 | 2026-07-21 | 2026-07-21 |
 | `claude-code-guide` | 1 | 2026-07-21 | 2026-07-21 |
 
@@ -61,7 +61,7 @@ _Consommés en lisant/exécutant leurs `scripts/`, ou via un sous-agent qui les 
 ## TODO agents (constats automatiques)
 
 1. **Skills projet sans usage** : `audit-technique`, `deck-design-review`, `veille-agentic` — vérifier pertinence et déclencheurs.
-2. **Skills en sommeil (>30 j sans usage)** : `agent-orchestrator`, `agent-supervisor`, `artifact-design`, `bmad-agent-pm`, `pptx-deck`, `pptx-verify`, `restitution-deck-design`, `revue-increment`, `roadmap-keeper`.
+2. **Skills en sommeil (>30 j sans usage)** : `agent-supervisor`, `artifact-design`, `bmad-agent-pm`, `pptx-deck`, `pptx-verify`, `restitution-deck-design`, `revue-increment`, `roadmap-keeper`.
 
 ## Arbitrages enregistrés
 

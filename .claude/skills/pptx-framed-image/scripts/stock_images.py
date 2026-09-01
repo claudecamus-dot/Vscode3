@@ -46,11 +46,31 @@ def search_photo(query, seed=0, aspect_ratio=None):
     return p["url"], p.get("creator") or "inconnu", p.get("foreign_landing_url", "")
 
 
+# Openverse aggregates third-party sources (Wikimedia, Flickr, StockSnap...),
+# so ``url`` is data we do not control. ``urllib.request.urlopen`` follows the
+# ``file://`` scheme by default — verified: it reads local files — so an entry
+# whose ``url`` is not http(s) would have made this function copy an arbitrary
+# local file into the deck's image cache. And ``r.read()`` with no cap loads
+# the whole response into memory. Both closed 2026-09-01 (project review).
+_SCHEMES_AUTORISES = ("http://", "https://")
+_TAILLE_MAX = 25 * 1024 * 1024   # 25 Mo : large pour une photo, borne pour la memoire
+
+
 def fetch_to(path, query, seed=0, aspect_ratio=None, manifest_path=None):
     img_url, creator, page_url = search_photo(query, seed=seed, aspect_ratio=aspect_ratio)
+    if not img_url.lower().startswith(_SCHEMES_AUTORISES):
+        raise ValueError(f"refused non-http(s) image URL from Openverse: {img_url[:80]!r}")
     req = urllib.request.Request(img_url, headers={"User-Agent": "bmad-iap-cadrage-ppt/1.0"})
     with urllib.request.urlopen(req, timeout=20) as r, open(path, "wb") as f:
-        f.write(r.read())
+        recu = 0
+        while True:
+            bloc = r.read(64 * 1024)
+            if not bloc:
+                break
+            recu += len(bloc)
+            if recu > _TAILLE_MAX:
+                raise ValueError(f"image over {_TAILLE_MAX} bytes, download aborted: {img_url[:80]!r}")
+            f.write(bloc)
     if manifest_path:
         _record(manifest_path, os.path.basename(path), query, creator, page_url)
     return path

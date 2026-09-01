@@ -1,0 +1,5 @@
+{
+ "derniere_veille": null,
+ "entrees": [],
+ "_note": "Cree vide le 2026-09-01 (revue fonctionnelle et technique) : le fichier etait reference par la skill veille-agentic ET par la premiere etape de la commande « /orchestre adopte <trouvaille> », qui echouait donc avant meme de commencer. derniere_veille = null : le hook SessionStart annonce « aucune veille enregistree », ce qui est exact — aucune veille n'a jamais tourne sur ce depot."
+}

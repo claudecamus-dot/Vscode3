@@ -80,7 +80,7 @@ Règles d'entretien du fichier :
 - **Doublons** : si une trouvaille existe déjà (même url), mettre à jour sa pertinence
   plutôt que dupliquer.
 
-Puis régénérer le wiki : `py scripts/scan_projets.py` — la section 3 « Veille agentic »
+Puis régénérer le wiki : `py .claude/supervision/scan_transcripts.py` — la section 3 « Veille agentic »
 reflète le fichier. Terminer en restituant à l'utilisateur les nouvelles entrées en une
 ligne chacune.
 
@@ -143,7 +143,7 @@ pratique déjà généralisée sur la flotte ne mérite pas d'entrée.
 
 1. **Règles d'analyse** : quand l'utilisateur passe une pratique en `adopte`, sa
    `regle_proposee` est intégrée au référentiel (`criteres-pratiques.md` § 7) et,
-   si mesurable à froid, au scan (`scripts/scan_projets.py`) ou au répertoire craft.
+   si mesurable à froid, au scan (`.claude/supervision/scan_transcripts.py`) ou au répertoire craft.
 2. **Actions correctives** : l'`action_corrective` des pratiques adoptées se traite
    comme un finding arbitré — via le playbook `evolution-flotte` pour les projets
    cibles, arbitrage tracé dans `arbitrages.json`.

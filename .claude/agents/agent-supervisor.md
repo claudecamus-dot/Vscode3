@@ -72,7 +72,7 @@ GitHub, dépôts publics d'agents/skills/playbooks) évoluent plus vite que le d
   appliquée. Catégorie `pratique-dev` ou `inefficacite` selon la nature, `cible` =
   `veille:<slug>`, proposition = l'arbitrage à poser.
 - **Une `regle_proposee` restée ⬜ dans `criteres-pratiques.md`** (jamais outillée dans
-  `scripts/scan_projets.py`) est un écart de mesure : le finding propose d'outiller la
+  `.claude/supervision/scan_transcripts.py`) est un écart de mesure : le finding propose d'outiller la
   mesure, pas de corriger un projet.
 - **Si la veille est périmée** (`derniere_veille` > 3 jours, ce que le hook SessionStart
   signale) et que ton diagnostic a besoin de l'état de l'art pour trancher, lance le

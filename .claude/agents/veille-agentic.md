@@ -47,11 +47,11 @@ Trois déclencheurs, tous légitimes :
    sont dans `projets.json`, le code est lisible. Une pratique déjà en place ne se
    « trouve » pas : elle se constate, et le dire vaut mieux qu'une entrée cosmétique.
 4. **Dériver les deux débouchés** quand la trouvaille les porte : `regle_proposee` (ce qui
-   deviendra un critère du référentiel, outillable dans `scripts/scan_projets.py` si
+   deviendra un critère du référentiel, outillable dans `.claude/supervision/scan_transcripts.py` si
    mesurable à froid) et `action_corrective` (le correctif concret, par projet concerné).
    Une entrée sans débouché est une curiosité, pas une trouvaille.
 5. **Écrire `.claude/veille/veille.json`** en statut `nouveau`, avec `derniere_veille` à
-   jour. Le scan (`py scripts/scan_projets.py`) la rendra en section 3 du wiki — c'est
+   jour. Le scan (`py .claude/supervision/scan_transcripts.py`) la rendra en section 3 du wiki — c'est
    l'appelant qui relance le scan, pas toi, sauf si ton brief le demande.
 
 ## Ce que tu ne fais jamais

@@ -541,10 +541,10 @@
     <section class="doc" id="agents-supervision">
       <p class="eyebrow">Projet</p>
       <h2>Supervision des agents — tableau de bord d'usage</h2>
-      <p class="file-meta"><span>docs/wiki/technical/agents-supervision.md</span><span>généré : 2026-09-01T10:09:39+02:00</span></p>
+      <p class="file-meta"><span>docs/wiki/technical/agents-supervision.md</span><span>généré : 2026-09-01T11:57:12+02:00</span></p>
 
       <div class="fact">
-        <p><strong>Bloc généré automatiquement</strong> à chaque session (hook SessionStart → <code>.claude/supervision/scan_transcripts.py</code>, scan incrémental des transcripts, 0 token LLM) — ne pas éditer à la main. <strong>15 sessions</strong> couvertes · <strong>23</strong> invocations de skills · <strong>48</strong> lancements de sous-agents. Diagnostic qualitatif : skill <code>agent-supervisor</code> (étage 2, section diagnostic ci-dessous).</p>
+        <p><strong>Bloc généré automatiquement</strong> à chaque session (hook SessionStart → <code>.claude/supervision/scan_transcripts.py</code>, scan incrémental des transcripts, 0 token LLM) — ne pas éditer à la main. <strong>15 sessions</strong> couvertes · <strong>24</strong> invocations de skills · <strong>53</strong> lancements de sous-agents. Diagnostic qualitatif : skill <code>agent-supervisor</code> (étage 2, section diagnostic ci-dessous).</p>
         <span class="tag tag-confirme">CONFIRMÉ</span>
         <div class="tag-source">scan_transcripts.py · 2026-09-01 · ~/.claude/projects/&lt;slug&gt;/*.jsonl</div>
       </div>
@@ -554,7 +554,7 @@
         <table>
           <thead><tr><th>Skill</th><th>Famille</th><th>Invocations</th><th>Première</th><th>Dernière</th></tr></thead>
           <tbody>
-            <tr><td><code>agent-orchestrator</code></td><td>projet</td><td>7</td><td>2026-07-21</td><td>2026-07-23</td></tr>
+            <tr><td><code>agent-orchestrator</code></td><td>projet</td><td>8</td><td>2026-07-21</td><td>2026-09-01</td></tr>
             <tr><td><code>agent-supervisor</code></td><td>projet</td><td>6</td><td>2026-07-21</td><td>2026-07-23</td></tr>
             <tr><td><code>artifact-design</code></td><td>(builtin/session)</td><td>2</td><td>2026-07-06</td><td>2026-07-07</td></tr>
             <tr><td><code>pptx-deck</code></td><td>global</td><td>2</td><td>2026-07-08</td><td>2026-07-09</td></tr>
@@ -573,8 +573,8 @@
           <thead><tr><th>Sous-agent</th><th>Lancements</th><th>Premier</th><th>Dernier</th></tr></thead>
           <tbody>
             <tr><td><code>general-purpose</code></td><td>31</td><td>2026-07-06</td><td>2026-07-23</td></tr>
-            <tr><td><code>ppt-designer</code></td><td>12</td><td>2026-07-21</td><td>2026-07-23</td></tr>
-            <tr><td><code>Explore</code></td><td>3</td><td>2026-07-21</td><td>2026-07-21</td></tr>
+            <tr><td><code>ppt-designer</code></td><td>13</td><td>2026-07-21</td><td>2026-09-01</td></tr>
+            <tr><td><code>Explore</code></td><td>7</td><td>2026-07-21</td><td>2026-09-01</td></tr>
             <tr><td><code>Plan</code></td><td>1</td><td>2026-07-21</td><td>2026-07-21</td></tr>
             <tr><td><code>claude-code-guide</code></td><td>1</td><td>2026-07-21</td><td>2026-07-21</td></tr>
           </tbody>
@@ -595,7 +595,7 @@
         <div class="tag-source">scan_transcripts.py · 2026-09-01 · transcripts de session</div>
       </div>
       <div class="critical">
-        <p><strong>Skills en sommeil (&gt;30 j sans usage)</strong> : <code>agent-orchestrator</code>, <code>agent-supervisor</code>, <code>artifact-design</code>, <code>bmad-agent-pm</code>, <code>pptx-deck</code>, <code>pptx-verify</code>, <code>restitution-deck-design</code>, <code>revue-increment</code>, <code>roadmap-keeper</code>.</p>
+        <p><strong>Skills en sommeil (&gt;30 j sans usage)</strong> : <code>agent-supervisor</code>, <code>artifact-design</code>, <code>bmad-agent-pm</code>, <code>pptx-deck</code>, <code>pptx-verify</code>, <code>restitution-deck-design</code>, <code>revue-increment</code>, <code>roadmap-keeper</code>.</p>
         <span class="tag tag-confirme">CONFIRMÉ</span>
         <div class="tag-source">scan_transcripts.py · 2026-09-01 · transcripts de session</div>
       </div>

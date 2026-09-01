@@ -280,6 +280,26 @@ _REQUETES_PHOTO = {
 }
 
 
+# Repli procedural : nature_images ne connait que 6 scenes
+# (forest/meadow/mountains/ocean/sunset/tropical). Les noms NEUFS choisis pour
+# les chapitres (dunes, nightsky, canyon) n'y sont pas — hors reseau ou sur
+# 0-resultat Openverse, generate_to levait ValueError HORS du try, ce qui tuait
+# build() en entier : 0 slide produite alors que 37 des 40 n'ont pas de photo
+# (mesure du 2026-09-01). On mappe donc chaque nom neuf sur la scene connue la
+# plus proche visuellement. Ce n'est PAS la meme image — c'est un repli assume,
+# dont le but est que le deck sorte, pas qu'il soit identique.
+_SCENE_REPLI = {
+    "dunes": "sunset",      # tons chauds sable/orange
+    "nightsky": "sunset",   # composition de ciel (clair au lieu de sombre)
+    "canyon": "mountains",  # relief rocheux
+}
+
+# Anomalies d'image relevees pendant le build, fusionnees dans `problemes` par
+# build(). Sans cela, un cadre introuvable ou un repli impossible ne sortait
+# qu'en print : le build annoncait « GEOMETRIE: OK » avec des photos manquantes.
+_ANOMALIES_IMAGE = []
+
+
 def _remplir_cadre(slide, cadre, scene, seed=0):
     """Pose une vraie photo libre de droit (Openverse, CC0) à l'aspect exact
     du cadre, repli sur la génération procédurale (nature_images) si le
@@ -288,7 +308,9 @@ def _remplir_cadre(slide, cadre, scene, seed=0):
     fait en comparant au REX "⛱️ L'Été de l'IA" (VSCode1) qui utilise de
     vraies photos sur ces mêmes cadres."""
     if cadre is None:
-        print(f"  cadre introuvable pour la scène '{scene}' — image non posée")
+        msg = f"cadre introuvable pour la scène '{scene}' — image non posée"
+        print(f"  {msg}")
+        _ANOMALIES_IMAGE.append(msg)
         return
     left, top, width, height, geom = cadre
     aspect = Emu(width).inches / Emu(height).inches
@@ -306,8 +328,18 @@ def _remplir_cadre(slide, cadre, scene, seed=0):
             cover_crop_to_aspect(brut, path, aspect)
             print(f"  photo réelle posée pour '{scene}' ({requete!r}, via Openverse CC0)")
         except Exception as e:
-            print(f"  Openverse indisponible pour '{scene}' ({e}) — repli sur nature_images")
-            nature_images.generate_to(path, scene, px_w, px_h, seed=seed)
+            repli = _SCENE_REPLI.get(scene, scene)
+            note = f" (scène '{scene}' inconnue du repli -> '{repli}')" if repli != scene else ""
+            print(f"  Openverse indisponible pour '{scene}' ({e}) — repli sur nature_images{note}")
+            try:
+                nature_images.generate_to(path, repli, px_w, px_h, seed=seed)
+            except Exception as e2:
+                # Degrader, jamais planter : la slide sort sans photo et le
+                # defaut remonte dans `problemes`, il ne disparait pas.
+                msg = f"aucune image pour '{scene}' : Openverse KO ({e}) et repli KO ({e2})"
+                print(f"  {msg}")
+                _ANOMALIES_IMAGE.append(msg)
+                return
     place_image_in_frame(slide, path, left, top, width, height, geom=geom)
 
 
@@ -556,8 +588,12 @@ def slide_mission(prs):
          "cognitif, décisionnel, environnemental, IA.",
          # v2.3 : promesse instrumentée, pas un acquis — même honnêteté que le
          # statut interne du cadrage (fin du double discours, finding C1).
-         "La capacité récupérée finance la trajectoire produit — mécanisme "
-         "instrumenté dès la première mission (KPI de réinvestissement)."),
+         # 2026-09-01 : la moitié CONDITIONNELLE de la formule du cadrage (l.23,
+         # « Hypothèse porteuse à prouver, pas un invariant acquis […] suppose un
+         # mécanisme de réallocation budgétaire côté client ») avait été effacée —
+         # la slide affirmait au présent un KPI qui est un point ouvert MVP3.
+         "La capacité récupérée finance la trajectoire produit — hypothèse à "
+         "prouver, qui suppose une réallocation budgétaire côté client."),
     ]
     # v2.5 (chantier ③) : les cartes flottaient à CONTENT_TOP+0.5 sans rien
     # au-dessus (~0.5in de blanc sous le titre). La note « ni séquentiels ni
@@ -622,9 +658,11 @@ def slide_pourquoi_contexte(prs):
         (D.PALETTE[2], "L'infra subie n'est plus tenable",
          "RUN subi, experts seniors drainés sur du répétitif, gaspillage cloud non maîtrisé, "
          "plateforme contournée : le coût du statu quo ne cesse de monter."),
+        # Le « MAIS » du cadrage (l.43) est le motif d'achat du pilier Assainir :
+        # sans lui, ce declencheur ne declenche rien. Restaure le 2026-09-01.
         (D.PALETTE[1], "Le modèle produit/plateforme est prouvé",
-         "Platform engineering et product operating model ne sont plus un pari mais un "
-         "standard : la cible est connue, outillée, reproductible."),
+         "Devenu un standard — mais Gartner : 80 % de grandes organisations avec platform "
+         "team en 2026, moins de 30 % de gains mesurables. C'est cet écart qu'Assainir adresse."),
         (D.PALETTE[4], "L'IA rebat les cartes — l'organisation d'abord",
          "L'IA amplifie une organisation mûre, jamais l'inverse. S'y préparer maintenant "
          "(doctrine confidentialité-first) évite de la subir plus tard."),
@@ -650,7 +688,8 @@ def slide_pourquoi_contexte(prs):
         ("Et surtout — nos deux missions répondent trait pour trait aux deux douleurs du client.",
          dict(size=8.5, bold=True, color=NAVY, line_spacing=1.05)),
         ("Subir le RUN → TRANSFORMER (cible produit/plateforme) ; le gaspillage → ASSAINIR "
-         "(capacité récupérée réinvestie dans la trajectoire — mesuré par KPI).",
+         "(capacité récupérée à réinvestir dans la trajectoire — sous réserve d'une "
+         "réallocation côté client).",
          dict(size=8, color=MUTED, space_before=2, line_spacing=1.15)),
     ], anchor=MSO_ANCHOR.MIDDLE)
     return s
@@ -1106,8 +1145,9 @@ def slide_gaspillages(prs):
     D.add_text(s, MARGIN + 0.22, score_top, text_w - 0.3, score_h, [
         ("Priorité = (impact × faisabilité) − prudence IA",
          dict(size=D.TYPE["small"], bold=True, color="#ffffff", line_spacing=1.15)),
-        ("Le score ne remplace pas l'arbitrage humain : il rend la discussion explicite, "
-         "et classe les candidats dans un backlog priorisé.",
+        ("Support de discussion ORDINAL, pas une métrique calculée : à lire en paliers "
+         "(fort / moyen / faible), jamais comme un nombre exact. Il rend la discussion "
+         "explicite et classe les candidats — il ne remplace pas l'arbitrage humain.",
          dict(size=8, color="#c7cbe0", space_before=4, line_spacing=1.2)),
     ], anchor=MSO_ANCHOR.MIDDLE)
 
@@ -1116,7 +1156,7 @@ def slide_gaspillages(prs):
     gauge_x = MARGIN + text_w
     gauge_w = CONTENT_W - text_w
     D.add_text(s, gauge_x, score_top + 0.12, gauge_w - 0.15, 0.18, [
-        ("SCORE ILLUSTRATIF", dict(size=7, bold=True, color="#8891b3")),
+        ("SCORE ILLUSTRATIF · ORDINAL", dict(size=7, bold=True, color="#8891b3")),
     ])
     rows_top = score_top + 0.38
     row_h2 = (score_h - 0.38 - 0.1) / 3
@@ -1980,7 +2020,7 @@ def slide_iap_contexte_client(prs):
     D.add_rect(s, cons_x, z_top, cons_w, z_h, fill=TRACK, rounded=True, radius=0.06)
     D.add_text(s, cons_x + pad, z_top + 0.12, cons_w - 2 * pad, 0.42, [
         ("POSTE DU CONSULTANT", dict(size=8, bold=True, color=NAVY)),
-        ("Le module IAP · 11 agents spécialisés", dict(size=7, color=MUTED, space_before=2)),
+        ("Le module IAP · 11 workflows outillés", dict(size=7, color=MUTED, space_before=2)),
     ])
     etapes = [("COLLECTE", D.PALETTE[0]), ("DIAGNOSTIC", D.PALETTE[4]),
               ("CONCEPTION", D.PALETTE[3]), ("RESTITUTION", D.PALETTE[1])]
@@ -2090,7 +2130,10 @@ def slide_ambition(prs):
          "Guide pas à pas, pose des questions de clarification, signale les incohérences.",
          "Palier intermédiaire, entre MVP5 et MVP6"),
         ("C", "Companion connecté", D.PALETTE[2],
-         "Connecté en direct à ServiceNow/Jira/Confluence/Datadog/CMDB/FinOps, quasi autonome.",
+         # « quasi autonome » seul survendait C comme une autonomie décisionnelle,
+         # ce que le cadrage (l.733) demande explicitement d'éviter.
+         "Connecté en direct à ServiceNow/Jira/Confluence/Datadog/CMDB/FinOps : quasi "
+         "autonome sur la collecte et la préparation — jamais sur l'arbitrage.",
          "= MVP6, non engagé"),
     ]
     n = 3
@@ -2540,7 +2583,7 @@ def slide_architecture_si(prs):
 # slide_schema_fonctionnement (le flux) — l'inventaire des composants.
 def slide_architecture_agents(prs):
     s = content_slide(prs, "Démarche",
-                       "Onze agents spécialisés, un seul bloquant : le gate confidentialité les traverse tous",
+                       "Onze workflows outillés, un seul bloquant : le gate confidentialité les traverse tous",
                        color=D.PALETTE[3])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.5, [
         ("Un mandat unique par agent, regroupés par étape. Le gate confidentialité est le seul "
@@ -2762,7 +2805,7 @@ def build():
     slide_maturite(prs)
     slide_kpis_exemple(prs)
 
-    problemes = D.verifier_geometrie(prs)
+    problemes = D.verifier_geometrie(prs) + _ANOMALIES_IMAGE
     if problemes:
         print(f"GEOMETRIE: {len(problemes)} probleme(s)")
         for p in problemes:
@@ -2770,9 +2813,22 @@ def build():
     else:
         print("GEOMETRIE: OK — aucune forme hors cadre")
 
-    out = os.path.join(os.path.dirname(__file__), "bmad-iap-cadrage-synthese.pptx")
-    prs.save(out)
-    print("Ecrit:", out)
+    # Un deck dont le controle signale un defaut n'ecrase PLUS le livrable.
+    # `prs.save(out)` etait inconditionnel : seul le code de sortie signalait
+    # l'echec, donc tout appelant qui l'ignore (IDE, double-clic, script sans
+    # `set -e`) livrait un deck casse en silence (mesure du 2026-09-01). En cas
+    # de defaut on ecrit a cote, sous un nom qui ne trompe personne, et l'export
+    # precedent — valide — reste en place.
+    base = os.path.join(os.path.dirname(__file__), "bmad-iap-cadrage-synthese")
+    if problemes:
+        out = base + ".INVALIDE.pptx"
+        prs.save(out)
+        print(f"Ecrit (NON LIVRABLE, {len(problemes)} probleme(s)):", out)
+        print("Export livrable inchange:", base + ".pptx")
+    else:
+        out = base + ".pptx"
+        prs.save(out)
+        print("Ecrit:", out)
     return problemes
 
 

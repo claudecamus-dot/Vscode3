@@ -1,5 +1,5 @@
 ---
-updated: 2026-07-07
+updated: 2026-09-01
 confidence: confirmed
 agents: [onboarder]
 ---
@@ -46,8 +46,13 @@ Retour utilisateur le même jour (2026-07-15) : (1) le schéma de fonctionnement
 
 ## Zones d'ombre
 
-- Pas de CI/CD, pas de tests automatisés (dépôt documentaire, voir [technical/tests.md](technical/tests.md))
-- `.roadmap/` et `.claude/skills/` mentionnés dans `CLAUDE.md` comme "à créer au besoin" — pas encore présents dans l'arborescence
+- Pas de CI/CD (`.github/workflows/` absent) — mais **100 tests automatisés** passent en local
+  (`py -m pytest tests/ .claude/skills/pdf-quality/tests/`, mesuré le 2026-09-01) ; la page
+  [technical/tests.md](technical/tests.md) décrit encore le dépôt comme documentaire, à reprendre
+- Le socle du dispositif est **importé du hub de supervision** et référence des actifs qui n'ont
+  jamais été propagés ici (`.claude/veille/veille.json`, `.claude/audits/`,
+  `docs/wiki/technical/criteres-pratiques.md`, les 12 salles de table ronde,
+  `.claude/dispositif/sync_dispositif.py`) — constaté par la revue du 2026-09-01, arbitrage en cours
 - Process de redaction du REX source formalisé en principe seulement (voir `docs/bmad-iap-cadrage.md` §Points ouverts) — pas encore une étape de workflow reproductible
 
 <!-- TODO-AGENTS:START — section générée par .claude/supervision/scan_transcripts.py, ne pas éditer à la main -->
@@ -56,7 +61,7 @@ Retour utilisateur le même jour (2026-07-15) : (1) le schéma de fonctionnement
 Constats automatiques du superviseur d'agents (usage mesuré dans les transcripts de session) :
 
 - **Skills projet sans usage** : `audit-technique`, `deck-design-review`, `veille-agentic` — vérifier pertinence et déclencheurs.
-- **Skills en sommeil (>30 j sans usage)** : `agent-orchestrator`, `agent-supervisor`, `artifact-design`, `bmad-agent-pm`, `pptx-deck`, `pptx-verify`, `restitution-deck-design`, `revue-increment`, `roadmap-keeper`.
+- **Skills en sommeil (>30 j sans usage)** : `agent-supervisor`, `artifact-design`, `bmad-agent-pm`, `pptx-deck`, `pptx-verify`, `restitution-deck-design`, `revue-increment`, `roadmap-keeper`.
 
 Tableau de bord complet : [technical/agents-supervision.md](technical/agents-supervision.md) — régénéré à chaque session.
 <!-- TODO-AGENTS:END -->

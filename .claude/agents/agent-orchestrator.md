@@ -49,7 +49,7 @@ Lire ensuite, comme la skill le prescrit : `.claude/orchestration/catalogue.md`,
 - **Fichiers générés interdits en écriture** : `docs/wiki.html`,
   `docs/wiki/projets-supervision.md`, `docs/wiki/technical/agents-supervision.md`,
   `.claude/supervision/state.json`, `.claude/orchestration/routing-hints.json` — ils se
-  régénèrent (`py scripts/scan_projets.py`), les éditer à la main est du travail perdu.
+  régénèrent (`py .claude/supervision/scan_transcripts.py`), les éditer à la main est du travail perdu.
 
 ## Contrat de sortie
 
