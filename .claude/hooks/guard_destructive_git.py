@@ -66,7 +66,12 @@ def _strip_heredocs(cmd: str) -> str:
 
 
 def _segments(cmd: str):
-    """Split on &&, ||, ;, |, newline — but not when inside '...' or "...". """
+    """Les parentheses sont neutralisees ICI, en amont du decoupage : sans cela
+    `(git push --force)` et `echo $(git push --force)` collaient le `(` au token de
+    tete, qui n'etait donc plus `git` (verifie en rejouant le hook, 2026-08-31).
+    Entre quotes elles restent intactes : `git commit -m "fix (bug)"` n'est pas coupe.
+
+    Split on &&, ||, ;, |, (, ), newline — but not when inside '...' or "...". """
     segs = []
     buf = []
     quote = None
@@ -90,7 +95,7 @@ def _segments(cmd: str):
             buf = []
             i += 2
             continue
-        if c in (";", "|", "\n"):
+        if c in (";", "|", "(", ")", "\n"):
             segs.append("".join(buf))
             buf = []
             i += 1
