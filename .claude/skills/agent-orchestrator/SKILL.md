@@ -51,6 +51,25 @@ joué** et reste sur demande explicite uniquement.
 | `dev-verifie`, `export-ppt-verifie`, `revue-design-parallele` | Éprouvés |
 | `cycle-produit-bmad` | Jamais joué — sur demande explicite uniquement |
 
+**Ce que le socle décrit et qui N'EXISTE PAS ici** (mesuré le 2026-09-01, revue
+fonctionnelle et technique). Le socle vient du hub ; ces actifs n'ont jamais été
+propagés. Ne pas suivre ces chemins depuis ce dépôt :
+
+| Le socle dit | État réel ici | Conséquence |
+| --- | --- | --- |
+| `scripts/scan_projets.py` (§ 2 quater, § 2 sexies) | **Absent** — le scanner de ce dépôt est `.claude/supervision/scan_transcripts.py` | Corrigé dans les fichiers locaux ; **2 occurrences restent dans le socle** (SKILL.md l. 248 et 443) et 1 dans `log_run.py` l. 94 — à corriger DANS LE HUB |
+| Les **12 salles** de table ronde (§ 2 septies) et `_bmad/custom/bmad-party-mode.toml` | **Absents** | Aucune salle n'est convocable ici ; `bmad-party-mode` reste utilisable en mode générique |
+| Le bouton « En débattre » du wiki (§ 2 septies) | **Absent** de `docs/wiki.html` | La commande terminal est la seule voie |
+| `tests/test_salles_routage.py` et `tests/test_orchestration_bmad.py` (« tables verrouillées par ») | **Absents** | Les deux tables de routage ne sont verrouillées par rien — les lire comme de la documentation, pas comme une garantie |
+| `.claude/dispositif/sync_dispositif.py` (bandeau « ne pas éditer localement ») | **Absent** | Le canon n'est pas atteignable d'ici : une correction du socle se fait depuis le hub (VScode5), jamais dans ce dépôt |
+| « 12 salles » puis « les onze » (§ 2 septies) | Contradiction interne du socle | À trancher dans le hub |
+
+**Créés localement le 2026-09-01** pour que deux mécanismes cessent d'échouer à leur
+première étape : `.claude/veille/veille.json` (vide, `derniere_veille: null` — la commande
+`adopte` avait un fichier à lire), `.claude/audits/` (+ son README de format) et
+`docs/wiki/technical/criteres-pratiques.md` (§ 7, où une `regle_proposee` adoptée
+s'inscrit). Leur rendu au wiki reste, lui, une affaire de hub.
+
 ## Méthode — 5 étapes
 
 ### 1. Qualifier (silencieux, jamais mentionné à l'utilisateur si exécution directe)
@@ -245,7 +264,7 @@ Une entrée `ecarte` se refuse de la même façon (« écarte X »), avec sa rai
 3. **Appliquer les deux débouchés** que porte l'entrée, quand ils existent :
    - `regle_proposee` → **règle d'analyse** : l'inscrire au référentiel
      `docs/wiki/technical/criteres-pratiques.md`, et si elle est mesurable à froid,
-     l'outiller dans `scripts/scan_projets.py` (nouveau marqueur, 0 token) avec ses
+       l'outiller dans `.claude/supervision/scan_transcripts.py` (nouveau marqueur, 0 token) avec ses
      tests de non-régression. C'est ce qui fait passer un critère ⬜ en ✅.
    - `action_corrective` → **le correctif lui-même** : sur un autre dépôt, via le
      playbook `evolution-flotte` (cadrage réel → modif scopée → vérifs → commit scopé) ;
@@ -440,7 +459,7 @@ et c'est l'orchestrateur qui la tient.
 **Ce qui suit le retour de la veille**, dans l'ordre — et c'est là que la plupart des
 dispositifs de veille meurent :
 
-1. **Régénérer le wiki** (`py scripts/scan_projets.py`) : la section 3 « Veille agentic »
+1. **Régénérer le wiki** (`py .claude/supervision/scan_transcripts.py`) : la section 3 « Veille agentic »
    affiche les trouvailles et leur statut. Une veille écrite mais non propagée est
    invisible.
 2. **Présenter les trouvailles à l'utilisateur**, une ligne chacune avec sa

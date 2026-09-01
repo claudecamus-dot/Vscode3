@@ -1,0 +1,12 @@
+# Project-specific overrides for bmad-party-mode skill
+# Defines custom parties or personas that complement the skill's built-in modes.
+# Structure: party definitions can extend the default party-mode behavior
+# for this project's specific needs (e.g., BMAD agent roundtables).
+#
+# Example (uncomment to use):
+# [parties.hub-roundtable-13]
+# personas = ["analyste", "architecte", "pm", "ux", "tech-writer"]
+# coordinator = "agent-orchestrator"
+# mode = "subagent"
+#
+# To invoke: user requests "party hub-roundtable-13" or "convoque table 1"

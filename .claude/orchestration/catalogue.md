@@ -113,9 +113,15 @@ garde la main par cible exacte). Routage par catégorie :
 Workflows récurrents pré-composés — la skill cherche un playbook matchant **avant** de
 composer à vide. Format : `.claude/orchestration/playbooks/FORMAT.md`.
 
+> **Le statut d'un playbook se lit dans `routing-hints.json`, pas ici.** Cette colonne
+> a affiche « jamais joué » sur `export-ppt-verifie` (9 succès) et
+> `revue-design-parallele` (2 succès) jusqu'au 2026-09-01 : le seul document consulté
+> pour router contredisait les chiffres que le dispositif produit lui-même. La tenir à
+> jour à la main, ou la lire comme une description — jamais comme une mesure.
+
 | Playbook | Pour | Source | Statut |
 | --- | --- | --- | --- |
-| `dev-verifie` | Implémentation/correction (scripts, hooks, skills) : tests + vérif réelle conditionnelle + `revue-increment` avant commit | Manuel (adapté de VSCode2 — pas d'app web/dev server ici) | Jamais joué |
-| `export-ppt-verifie` | Livrable = le deck `docs/cadrage-ppt/` : génération + enrichissements conditionnels (cadres photo, polish, design) + `pptx-verify`/`test_generate_deck.py` obligatoire + `revue-increment` | Manuel (adapté de VSCode2 — colonne vertébrale déjà pratiquée sur ce projet, ex. commit `1cb15fc`) | Jamais joué en tant que playbook formel |
-| `revue-design-parallele` | Revue multi-angles d'un livrable en fan-out (≤4 `Explore`) puis consolidation | Manuel | Jamais joué en tant que playbook formel |
-| `cycle-produit-bmad` | Cycle produit BMAD (brief→PRD→archi→epics→dev→review), clos par `revue-increment` | `generate_bmad_playbook.py` (généré depuis `_bmad/_config/bmad-help.csv` de ce dépôt — regénérer, ne pas éditer) | Jamais joué — sur demande explicite |
+| `dev-verifie` | Implémentation/correction (scripts, hooks, skills) : tests + vérif réelle conditionnelle + `revue-increment` avant commit | Manuel (adapté de VSCode2 — pas d'app web/dev server ici) | **Importé** — jamais joué ici (sur demande explicite) |
+| `export-ppt-verifie` | Livrable = le deck `docs/cadrage-ppt/` : génération + enrichissements conditionnels (cadres photo, polish, design) + `pptx-verify`/`test_generate_deck.py` obligatoire + `revue-increment` | Manuel (adapté de VSCode2 — colonne vertébrale de ce projet) | **Éprouvé** — 9+ runs depuis 2026-07-21, tous succès avec vérification réelle `pptx-verify` |
+| `revue-design-parallele` | Revue multi-angles d'un livrable en fan-out (≤4 `Explore`) puis consolidation | Manuel | **Éprouvé** — 2+ runs depuis 2026-07-21, tous succès, fan-out `Explore` systématique |
+| `cycle-produit-bmad` | Cycle produit BMAD (brief→PRD→archi→epics→dev→review), clos par `revue-increment` | `generate_bmad_playbook.py` (généré depuis `_bmad/_config/bmad-help.csv` de ce dépôt — regénérer, ne pas éditer) | Jamais joué — sur demande explicite uniquement |

@@ -4,6 +4,11 @@
 .claude/settings.local.json
 CLAUDE.local.md
 
+# Fichiers secrets (jamais committer, même accidentellement)
+.env
+.env.local
+secrets/
+
 # Roadmap — .roadmap/roadmap.json est la source de verite versionnee ;
 # le .svg est regenere a la demande par le skill roadmap-keeper.
 .roadmap/*.svg
