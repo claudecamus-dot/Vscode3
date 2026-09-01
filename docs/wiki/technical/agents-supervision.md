@@ -1,5 +1,5 @@
 ---
-updated: 2026-07-23
+updated: 2026-09-01
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -7,22 +7,21 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
-> Conception et phasage : [../../reflexions/agent-superviseur.md](../../reflexions/agent-superviseur.md).
 
-Dernier scan : 2026-07-23T20:23:43+02:00 · **14 sessions** (transcripts) · **14** invocations de skills · **48** lancements de sous-agents.
+Dernier scan : 2026-09-01T10:09:39+02:00 · **15 sessions** (transcripts) · **23** invocations de skills · **48** lancements de sous-agents.
 
 ## Skills — usage réel
 
 | Skill | Famille | Invocations | Première | Dernière |
 | --- | --- | --- | --- | --- |
-| `agent-orchestrator` | projet | 3 | 2026-07-21 | 2026-07-23 |
-| `agent-supervisor` | projet | 2 | 2026-07-21 | 2026-07-21 |
+| `agent-orchestrator` | projet | 7 | 2026-07-21 | 2026-07-23 |
+| `agent-supervisor` | projet | 6 | 2026-07-21 | 2026-07-23 |
 | `artifact-design` | (builtin/session) | 2 | 2026-07-06 | 2026-07-07 |
 | `pptx-deck` | global | 2 | 2026-07-08 | 2026-07-09 |
+| `revue-increment` | projet | 2 | 2026-07-21 | 2026-07-22 |
 | `bmad-agent-pm` | BMAD | 1 | 2026-07-22 | 2026-07-22 |
 | `pptx-verify` | global | 1 | 2026-07-08 | 2026-07-08 |
 | `restitution-deck-design` | global | 1 | 2026-07-08 | 2026-07-08 |
-| `revue-increment` | projet | 1 | 2026-07-21 | 2026-07-21 |
 | `roadmap-keeper` | global | 1 | 2026-07-07 | 2026-07-07 |
 
 ## Sous-agents
@@ -37,9 +36,9 @@ Dernier scan : 2026-07-23T20:23:43+02:00 · **14 sessions** (transcripts) · **1
 
 ## Jamais utilisés
 
-**projet** — 3/6 jamais invoqués :
+**projet** — 4/10 jamais invoqués :
 
-`deck-design-library`, `pptx-framed-image`, `slide-text-polish`
+`audit-technique`, `deck-design-library`, `deck-design-review`, `veille-agentic`
 
 **BMAD** — 45/46 jamais invoqués :
 
@@ -53,9 +52,16 @@ Dernier scan : 2026-07-23T20:23:43+02:00 · **14 sessions** (transcripts) · **1
 
 `skill-creator`
 
+## Skills bibliothèque / référence
+
+_Consommés en lisant/exécutant leurs `scripts/`, ou via un sous-agent qui les suit (ex. `ppt-designer`, qui n'a pas l'outil Skill) — le compteur d'invocations ne peut structurellement pas les voir. `n=0` n'y vaut donc PAS « mort » : ne pas désinstaller sur ce seul signal (constat superviseur #2)._
+
+`pdf-quality`, `pptx-framed-image`, `slide-text-polish`
+
 ## TODO agents (constats automatiques)
 
-_(aucun constat — rien à signaler sur les données actuelles)_
+1. **Skills projet sans usage** : `audit-technique`, `deck-design-review`, `veille-agentic` — vérifier pertinence et déclencheurs.
+2. **Skills en sommeil (>30 j sans usage)** : `agent-orchestrator`, `agent-supervisor`, `artifact-design`, `bmad-agent-pm`, `pptx-deck`, `pptx-verify`, `restitution-deck-design`, `revue-increment`, `roadmap-keeper`.
 
 ## Arbitrages enregistrés
 
@@ -83,6 +89,12 @@ _Constats clos par décision humaine (`.claude/supervision/arbitrages.json`) —
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 
 _Diagnostic ⚠️ à relancer (> 14 j) — rien à signaler, tous les constats précédents ont été arbitrés._
+
+_3 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir un, demander au superviseur un `re_challenge` avec des données nouvelles :_
+
+- ~~Fix shell ppt-designer jamais confirmé — la voie unique deck arbitrée est contournée par précédent~~ (`ppt-designer`)
+- ~~Le travail deck le plus lourd échappe au journal d'orchestration~~ (`agent-orchestrator`)
+- ~~6 retraits BMAD arbitrés le 2026-07-21 toujours physiquement présents~~ (`tri-BMAD-retraits-D`)
 
 ---
 

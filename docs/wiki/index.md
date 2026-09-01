@@ -55,7 +55,8 @@ Retour utilisateur le même jour (2026-07-15) : (1) le schéma de fonctionnement
 
 Constats automatiques du superviseur d'agents (usage mesuré dans les transcripts de session) :
 
-- _(aucun constat automatique)_
+- **Skills projet sans usage** : `audit-technique`, `deck-design-review`, `veille-agentic` — vérifier pertinence et déclencheurs.
+- **Skills en sommeil (>30 j sans usage)** : `agent-orchestrator`, `agent-supervisor`, `artifact-design`, `bmad-agent-pm`, `pptx-deck`, `pptx-verify`, `restitution-deck-design`, `revue-increment`, `roadmap-keeper`.
 
 Tableau de bord complet : [technical/agents-supervision.md](technical/agents-supervision.md) — régénéré à chaque session.
 <!-- TODO-AGENTS:END -->
