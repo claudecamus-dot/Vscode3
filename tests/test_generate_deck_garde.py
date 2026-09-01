@@ -52,7 +52,7 @@ def test_new_prs_porte_la_meme_garde(generate_deck, monkeypatch):
 # chapitres (dunes, nightsky, canyon) n'en font pas partie : hors reseau ou sur
 # 0-resultat Openverse, `generate_to` levait ValueError HORS du try de
 # `_remplir_cadre`, ce qui tuait build() en entier — 0 slide produite, alors que
-# 37 des 40 n'ont pas de photo. Reproduit puis corrige le 2026-09-01.
+# 39 des 42 n'ont pas de photo. Reproduit puis corrige le 2026-09-01.
 
 
 @pytest.fixture(scope="module")

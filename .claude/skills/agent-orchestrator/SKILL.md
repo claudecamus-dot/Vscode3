@@ -13,8 +13,8 @@ d'office, stats plan-vs-réel par playbook/agent, `prudence` issu du diagnostic 
 `docs/wiki/technical/agents-supervision.md` (tableau de bord humain des mêmes données) et
 `.claude/orchestration/playbooks/` (workflows récurrents — format dans `playbooks/FORMAT.md`).
 
-<!-- SOCLE-PROVENANCE: socle : f2490bf du 2026-09-01 -->
-> **Socle généré** — tout ce qui suit `## Méthode` vient du hub de supervision (`f2490bf`, 2026-09-01) et sera **réécrit** à la prochaine propagation.
+<!-- SOCLE-PROVENANCE: socle : ad02e65 du 2026-09-01 -->
+> **Socle généré** — tout ce qui suit `## Méthode` vient du hub de supervision (`ad02e65`, 2026-09-01) et sera **réécrit** à la prochaine propagation.
 > Le chapitre « Portée sur ce projet » ci-dessous, lui, n'est jamais réécrit : c'est le travail local.
 
 ## Portée sur ce projet
@@ -264,7 +264,9 @@ Une entrée `ecarte` se refuse de la même façon (« écarte X »), avec sa rai
 3. **Appliquer les deux débouchés** que porte l'entrée, quand ils existent :
    - `regle_proposee` → **règle d'analyse** : l'inscrire au référentiel
      `docs/wiki/technical/criteres-pratiques.md`, et si elle est mesurable à froid,
-       l'outiller dans `.claude/supervision/scan_transcripts.py` (nouveau marqueur, 0 token) avec ses
+     l'outiller dans le scanner du HUB (`scripts/scan_projets.py`, qui n'existe que là
+     — le scanner déployé chez une cible est `.claude/supervision/scan_transcripts.py`)
+     avec ses
      tests de non-régression. C'est ce qui fait passer un critère ⬜ en ✅.
    - `action_corrective` → **le correctif lui-même** : sur un autre dépôt, via le
      playbook `evolution-flotte` (cadrage réel → modif scopée → vérifs → commit scopé) ;
@@ -459,7 +461,8 @@ et c'est l'orchestrateur qui la tient.
 **Ce qui suit le retour de la veille**, dans l'ordre — et c'est là que la plupart des
 dispositifs de veille meurent :
 
-1. **Régénérer le wiki** (`py .claude/supervision/scan_transcripts.py`) : la section 3 « Veille agentic »
+1. **Régénérer le wiki** — au HUB, `py scripts/scan_projets.py` (ce script n'est pas
+   déployé : depuis une cible, il n'y a pas de wiki à régénérer) : la section 3 « Veille agentic »
    affiche les trouvailles et leur statut. Une veille écrite mais non propagée est
    invisible.
 2. **Présenter les trouvailles à l'utilisateur**, une ligne chacune avec sa

@@ -1,4 +1,4 @@
-"""Génère une synthèse PPT (40 slides) des RÉSULTATS du cadrage BMAD IAP
+"""Génère une synthèse PPT (42 slides) des RÉSULTATS du cadrage BMAD IAP
 (docs/bmad-iap-cadrage.md) à partir des helpers pptx_deck, dessinée
 PAR-DESSUS le vrai template de marque OCTO (template-octo.pptx) —
 masters/layouts/thème conservés, pas un deck sur canevas vierge.
@@ -28,6 +28,12 @@ illustratives) est SUPPRIMÉ à la demande — git garde l'historique (v2.5) ; e
 IAP en contexte client) et un badge de série « déploiement agentic chez le
 client » sur les 4 slides de proposition agentic du chapitre 05 (3 agents
 candidats + export markdown), renvoyant au schéma du chapitre 07.
+
+v2.7 (2026-09-01) : 2 slides de plus (40 -> 42) sur ce que le cadrage
+déclarait faisant foi pour le deck sans y être redescendu — « qui achète,
+contre quoi » (les 4 achats alternatifs, chapitre 01, après les déclencheurs)
+et « conditions de réussite et non-engagement » (ce que la mission exige du
+client et ce que son absence déclenche, chapitre 06, après le fil humain).
 
 Séparateurs : chapitres = intercalaire teardrop (photo + numéro, layout dédié) ;
 sous-chapitres = `slide_sous_chapitre` (bloc-titre léger, sans photo ni numéro —
@@ -692,6 +698,129 @@ def slide_pourquoi_contexte(prs):
          "réallocation côté client).",
          dict(size=8, color=MUTED, space_before=2, line_spacing=1.15)),
     ], anchor=MSO_ANCHOR.MIDDLE)
+    return s
+
+
+# --- Nouveau (2026-09-01) : « qui achète, contre quoi ». La section
+# §Positionnement & achat du cadrage (l.36) fait foi POUR LE DECK depuis la
+# v2.3, mais n'y avait jamais été redescendue : 40 slides disaient COMMENT on
+# fait la mission, aucune contre quel achat alternatif elle se gagne.
+# Forme retenue (deck-design-library) : grille-référentiel à libellé propre par
+# ligne (pattern 15) — lignes = les 4 achats alternatifs (cadrage l.52-57),
+# colonnes = ce qu'il apporte / ce qui lui manque ; la règle « un sur N en
+# accent » est appliquée à la COLONNE de droite (teinte pâle), c'est là que
+# l'offre gagne. En pied, bandeau transverse (pattern 18) : collision de nom
+# (l.63) et réponse au sponsor « je ne veux que la baisse de coûts » (l.57, l.78).
+def slide_qui_achete(prs):
+    s = content_slide(prs, "Contexte",
+                       "Le sponsor est la DSI — l'offre se gagne contre quatre achats partiels",
+                       color=D.PALETTE[0])
+    couleur = D.PALETTE[0]
+
+    def lh(pt):
+        return pt * 1.25 / 72.0
+
+    # --- Chapeau : qui achète, et dans quel langage (cadrage l.48) -----------
+    lead1 = ("Sponsor qualifié : DSI (direction des systèmes d'information) ou direction "
+             "infrastructure, sur une ligne budgétaire transformation — jamais le budget "
+             "RUN (exploitation courante).")
+    lead2 = ("La modernisation infra recule face à la cyber dans les priorités budgétaires "
+             "2026 (baromètre Abraxio) : le langage de vente est « récupérer de la capacité "
+             "humaine rare », pas « moderniser l'infra ».")
+    lead_h = (_lignes(lead1, CONTENT_W, 9.5) * lh(9.5)
+              + _lignes(lead2, CONTENT_W, 7.5) * lh(7.5) + 0.09)
+    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, lead_h, [
+        (lead1, dict(size=9.5, color=NAVY, italic=True, line_spacing=1.25)),
+        (lead2, dict(size=7.5, color=MUTED, space_before=3, line_spacing=1.25)),
+    ])
+
+    # --- Bandeau transverse : dimensionné AVANT la grille, qui prend le reste
+    # (jamais de panneau étiré sur la hauteur restante).
+    bandeaux = [
+        (TRACK, MUTED, NAVY, "CE QUE LES QUATRE ALTERNATIVES N'ONT PAS",
+         "L'étiquette « Infrastructure as a Product » est déjà prise — Thoughtworks (conseil), "
+         "Itential (plateforme). Le différenciateur n'est pas le nom mais le couplage produit "
+         "+ gaspillage + doctrine IA, angle mort commun des quatre."),
+        (NAVY, "#8891b3", "#ffffff", "LA RÉPONSE AU « JE NE VEUX QUE LA BAISSE DE COÛTS »",
+         "Une mission flash d'entrée — intake, gate confidentialité, pilote court — puis la "
+         "trajectoire ; jamais l'assainissement seul. Sous pression IA, un cas d'usage sur "
+         "données publiques est packagé dès l'intake : « celui-ci, tout de suite, sous gate » "
+         "(chapitre IA)."),
+    ]
+    _, band_w = col_x(0, 2)
+    band_pad = 0.12
+    band_lignes = max(_lignes(b[4], band_w - 2 * band_pad - 0.04, 7) for b in bandeaux)
+    band_h = 2 * band_pad + lh(7) + 0.04 + band_lignes * lh(7) + 0.03
+    band_top = CONTENT_BOTTOM - band_h
+
+    # --- Grille : 4 lignes (les alternatives) x 3 colonnes ------------------
+    alternatives = [
+        ("Ne rien faire",
+         "Zéro coût apparent.",
+         "Le coût du statu quo monte",
+         "C'est lui que l'Assessment flash chiffre (déclencheur ①)."),
+        ("FinOps outillé seul",
+         "Mesure le gaspillage : marché mature, gaspillage cloud estimé à 29 % (Flexera).",
+         "Ni cible produit, ni réallocation",
+         "IAP se place en aval : le chiffre devient une capacité produit gouvernée, pas "
+         "seulement une économie."),
+        ("Platform engineering pur",
+         "La cible produit/plateforme, un modèle devenu standard.",
+         "La cible sans le financement",
+         "Reproduit l'écart 80/30 : 80 % de platform teams en 2026, moins de 30 % de gains "
+         "mesurables (Gartner)."),
+        ("AIOps / agentic outillé",
+         "Time-to-value court (ServiceNow, Datadog).",
+         "Automatise le RUN sans transformer",
+         "Plus de 40 % des projets agentic seront abandonnés d'ici 2027 (Gartner, juin 2025)."),
+    ]
+    c1_w, c2_w = 1.80, 2.45
+    c3_w = CONTENT_W - c1_w - c2_w
+    c1_x = MARGIN
+    c2_x = c1_x + c1_w
+    c3_x = c2_x + c2_w
+
+    head_h = 0.18
+    head_top = CONTENT_TOP + lead_h + 0.10
+    grid_top = head_top + head_h + 0.05
+    grid_h = band_top - 0.16 - grid_top
+    row_h = grid_h / len(alternatives)
+
+    _header_cell(s, c1_x, head_top, c1_w, head_h, "L'ACHAT ALTERNATIF")
+    _header_cell(s, c2_x + 0.12, head_top, c2_w - 0.12, head_h, "CE QU'IL APPORTE")
+    _header_cell(s, c3_x + 0.14, head_top, c3_w - 0.14, head_h,
+                 "CE QUI LUI MANQUE — LA RÉPONSE IAP", color=couleur)
+
+    # « Un sur N en accent » porté par la COLONNE, pas par une ligne : la
+    # troisième colonne est la seule teintée — c'est là que l'offre répond.
+    D.add_rect(s, c3_x, grid_top, c3_w, grid_h, fill="#D9ECFF", rounded=True, radius=0.06)
+
+    chip_h = 0.40
+    for i, (nom, apporte, manque, reponse) in enumerate(alternatives):
+        y = grid_top + i * row_h
+        if i:  # séparateurs fins : la grille sans le tableau (pattern 11)
+            D.add_rect(s, MARGIN, y, CONTENT_W, 0.012, fill=LINE)
+        chip_y = y + row_h / 2 - chip_h / 2
+        D.add_rect(s, c1_x, chip_y, c1_w - 0.16, chip_h, fill=TRACK, rounded=True, radius=0.1)
+        D.add_text(s, c1_x + 0.10, chip_y, c1_w - 0.36, chip_h, [
+            (nom, dict(size=8, bold=True, color=NAVY, line_spacing=1.05)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+        D.add_text(s, c2_x + 0.12, y, c2_w - 0.24, row_h, [
+            (apporte, dict(size=7.5, color=NAVY, line_spacing=1.25)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+        D.add_text(s, c3_x + 0.14, y, c3_w - 0.28, row_h, [
+            (manque, dict(size=7.5, bold=True, color=couleur, line_spacing=1.1)),
+            (reponse, dict(size=7.5, color=NAVY, space_before=2, line_spacing=1.25)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+
+    for i, (fill, label_c, texte_c, label, corps) in enumerate(bandeaux):
+        x, w = col_x(i, 2)
+        D.add_rect(s, x, band_top, w, band_h, fill=fill, rounded=True, radius=0.08)
+        D.add_text(s, x + band_pad + 0.02, band_top + band_pad, w - 2 * band_pad - 0.04,
+                   band_h - 2 * band_pad, [
+            (label, dict(size=7, bold=True, color=label_c)),
+            (corps, dict(size=7, color=texte_c, space_before=3, line_spacing=1.25)),
+        ])
     return s
 
 
@@ -1715,6 +1844,180 @@ def slide_activites_humaines(prs):
     return s
 
 
+# --- Nouveau (2026-09-01) : conditions de réussite et non-engagement. Le deck
+# ne disait nulle part ce que la mission EXIGE du client ni ce qui la fait
+# échouer — un sponsor destinataire ne pouvait pas savoir à quoi il s'engage.
+# Prolonge (sans la répéter) la phrase du fil humain « testé dès l'intake ».
+# Forme retenue (deck-design-library) : chaîne verticale de conditions reliées
+# par un connecteur + encart de mise en exergue latéral (pattern 6) — la
+# colonne porte le processus, le panneau porte le message, ici l'issue
+# NÉGATIVE. Bandeau transverse en pied pour le critère de sortie (l.949).
+# Matière : cadrage l.934 (non-engagement), l.951 (test à l'intake, RH),
+# l.172 (anti-patterns), l.455 (deskilling-risk), l.667 (management-posture-risk).
+def slide_conditions_reussite(prs):
+    s = content_slide(prs, "Démarche",
+                       "Sans ces quatre conditions, la mission ne s'engage pas",
+                       color=D.PALETTE[3])
+    couleur = D.PALETTE[3]
+
+    def lh(pt):
+        return pt * 1.25 / 72.0
+
+    lead = ("Le test d'engagement porté par le fil humain n'a de valeur que s'il peut conclure "
+            "« non » : voici ce qu'il vérifie avant signature — et ce que son échec déclenche.")
+    lead_h = _lignes(lead, CONTENT_W, 9.5) * lh(9.5) + 0.06
+    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, lead_h, [
+        (lead, dict(size=9.5, color=NAVY, italic=True, line_spacing=1.25)),
+    ])
+
+    # --- Bandeau transverse (critère de sortie, l.949) : dimensionné d'abord,
+    # la région centrale prend le reste — jamais l'inverse.
+    sortie = ("L'équipe et ses relais tiennent-ils le modèle une période sans le consultant ? "
+              "Le consultant se rend dispensable : il n'évalue jamais les personnes, ne fait "
+              "pas le reporting à leur place et ne s'installe pas en intermédiaire permanent "
+              "entre l'équipe et le sponsor.")
+    band_pad = 0.12
+    band_h = 2 * band_pad + lh(7) + 0.04 + _lignes(sortie, CONTENT_W - 0.28, 7) * lh(7) + 0.03
+    band_top = CONTENT_BOTTOM - band_h
+
+    region_top = CONTENT_TOP + lead_h + 0.10
+    region_h = band_top - 0.16 - region_top
+
+    # --- Colonne gauche : les 4 conditions, en chaîne -----------------------
+    conditions = [
+        ("Un sponsor qui porte la cible",
+         "La transformation ne va pas plus loin que ce que le sponsor peut porter : c'est son "
+         "engagement personnel qui se teste, pas son budget."),
+        ("Des équipes réellement disponibles",
+         "Interviews et ateliers supposent du temps réservé — la disponibilité réelle se "
+         "vérifie à l'intake, jamais en cours de mission."),
+        ("Une RH embarquée sur rôles et évaluation",
+         "« Frein ou principal accélérateur » : coacher une posture que les grilles "
+         "d'évaluation punissent revient à ramer contre le système."),
+        ("Un processus documenté avant tout agent",
+         "Sinon on fige une pratique mal définie dans du code — préalable non négociable de "
+         "la doctrine d'automatisation."),
+    ]
+    gauche_w = 3.65
+    fil_x = MARGIN + 0.13
+    badge_d = 0.26
+    card_x = MARGIN + 0.26
+    card_w = MARGIN + gauche_w - card_x
+    card_pad = 0.14
+    card_usable = card_w - 0.08 - 2 * card_pad
+    card_gap = 0.09
+    card_h = (region_h - (len(conditions) - 1) * card_gap) / len(conditions)
+
+    # Connecteur continu : une seule ligne, pas de flèches (pattern 6).
+    D.add_rect(s, fil_x - 0.01, region_top + card_h / 2, 0.02,
+               (len(conditions) - 1) * (card_h + card_gap), fill=LINE)
+    for i, (titre, corps) in enumerate(conditions):
+        y = region_top + i * (card_h + card_gap)
+        D.add_card(s, card_x, y, card_w, card_h, couleur)
+        D.add_rect(s, fil_x - badge_d / 2, y + card_h / 2 - badge_d / 2, badge_d, badge_d,
+                   fill=couleur if i == 0 else "#ffffff",
+                   line=None if i == 0 else couleur, line_w=1.0, rounded=True, radius=0.5)
+        D.add_text(s, fil_x - badge_d / 2, y + card_h / 2 - badge_d / 2, badge_d, badge_d, [
+            (str(i + 1), dict(size=8, bold=True,
+                              color="#ffffff" if i == 0 else couleur,
+                              align=PP_ALIGN.CENTER)),
+        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+        D.add_text(s, card_x + 0.08 + card_pad, y, card_usable, card_h, [
+            (titre, dict(size=8, bold=True, color=couleur, line_spacing=1.05)),
+            (corps, dict(size=7, color=NAVY, space_before=3, line_spacing=1.25)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+
+    # --- Panneau droit : l'issue négative (le seul aplat plein de la slide) --
+    pan_x = MARGIN + gauche_w + 0.24
+    pan_w = BORD_DROIT - pan_x
+    pad = 0.16
+    tw = pan_w - 2 * pad
+
+    chip_l, chip_h = 1.42, 0.22
+    accroche = ("Un sponsor qui achète un audit mais ne portera pas la cible est un critère "
+                "de non-engagement, pas un aléa.")
+    nuance = ("Le refus de mission reste un point ouvert du cadrage ; le test d'engagement, "
+              "lui, est acté — il conditionne la signature.")
+    refus = ["Automatiser un processus mal conçu",
+             "Livrer une plateforme techniquement bonne mais peu adoptée",
+             "Séparer transformation organisationnelle et technique"]
+    risques = [
+        ("deskilling-risk — perte de la capacité tacite",
+         "L'équipe saurait-elle reprendre la main une semaine sans l'agent ?"),
+        ("management-posture-risk — incitations RH contraires",
+         "Qu'est-ce qui, dans vos grilles d'évaluation, récompense encore le comportement "
+         "qu'on vient de décourager ?"),
+    ]
+    b1_h = (chip_h + 0.06 + _lignes(accroche, tw, 9) * lh(9) + 0.04
+            + _lignes(nuance, tw, 7.5) * lh(7.5))
+    b2_h = (lh(7) + 0.03 + sum(_lignes(r, tw - 0.14, 7) for r in refus) * lh(7)
+            + (len(refus) - 1) * 0.03)
+    b3_h = (lh(7) + 0.03
+            + sum(_lignes(a, tw, 7) + _lignes(b, tw, 7) for a, b in risques) * lh(7)
+            + (len(risques) - 1) * 0.05)
+
+    # Panneau dimensionné à SON contenu (le mou part dans les interlignes de
+    # blocs, jamais en vide au pied du panneau).
+    gap_int = 0.14
+    contenu_h = 2 * pad + b1_h + b2_h + b3_h + 2 * gap_int
+    slack = region_h - contenu_h
+    if slack > 0:
+        gap_int += min(slack / 2.0, 0.18)
+        contenu_h = 2 * pad + b1_h + b2_h + b3_h + 2 * gap_int
+    pan_h = min(region_h, contenu_h)
+    pan_top = region_top + max(0.0, (region_h - pan_h) / 2.0)
+
+    D.add_rect(s, pan_x, pan_top, pan_w, pan_h, fill=NAVY, rounded=True, radius=0.08)
+    y = pan_top + pad
+    D.add_rect(s, pan_x + pad, y, chip_l, chip_h, fill=D.PALETTE[2], rounded=True, radius=0.5)
+    D.add_text(s, pan_x + pad, y, chip_l, chip_h, [
+        ("NON-ENGAGEMENT", dict(size=7, bold=True, color="#ffffff", align=PP_ALIGN.CENTER)),
+    ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+    D.add_text(s, pan_x + pad, y + chip_h + 0.06, tw, b1_h - chip_h - 0.06, [
+        (accroche, dict(size=9, bold=True, color="#ffffff", line_spacing=1.15)),
+        (nuance, dict(size=7.5, color="#c7cbe0", space_before=3, line_spacing=1.25)),
+    ])
+
+    y += b1_h + gap_int
+    D.add_rect(s, pan_x + pad, y - gap_int / 2, tw, 0.012, fill="#3a4568")
+    D.add_text(s, pan_x + pad, y, tw, lh(7), [
+        ("CE QU'ON REFUSE DE FAIRE — LES ANTI-PATTERNS DU CADRAGE",
+         dict(size=7, bold=True, color="#8891b3")),
+    ])
+    ry = y + lh(7) + 0.03
+    for r in refus:
+        n = _lignes(r, tw - 0.14, 7)
+        D.add_dot(s, pan_x + pad + 0.02, ry + 0.04, 0.05, ACCENT)
+        D.add_text(s, pan_x + pad + 0.14, ry, tw - 0.14, n * lh(7), [
+            (r, dict(size=7, color="#ffffff", line_spacing=1.25)),
+        ])
+        ry += n * lh(7) + 0.03
+
+    y += b2_h + gap_int
+    D.add_rect(s, pan_x + pad, y - gap_int / 2, tw, 0.012, fill="#3a4568")
+    D.add_text(s, pan_x + pad, y, tw, lh(7), [
+        ("CE QU'ON NE RÉSOUT PAS — MAIS QU'ON CONSIGNE ET QU'ON POSE",
+         dict(size=7, bold=True, color="#8891b3")),
+    ])
+    ry = y + lh(7) + 0.03
+    for nom, question in risques:
+        n = _lignes(nom, tw, 7) + _lignes(question, tw, 7)
+        D.add_text(s, pan_x + pad, ry, tw, n * lh(7), [
+            (nom, dict(size=7, bold=True, color=D.PALETTE[3], line_spacing=1.25)),
+            (question, dict(size=7, color="#c7cbe0", line_spacing=1.25)),
+        ])
+        ry += n * lh(7) + 0.05
+
+    D.add_rect(s, MARGIN, band_top, CONTENT_W, band_h, fill=TRACK, rounded=True, radius=0.08)
+    D.add_text(s, MARGIN + band_pad + 0.02, band_top + band_pad, CONTENT_W - 0.28,
+               band_h - 2 * band_pad, [
+        ("LE CRITÈRE DE SORTIE EST LE MIROIR DES CONDITIONS D'ENTRÉE",
+         dict(size=7, bold=True, color=MUTED)),
+        (sortie, dict(size=7, color=NAVY, space_before=3, line_spacing=1.25)),
+    ])
+    return s
+
+
 # ---------------------------------------------------------------- slide 9
 # Formes inspirées de la slide d'exemple « Une approche contextualisée » du
 # template : colonne par étape avec badge + bandeau titre + ligne de
@@ -2586,7 +2889,7 @@ def slide_architecture_agents(prs):
                        "Onze workflows outillés, un seul bloquant : le gate confidentialité les traverse tous",
                        color=D.PALETTE[3])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.5, [
-        ("Un mandat unique par agent, regroupés par étape. Le gate confidentialité est le seul "
+        ("Un mandat unique par workflow, regroupés par étape. Le gate confidentialité est le seul "
          "à pouvoir arrêter la chaîne — transversal, il précède tout usage d'un modèle IA sur "
          "donnée client.", dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
     ])
@@ -2635,7 +2938,7 @@ def slide_architecture_agents(prs):
         D.add_card(s, x, top0, w, card_h, color)
         D.add_text(s, x + pad, top0 + 0.12, w - 2 * pad, 0.36, [
             (nom, dict(size=8, bold=True, color=color, line_spacing=1.0)),
-            (f"{len(agents)} agent" + ("s" if len(agents) > 1 else ""),
+            (f"{len(agents)} workflow" + ("s" if len(agents) > 1 else ""),
              dict(size=6.5, color=MUTED, space_before=1)),
         ])
         blocs = [0.16 + _lignes(role, usable_col, 6.5) * (6.5 * 1.15 / 72.0)
@@ -2690,6 +2993,11 @@ def build():
                    D.PALETTE[0], "mountains", seed=0)
     slide_mission(prs)
     slide_pourquoi_contexte(prs)
+    # 2026-09-01 : « qui achète, contre quoi » — la section §Positionnement &
+    # achat du cadrage (l.36) fait foi pour le deck depuis la v2.3 sans y avoir
+    # jamais été redescendue. Vient APRÈS les 3 déclencheurs, qu'elle prolonge
+    # (le déclencheur ① et l'écart 80/30 y sont repris comme réponse d'achat).
+    slide_qui_achete(prs)
 
     # === Chapitre 02 — PERSONAS : qui l'on transforme ===
     slide_chapitre(prs, "02", "Personas",
@@ -2774,6 +3082,10 @@ def build():
     # v2.6 (point ②) : les activités humaines de la démarche, avec/sans l'outil
     # — juste après le fil humain, qu'elle décline en registres d'activités.
     slide_activites_humaines(prs)
+    # 2026-09-01 : conditions de réussite et non-engagement — juste après le fil
+    # humain et ses activités, dont elle prolonge le « testé dès l'intake » : ce
+    # que la mission exige du client, et ce que son absence déclenche.
+    slide_conditions_reussite(prs)
     # v2.5 (chantier ④) : déplacées de la Proposition (schéma, livrables) et de
     # l'IA (inventaire des agents) vers la Démarche.
     slide_schema_fonctionnement(prs)
