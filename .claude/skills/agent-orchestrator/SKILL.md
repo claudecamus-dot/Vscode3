@@ -13,8 +13,8 @@ d'office, stats plan-vs-réel par playbook/agent, `prudence` issu du diagnostic 
 `docs/wiki/technical/agents-supervision.md` (tableau de bord humain des mêmes données) et
 `.claude/orchestration/playbooks/` (workflows récurrents — format dans `playbooks/FORMAT.md`).
 
-<!-- SOCLE-PROVENANCE: socle : b5d29c5 du 2026-09-01 -->
-> **Socle généré** — tout ce qui suit `## Méthode` vient du hub de supervision (`b5d29c5`, 2026-09-01) et sera **réécrit** à la prochaine propagation.
+<!-- SOCLE-PROVENANCE: socle : f2490bf du 2026-09-01 -->
+> **Socle généré** — tout ce qui suit `## Méthode` vient du hub de supervision (`f2490bf`, 2026-09-01) et sera **réécrit** à la prochaine propagation.
 > Le chapitre « Portée sur ce projet » ci-dessous, lui, n'est jamais réécrit : c'est le travail local.
 
 ## Portée sur ce projet
@@ -32,6 +32,24 @@ le compter comme disponible surestimerait ce que ce projet sait faire.
 réelle du pipeline, jamais une reconstruction maison —, le rendre ENTIER, et le faire
 VALIDER par lui avant tout « fait ». Règle née ici le 2026-07-22 d'une boucle non
 convergente : le même modèle validait ce qu'il produisait.
+
+**Vérifications obligatoires propres à ce dépôt** — elles s'ajoutent à celles du socle :
+
+| Si le plan touche… | Alors le plan contient… |
+| --- | --- |
+| `pptx_export.py` / `pptx_deck.py` | `pptx-verify` (rendu réel — python-pptx est un parseur tolérant) |
+| Template Jinja / CSS / JS | Screenshot via `run-dev-server` (pas seulement pytest) |
+| Fin d'incrément / avant commit | `revue-increment` en étape terminale |
+
+**`cycle-produit-bmad`** (cycle produit BMAD complet, généré depuis le CSV) est **jamais
+joué** et reste sur demande explicite uniquement.
+
+**Conception** : `docs/reflexions/agent-orchestrateur.md`.
+
+| Playbook | Statut local |
+| --- | --- |
+| `dev-verifie`, `export-ppt-verifie`, `revue-design-parallele` | Éprouvés |
+| `cycle-produit-bmad` | Jamais joué — sur demande explicite uniquement |
 
 ## Méthode — 5 étapes
 
