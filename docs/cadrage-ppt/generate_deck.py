@@ -22,8 +22,10 @@ annoncée par le plan v2.5, puis ambition A/B/C et lien SI) · 09 KPI (la preuve
 « l'IA amplifie l'organisation, elle n'est jamais la réponse à un problème
 d'abord organisationnel ») ; la Démarche vient APRÈS l'IA pour que le
 « comment » enchaîne directement sur l'outillage puis la preuve.
-L'executive summary (slide 2) reprend le même fil en 4 blocs
-POURQUOI/QUOI/COMMENT/RÉSULTAT avec renvoi aux chapitres.
+L'executive summary (slide 2) reprend le même fil en 5 blocs
+OFFRE/POURQUOI/QUOI/COMMENT/RÉSULTAT avec renvoi aux chapitres (v2.10 : le
+bloc OFFRE, qui référence le chapitre 01, manquait — le sommaire ne
+mentionnait aucun chapitre avant "02–04").
 
 v2.6 : le sous-chapitre « Exemples » de la Proposition (séparateur + 3 slides
 illustratives) est SUPPRIMÉ à la demande — git garde l'historique (v2.5) ; en
@@ -78,6 +80,15 @@ d'accueil. À leur place, deux slides neuves :
     `slide_iap_contexte_client` (topologie, ch. 08), ni `slide_export_markdown`
     (bifurcation, ch. 06) — renvois littéraux « décliné chapitre 07 » et
     « déployé chapitre 08 » portés sur la slide.
+
+v2.10 (2026-09-03) : le chapitre 01 · Exec summary (slide_pitch_iap +
+slide_demarche_avec_sans_agentic) était déjà groupé par son propre intercalaire
+(`slide_chapitre(prs, "01", ...)`), mais restait invisible du sommaire
+(`slide_executive_summary`) — sa rangée POURQUOI/QUOI/COMMENT/RÉSULTAT ne
+renvoyait qu'aux chapitres 02 à 09. Un bloc OFFRE, accroché en tête de rangée
+(même style « accent » — fond plein — que RÉSULTAT, pour border la rangée :
+l'offre ouvre, la preuve ferme), renvoie maintenant au chapitre 01 et reprend
+au mot près les deux sous-titres des slides qu'il annonce.
 
 Séparateurs : chapitres = intercalaire teardrop (photo + numéro, layout dédié) ;
 sous-chapitres = `slide_sous_chapitre` (bloc-titre léger, sans photo ni numéro —
@@ -661,12 +672,21 @@ def slide_executive_summary(prs):
     headline_h = 0.62
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, headline_h, [
         ("Transformer l'infrastructure en plateforme opérée comme un produit, ET traiter "
-         "structurellement le gaspillage qui l'en empêche — le deck suit le fil : pourquoi, "
-         "qui, quoi, comment, avec quoi, la preuve.",
+         "structurellement le gaspillage qui l'en empêche — le deck suit le fil : l'offre, "
+         "pourquoi, qui, quoi, comment, avec quoi, la preuve.",
          dict(size=D.TYPE["small"], color=NAVY, italic=True, line_spacing=1.3)),
     ])
 
+    # v2.10 : bloc OFFRE ajouté en tête de rangée (arbitrage utilisateur) — le
+    # sommaire ne référençait aucun chapitre avant "Chapitres 02–04" alors que
+    # le chapitre 01 · Exec summary (slide_pitch_iap + slide_demarche_avec_sans_agentic,
+    # juste après CETTE slide) restait invisible ici. Accent (fond plein) comme
+    # RÉSULTAT : les deux bornent la rangée (l'offre ouvre, la preuve ferme).
     items = [
+        ("OFFRE", NAVY, "Trois faces à ne pas confondre, une démarche avec ou sans IA.",
+         "Leurs douleurs, notre outillage de consultant, l'agentic chez eux en option — "
+         "déclinés sur les trois mêmes temps, outillés ou non.",
+         "Chapitre 01"),
         ("POURQUOI", D.PALETTE[0], "L'infra subie coûte de plus en plus cher.",
          "Trois déclencheurs, quatre personas interrogés séparément, des douleurs "
          "mesurables plutôt que des plaintes.",
@@ -695,13 +715,13 @@ def slide_executive_summary(prs):
     # étages : label (0.24) + claim + desc + renvoi chapitres (0.26) + respirations
     card_h = 0.14 + 0.24 + claim_h + 0.10 + desc_h + 0.14 + 0.26 + 0.14
     top0 = CONTENT_TOP + headline_h + 0.30
-    # bandeau de fond commun (pattern 7) : regroupe les 4 blocs en un seul
+    # bandeau de fond commun (pattern 7) : regroupe les 5 blocs en un seul
     # « bloc de lecture » — le fil se lit d'un trait, flèches dans les inter-colonnes.
     D.add_rect(s, MARGIN - 0.08, top0 - 0.16, CONTENT_W + 0.16, card_h + 0.32,
                fill=TRACK, rounded=True, radius=0.06)
     for i, (etape, color, claim, desc, renvoi) in enumerate(items):
         x, w = col_x(i, n)
-        accent = (etape == "RÉSULTAT")   # « un sur N » : la preuve
+        accent = etape in ("OFFRE", "RÉSULTAT")   # bornent la rangée : l'offre ouvre, la preuve ferme
         if accent:
             D.add_rect(s, x, top0, w, card_h, fill=NAVY, rounded=True, radius=0.08)
         else:
