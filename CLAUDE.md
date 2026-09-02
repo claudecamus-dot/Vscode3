@@ -23,9 +23,11 @@ Cadrage BMAD IAP : le livrable est un deck de synthèse (`docs/cadrage-ppt/`,
 ## Claude Code — configuration du projet
 
 - `.claude/settings.json` (versionné) : garde-fou git destructif, rappel de vérif
-  réelle avant commit (adapter `_WATCHED_PREFIXES`/`_VERIF_BASH` dans
-  `.claude/hooks/warn_verif_before_commit.py` au canal de CE projet), gate
-  orchestrateur, scan supervision en SessionStart, deny rules secrets.
+  réelle avant commit (le hook `.claude/hooks/warn_verif_before_commit.py` est
+  générique — SOURCE publiée par le hub dans le kit agentic — et lit le canal de
+  CE projet dans `.claude/warn_verif_before_commit.json` ; adapter ce JSON, pas
+  le hook, depuis le 2026-09-02), gate orchestrateur, scan supervision en
+  SessionStart, deny rules secrets.
 - `.claude/skills/` : orchestrateur (compose et exécute les plans multi-étapes),
   superviseur (diagnostic étage 2), revue-increment (definition of done),
   veille-agentic (état de l'art), audit-technique.

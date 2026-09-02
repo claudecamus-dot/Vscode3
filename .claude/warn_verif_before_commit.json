@@ -1,0 +1,6 @@
+{
+  "_comment": "Configuration du hook .claude/hooks/warn_verif_before_commit.py, propre a CE depot (VSCode3, generateur de deck python-pptx). Le hook lui-meme est generique et publie tel quel dans le kit agentic du hub de supervision (export_agentic.GENERIQUE) : ce fichier, lui, ne l'est pas et ne doit pas etre recopie ailleurs sans adaptation. Pose le 2026-09-02 (decision d'architecture : generaliser le hook, pas le sortir de VSCode3) pour restituer exactement le perimetre qui etait fige en dur avant correction.",
+  "watched_prefixes": ["docs/cadrage-ppt/"],
+  "verif_bash": ["pytest", "-m pytest", "test_generate_deck"],
+  "verif_skill": ["pptx-verify", "revue-increment"]
+}
