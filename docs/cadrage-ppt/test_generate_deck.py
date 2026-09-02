@@ -93,22 +93,29 @@ def main():
     prs = Presentation(out)
 
     print("Structure :")
-    check(len(prs.slides) == 42, f"42 slides — reçu {len(prs.slides)}")
+    check(len(prs.slides) == 46, f"46 slides — reçu {len(prs.slides)}")
     check(not problemes, f"géométrie propre (verifier_geometrie) — {len(problemes or [])} problème(s)")
     check(os.path.exists(out) and os.path.getsize(out) > 500_000,
           f"fichier .pptx écrit, taille plausible ({os.path.getsize(out) if os.path.exists(out) else 0} octets)")
 
     print("Cadres photo bien calés (chapitres — layout '50 - Chapitre', teardrop) :")
-    # 8 chapitres (v2.7) : Contexte(4) · Personas(8) · Besoins & douleurs(11) ·
-    # Proposition(14) · IA(18) · Démarche(25) · Outillage IAP(33) · KPI(37)
+    # 9 chapitres (v2.9) : Exec summary(3) · Contexte(7) · Personas(11) ·
+    # Besoins & douleurs(14) · Proposition(17) · IA(21) · Démarche(28) ·
+    # Outillage IAP(37) · KPI(41)
     # (v2.6 : le sous-chapitre « Exemples » — séparateur + 3 slides — est
     # supprimé, d'où IA/Démarche qui remontent de 4 ; la Démarche gagne les
     # activités humaines avec/sans l'outil, et l'Outillage IAP ouvre sur le
     # schéma d'architecture en contexte client — 3 slides de contenu.
-    # v2.7 : +1 dans le Contexte (« qui achète, contre quoi », slide 7) et +1
-    # dans la Démarche (« conditions de réussite », slide 29) — tout ce qui
-    # suit décale d'autant.)
-    chapitres = [4, 8, 11, 14, 18, 25, 33, 37]
+    # v2.7 : +1 dans le Contexte (« qui achète, contre quoi ») et +1 dans la
+    # Démarche (« conditions de réussite ») — tout ce qui suit décale d'autant.
+    # v2.8 : nouveau chapitre 01 « Exec summary » en OUVERTURE du deck (juste
+    # après le sommaire, avant slide_vision) — 3 slides de plus (2 de contenu +
+    # 1 intercalaire), tous les chapitres suivants glissent de +1.
+    # v2.9 : le chapitre 01 garde 2 slides de contenu (le pitch en 3 faces et la
+    # démarche avec/sans agentic remplacent l'offre et sa synthèse) mais le grand
+    # schéma du parcours de mission déménage dans la Démarche — +1 slide au total
+    # (45 -> 46), donc Outillage IAP et KPI glissent seuls de +1.)
+    chapitres = [3, 7, 11, 14, 17, 21, 28, 37, 41]
     for idx in chapitres:
         slide = prs.slides[idx - 1]
         cadre = gen._find_frame_by_geom(slide.slide_layout.shapes, "teardrop")
@@ -126,21 +133,22 @@ def main():
                   f"slide {idx} : image clippée au bon preset (teardrop)")
 
     print("Cadre photo bien calé (slide vision — layout 'cadre blanc', round2DiagRect) :")
-    slide_vision = prs.slides[2]
+    # v2.8 : slide_vision décale de 3 -> 6 (chapitre 01 Exec summary inséré avant elle).
+    slide_vision = prs.slides[5]
     cadre_vision = gen._find_frame_in_group(
         slide_vision.slide_layout.shapes, "Google Shape;212;p17", "Google Shape;213;p17")
     images_vision = _images(slide_vision)
-    check(len(images_vision) == 1, f"slide 3 (vision) : exactement 1 image posée (reçu {len(images_vision)})")
-    check(cadre_vision is not None, "slide 3 (vision) : cadre 'cadre blanc' trouvé sur le layout")
+    check(len(images_vision) == 1, f"slide 6 (vision) : exactement 1 image posée (reçu {len(images_vision)})")
+    check(cadre_vision is not None, "slide 6 (vision) : cadre 'cadre blanc' trouvé sur le layout")
     if images_vision and cadre_vision:
         pic = images_vision[0]
         l, t, w, h, _ = cadre_vision
         check((pic.left, pic.top, pic.width, pic.height) == (l, t, w, h),
-              f"slide 3 (vision) : image alignée exactement sur le cadre "
+              f"slide 6 (vision) : image alignée exactement sur le cadre "
               f"(image=({pic.left},{pic.top},{pic.width},{pic.height}) vs cadre=({l},{t},{w},{h}))")
         g = pic._element.spPr.find(qn("a:prstGeom"))
         check(g is not None and g.get("prst") == "round2DiagRect",
-              "slide 3 (vision) : image clippée au bon preset (round2DiagRect)")
+              "slide 6 (vision) : image clippée au bon preset (round2DiagRect)")
 
     print("Aucun cadre laissé vide (texte gabarit « ici mettre une Photo » résiduel) :")
     texte_complet = "\n".join(
