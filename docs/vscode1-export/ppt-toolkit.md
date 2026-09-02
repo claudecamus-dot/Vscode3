@@ -4,23 +4,29 @@
 > fichier VSCode1 ; celui-ci est une copie de référence, à re-synchroniser
 > manuellement si l'original évolue.
 >
-> ⚠️ **EXCEPTION — `stock_images.py` : VSCode3 est EN AVANCE, ne pas
-> re-synchroniser depuis VSCode1.** La copie locale
-> (`.claude/skills/pptx-framed-image/scripts/stock_images.py`, 90 l) porte une garde
-> de sécurité ajoutée le 2026-09-01 et absente de la source (VSCode1, 70 l) :
-> `_SCHEMES_AUTORISES` refuse les URL non-http(s) renvoyées par Openverse
-> (`urlopen` suit `file://` — vérifié par exécution : une entrée à `url` non-http
-> faisait copier un fichier local arbitraire dans le cache d'images du deck) et
-> `_TAILLE_MAX` plafonne le téléchargement à 25 Mo, là où `r.read()` était sans borne.
-> Mesuré le 2026-09-01 sur la flotte (`grep -c _SCHEMES_AUTORISES`) : **1 copie sur 7**
-> porte la garde, et c'est celle-ci. Appliquer la doctrine de resynchro ci-dessus la
-> remplacerait par la version vulnérable.
+> ✅ **EXCEPTION LEVÉE le 2026-09-02 — `stock_images.py` n'est plus une divergence.**
+> Elle avait été posée le 2026-09-01 : VSCode3 portait seul une garde de sécurité
+> (`_SCHEMES_AUTORISES`, `_TAILLE_MAX`) absente des six autres copies, et la doctrine
+> de resynchro ci-dessus l'aurait remplacée par la version vulnérable — **1 copie sur 7**
+> portait la garde, et c'était celle-ci.
 >
-> **Avant TOUTE resynchro depuis VSCode1** (ce fichier comme les scripts du kit) :
-> `diff` d'abord, la copie peut être en avance. Lever cette exception quand la garde
-> aura été remontée au hub (VScode5 `.claude/skills/pptx-framed-image/` puis
-> `export_agentic.py`) et redescendue dans VSCode1 — remontée demandée le 2026-09-01,
-> non encore appliquée.
+> La condition de levée que cette note s'était fixée — « quand la garde aura été remontée
+> au hub puis redescendue dans VSCode1 » — est remplie et **mesurée avant d'écrire** :
+> `diff VSCode1/... VSCode3/...` ne rend rien, les deux fichiers font 204 lignes et
+> portent les mêmes 9 marqueurs de garde ; les 6 dépôts de la flotte sont alignés sur le
+> hub et commités.
+>
+> Et la garde remontée est **plus large que celle qui était ici** : au filtre de schéma
+> et au plafond de 25 Mo s'ajoutent la résolution de l'hôte (refus des adresses de
+> bouclage, privées, link-local, réservées, multicast, IPv4 mappée en IPv6 comprise, en
+> fail-closed sur un hôte non résolvable) et la re-validation de **chaque saut de
+> redirection 3xx** — `urlopen` les suivait seul, donc une URL publique répondant
+> `302 Location: http://127.0.0.1/` traversait la garde intacte. Re-synchroniser depuis
+> VSCode1 ne fait donc plus perdre de sécurité : cela en apporte.
+>
+> **La règle générale, elle, ne se lève pas.** Avant TOUTE resynchro depuis VSCode1 (ce
+> fichier comme les scripts du kit) : `diff` d'abord, la copie peut être en avance. C'est
+> cette exception-ci qui s'éteint, pas la prudence qui l'avait fait naître.
 
 # Kit « export PPT de restitution » — portable sur d'autres projets
 
