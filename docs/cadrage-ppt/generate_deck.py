@@ -90,6 +90,33 @@ renvoyait qu'aux chapitres 02 à 09. Un bloc OFFRE, accroché en tête de rangé
 l'offre ouvre, la preuve ferme), renvoie maintenant au chapitre 01 et reprend
 au mot près les deux sous-titres des slides qu'il annonce.
 
+v2.11 (2026-09-03) : deux défauts graphiques signalés par relecture réelle
+(vraie taille de deck, PAS le self-check géométrique) — départagés en
+comparant le rendu LibreOffice ET un rendu PowerPoint réel (COM) sur les
+mêmes slides, pour ne corriger que ce qui existe dans l'artefact que
+l'utilisateur ouvre :
+  - Slide 1 (couverture) : le trait qui semble mal rejoindre le coin arrondi
+    du bandeau version est un ARTEFACT DE RENDU LIBREOFFICE (groupe pivoté à
+    180° du template `template-octo.pptx`, composé différemment par les deux
+    moteurs) — absent du rendu PowerPoint réel. Rien à corriger côté
+    générateur ; toucher le template partagé (masters/layouts hors périmètre
+    de ce script) aurait été le mauvais geste pour un défaut qui n'existe pas
+    dans le livrable réel.
+  - Slide 4 (`slide_pitch_iap`) : DÉFAUT RÉEL, confirmé dans les deux rendus.
+    La carte « CE QU'ILS VIVENT » a 4 puces (4 personas) quand les 2 autres
+    cartes n'en ont que 3, mais le budget vertical `dispo` était partagé sans
+    tenir compte du nombre d'items — la 4e puce débordait sous le chip de
+    pied, dont le fond plein la masquait entièrement (seul son disque de
+    puce dépassait, visible comme une virgule rouge au-dessus du bouton).
+    Corrigé par une taille/interligne de puce ADAPTATIVE (calculée par carte
+    selon ce qui tient réellement dans `dispo`, avec marge de sécurité),
+    plutôt que par un chiffre choisi à la main — corrige la classe de bug,
+    pas seulement cette instance. Le mécanisme d'anomalies de build
+    (`_ANOMALIES_BUILD`, jusque-là réservé aux photos manquantes) est
+    généralisé à ce type de débordement : si aucune taille ne suffit même au
+    plancher, le build le signale désormais comme un vrai défaut au lieu
+    d'un print perdu — c'est l'évolution du check graphique demandée.
+
 Séparateurs : chapitres = intercalaire teardrop (photo + numéro, layout dédié) ;
 sous-chapitres = `slide_sous_chapitre` (bloc-titre léger, sans photo ni numéro —
 sans appelant depuis la v2.6, machinerie conservée).
@@ -368,10 +395,15 @@ _SCENE_REPLI = {
     "wheatfield": "meadow",  # champ ouvert, tons chauds proches
 }
 
-# Anomalies d'image relevees pendant le build, fusionnees dans `problemes` par
-# build(). Sans cela, un cadre introuvable ou un repli impossible ne sortait
-# qu'en print : le build annoncait « GEOMETRIE: OK » avec des photos manquantes.
-_ANOMALIES_IMAGE = []
+# Anomalies relevees pendant le build (pas seulement d'image, malgre le nom
+# historique), fusionnees dans `problemes` par build(). Sans cela, un defaut
+# ne sortait qu'en print : le build annoncait « GEOMETRIE: OK » avec des
+# photos manquantes (cadre introuvable/repli impossible) OU, depuis v2.11,
+# avec un contenu qui deborde silencieusement sous un element de pied de
+# carte (cf. slide_pitch_iap : le self-check geometrique de pptx_deck.py ne
+# mesure QUE les formes que NOUS dessinons hors-cadre — pas un debordement de
+# texte dans son propre panneau).
+_ANOMALIES_BUILD = []
 
 
 def _remplir_cadre(slide, cadre, scene, seed=0):
@@ -384,7 +416,7 @@ def _remplir_cadre(slide, cadre, scene, seed=0):
     if cadre is None:
         msg = f"cadre introuvable pour la scène '{scene}' — image non posée"
         print(f"  {msg}")
-        _ANOMALIES_IMAGE.append(msg)
+        _ANOMALIES_BUILD.append(msg)
         return
     left, top, width, height, geom = cadre
     aspect = Emu(width).inches / Emu(height).inches
@@ -412,7 +444,7 @@ def _remplir_cadre(slide, cadre, scene, seed=0):
                 # defaut remonte dans `problemes`, il ne disparait pas.
                 msg = f"aucune image pour '{scene}' : Openverse KO ({e}) et repli KO ({e2})"
                 print(f"  {msg}")
-                _ANOMALIES_IMAGE.append(msg)
+                _ANOMALIES_BUILD.append(msg)
                 return
     place_image_in_frame(slide, path, left, top, width, height, geom=geom)
 
@@ -991,8 +1023,8 @@ def slide_pitch_iap(prs):
         ("CE QU'ILS VIVENT", D.PALETTE[2], "alerte",
          "Douleurs & besoins de ces organisations",
          "Quatre personas interrogés séparément, huit familles de gaspillage.",
-         ["Infra & RUN — RUN subi : mêmes incidents, BUILD sacrifié à l'astreinte",
-          "Utilisateur applicatif — pas de self-service : guichet, puis contournements",
+         ["Infra & RUN — incidents subis en boucle, BUILD sacrifié à l'astreinte",
+          "Utilisateur applicatif — sans self-service : guichet, contournements",
           "Management — expert devenu manager malgré lui, reporting miroir",
           "Sponsor — pression à « mettre de l'IA » sans cas d'usage démontré"],
          "Détaillé aux chapitres 03 et 04"),
@@ -1021,9 +1053,9 @@ def slide_pitch_iap(prs):
     _, cw = col_x(0, n)
     usable = cw - 2 * pad
     picto_d = 0.30
-    item_size = 7
-    item_lh = item_size * 1.2 / 72.0
     chip_h = 0.34
+    ITEM_SIZE_DEFAUT = 7
+    ITEM_SIZE_PLANCHER = 6.25   # jamais en dessous : déjà la taille du kicker/chip de cette slide
 
     # Étages communs aux 3 cartes (hauteurs dérivées du contenu le plus long) —
     # les titres, accroches et pieds s'alignent d'une carte à l'autre, sinon la
@@ -1059,14 +1091,46 @@ def slide_pitch_iap(prs):
         # pied de carte) : les 3 cartes n'ont pas le même nombre de puces, leurs
         # pieds doivent malgré tout s'aligner. Défaut « panneau flottant » évité
         # par construction, pas par relecture.
-        items_h = [_lignes(t, usable - 0.14, item_size) * item_lh + 0.02 for t in items]
         pied_top = cards_top + card_h - 0.14 - chip_h
         dispo = pied_top - 0.12 - y
+        # v2.11 : la taille de puce n'était pas adaptée au NOMBRE de puces —
+        # une carte à 4 items (ex. "CE QU'ILS VIVENT", 4 personas) débordait
+        # silencieusement sous le chip du pied, dont le fond plein masquait le
+        # dernier item entier (seule sa puce ronde dépassait, visible comme un
+        # petit disque coloré au-dessus du chip — repéré au rendu réel, pas au
+        # self-check géométrique qui ne mesurait pas ce débordement). On
+        # réduit taille puis interligne, PALIER PAR PALIER, jusqu'à tenir dans
+        # `dispo` avec une marge de sécurité — jamais en dessous du plancher.
+        marge = 0.03
+        item_size = item_ls = items_h = None
+        for size in (7, 6.75, 6.5, 6.25):
+            for ls in (1.2, 1.1, 1.0):
+                lh = size * ls / 72.0
+                h = [_lignes(t, usable - 0.14, size) * lh + 0.02 for t in items]
+                total = sum(h) + max(0, len(items) - 1) * 0.06
+                if total <= dispo - marge:
+                    item_size, item_ls, items_h = size, ls, h
+                    break
+            if item_size:
+                break
+        if item_size is None:
+            # Rien ne tient même au plancher : dégrader plutôt que planter,
+            # et le signaler comme une vraie anomalie de build (pas un print
+            # perdu) — c'est la clause que "faire évoluer le check graphique"
+            # demandait : un débordement de ce type n'est plus silencieux.
+            item_size, item_ls = ITEM_SIZE_PLANCHER, 1.0
+            lh = item_size * item_ls / 72.0
+            items_h = [_lignes(t, usable - 0.14, item_size) * lh + 0.02 for t in items]
+            _ANOMALIES_BUILD.append(
+                f"slide_pitch_iap carte {i} ('{label}') : {len(items)} puces ne tiennent pas "
+                f"dans la hauteur disponible ({dispo:.2f}in) même à la taille plancher "
+                f"({ITEM_SIZE_PLANCHER}pt) — raccourcir le texte ou réduire le nombre d'items."
+            )
         gap = max(0.06, (dispo - sum(items_h)) / max(1, len(items) - 1))
         for t, ih in zip(items, items_h):
             D.add_rect(s, x + pad + 0.01, y + 0.045, 0.06, 0.06, fill=color, rounded=True, radius=0.5)
             D.add_text(s, x + pad + 0.14, y, usable - 0.14, ih, [
-                (t, dict(size=item_size, color=NAVY, line_spacing=1.2)),
+                (t, dict(size=item_size, color=NAVY, line_spacing=item_ls)),
             ])
             y += ih + gap
 
@@ -3781,7 +3845,7 @@ def build():
     slide_maturite(prs)
     slide_kpis_exemple(prs)
 
-    problemes = D.verifier_geometrie(prs) + _ANOMALIES_IMAGE
+    problemes = D.verifier_geometrie(prs) + _ANOMALIES_BUILD
     if problemes:
         print(f"GEOMETRIE: {len(problemes)} probleme(s)")
         for p in problemes:
