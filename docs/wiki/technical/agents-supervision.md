@@ -8,7 +8,7 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-09-03T09:46:11+02:00 · **20 sessions** (transcripts) · **33** invocations de skills · **60** lancements de sous-agents.
+Dernier scan : 2026-09-03T09:54:49+02:00 · **20 sessions** (transcripts) · **33** invocations de skills · **61** lancements de sous-agents.
 
 ## Skills — usage réel
 
@@ -33,6 +33,7 @@ Dernier scan : 2026-09-03T09:46:11+02:00 · **20 sessions** (transcripts) · **3
 | `ppt-designer` | 16 | 2026-07-21 | 2026-09-02 |
 | `Explore` | 7 | 2026-07-21 | 2026-09-01 |
 | `Plan` | 1 | 2026-07-21 | 2026-07-21 |
+| `agent-supervisor` | 1 | 2026-09-03 | 2026-09-03 |
 | `claude-code-guide` | 1 | 2026-07-21 | 2026-07-21 |
 
 ## Jamais utilisés
@@ -62,7 +63,7 @@ _Consommés en lisant/exécutant leurs `scripts/`, ou via un sous-agent qui les 
 ## TODO agents (constats automatiques)
 
 1. **Skills projet sans usage** : `audit-technique`, `veille-agentic` — vérifier pertinence et déclencheurs.
-2. **Skills en sommeil (>30 j sans usage)** : `Plan`, `agent-supervisor`, `artifact-design`, `bmad-agent-pm`, `claude-code-guide`, `pptx-deck`, `pptx-verify`, `restitution-deck-design`, `revue-increment`, `roadmap-keeper`.
+2. **Skills en sommeil (>30 j sans usage)** : `Plan`, `artifact-design`, `bmad-agent-pm`, `claude-code-guide`, `pptx-deck`, `pptx-verify`, `restitution-deck-design`, `revue-increment`, `roadmap-keeper`.
 
 ## Arbitrages enregistrés
 
