@@ -135,6 +135,26 @@ moteurs de rendu (donc jamais des artefacts LibreOffice comme la slide 1) :
     au texte réellement posé sur le placeholder de couverture — ce test a
     lui-même détecté l'écart en cours d'écriture de cette entrée.
 
+v2.13 (2026-09-03) : diagnostic étage 2 rafraîchi (2 jours périmé) a trouvé
+`content_slide(prs, kicker, title, color=None)` — sur 34 vrais appels
+(37 occurrences moins 3 en commentaire), TOUS passent déjà `color=`
+explicitement depuis ce module. Le repli `color or ACCENT` ne protégeait
+donc plus personne : sa seule fonction résiduelle était de laisser un futur
+appel oublié retomber en cyan silencieux, exactement le défaut de v2.12.
+`color` devient un paramètre obligatoire (zéro régression mesurée, 34/34
+appels déjà conformes) — un appel qui l'omettrait échoue maintenant au
+build (`TypeError`), pas au rendu.
+
+`slide_executive_summary` DÉMÉNAGE (arbitrage utilisateur 2026-09-03) de
+juste après la couverture à juste après l'intercalaire du chapitre 01 —
+modifié manuellement par l'utilisateur sur l'export, reporté dans `build()`
+pour que toute régénération le conserve.
+
+Brouillon `slide_synthese_pourquoi_quoi_comment` ajouté (demande
+utilisateur) mais **NON câblé dans `build()`** — généré et vérifié en
+isolation pour validation avant intégration, sur consigne explicite
+("pour l'instant ne génère que cette slide").
+
 Séparateurs : chapitres = intercalaire teardrop (photo + numéro, layout dédié) ;
 sous-chapitres = `slide_sous_chapitre` (bloc-titre léger, sans photo ni numéro —
 sans appelant depuis la v2.6, machinerie conservée).
@@ -173,7 +193,7 @@ from pptx.oxml.ns import qn
 # 4 bumps de version consecutifs (v2.9 a v2.11 ont toutes laisse "v2.8 · date
 # perimee" sur la SLIDE LA PLUS VISIBLE du deck). Un seul endroit a changer
 # desormais.
-VERSION_DECK = "v2.12"
+VERSION_DECK = "v2.13"
 DATE_VERSION_DECK = "2026-09-03"
 
 HERE = os.path.dirname(__file__)
@@ -267,12 +287,17 @@ def new_prs():
 #   09 KPI                 = D.PALETTE[0]  (bleu)
 
 
-def content_slide(prs, kicker, title, color=None):
+def content_slide(prs, kicker, title, color):
+    # v2.13 : `color` etait optionnel (repli sur ACCENT, cyan generique) —
+    # diagnostic du 2026-09-03 : 34/34 appels reels de ce module passent deja
+    # `color=` explicitement, le repli ne protegeait plus rien, il masquait
+    # silencieusement un oubli (cf. le defaut kicker de slide_executive_summary,
+    # v2.12). Obligatoire desormais : un oubli echoue au build, pas au rendu.
     layout = prs.slide_masters[0].slide_layouts[LAYOUT_TITRE_SEUL]
     s = prs.slides.add_slide(layout)
     ph = s.shapes.placeholders[0]
     box_w = Emu(ph.width).inches
-    kicker_color = color or ACCENT
+    kicker_color = color
     texte_complet = f"{kicker.upper()}   ·   {title}"
     taille, _ = D.ajuster_police([texte_complet], box_w, 17, 12,
                                   lambda t, lignes_max: lignes_max <= 1)
@@ -1199,6 +1224,82 @@ def slide_pitch_iap(prs):
 # vocabulaire des variantes conditionnées du parcours de mission) ; teal =
 # module qui outille le consultant ; violet = agentic déployé chez le client
 # (même violet que slide_iap_contexte_client et que les badges du chapitre IA).
+# v2.13 (2026-09-03, DRAFT non câblé dans build() — généré en isolation pour
+# validation avant d'intégrer au reste du deck). Reprend le PATTERN visuel de
+# slide_trajectoire (chapitre 07, "vue bout-en-bout") — badge rond numéroté,
+# titre, description, chip de renvoi en pied de colonne — appliqué à un
+# contenu différent : POURQUOI/QUOI/COMMENT de slide_executive_summary
+# (l'ex-slide 3 pour l'utilisateur, une fois son sommaire déplacé après
+# l'intercalaire), avec le POURQUOI enrichi de douleurs concrètes reprises de
+# la carte "Douleurs & besoins de ces organisations" de slide_pitch_iap
+# (l'ex-slide 4) — 3 des 4 bullets condensés en une phrase, pas une 4e
+# répétition intégrale. OFFRE et RÉSULTAT du sommaire ne sont PAS repris ici :
+# le sommaire garde son rôle de table des matières complète, cette slide-ci
+# est une synthèse resserrée sur le fil POURQUOI→QUOI→COMMENT.
+def slide_synthese_pourquoi_quoi_comment(prs):
+    s = content_slide(prs, "Exec summary",
+                       "Le pourquoi, le quoi, le comment — et ce qu'ils vivent concrètement",
+                       color=NAVY)
+
+    chapo = ("Le fil du deck en trois temps, le premier ancré dans les douleurs réelles de "
+             "ces organisations — pas une généralité, une mesure.")
+    chapo_h = _lignes(chapo, CONTENT_W, 8.5) * (8.5 * 1.25 / 72.0) + 0.06
+    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, chapo_h, [
+        (chapo, dict(size=8.5, color=NAVY, italic=True, line_spacing=1.25)),
+    ])
+
+    etapes = [
+        ("①", "POURQUOI", D.PALETTE[2],
+         "L'infra subie coûte de plus en plus cher.",
+         "Mêmes incidents en boucle côté RUN, guichet et contournements côté utilisateurs, "
+         "reporting miroir côté management — quatre personas interrogés séparément, huit "
+         "familles de gaspillage mesurées, pas des plaintes.",
+         "Chapitres 02–04"),
+        ("②", "QUOI", D.PALETTE[1],
+         "Traiter l'infra comme un produit — et assainir.",
+         "Double mission, méthode scorée (impact × faisabilité − prudence IA), IA sous gate : "
+         "jamais la réponse à un problème d'abord organisationnel.",
+         "Chapitres 05–06"),
+        ("③", "COMMENT", D.PALETTE[3],
+         "Trois temps et une boucle, personnes comprises.",
+         "Démarche ①②③⟲ avec son fil humain de bout en bout ; l'outillage IAP au service de "
+         "la démarche — jamais l'inverse.",
+         "Chapitres 07–08"),
+    ]
+    n = len(etapes)
+    badge_d = 0.6
+    top0 = CONTENT_TOP + chapo_h + 0.3
+    line_y = top0 + badge_d / 2 - 0.012
+    D.add_rect(s, MARGIN + badge_d / 2, line_y, CONTENT_W - badge_d, 0.024, fill=LINE)
+    _, wcol = col_x(0, n)
+    label_h = 0.26
+    titre_h = max(_lignes(e[3], wcol - 0.2, 10) for e in etapes) * (10 * 1.2 / 72.0) + 0.06
+    desc_h = max(_lignes(e[4], wcol - 0.2, 8) for e in etapes) * (8 * 1.25 / 72.0) + 0.05
+    for i, (sym, label, color, titre, desc, renvoi) in enumerate(etapes):
+        x, w = col_x(i, n)
+        cx = x + w / 2 - badge_d / 2
+        D.add_rect(s, cx, top0, badge_d, badge_d, fill=color, rounded=True, radius=0.5)
+        D.add_text(s, cx, top0, badge_d, badge_d, [
+            (sym, dict(size=17, bold=True, color="#ffffff", align=PP_ALIGN.CENTER)),
+        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+        y = top0 + badge_d + 0.12
+        D.add_text(s, x, y, w, label_h, [
+            (label, dict(size=8, bold=True, color=color, align=PP_ALIGN.CENTER)),
+        ], align=PP_ALIGN.CENTER)
+        y += label_h
+        D.add_text(s, x + 0.05, y, w - 0.1, titre_h, [
+            (titre, dict(size=10, bold=True, color=NAVY, align=PP_ALIGN.CENTER, line_spacing=1.15)),
+        ], align=PP_ALIGN.CENTER)
+        y += titre_h + 0.06
+        D.add_text(s, x + 0.1, y, w - 0.2, desc_h, [
+            (desc, dict(size=8, color=MUTED, align=PP_ALIGN.CENTER, line_spacing=1.25)),
+        ], align=PP_ALIGN.CENTER)
+        y += desc_h + 0.14
+        chip(s, x + w / 2 - 0.75, y, 1.5, 0.28, renvoi, color, size=7.5)
+
+    return s
+
+
 def slide_demarche_avec_sans_agentic(prs):
     s = content_slide(prs, "Exec summary",
                        "La même démarche absorbe l'outillage : elle n'est jamais dédoublée",
@@ -3724,20 +3825,23 @@ def slide_architecture_agents(prs):
 def build():
     prs = new_prs()
     slide_cover(prs)
-    slide_executive_summary(prs)
 
     # === Chapitre 01 — EXEC SUMMARY : le pitch de l'offre (v2.8, refondu v2.9) ===
     # v2.9 (arbitrage utilisateur) : le grand schéma du parcours de mission
     # (slide_offre_iap) part au chapitre 07 · Démarche et la synthèse en une page
-    # (slide_offre_synthese) est supprimée — slide_executive_summary, juste
-    # au-dessus, reste LE sommaire du deck et ne bouge pas. À la place, deux
-    # slides qui parlent au prospect : les trois faces de l'offre, puis la même
-    # démarche avec ou sans agentic.
+    # (slide_offre_synthese) est supprimée — slide_executive_summary reste LE
+    # sommaire du deck. À la place, deux slides qui parlent au prospect : les
+    # trois faces de l'offre, puis la même démarche avec ou sans agentic.
+    # v2.13 (2026-09-03, arbitrage utilisateur) : slide_executive_summary
+    # DÉMÉNAGE d'avant l'intercalaire à juste après — modifié manuellement par
+    # l'utilisateur sur l'export, reporté ici pour que toute régénération le
+    # conserve (sinon un rebuild écraserait l'édition manuelle sans bruit).
     slide_chapitre(prs, "01", "Exec summary",
                    "Les trois faces de l'offre — leurs douleurs, notre outillage de "
                    "consultant, l'agentic déployé chez eux en option — et la démarche qui les "
                    "absorbe.",
                    NAVY, "wheatfield", seed=0)
+    slide_executive_summary(prs)
     slide_pitch_iap(prs)
     slide_demarche_avec_sans_agentic(prs)
 

@@ -93,11 +93,11 @@ def test_le_repli_produit_bien_une_image_pour_les_scenes_neuves(generate_deck, n
 def test_un_repli_impossible_degrade_au_lieu_de_planter(generate_deck, monkeypatch, tmp_path):
     """Ceinture ET bretelles : meme si le repli echoue, build() ne meurt pas.
 
-    Le defaut remonte alors dans `_ANOMALIES_IMAGE`, donc dans `problemes` —
+    Le defaut remonte alors dans `_ANOMALIES_BUILD`, donc dans `problemes` —
     il ne disparait pas en silence.
     """
     monkeypatch.setattr(generate_deck, "IMG_DIR", str(tmp_path))
-    generate_deck._ANOMALIES_IMAGE[:] = []
+    generate_deck._ANOMALIES_BUILD[:] = []
 
     def echec(*a, **k):
         raise RuntimeError("reseau coupe (simulation)")
@@ -108,11 +108,11 @@ def test_un_repli_impossible_degrade_au_lieu_de_planter(generate_deck, monkeypat
     prs = generate_deck.new_prs()
     generate_deck.slide_chapitre(prs, "01", "titre", "couverture",
                                  generate_deck.D.PALETTE[0], "canyon", seed=0)
-    assert any("canyon" in a for a in generate_deck._ANOMALIES_IMAGE),         "un repli impossible doit remonter dans les anomalies, pas disparaitre"
+    assert any("canyon" in a for a in generate_deck._ANOMALIES_BUILD),         "un repli impossible doit remonter dans les anomalies, pas disparaitre"
 
 
 def test_cadre_introuvable_remonte_dans_les_problemes(generate_deck):
     """Un cadre absent du template ne doit plus se contenter d'un print."""
-    generate_deck._ANOMALIES_IMAGE[:] = []
+    generate_deck._ANOMALIES_BUILD[:] = []
     generate_deck._remplir_cadre(None, None, "canyon")
-    assert generate_deck._ANOMALIES_IMAGE,         "cadre introuvable : le defaut doit rejoindre les problemes remontes par build()"
+    assert generate_deck._ANOMALIES_BUILD,         "cadre introuvable : le defaut doit rejoindre les problemes remontes par build()"

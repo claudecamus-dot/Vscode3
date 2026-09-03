@@ -10,12 +10,21 @@ Cadrage BMAD IAP : le livrable est un deck de synthèse (`docs/cadrage-ppt/`,
 - Après toute modif du générateur : `python test_generate_deck.py` **en plus** du
   rendu réel relu à l'œil — le test valide le cadrage géométrique, pas la qualité
   d'une photo.
-- Scripts superviseur/orchestrateur : `py -m pytest tests/test_agent_*.py`
-  (sur Windows, `--basetemp` sur un dossier neuf : le nettoyage du symlink
-  `pytest-current` plante en teardown sinon, sans que ce soit un échec).
+- Suite complète : `py -m pytest tests/` (90 tests — sur Windows, `--basetemp`
+  sur un dossier neuf : le nettoyage du symlink `pytest-current` plante en
+  teardown sinon, sans que ce soit un échec). **Pas** `tests/test_agent_*.py` :
+  ce glob exclut `tests/test_generate_deck_garde.py` — un renommage l'a cassé
+  et poussé sur `main` sans que ce filtre ne le détecte (2026-09-03).
 - Un seul test : `py -m pytest tests/test_agent_supervision.py::test_scan_counts_and_generates_page_and_index`.
-- Couverture : `py -m pytest tests/ --cov=docs/cadrage-ppt` (`requirements-dev.txt`).
-  Aucun seuil imposé — on mesure d'abord.
+- Couverture : `py -m pytest tests/ --cov=docs/cadrage-ppt` mesure le
+  dispositif de supervision (appelé en subprocess depuis `tests/`), **pas**
+  `generate_deck.py` (exercé par `test_generate_deck.py`, un script autonome
+  hors pytest) — les deux affichés ensemble sous-comptent massivement le
+  second (7 % mesuré, écart trouvé le 2026-09-03). Mesurer le deck
+  séparément : `py -m coverage run docs/cadrage-ppt/test_generate_deck.py`
+  puis `py -m coverage report docs/cadrage-ppt/generate_deck.py` (~95 % au
+  2026-09-03 — pas de chiffre figé ici, le fichier change vite : rejouer la
+  commande plutôt que citer ce nombre). Aucun seuil imposé — on mesure d'abord.
 - Linter : `py -m ruff check .` (baseline F/I/UP/B dans `pyproject.toml`).
   **Jamais `--fix` en aveugle** : sur VSCode2 il a supprimé un ré-export et cassé
   un import.

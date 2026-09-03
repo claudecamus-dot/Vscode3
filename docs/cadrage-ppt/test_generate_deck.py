@@ -127,8 +127,11 @@ def main():
     # v2.9 : le chapitre 01 garde 2 slides de contenu (le pitch en 3 faces et la
     # démarche avec/sans agentic remplacent l'offre et sa synthèse) mais le grand
     # schéma du parcours de mission déménage dans la Démarche — +1 slide au total
-    # (45 -> 46), donc Outillage IAP et KPI glissent seuls de +1.)
-    chapitres = [3, 7, 11, 14, 17, 21, 28, 37, 41]
+    # (45 -> 46), donc Outillage IAP et KPI glissent seuls de +1.
+    # v2.13 : slide_executive_summary déménage d'AVANT l'intercalaire à APRÈS
+    # (arbitrage utilisateur) — l'intercalaire du chapitre 01 recule de 3 à 2,
+    # tout le reste (positions 4+, inchangées) ne bouge pas.)
+    chapitres = [2, 7, 11, 14, 17, 21, 28, 37, 41]
     for idx in chapitres:
         slide = prs.slides[idx - 1]
         cadre = gen._find_frame_by_geom(slide.slide_layout.shapes, "teardrop")

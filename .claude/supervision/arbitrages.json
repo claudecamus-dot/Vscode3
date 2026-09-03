@@ -165,6 +165,41 @@
       "categories": [],
       "decision": "REMONTE AU HUB (demande utilisateur explicite : 'remonter au hub qu'un plan d'amelioration est necessaire'). Pas une decision appliquee ici -- un signalement, a traiter et planifier LA-BAS (CLAUDE.md : 'corriger la-bas puis regenerer l'export, jamais localement'). Trois faits mesures dans cette seule session (2026-09-02/03) qui, ensemble, dessinent un pattern plutot que des incidents isoles :\n1) GAP COMMIT/PUSH SILENCIEUX : 2 commits deck (v2.10, v2.11) sont restes locaux 1 jour+ pendant que l'utilisateur validait sur un artefact non a jour (GitHub/autre vue synchronisee sur le push), provoquant une confusion 'toujours pas realise' sur des defauts deja corriges. Le playbook export-ppt-verifie ne dit nulle part QUAND pousser un livrable utilisateur -- 'commit et push' redemande a chaque fois plutot que trace comme une regle du playbook.\n2) FAUX POSITIFS DU RENDU DE VERIFICATION : le pipeline de verif de ce projet s'appuie sur LibreOffice (playbook + test_generate_deck.py) qui a produit un defaut visuel N'EXISTANT PAS dans le fichier reel (artefact de composition d'un groupe pivote a 180 du template, confirme absent d'un rendu PowerPoint COM reel). L'existence de ce risque n'est documentee nulle part dans le playbook -- un futur run pourrait 'corriger' un defaut qui n'existe pas en modifiant le template partage.\n3) SKILL OBLIGATOIRE JAMAIS EXECUTEE MEME QUAND SON TRAVAIL EST FAIT : deck-design-review est l'etape design-review OBLIGATOIRE du playbook depuis le 2026-09-01, et cette session a fait EXACTEMENT ce travail (revue slide-par-slide, defauts trouves et corriges) SANS jamais invoquer la skill elle-meme -- toujours 0 execution mesuree. Meme cause deja identifiee pour les skills BMAD ('le brief nomme la skill, sinon d'office n'est une consigne pour personne') mais pas encore traitee pour les etapes 'reel' (rendu/revue) des playbooks projet.\nCe que 'traiter' ces 3 points pourrait vouloir dire (a instruire au hub, pas tranche ici) : regle explicite de push en fin de playbook livrable-utilisateur ; case 'verification croisee reel (COM/autre moteur)' avant de toucher un template partage sur la seule foi d'un rendu ; contrat de sortie qui EXIGE le nom de la skill invoquee meme pour les etapes de revue/verification des playbooks (pas seulement le routage BMAD).",
       "source": "demande utilisateur explicite 2026-09-03 : 'remonter au hub qu'un plan d'amelioration est necessaire'"
+    },
+    {
+      "cible": "tests/test_generate_deck_garde.py",
+      "date": "2026-09-03",
+      "categories": [],
+      "decision": "ACCEPTE + APPLIQUE (regression introduite par moi-meme, corrigee dans la foulee). Le diagnostic etage 2 rafraichi du 2026-09-03 a mesure `py -m pytest tests/` = 2 failed / 88 passed sur du code DEJA POUSSE : mon commit 023ad83 (v2.11) avait renomme _ANOMALIES_IMAGE -> _ANOMALIES_BUILD dans generate_deck.py sans toucher aux 5 references du fichier de test. Corrige (sed sur les 5 references) ; `py -m pytest tests/` = 90 passed. CAUSE RACINE, plus interessante que le bug : les 3 garde-fous du projet ignoraient tous ce fichier -- CLAUDE.md prescrivait `pytest tests/test_agent_*.py` (glob qui l'exclut), l'autre commande documentee est le script autonome test_generate_deck.py, et le hook de pre-commit accepte le jeton `test_generate_deck` comme preuve suffisante. CLAUDE.md corrige en consequence : la suite complete `py -m pytest tests/` remplace le glob, avec la raison ecrite en clair pour que le raccourci ne revienne pas.",
+      "source": "diagnostic etage 2 du 2026-09-03 (agent-supervisor), finding 1"
+    },
+    {
+      "cible": "generate_deck.py::content_slide",
+      "date": "2026-09-03",
+      "categories": [],
+      "decision": "ACCEPTE + APPLIQUE. Le diagnostic a mesure que `color=None` + repli `color or ACCENT` ne protegeait plus aucun appel : 34 vrais appels sur 34 passent deja `color=` explicitement (comptage a parentheses equilibrees, 37 occurrences moins 3 en commentaire). Sa seule fonction residuelle etait de laisser un futur oubli retomber en cyan silencieux -- exactement le defaut corrige le matin meme sur slide_executive_summary (v2.12), trouve a l'oeil 2 versions apres son introduction. `color` devient obligatoire : un oubli echoue desormais au build en TypeError au lieu de produire une slide fausse. Zero regression (34/34 conformes) ; deck regenere, 46 pages, geometrie OK, 90 tests pytest verts.",
+      "source": "diagnostic etage 2 du 2026-09-03 (agent-supervisor), finding 5"
+    },
+    {
+      "cible": "CLAUDE.md:couverture",
+      "date": "2026-09-03",
+      "categories": [],
+      "decision": "ACCEPTE + APPLIQUE, avec une correction du chiffre propose. Le diagnostic signalait que la commande de couverture documentee (`pytest tests/ --cov=docs/cadrage-ppt`) annonce 7 % sur generate_deck.py alors que le vrai harnais du deck (test_generate_deck.py, script autonome hors pytest) en couvre l'essentiel -- la suite pytest n'appelle jamais build(). VERIFIE MOI-MEME plutot que repris tel quel : `py -m coverage run docs/cadrage-ppt/test_generate_deck.py` + `report` donne 95 %, pas les 96 % du rapport (le fichier avait deja change entre-temps). CLAUDE.md corrige pour documenter les DEUX mesures et ce qu'elles couvrent chacune, et deliberement SANS figer le pourcentage : citer un nombre qui se perime est precisement le defaut repare le matin meme sur la couverture du deck (version v2.8 gelee 4 versions). La consigne ecrite est de rejouer la commande, pas de citer la ligne.",
+      "source": "diagnostic etage 2 du 2026-09-03 (agent-supervisor), finding 4"
+    },
+    {
+      "cible": ".claude/supervision/write_diagnostic.py",
+      "date": "2026-09-03",
+      "categories": [],
+      "decision": "REMIS A L'ARBITRAGE — correctif hub, pas local (regle durable CLAUDE.md : 'le dispositif vient du hub, corriger la-bas puis regenerer l'export, jamais localement, lecon P1'). Mesure du diagnostic : l'ecrivain local refuse les 6 categories pratique-* que son propre consommateur (scan_transcripts.py l.574-575) accepte deja depuis le 2026-07-28 -- correctif applique au consommateur, jamais au producteur. Consequence concrete et non theorique : le volet 'pratiques d'ingenierie' est INEXPRIMABLE depuis ce depot, les 4 findings de pratique du diagnostic de ce jour ont du etre replies sur verification-manquante/autre. Canon hub : 141 lignes contre 84 ici, diff de 225 lignes. RIEN MODIFIE LOCALEMENT. A faire au hub : regenerer write_diagnostic.py depuis le canon, puis balayer la flotte -- le correctif de juillet n'a peut-etre atteint aucun write_diagnostic.py des projets cibles.",
+      "source": "diagnostic etage 2 du 2026-09-03 (agent-supervisor), finding 2"
+    },
+    {
+      "cible": "docs/cadrage-ppt/generate_deck.py:taille",
+      "date": "2026-09-03",
+      "categories": [],
+      "decision": "REMIS A L'ARBITRAGE (mesure faite, geste non pose — il coute et il engage). Mesure du diagnostic : 2781 l (audit 2026-07-30) -> 3149 l (2026-09-02) -> 3911 l aujourd'hui, soit +40,6 % au total et une croissance d'un seul jour (+762 l) superieure au cumul des 33 jours precedents. Fichier unique, 66 def dont 37 slide_*. La pastille 'risque technique moyen' du hub repose donc sur un chiffre faux de plus de 1100 lignes. NUANCE CONSERVEE, elle compte : le filet fonctionnel tient (95 % de couverture, 46 pages rendues, geometrie verte, 90 tests) -- c'est un risque de LISIBILITE, pas de casse. Deux gestes proposes, aucun pose : (1) lancer audit-technique (skill jamais utilisee, audit facture qui LIT le code) pour re-coter le risque, verdict a ecrire cote hub ; (2) decouper par chapitre SEULEMENT si l'audit le confirme. Geste immediat independant et non bloquant, lui aussi non fait : les 2 vraies erreurs pyflakes (F841, F541) parmi les 14 ruff -- jamais par `ruff --fix` aveugle (lecon VSCode2).",
+      "source": "diagnostic etage 2 du 2026-09-03 (agent-supervisor), finding 3"
     }
   ]
 }
