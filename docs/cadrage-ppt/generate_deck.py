@@ -167,6 +167,17 @@ Décalage d'index : l'intercalaire du chapitre 01 reste en 2, tout ce qui
 suit la nouvelle slide glisse de +1 (slide_vision 6 -> 7, intercalaires
 7/11/14/17/21/28/37/41 -> 8/12/15/18/22/29/38/42).
 
+v2.15 (2026-09-03) : `slide_synthese_pourquoi_quoi_comment` REFONDUE —
+retour utilisateur : les chips "Chapitres X–Y" en pied de colonne étaient
+l'inverse exact de la consigne ("sans faire référence au chapitre"), qui
+posait aussi un test précis d'autonomie ("si je ne lis QUE cette slide, je
+comprends sans les autres ?"). Chips retirées ; le pied de chaque colonne
+COMMENT nomme désormais ses 3 temps en toutes lettres (Comprendre / Définir
+/ Faire adopter, puis réévaluer) plutôt que des symboles ①②③⟲ nus qui
+supposaient déjà connu le reste du deck. Une bande de clôture, sur le même
+principe que la note "Bifurcation..." de slide_trajectoire, synthétise
+POURQUOI→QUOI→COMMENT en une phrase — le résumé qu'on emporte seul.
+
 Séparateurs : chapitres = intercalaire teardrop (photo + numéro, layout dédié) ;
 sous-chapitres = `slide_sous_chapitre` (bloc-titre léger, sans photo ni numéro —
 sans appelant depuis la v2.6, machinerie conservée).
@@ -205,7 +216,7 @@ from pptx.oxml.ns import qn
 # 4 bumps de version consecutifs (v2.9 a v2.11 ont toutes laisse "v2.8 · date
 # perimee" sur la SLIDE LA PLUS VISIBLE du deck). Un seul endroit a changer
 # desormais.
-VERSION_DECK = "v2.14"
+VERSION_DECK = "v2.15"
 DATE_VERSION_DECK = "2026-09-03"
 
 HERE = os.path.dirname(__file__)
@@ -1236,25 +1247,25 @@ def slide_pitch_iap(prs):
 # vocabulaire des variantes conditionnées du parcours de mission) ; teal =
 # module qui outille le consultant ; violet = agentic déployé chez le client
 # (même violet que slide_iap_contexte_client et que les badges du chapitre IA).
-# v2.13 (2026-09-03, DRAFT non câblé dans build() — généré en isolation pour
-# validation avant d'intégrer au reste du deck). Reprend le PATTERN visuel de
-# slide_trajectoire (chapitre 07, "vue bout-en-bout") — badge rond numéroté,
-# titre, description, chip de renvoi en pied de colonne — appliqué à un
-# contenu différent : POURQUOI/QUOI/COMMENT de slide_executive_summary
-# (l'ex-slide 3 pour l'utilisateur, une fois son sommaire déplacé après
-# l'intercalaire), avec le POURQUOI enrichi de douleurs concrètes reprises de
-# la carte "Douleurs & besoins de ces organisations" de slide_pitch_iap
-# (l'ex-slide 4) — 3 des 4 bullets condensés en une phrase, pas une 4e
-# répétition intégrale. OFFRE et RÉSULTAT du sommaire ne sont PAS repris ici :
-# le sommaire garde son rôle de table des matières complète, cette slide-ci
-# est une synthèse resserrée sur le fil POURQUOI→QUOI→COMMENT.
+# v2.15 (2026-09-03, REFONDUE — arbitrage utilisateur). v2.13/v2.14 renvoyaient
+# à des "Chapitres X–Y" en pied de colonne : exactement l'inverse de la
+# consigne, qui est explicite — AUCUNE référence au chapitre, et un test
+# d'autonomie précis (« si je ne lis QUE cette slide, est-ce que je comprends,
+# sans avoir besoin des autres ? »). Reprend le PATTERN visuel de
+# slide_trajectoire (chapitre 07 · Démarche) — badge rond numéroté, titre,
+# description EN COLONNE — mais son pied de colonne à elle nomme un LIVRABLE
+# CONCRET, jamais un renvoi ; ici, chaque colonne se referme sur elle-même
+# (COMMENT nomme ses 3 temps en toutes lettres, plutôt que ①②③⟲ nu) et une
+# bande de clôture (même mécanique que la note "Bifurcation..." de
+# slide_trajectoire) synthétise le POURQUOI→QUOI→COMMENT en une phrase — le
+# résumé qu'on emporte si on ne lit que cette slide.
 def slide_synthese_pourquoi_quoi_comment(prs):
     s = content_slide(prs, "Exec summary",
                        "Le pourquoi, le quoi, le comment — et ce qu'ils vivent concrètement",
                        color=NAVY)
 
-    chapo = ("Le fil du deck en trois temps, le premier ancré dans les douleurs réelles de "
-             "ces organisations — pas une généralité, une mesure.")
+    chapo = ("Une infrastructure subie, traitée comme un produit, changée avec les personnes "
+             "— pas un slogan, une démarche mesurée à chaque étape.")
     chapo_h = _lignes(chapo, CONTENT_W, 8.5) * (8.5 * 1.25 / 72.0) + 0.06
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, chapo_h, [
         (chapo, dict(size=8.5, color=NAVY, italic=True, line_spacing=1.25)),
@@ -1265,18 +1276,18 @@ def slide_synthese_pourquoi_quoi_comment(prs):
          "L'infra subie coûte de plus en plus cher.",
          "Mêmes incidents en boucle côté RUN, guichet et contournements côté utilisateurs, "
          "reporting miroir côté management — quatre personas interrogés séparément, huit "
-         "familles de gaspillage mesurées, pas des plaintes.",
-         "Chapitres 02–04"),
+         "familles de gaspillage mesurées, pas des plaintes."),
         ("②", "QUOI", D.PALETTE[1],
          "Traiter l'infra comme un produit — et assainir.",
-         "Double mission, méthode scorée (impact × faisabilité − prudence IA), IA sous gate : "
-         "jamais la réponse à un problème d'abord organisationnel.",
-         "Chapitres 05–06"),
+         "Un service pensé pour ses usagers, avec un parcours et des indicateurs de pilotage, "
+         "plutôt qu'un centre de coûts ou un guichet de tickets — un scoring impact × "
+         "faisabilité tranche les priorités, l'IA reste sous gate : jamais la réponse à un "
+         "problème d'abord organisationnel."),
         ("③", "COMMENT", D.PALETTE[3],
-         "Trois temps et une boucle, personnes comprises.",
-         "Démarche ①②③⟲ avec son fil humain de bout en bout ; l'outillage IAP au service de "
-         "la démarche — jamais l'inverse.",
-         "Chapitres 07–08"),
+         "Comprendre, définir, faire adopter — puis réévaluer.",
+         "Trois temps et une boucle qui suivent chaque personne autant que chaque système, "
+         "de l'état des lieux partagé jusqu'à l'adoption prouvée — l'outillage sert cette "
+         "démarche, jamais l'inverse."),
     ]
     n = len(etapes)
     badge_d = 0.6
@@ -1287,7 +1298,7 @@ def slide_synthese_pourquoi_quoi_comment(prs):
     label_h = 0.26
     titre_h = max(_lignes(e[3], wcol - 0.2, 10) for e in etapes) * (10 * 1.2 / 72.0) + 0.06
     desc_h = max(_lignes(e[4], wcol - 0.2, 8) for e in etapes) * (8 * 1.25 / 72.0) + 0.05
-    for i, (sym, label, color, titre, desc, renvoi) in enumerate(etapes):
+    for i, (sym, label, color, titre, desc) in enumerate(etapes):
         x, w = col_x(i, n)
         cx = x + w / 2 - badge_d / 2
         D.add_rect(s, cx, top0, badge_d, badge_d, fill=color, rounded=True, radius=0.5)
@@ -1306,8 +1317,19 @@ def slide_synthese_pourquoi_quoi_comment(prs):
         D.add_text(s, x + 0.1, y, w - 0.2, desc_h, [
             (desc, dict(size=8, color=MUTED, align=PP_ALIGN.CENTER, line_spacing=1.25)),
         ], align=PP_ALIGN.CENTER)
-        y += desc_h + 0.14
-        chip(s, x + w / 2 - 0.75, y, 1.5, 0.28, renvoi, color, size=7.5)
+
+    # Bande de clôture — le résumé qu'on emporte si on ne lit QUE cette
+    # slide : lie POURQUOI (la douleur) à QUOI (le produit) et COMMENT (la
+    # démarche) en une seule phrase, sans renvoyer nulle part ailleurs.
+    note_top = top0 + badge_d + 0.12 + label_h + titre_h + 0.06 + desc_h + 0.26
+    note_h = min(1.1, CONTENT_BOTTOM - note_top)
+    D.add_rect(s, MARGIN, note_top, CONTENT_W, note_h, fill=TRACK, rounded=True, radius=0.08)
+    D.add_text(s, MARGIN + 0.2, note_top, CONTENT_W - 0.4, note_h, [
+        ("Ce que ça change, en une phrase", dict(size=8, bold=True, color=NAVY)),
+        ("Une infrastructure subie devient un produit géré comme tel : assainie avant d'être "
+         "outillée, transformée avec les personnes autant qu'avec la technique.",
+         dict(size=8.5, color=NAVY, space_before=3, line_spacing=1.25)),
+    ], anchor=MSO_ANCHOR.MIDDLE)
 
     return s
 
