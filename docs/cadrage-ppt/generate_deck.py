@@ -155,6 +155,18 @@ utilisateur) mais **NON câblé dans `build()`** — généré et vérifié en
 isolation pour validation avant intégration, sur consigne explicite
 ("pour l'instant ne génère que cette slide").
 
+v2.14 (2026-09-03) : `slide_synthese_pourquoi_quoi_comment` est CÂBLÉE dans
+`build()` (46 -> 47 slides), au chapitre 01 entre le sommaire et le pitch en
+trois faces : elle développe ce que le sommaire annonce, avant que le pitch
+ne l'ouvre au client. La version isolée de v2.13 avait été demandée puis
+n'était visible nulle part — le fichier d'aperçu avait été supprimé au
+nettoyage après envoi de la capture, donc l'utilisateur cherchait une slide
+qui n'existait dans aucun export ouvrable. Leçon : une slide "générée pour
+validation" doit rester ouvrable quelque part, ou être câblée.
+Décalage d'index : l'intercalaire du chapitre 01 reste en 2, tout ce qui
+suit la nouvelle slide glisse de +1 (slide_vision 6 -> 7, intercalaires
+7/11/14/17/21/28/37/41 -> 8/12/15/18/22/29/38/42).
+
 Séparateurs : chapitres = intercalaire teardrop (photo + numéro, layout dédié) ;
 sous-chapitres = `slide_sous_chapitre` (bloc-titre léger, sans photo ni numéro —
 sans appelant depuis la v2.6, machinerie conservée).
@@ -193,7 +205,7 @@ from pptx.oxml.ns import qn
 # 4 bumps de version consecutifs (v2.9 a v2.11 ont toutes laisse "v2.8 · date
 # perimee" sur la SLIDE LA PLUS VISIBLE du deck). Un seul endroit a changer
 # desormais.
-VERSION_DECK = "v2.13"
+VERSION_DECK = "v2.14"
 DATE_VERSION_DECK = "2026-09-03"
 
 HERE = os.path.dirname(__file__)
@@ -3842,6 +3854,13 @@ def build():
                    "absorbe.",
                    NAVY, "wheatfield", seed=0)
     slide_executive_summary(prs)
+    # v2.14 (2026-09-03, demande utilisateur) : synthèse POURQUOI/QUOI/COMMENT
+    # adossée aux douleurs concrètes — reprend le pattern visuel de
+    # slide_trajectoire (ch. 07), le fil du sommaire juste au-dessus, et les
+    # douleurs de la carte « CE QU'ILS VIVENT » de slide_pitch_iap juste en
+    # dessous. Placée ENTRE les deux : elle développe ce que le sommaire
+    # annonce, avant que le pitch en trois faces ne l'ouvre au client.
+    slide_synthese_pourquoi_quoi_comment(prs)
     slide_pitch_iap(prs)
     slide_demarche_avec_sans_agentic(prs)
 

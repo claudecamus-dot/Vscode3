@@ -93,7 +93,7 @@ def main():
     prs = Presentation(out)
 
     print("Structure :")
-    check(len(prs.slides) == 46, f"46 slides — reçu {len(prs.slides)}")
+    check(len(prs.slides) == 47, f"47 slides — reçu {len(prs.slides)}")
     check(not problemes, f"géométrie propre (verifier_geometrie) — {len(problemes or [])} problème(s)")
     check(os.path.exists(out) and os.path.getsize(out) > 500_000,
           f"fichier .pptx écrit, taille plausible ({os.path.getsize(out) if os.path.exists(out) else 0} octets)")
@@ -131,7 +131,7 @@ def main():
     # v2.13 : slide_executive_summary déménage d'AVANT l'intercalaire à APRÈS
     # (arbitrage utilisateur) — l'intercalaire du chapitre 01 recule de 3 à 2,
     # tout le reste (positions 4+, inchangées) ne bouge pas.)
-    chapitres = [2, 7, 11, 14, 17, 21, 28, 37, 41]
+    chapitres = [2, 8, 12, 15, 18, 22, 29, 38, 42]
     for idx in chapitres:
         slide = prs.slides[idx - 1]
         cadre = gen._find_frame_by_geom(slide.slide_layout.shapes, "teardrop")
@@ -150,21 +150,21 @@ def main():
 
     print("Cadre photo bien calé (slide vision — layout 'cadre blanc', round2DiagRect) :")
     # v2.8 : slide_vision décale de 3 -> 6 (chapitre 01 Exec summary inséré avant elle).
-    slide_vision = prs.slides[5]
+    slide_vision = prs.slides[6]
     cadre_vision = gen._find_frame_in_group(
         slide_vision.slide_layout.shapes, "Google Shape;212;p17", "Google Shape;213;p17")
     images_vision = _images(slide_vision)
-    check(len(images_vision) == 1, f"slide 6 (vision) : exactement 1 image posée (reçu {len(images_vision)})")
-    check(cadre_vision is not None, "slide 6 (vision) : cadre 'cadre blanc' trouvé sur le layout")
+    check(len(images_vision) == 1, f"slide 7 (vision) : exactement 1 image posée (reçu {len(images_vision)})")
+    check(cadre_vision is not None, "slide 7 (vision) : cadre 'cadre blanc' trouvé sur le layout")
     if images_vision and cadre_vision:
         pic = images_vision[0]
         l, t, w, h, _ = cadre_vision
         check((pic.left, pic.top, pic.width, pic.height) == (l, t, w, h),
-              f"slide 6 (vision) : image alignée exactement sur le cadre "
+              f"slide 7 (vision) : image alignée exactement sur le cadre "
               f"(image=({pic.left},{pic.top},{pic.width},{pic.height}) vs cadre=({l},{t},{w},{h}))")
         g = pic._element.spPr.find(qn("a:prstGeom"))
         check(g is not None and g.get("prst") == "round2DiagRect",
-              "slide 6 (vision) : image clippée au bon preset (round2DiagRect)")
+              "slide 7 (vision) : image clippée au bon preset (round2DiagRect)")
 
     print("Aucun cadre laissé vide (texte gabarit « ici mettre une Photo » résiduel) :")
     texte_complet = "\n".join(
