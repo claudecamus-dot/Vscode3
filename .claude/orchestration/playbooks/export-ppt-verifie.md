@@ -98,7 +98,7 @@ contenu, visuel). Les deux partagent l'obligation de rendu réel et la terminais
       "modele": "(session)",
       "contrat": {
         "type": "reel",
-        "critere": "export réel rendu en images (LibreOffice/COM) et inspecté visuellement, avec un rendu ZOOMÉ sur chaque NOUVEAU type de slide (valeurs alignées, panneaux ni vides ni sur-étirés, ni contenu centré par slot laissant un grand vide sous l'en-tête — défaut « panneau flottant/étiré » récurrent, invisible au self-check géométrique, cf. constat superviseur 2026-07-21 / commit a8b264a, pas de collision avec le chrome du template) — jamais retirée à l'instanciation, quelle que soit la taille du changement"
+        "critere": "export réel rendu en images (LibreOffice/COM) et inspecté visuellement, avec un rendu ZOOMÉ sur chaque NOUVEAU type de slide (valeurs alignées, panneaux ni vides ni sur-étirés, ni contenu centré par slot laissant un grand vide sous l'en-tête — défaut « panneau flottant/étiré » récurrent, invisible au self-check géométrique, cf. constat superviseur 2026-07-21 / commit a8b264a, pas de collision avec le chrome du template) — jamais retirée à l'instanciation, quelle que soit la taille du changement. GARDE-FOU groupe pivoté 180° (constat croisé VSCode3/VSCode4, 2026-09-03, sur la couverture de ce deck : un groupe de connecteurs pivoté à 180° dans un layout natif du template produit une diagonale parasite au raccord du bandeau version — SOUS LIBREOFFICE SEULEMENT, absente en PowerPoint réel/COM, vérifié des deux côtés) : avant de conclure à un défaut d'artwork sur une géométrie de ce type (groupe imbriqué + rotation), rendre AUSSI en COM — ne jamais retoucher le template partagé sur la seule foi d'un rendu LibreOffice."
       },
       "checkpoint": false
     },
