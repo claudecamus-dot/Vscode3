@@ -178,6 +178,13 @@ supposaient déjà connu le reste du deck. Une bande de clôture, sur le même
 principe que la note "Bifurcation..." de slide_trajectoire, synthétise
 POURQUOI→QUOI→COMMENT en une phrase — le résumé qu'on emporte seul.
 
+v2.16 (2026-09-03) : `slide_synthese_pourquoi_quoi_comment` RETIRÉE de
+`build()` (47 -> 46 slides) — 2 tours rejetée (v2.14 avec des chips de
+chapitre, puis v2.15 malgré leur retrait). La fonction reste définie ;
+demande explicite de repasser par une génération ISOLÉE (fichier `.pptx`
+autonome, PAS supprimé après coup cette fois — leçon de la disparition
+v2.13) pour validation avant toute réintégration.
+
 Séparateurs : chapitres = intercalaire teardrop (photo + numéro, layout dédié) ;
 sous-chapitres = `slide_sous_chapitre` (bloc-titre léger, sans photo ni numéro —
 sans appelant depuis la v2.6, machinerie conservée).
@@ -216,7 +223,7 @@ from pptx.oxml.ns import qn
 # 4 bumps de version consecutifs (v2.9 a v2.11 ont toutes laisse "v2.8 · date
 # perimee" sur la SLIDE LA PLUS VISIBLE du deck). Un seul endroit a changer
 # desormais.
-VERSION_DECK = "v2.15"
+VERSION_DECK = "v2.16"
 DATE_VERSION_DECK = "2026-09-03"
 
 HERE = os.path.dirname(__file__)
@@ -3876,13 +3883,10 @@ def build():
                    "absorbe.",
                    NAVY, "wheatfield", seed=0)
     slide_executive_summary(prs)
-    # v2.14 (2026-09-03, demande utilisateur) : synthèse POURQUOI/QUOI/COMMENT
-    # adossée aux douleurs concrètes — reprend le pattern visuel de
-    # slide_trajectoire (ch. 07), le fil du sommaire juste au-dessus, et les
-    # douleurs de la carte « CE QU'ILS VIVENT » de slide_pitch_iap juste en
-    # dessous. Placée ENTRE les deux : elle développe ce que le sommaire
-    # annonce, avant que le pitch en trois faces ne l'ouvre au client.
-    slide_synthese_pourquoi_quoi_comment(prs)
+    # v2.16 (2026-09-03, demande utilisateur) : slide_synthese_pourquoi_quoi_comment
+    # RETIRÉE de build() — 2 tours rejetée (chips de chapitre v2.14, puis un
+    # motif encore insatisfaisant en v2.15). Repasse en génération isolée pour
+    # validation avant réintégration (cf. fonction, toujours définie plus haut).
     slide_pitch_iap(prs)
     slide_demarche_avec_sans_agentic(prs)
 
