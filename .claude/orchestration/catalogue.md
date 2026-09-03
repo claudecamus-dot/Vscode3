@@ -38,7 +38,8 @@
 | --- | --- | --- | --- | --- |
 | `roadmap-keeper` | Mettre à jour/rendre la roadmap (`.roadmap/roadmap.json`) | Synchrone | (session) | Pas encore mesuré |
 | `pptx-deck` / `pptx-verify` | Aide de génération PPT (`docs/cadrage-ppt/pptx_deck.py`) / vérification en rendu réel — colonne vertébrale du playbook `export-ppt-verifie` | Synchrone, toujours en paire | (session) | Pas encore mesuré |
-| `restitution-deck-design` | Deck techniquement correct (géométrie OK) mais visuellement pauvre — étape conditionnelle du playbook `export-ppt-verifie` | Synchrone | (session) | Pas encore mesuré |
+| `deck-design-review` | Revue de design slide-par-slide du deck de CE projet contre le contrat propre à chaque type de slide — étape `design-review` OBLIGATOIRE du playbook `export-ppt-verifie` dès qu'une version ajoute/restructure des slides (arbitrage 2026-09-03, câblage ratifié) | Synchrone | (session) | Câblage ratifié, 0 exécution mesurée à ce jour |
+| `restitution-deck-design` | Système de design général pour decks de restitution (hiérarchie visuelle, rythme, cohérence) — référence complémentaire à `deck-design-review`, pas l'étape câblée du playbook | Synchrone | (session) | Pas encore mesuré |
 | `dataviz` | Tout graphique/chart/dashboard, dans un artifact ou un deck | Synchrone | (session) | Pas encore mesuré |
 | `code-review` / `verify` / `simplify` | Revue du diff / vérification bout-en-bout / nettoyage | Synchrone, fin de plan de dev | (session) | Builtins |
 

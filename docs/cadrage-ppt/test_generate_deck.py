@@ -98,6 +98,19 @@ def main():
     check(os.path.exists(out) and os.path.getsize(out) > 500_000,
           f"fichier .pptx écrit, taille plausible ({os.path.getsize(out) if os.path.exists(out) else 0} octets)")
 
+    print("Version affichée en couverture à jour (v2.8 y est restée gelée 4 bumps de suite) :")
+    versions_docstring = [tuple(int(p) for p in v.split("."))
+                           for v in re.findall(r"(?m)^v(\d+\.\d+)", gen.__doc__ or "")]
+    version_courante = tuple(int(p) for p in gen.VERSION_DECK.lstrip("v").split("."))
+    check(bool(versions_docstring) and max(versions_docstring) == version_courante,
+          f"VERSION_DECK ({gen.VERSION_DECK}) == dernière entrée de version du docstring "
+          f"({'v' + '.'.join(map(str, max(versions_docstring))) if versions_docstring else 'aucune trouvée'})")
+    couverture = prs.slides[0]
+    texte_version = next((ph.text_frame.text for ph in couverture.placeholders
+                           if ph.placeholder_format.idx == 3), None)
+    check(texte_version == f"{gen.VERSION_DECK} · {gen.DATE_VERSION_DECK}",
+          f"placeholder version de la couverture == VERSION_DECK/DATE_VERSION_DECK (reçu {texte_version!r})")
+
     print("Cadres photo bien calés (chapitres — layout '50 - Chapitre', teardrop) :")
     # 9 chapitres (v2.9) : Exec summary(3) · Contexte(7) · Personas(11) ·
     # Besoins & douleurs(14) · Proposition(17) · IA(21) · Démarche(28) ·

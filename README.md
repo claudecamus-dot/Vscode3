@@ -1,7 +1,7 @@
 # VSCode3 — cadrage BMAD IAP
 
-Le livrable de ce dépôt est un **deck de synthèse** (`docs/cadrage-ppt/`, v2.7,
-8 chapitres, 42 slides) qui restitue les résultats du cadrage BMAD IAP
+Le livrable de ce dépôt est un **deck de synthèse** (`docs/cadrage-ppt/`, v2.11,
+9 chapitres, 46 slides) qui restitue les résultats du cadrage BMAD IAP
 (`docs/bmad-iap-cadrage.md`), dessiné par-dessus le vrai template de marque
 OCTO (`template-octo.pptx`) — masters/layouts/thème conservés.
 
@@ -30,8 +30,10 @@ py -m pytest tests/ --cov=docs/cadrage-ppt   # couverture, première mesure 10 %
 py -m ruff check .                            # linter, baseline mesurée
 ```
 
-Détail complet des commandes, contraintes durables du deck et gotchas connus
-(cadre teardrop carré, glyphe ⟲ sans variante grasse) : voir [`CLAUDE.md`](CLAUDE.md).
+Détail complet des commandes : voir [`CLAUDE.md`](CLAUDE.md). Gotchas connus du
+deck (cadre teardrop carré, glyphe ⟲ sans variante grasse) : voir
+[`.claude/skills/deck-design-review/SKILL.md`](.claude/skills/deck-design-review/SKILL.md)
+et les commentaires de `docs/cadrage-ppt/generate_deck.py`.
 
 ## Documentation
 

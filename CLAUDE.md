@@ -1,7 +1,7 @@
 # VSCode3
 
 Cadrage BMAD IAP : le livrable est un deck de synthèse (`docs/cadrage-ppt/`,
-42 slides sur le vrai template OCTO) — l'historique de ses versions vit dans
+46 slides sur le vrai template OCTO) — l'historique de ses versions vit dans
 `git log docs/cadrage-ppt/`, pas ici.
 
 ## Commandes
@@ -38,6 +38,13 @@ Cadrage BMAD IAP : le livrable est un deck de synthèse (`docs/cadrage-ppt/`,
 
 Le dispositif vient du hub de supervision : **corriger là-bas puis régénérer
 l'export**, jamais localement — les copies locales divergent (leçon P1).
+
+## Optimisation tokens (cf. `docs/vscode1-export/optimisation-tokens.md`)
+
+- Ne pas re-dériver ce que le wiki (`docs/wiki/`) ou une mémoire documente déjà.
+- Lire des portions ciblées (Grep/Glob puis Read offset/limit), pas des fichiers entiers.
+- Sous-agent pour toute sortie volumineuse ; sinon pas de sous-agent par défaut.
+- Documenter une décision actée plutôt que la rejouer.
 
 ## Règles de travail
 

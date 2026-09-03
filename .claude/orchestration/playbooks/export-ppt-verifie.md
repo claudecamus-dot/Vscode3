@@ -10,9 +10,12 @@ cadrage géométrique »).
 
 Précédent réel sur ce dépôt (statut `eprouve` pour la colonne vertébrale) : la paire
 génération → `test_generate_deck.py` → rendu réel a déjà été jouée pour rebâtir le deck sur
-le vrai template OCTO (commit `1cb15fc`, cadres photo réels via `pptx-framed-image`). Les
-étapes conditionnelles `slide-text-polish` et `restitution-deck-design` restent, elles,
-`jamais-jouees` sur ce dépôt à ce jour — à proposer avec prudence explicite.
+le vrai template OCTO (commit `1cb15fc`, cadres photo réels via `pptx-framed-image`). L'étape
+`design-review` (ci-dessous) a été RECÂBLÉE en OBLIGATOIRE le 2026-09-01 (commit `418286c`)
+sur la skill `deck-design-review` — ce commit avait précédé son propre arbitrage, régularisé
+le 2026-09-03 (`arbitrages.json`, cible `deck-design-review` : ratifié, coordination avec le
+même chantier sur VSCode4). `slide-text-polish` reste, elle, `jamais-jouee` sur ce dépôt à ce
+jour — à proposer avec prudence explicite.
 
 Routage de l'étape `generation` (arbitrage 2026-07-21) : elle s'instancie désormais via le
 **sous-agent `ppt-designer`** (outil `Agent`), pas en génération inline dans la session —

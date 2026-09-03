@@ -117,6 +117,24 @@ l'utilisateur ouvre :
     plancher, le build le signale désormais comme un vrai défaut au lieu
     d'un print perdu — c'est l'évolution du check graphique demandée.
 
+v2.12 (2026-09-03) : deuxième passe sur les mêmes 4 slides signalées, cette
+fois avec un rendu PowerPoint réel de CHAQUE slide (pas un échantillon) —
+deux défauts réels supplémentaires trouvés, tous deux présents dans les DEUX
+moteurs de rendu (donc jamais des artefacts LibreOffice comme la slide 1) :
+  - `slide_executive_summary` (slide 2) était le SEUL appel `content_slide()`
+    de tout le générateur (~30 autres) sans `color=` explicite — son kicker
+    retombait sur l'accent cyan générique au lieu du NAVY du chapitre 01
+    qu'elle ouvre, déjà porté par ses deux slides suivantes. Corrigé en
+    passant `color=NAVY`.
+  - `slide_cover` (slide 1) affichait une version gelée sur "v2.8 ·
+    2026-09-02" depuis 4 bumps de version consécutifs (v2.9 à v2.11) — la
+    chaîne était écrite en dur dans la fonction plutôt que dérivée d'une
+    source unique. Introduit `VERSION_DECK`/`DATE_VERSION_DECK` (constantes
+    de module) + un test de régression (`test_generate_deck.py`) qui compare
+    `VERSION_DECK` à la dernière entrée "vX.Y" du docstring de ce module et
+    au texte réellement posé sur le placeholder de couverture — ce test a
+    lui-même détecté l'écart en cours d'écriture de cette entrée.
+
 Séparateurs : chapitres = intercalaire teardrop (photo + numéro, layout dédié) ;
 sous-chapitres = `slide_sous_chapitre` (bloc-titre léger, sans photo ni numéro —
 sans appelant depuis la v2.6, machinerie conservée).
@@ -149,6 +167,14 @@ from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.dml import MSO_LINE_DASH_STYLE
 from pptx.oxml.ns import qn
+
+# Source unique du numero de version affiche sur la couverture (slide_cover) —
+# jusqu'a v2.12 c'etait une chaine gelee dans slide_cover, jamais mise a jour a
+# 4 bumps de version consecutifs (v2.9 a v2.11 ont toutes laisse "v2.8 · date
+# perimee" sur la SLIDE LA PLUS VISIBLE du deck). Un seul endroit a changer
+# desormais.
+VERSION_DECK = "v2.12"
+DATE_VERSION_DECK = "2026-09-03"
 
 HERE = os.path.dirname(__file__)
 TEMPLATE = os.path.join(HERE, "template-octo.pptx")
@@ -684,7 +710,7 @@ def slide_cover(prs):
     # v2.5 : restructuration 8 chapitres sur le fil rouge SCALE — fusion
     # trajectoire/bout-en-bout, executive summary réancré, chapitre Outillage
     # IAP. v2.4 : fil humain de la trajectoire.)
-    phs[3].text_frame.text = "v2.8 · 2026-09-02"
+    phs[3].text_frame.text = f"{VERSION_DECK} · {DATE_VERSION_DECK}"
     # Bandeau de métadonnées (statut/langue/confidentialité/sources) retiré sur
     # demande — la couverture ne garde que titre, sous-titre, entité et version.
     return s
@@ -698,8 +724,16 @@ def slide_cover(prs):
 # accent ») : le RÉSULTAT (la preuve, ce que le sponsor achète in fine) est la
 # seule carte en fill navy plein.
 def slide_executive_summary(prs):
+    # v2.12 : seul appel content_slide() de tout le deck SANS color= explicite
+    # (les ~30 autres en passent tous un) -> kicker retombait sur ACCENT (cyan
+    # generique) au lieu du NAVY du chapitre 01 Exec summary, dont cette slide
+    # ouvre le fil (slide_pitch_iap et slide_demarche_avec_sans_agentic, juste
+    # apres, portent deja color=NAVY) -- visible dans les DEUX rendus (LibreOffice
+    # ET PowerPoint), manquee lors d'une premiere relecture concentree sur le
+    # contenu (bloc OFFRE) plutot que sur la couleur du kicker.
     s = content_slide(prs, "Executive summary",
-                       "Du pourquoi à la preuve : une transformation cadrée de bout en bout")
+                       "Du pourquoi à la preuve : une transformation cadrée de bout en bout",
+                       color=NAVY)
 
     headline_h = 0.62
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, headline_h, [
