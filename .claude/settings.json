@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "py \"${CLAUDE_PROJECT_DIR}/.claude/hooks/guard_destructive_git.py\"",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_destructive_git.py\"",
             "timeout": 10
           },
           {
@@ -23,13 +23,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "py \"${CLAUDE_PROJECT_DIR}/.claude/hooks/remind_revue_increment.py\"",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/remind_revue_increment.py\"",
             "timeout": 10,
             "statusMessage": "Rappel discipline revue-increment..."
           },
           {
             "type": "command",
-            "command": "py \"${CLAUDE_PROJECT_DIR}/.claude/supervision/scan_transcripts.py\"",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/supervision/scan_transcripts.py\"",
             "timeout": 60,
             "statusMessage": "Supervision agents : scan incremental des transcripts..."
           }
@@ -51,7 +51,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "py \"${CLAUDE_PROJECT_DIR}/.claude/hooks/orchestrator_gate.py\"",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/orchestrator_gate.py\"",
             "timeout": 10,
             "statusMessage": "Grille de qualification orchestrateur..."
           }
@@ -64,7 +64,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "py \"${CLAUDE_PROJECT_DIR}/.claude/supervision/log_usage.py\"",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/supervision/log_usage.py\"",
             "timeout": 10,
             "statusMessage": "Journal usage agents..."
           }
@@ -78,6 +78,12 @@
       "Read(./.env)",
       "Read(./secrets/**)",
       "Read(./config/credentials.json)"
+    ],
+    "allow": [
+      "Bash(py -m pytest *)",
+      "Bash(py -m py_compile *)",
+      "Bash(node -c *)",
+      "Bash(npm test*)"
     ]
   }
 }
