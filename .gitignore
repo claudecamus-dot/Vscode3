@@ -28,6 +28,13 @@ _bmad-output/
 # + nature_images) - regenerables via generate_deck.py, pas a committer.
 docs/cadrage-ppt/_img/
 
+# Archives de versions intermediaires du deck (.pptx, 19-23 Mo chacune) -
+# scratch de travail regenerable via generate_deck.py, jamais du contenu a
+# committer (finding risque_technique de l'audit-technique VScode5 du
+# 2026-09-04 : 10 .pptx lourds deja versionnes, .git a 105 Mo). Mitigation
+# uniquement : n'empeche pas les commits deja faits, stoppe la croissance.
+docs/cadrage-ppt/archives/*.pptx
+
 # Fichier verrou PowerPoint (cree quand le .pptx est ouvert via COM, ex. le
 # script de rendu pptx-verify) - artefact temporaire, jamais du contenu.
 **/~$*.pptx
