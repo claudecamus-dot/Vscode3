@@ -1508,7 +1508,7 @@ def slide_pitch_iap(prs):
                 f"({ITEM_SIZE_PLANCHER}pt) — raccourcir le texte ou réduire le nombre d'items."
             )
         gap = max(0.06, (dispo - sum(items_h)) / max(1, len(items) - 1))
-        for t, ih in zip(items, items_h):
+        for t, ih in zip(items, items_h, strict=True):
             D.add_rect(s, x + pad + 0.01, y + 0.045, 0.06, 0.06, fill=color, rounded=True, radius=0.5)
             D.add_text(s, x + pad + 0.14, y, usable - 0.14, ih, [
                 (t, dict(size=item_size, color=NAVY, line_spacing=item_ls)),
@@ -3686,7 +3686,7 @@ def slide_vision(prs):
     D.add_rect(s, chain_cx - 0.01, c1, 0.02, c3 - c1, fill=LINE)
 
     for i, ((label, color, claim, detail), (h, claim_h, detail_h), top) in \
-            enumerate(zip(blocs, dims, tops)):
+            enumerate(zip(blocs, dims, tops, strict=True)):
         accent = (i == len(blocs) - 1)   # « un sur N » : l'exigence, la thèse
         if accent:
             D.add_rect(s, card_x, top, card_w, h, fill=NAVY, rounded=True, radius=0.06)
@@ -4162,7 +4162,7 @@ def slide_kpis_exemple(prs):
         cx += cw + 0.12
 
     header_y = CONTENT_TOP + 0.4
-    for x, w, label in zip(xs, col_widths, headers):
+    for x, w, label in zip(xs, col_widths, headers, strict=True):
         # _header_cell : le "⟲" de « T+6-12 MOIS · ⟲ RÉÉVALUATION » serait un
         # tofu en gras (cf. _GLYPHES_SANS_GRAS) — posé bold=False pour ce seul
         # caractère, le reste du libellé reste en gras.
