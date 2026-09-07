@@ -1,5 +1,5 @@
 ---
-updated: 2026-09-03
+updated: 2026-09-07
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -8,19 +8,20 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-09-03T11:08:06+02:00 · **20 sessions** (transcripts) · **33** invocations de skills · **61** lancements de sous-agents.
+Dernier scan : 2026-09-07T09:24:19+02:00 · **23 sessions** (transcripts) · **36** invocations de skills · **74** lancements de sous-agents.
 
 ## Skills — usage réel
 
 | Skill | Famille | Invocations | Première | Dernière |
 | --- | --- | --- | --- | --- |
-| `agent-orchestrator` | projet | 16 | 2026-07-21 | 2026-09-03 |
+| `agent-orchestrator` | projet | 18 | 2026-07-21 | 2026-09-07 |
 | `agent-supervisor` | projet | 6 | 2026-07-21 | 2026-07-23 |
 | `artifact-design` | (builtin/session) | 2 | 2026-07-06 | 2026-07-07 |
 | `pptx-deck` | global | 2 | 2026-07-08 | 2026-07-09 |
 | `revue-increment` | projet | 2 | 2026-07-21 | 2026-07-22 |
 | `bmad-agent-pm` | BMAD | 1 | 2026-07-22 | 2026-07-22 |
 | `bmad-party-mode` | BMAD | 1 | 2026-09-02 | 2026-09-02 |
+| `deck-design-library` | projet | 1 | 2026-09-03 | 2026-09-03 |
 | `pptx-verify` | global | 1 | 2026-07-08 | 2026-07-08 |
 | `restitution-deck-design` | global | 1 | 2026-07-08 | 2026-07-08 |
 | `roadmap-keeper` | global | 1 | 2026-07-07 | 2026-07-07 |
@@ -29,18 +30,18 @@ Dernier scan : 2026-09-03T11:08:06+02:00 · **20 sessions** (transcripts) · **3
 
 | Sous-agent | Lancements | Premier | Dernier |
 | --- | --- | --- | --- |
-| `general-purpose` | 35 | 2026-07-06 | 2026-09-02 |
-| `ppt-designer` | 16 | 2026-07-21 | 2026-09-02 |
+| `general-purpose` | 46 | 2026-07-06 | 2026-09-04 |
+| `ppt-designer` | 17 | 2026-07-21 | 2026-09-04 |
 | `Explore` | 7 | 2026-07-21 | 2026-09-01 |
+| `agent-supervisor` | 2 | 2026-09-03 | 2026-09-03 |
 | `Plan` | 1 | 2026-07-21 | 2026-07-21 |
-| `agent-supervisor` | 1 | 2026-09-03 | 2026-09-03 |
 | `claude-code-guide` | 1 | 2026-07-21 | 2026-07-21 |
 
 ## Jamais utilisés
 
-**projet** — 4/10 jamais invoqués :
+**projet** — 3/10 jamais invoqués :
 
-`audit-technique`, `deck-design-library`, `deck-design-review`, `veille-agentic`
+`audit-technique`, `deck-design-review`, `veille-agentic`
 
 **BMAD** — 44/46 jamais invoqués :
 
@@ -102,16 +103,15 @@ Ce que 'traiter' ces 3 points pourrait vouloir dire (a instruire au hub, pas tra
 - **`CLAUDE.md:couverture`** (2026-09-03) : ACCEPTE + APPLIQUE, avec une correction du chiffre propose. Le diagnostic signalait que la commande de couverture documentee (`pytest tests/ --cov=docs/cadrage-ppt`) annonce 7 % sur generate_deck.py alors que le vrai harnais du deck (test_generate_deck.py, script autonome hors pytest) en couvre l'essentiel -- la suite pytest n'appelle jamais build(). VERIFIE MOI-MEME plutot que repris tel quel : `py -m coverage run docs/cadrage-ppt/test_generate_deck.py` + `report` donne 95 %, pas les 96 % du rapport (le fichier avait deja change entre-temps). CLAUDE.md corrige pour documenter les DEUX mesures et ce qu'elles couvrent chacune, et deliberement SANS figer le pourcentage : citer un nombre qui se perime est precisement le defaut repare le matin meme sur la couverture du deck (version v2.8 gelee 4 versions). La consigne ecrite est de rejouer la commande, pas de citer la ligne.
 - **`.claude/supervision/write_diagnostic.py`** (2026-09-03) : REMIS A L'ARBITRAGE — correctif hub, pas local (regle durable CLAUDE.md : 'le dispositif vient du hub, corriger la-bas puis regenerer l'export, jamais localement, lecon P1'). Mesure du diagnostic : l'ecrivain local refuse les 6 categories pratique-* que son propre consommateur (scan_transcripts.py l.574-575) accepte deja depuis le 2026-07-28 -- correctif applique au consommateur, jamais au producteur. Consequence concrete et non theorique : le volet 'pratiques d'ingenierie' est INEXPRIMABLE depuis ce depot, les 4 findings de pratique du diagnostic de ce jour ont du etre replies sur verification-manquante/autre. Canon hub : 141 lignes contre 84 ici, diff de 225 lignes. RIEN MODIFIE LOCALEMENT. A faire au hub : regenerer write_diagnostic.py depuis le canon, puis balayer la flotte -- le correctif de juillet n'a peut-etre atteint aucun write_diagnostic.py des projets cibles.
 - **`docs/cadrage-ppt/generate_deck.py:taille`** (2026-09-03) : REMIS A L'ARBITRAGE (mesure faite, geste non pose — il coute et il engage). Mesure du diagnostic : 2781 l (audit 2026-07-30) -> 3149 l (2026-09-02) -> 3911 l aujourd'hui, soit +40,6 % au total et une croissance d'un seul jour (+762 l) superieure au cumul des 33 jours precedents. Fichier unique, 66 def dont 37 slide_*. La pastille 'risque technique moyen' du hub repose donc sur un chiffre faux de plus de 1100 lignes. NUANCE CONSERVEE, elle compte : le filet fonctionnel tient (95 % de couverture, 46 pages rendues, geometrie verte, 90 tests) -- c'est un risque de LISIBILITE, pas de casse. Deux gestes proposes, aucun pose : (1) lancer audit-technique (skill jamais utilisee, audit facture qui LIT le code) pour re-coter le risque, verdict a ecrire cote hub ; (2) decouper par chapitre SEULEMENT si l'audit le confirme. Geste immediat independant et non bloquant, lui aussi non fait : les 2 vraies erreurs pyflakes (F841, F541) parmi les 14 ruff -- jamais par `ruff --fix` aveugle (lecon VSCode2).
+- **`write_diagnostic.py:sync-2026-09-04`** (2026-09-04) : ACCEPTE + APPLIQUE : suite a l'arbitrage du 2026-09-03 (cible .claude/supervision/write_diagnostic.py, decision « correctif hub, pas local »), le fichier est resynchronise depuis le canon du hub (diff verifie propre au prealable : aucune divergence locale a preserver). CATEGORIES passe de 7 a 13 valeurs (ajout des 6 categories pratique-*), plus trois ameliorations de securite deja presentes cote hub et absentes ici : validation du champ cible (requis), avertissement sur les findings qui disparaissent silencieusement d'une reecriture, ecriture atomique (tmp + os.replace) pour eviter un diagnostic.json tronque. Verifie : py_compile propre, ecriture reelle testee via AGENT_SUPERVISION_DIAGNOSTIC sur un fichier scratch (jamais sur le diagnostic reel) avec une categorie pratique-test -> acceptee. diagnostic.json corrige dans la foulee : 4 findings deja ACCEPTE+APPLIQUE le 2026-09-03 (tests/test_generate_deck_garde.py, write_diagnostic.py lui-meme, CLAUDE.md couverture, generate_deck.py::content_slide) mais jamais retires du fichier apres leur arbitrage sont pruned ; ne reste que le finding docs/cadrage-ppt/generate_deck.py:taille, toujours REMIS A L'ARBITRAGE depuis le 2026-09-03.
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 
 _Diagnostic à jour._
 
-1. **La suite pytest est rouge au HEAD deja pousse, et le fichier de test du generateur n'est atteint par AUCUNE commande documentee** — Reparer les 5 references mortes est le geste de deux minutes ; le finding porte sur la raison pour laquelle personne ne l'a vu — un fichier de test que le contrat de verification ne collecte jamais n'est pas un filet, c'est un decor. · **Proposition** : Deux gestes, a arbitrer ensemble. (1) Elargir la commande documentee : CLAUDE.md l.13 passe de py -m pytest tests/test_agent_*.py a py -m pytest tests/ (suite entiere, 90 tests, ~34 s mesures) — le glob test_agent_* datait d'une epoque ou tests/ ne contenait que les tests du dispositif ; il y a aujourd'hui 3 fichiers hors motif (test_generate_deck_garde, test_guard_destructive_git, test_warn_verif_before_commit), dont deux touchent la securite. (2) Aligner le contrat de l'etape generation du playbook export-ppt-verifie ET le jeton verif_bash de .claude/warn_verif_before_commit.json pour qu'un commit sous docs/cadrage-ppt/ n'accepte plus test_generate_deck seul comme preuve, mais exige aussi la suite pytest verte. Sans (2), (1) ne change rien : la commande resterait exacte et non jouee. Correctif du symptome a faire dans le meme geste : renommer les 5 occurrences _ANOMALIES_IMAGE en _ANOMALIES_BUILD dans tests/test_generate_deck_garde.py.
-2. **Le volet « pratiques d'ingenierie » est inexprimable dans ce depot : l'ecrivain du diagnostic refuse les 6 categories que son propre scan accepte** — Resynchroniser write_diagnostic.py depuis le hub, pas le patcher ici : CLAUDE.md l'impose deja — « corriger la-bas puis regenerer l'export, jamais localement » (lecon P1). · **Proposition** : Regenerer .claude/supervision/write_diagnostic.py depuis le canon du hub (VScode5) via l'export du dispositif, puis relancer ce diagnostic pour re-categoriser en pratique-test les findings 1 et 3, en pratique-dev les findings 4 et 5 : leur libelle actuel est un repli, pas leur nature. Avant de regenerer, appliquer la doctrine de resynchro etablie le 2026-09-02 pour stock_images.py — diff d'abord, car une copie locale peut etre EN AVANCE ; ici la mesure est faite et tranche dans l'autre sens (84 l locales contre 141 l au hub, aucune categorie locale absente du hub), donc la regeneration ne perd rien. Balayage a prevoir dans le meme geste : verifier si les autres depots de la flotte portent la meme troncature — le correctif du 2026-07-28 a pu n'atteindre que les scan_transcripts.py partout, auquel cas aucun projet de la flotte ne sait ecrire un finding de pratique.
-3. **La couverture documentee annonce 7 % la ou le vrai harnais en mesure 96 % : le seul chiffre que ce depot sait produire est faux de 89 points** — Corriger la commande avant de regarder le chiffre : publier un 7 % exposerait la pastille couverture du wiki de flotte a un faux negatif spectaculaire, et pousserait a « ecrire des tests » pour un generateur deja couvert a 96 %. · **Proposition** : Remplacer la ligne 17 de CLAUDE.md par deux mesures distinctes plutot qu'une fausse : (a) couverture du livrable deck = py -m coverage run --source=docs/cadrage-ppt docs/cadrage-ppt/test_generate_deck.py puis py -m coverage report (96 % mesure ce jour, a inscrire comme reference) ; (b) couverture du dispositif = py -m pytest tests/ --cov=.claude. Alternative plus propre si elle est arbitree : integrer test_generate_deck.py a la suite pytest (son main() devient un test, ses check() des assert), ce qui reunifie les deux harnais, supprime par construction la cause du finding 1, et rend --cov honnete sans commande speciale. Dans les deux cas, ne pas fixer de seuil : la doctrine « on mesure d'abord » reste la bonne, c'est l'instrument qui etait faux.
-4. **+762 lignes en 24 h : le generateur a plus que double en un jour la croissance de ses 33 jours precedents, et le re-cotage renvoye « au prochain diagnostic etage 2 » n'a plus d'excuse** — Re-coter sur le fichier reel avant tout decoupage : la decision de refactorer un fichier en evolution active (5 versions en 3 jours) doit s'appuyer sur un audit date d'aujourd'hui, pas sur une pastille de juillet. · **Proposition** : Lancer audit-technique sur VSCode3 (skill installee, toujours listee dans jamais_utilises de routing-hints) pour re-coter risque_technique sur les 3911 lignes reelles, en ecrivant le verdict la ou il vit — .claude/audits/VSCode3.json cote hub, le repertoire local ne contenant qu'un README.md. Puis, SEULEMENT si l'audit le confirme : acter au prochain increment deck l'extraction des 37 fonctions slide_* en modules par chapitre importes par build(), le harnais existant (96 %, 46 pages rendues) servant de filet de non-regression. Ne rien decouper avant cet arbitrage. Geste independant et immediat, lui : traiter les 2 vraies erreurs pyflakes (F841 variable inutilisee, F541 f-string sans placeholder) — jamais par ruff --fix en aveugle, CLAUDE.md rappelant qu'un --fix a supprime un re-export et casse un import sur VSCode2.
-5. **Le defaut de couleur corrige ce matin reste arme : content_slide garde un defaut implicite que 34 appels sur 34 contredisent, et zero test ne regarde une couleur** — Transformer le defaut invisible en echec bruyant : c'est le durcissement le moins cher pour cette classe de bug, et il ne demande aucun test supplementaire. · **Proposition** : Rendre color obligatoire dans la signature — def content_slide(prs, kicker, title, color): — et supprimer le repli or ACCENT. Les 34 appels existants passent deja la couleur, le changement est donc a zero regression (verifiable d'un coup par python test_generate_deck.py : 46 slides inchangees), et le 35e appel ecrit sans couleur echouera en TypeError au build au lieu de produire un kicker cyan que personne ne verra avant deux versions. Regle generale a arbitrer au-dela de ce cas, car c'est la vraie lecon des 3 defauts du 2026-09-03 : dans ce generateur, tout parametre portant une decision VISUELLE (couleur de chapitre, version affichee, budget vertical d'une carte) n'a pas de defaut implicite — soit il est obligatoire, soit il derive d'une constante unique verifiee par un test, comme VERSION_DECK vient de l'etre. Un defaut implicite y produit une slide fausse mais valide, c'est-a-dire precisement ce qu'aucun de nos automatismes ne sait voir.
+1. **+762 lignes en 24 h : le generateur a plus que double en un jour la croissance de ses 33 jours precedents, et le re-cotage renvoye « au prochain diagnostic etage 2 » n'a plus d'excuse** — Trancher explicitement si ce rythme est attendu (refonte en cours) ou un signal de derive a ralentir. · **Proposition** : A arbitrer avec l'utilisateur : confirmer le contexte (refonte graphique v2.11-v2.13) avant de qualifier ce point de risque ou de non-evenement.
+2. **generate_deck.py jamais decoupe (4738 lignes en working tree, 66+ fonctions)** — Decoupage modulaire par chapitre une fois le WIP en cours stabilise et commite. · **Proposition** : Effort XL, risque eleve dans l'immediat (WIP actif dessus, decouper maintenant = conflits garantis) -- attendre stabilisation.
+3. **Dette de lint mesuree non traitee : 5 blocs d'imports non tries (ruff I001)** — Retrier a la main bloc par bloc (le projet interdit ruff --fix aveugle), en conservant chaque # noqa: E402. · **Proposition** : Effort S, risque faible -- mais meme fichier generate_deck.py en WIP actif, a faire apres stabilisation.
 
 ---
 

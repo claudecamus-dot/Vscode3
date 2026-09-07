@@ -200,6 +200,37 @@
       "categories": [],
       "decision": "REMIS A L'ARBITRAGE (mesure faite, geste non pose — il coute et il engage). Mesure du diagnostic : 2781 l (audit 2026-07-30) -> 3149 l (2026-09-02) -> 3911 l aujourd'hui, soit +40,6 % au total et une croissance d'un seul jour (+762 l) superieure au cumul des 33 jours precedents. Fichier unique, 66 def dont 37 slide_*. La pastille 'risque technique moyen' du hub repose donc sur un chiffre faux de plus de 1100 lignes. NUANCE CONSERVEE, elle compte : le filet fonctionnel tient (95 % de couverture, 46 pages rendues, geometrie verte, 90 tests) -- c'est un risque de LISIBILITE, pas de casse. Deux gestes proposes, aucun pose : (1) lancer audit-technique (skill jamais utilisee, audit facture qui LIT le code) pour re-coter le risque, verdict a ecrire cote hub ; (2) decouper par chapitre SEULEMENT si l'audit le confirme. Geste immediat independant et non bloquant, lui aussi non fait : les 2 vraies erreurs pyflakes (F841, F541) parmi les 14 ruff -- jamais par `ruff --fix` aveugle (lecon VSCode2).",
       "source": "diagnostic etage 2 du 2026-09-03 (agent-supervisor), finding 3"
+    },
+    {
+      "cible": "write_diagnostic.py:sync-2026-09-04",
+      "date": "2026-09-04",
+      "categories": [],
+      "decision": "ACCEPTE + APPLIQUE : suite a l'arbitrage du 2026-09-03 (cible .claude/supervision/write_diagnostic.py, decision « correctif hub, pas local »), le fichier est resynchronise depuis le canon du hub (diff verifie propre au prealable : aucune divergence locale a preserver). CATEGORIES passe de 7 a 13 valeurs (ajout des 6 categories pratique-*), plus trois ameliorations de securite deja presentes cote hub et absentes ici : validation du champ cible (requis), avertissement sur les findings qui disparaissent silencieusement d'une reecriture, ecriture atomique (tmp + os.replace) pour eviter un diagnostic.json tronque. Verifie : py_compile propre, ecriture reelle testee via AGENT_SUPERVISION_DIAGNOSTIC sur un fichier scratch (jamais sur le diagnostic reel) avec une categorie pratique-test -> acceptee. diagnostic.json corrige dans la foulee : 4 findings deja ACCEPTE+APPLIQUE le 2026-09-03 (tests/test_generate_deck_garde.py, write_diagnostic.py lui-meme, CLAUDE.md couverture, generate_deck.py::content_slide) mais jamais retires du fichier apres leur arbitrage sont pruned ; ne reste que le finding docs/cadrage-ppt/generate_deck.py:taille, toujours REMIS A L'ARBITRAGE depuis le 2026-09-03."
+    },
+    {
+      "cible": "docs/cadrage-ppt/generate_deck.py:taille",
+      "date": "2026-09-07",
+      "categories": [],
+      "decision": "ACCEPTE : arbitrage utilisateur explicite (2026-09-07) — la croissance mesuree (+40,6% cumule, +762 lignes en 24h le 2026-09-03) est due a la refonte graphique en cours (check_slide_synthese v2.13->v3-refonte, integree au deck de prod en v2.30 le 2026-09-04, deck aujourd'hui a v2.32), pas une derive non maitrisee. Confirme la NUANCE deja posee par le diagnostic du 2026-09-03 : filet fonctionnel intact (couverture mesuree, geometrie verte, tests generateur au vert y compris apres ce run). Ne cloture PAS le decoupage modulaire (cf. arbitrage separe flotte:23-items-cadres) : la refonte assumee dit seulement que le rythme actuel n'est pas un signal d'alarme a lui seul.",
+      "source": "diagnostic etage 2 du 2026-09-03 (agent-supervisor), finding 3 -- arbitre sur /orchestre du 2026-09-07"
+    },
+    {
+      "cible": "flotte:23-items-cadres",
+      "date": "2026-09-07",
+      "categories": [
+        "pratique-dev"
+      ],
+      "decision": "REMIS A L'ARBITRAGE, confirme (pas d'action) : le decoupage modulaire de generate_deck.py (4738+ lignes, 66+ fonctions) reste differe jusqu'a stabilisation du WIP -- la proposition du diagnostic le disait deja (\"decouper maintenant = conflits garantis\"), et l'etat reel au 2026-09-07 le confirme : 17 fichiers non commites sur ce meme chantier de refonte graphique, dont generate_deck.py (+868/-354 lignes de diff). Decision explicite plutot que silence : revisiter une fois le chantier refonte graphique (check_slide_synthese v3, integration deck v2.30+) commite.",
+      "source": "diagnostic etage 2 du 2026-09-04 (agent-supervisor), finding pratique-dev \"jamais decoupe\" -- arbitre sur /orchestre du 2026-09-07"
+    },
+    {
+      "cible": "flotte:23-items-cadres",
+      "date": "2026-09-07",
+      "categories": [
+        "pratique-dev"
+      ],
+      "decision": "ACCEPTE + APPLIQUE : dette de lint traitee (5 blocs d'imports ruff I001 : generate_deck.py:373,375,396 ; pptx_deck.py:10 ; test_generate_deck.py:39), retriee a la main bloc par bloc (jamais `ruff --fix` en aveugle, regle du projet) en suivant exactement la sortie `ruff check --select I001` comme guide. Verifie : `ruff check --select I001` propre sur les 3 fichiers, py_compile propre, ET `python test_generate_deck.py` rejoue en entier apres coup (49/49 pages rendues, TOUS LES TESTS PASSENT) -- aucune regression fonctionnelle malgre le WIP actif sur ces memes fichiers.",
+      "source": "diagnostic etage 2 du 2026-09-04 (agent-supervisor), finding pratique-dev \"dette de lint\" -- applique sur /orchestre du 2026-09-07"
     }
   ]
 }
