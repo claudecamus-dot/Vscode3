@@ -22,7 +22,8 @@ générateur script (pas une app web) :
     retrait de puce du master (cf. `_sans_puce`, bug trouvé et corrigé) ;
   - obstructions de cadre limitées aux deux formes décoratives connues
     (badge logo/numéro) — une nouvelle obstruction serait un vrai défaut ;
-  - aucune police générique (Arial/Calibri/...) explicitement posée ;
+  - aucune police générique (Arial/Calibri/...) explicitement posée, hors le
+    repli Arial documenté sur les glyphes ①②③⟲ (hors couverture Outfit) ;
   - rendu réel via LibreOffice : le fichier s'ouvre et produit bien une page
     par slide (pas un fichier que python-pptx parse mais qu'aucun moteur
     n'ouvre proprement).
@@ -35,11 +36,10 @@ import subprocess
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import generate_deck as gen
 from pptx import Presentation
 from pptx.enum.shapes import MSO_SHAPE_TYPE
 from pptx.oxml.ns import qn
-
-import generate_deck as gen
 
 echecs = 0
 
@@ -93,7 +93,7 @@ def main():
     prs = Presentation(out)
 
     print("Structure :")
-    check(len(prs.slides) == 46, f"46 slides — reçu {len(prs.slides)}")
+    check(len(prs.slides) == 49, f"49 slides — reçu {len(prs.slides)}")
     check(not problemes, f"géométrie propre (verifier_geometrie) — {len(problemes or [])} problème(s)")
     check(os.path.exists(out) and os.path.getsize(out) > 500_000,
           f"fichier .pptx écrit, taille plausible ({os.path.getsize(out) if os.path.exists(out) else 0} octets)")
@@ -134,7 +134,24 @@ def main():
     # v2.14/v2.15 avaient câblé slide_synthese_pourquoi_quoi_comment ici (+1
     # slide, 46 -> 47) ; v2.16 la retire de build() (2 tours rejetée) — 46
     # slides à nouveau, indices ci-dessous redevenus ceux de v2.13.)
-    chapitres = [2, 7, 11, 14, 17, 21, 28, 37, 41]
+    # v2.28 : slide_specificites_infra CÂBLÉE juste après l'intercalaire du
+    # chapitre 02 (qui reste en 7, l'ajout vient APRÈS lui) — 46 -> 47, tout
+    # ce qui suit le chapitre 02 glisse de +1 (Personas 11->12, Besoins &
+    # douleurs 14->15, Proposition 17->18, IA 21->22, Démarche 28->29,
+    # Outillage IAP 37->38, KPI 41->42).
+    # v2.29 : slide_infra_as_product_exemple CÂBLÉE juste après elle (l'exemple
+    # avant/après qui rend tangible sa conclusion) — 47 -> 48, encore +1 sur
+    # tout ce qui suit le chapitre 02 (Personas 12->13, Besoins & douleurs
+    # 15->16, Proposition 18->19, IA 22->23, Démarche 29->30, Outillage IAP
+    # 38->39, KPI 42->43).
+    # v2.30 : `slide_specificites_infra` et `slide_infra_as_product_exemple`
+    # DÉMÉNAGENT du chapitre 02 vers le chapitre 01 (juste après
+    # slide_executive_summary) ; `slide_synthese_pourquoi_quoi_comment` est
+    # AJOUTÉE entre les deux — net +1 slide au total (48 -> 49). Le chapitre 02
+    # commence directement par slide_mission après son intercalaire, qui
+    # glisse de +3 (7 -> 10), et tout ce qui suit avec lui (13->14, 16->17,
+    # 19->20, 23->24, 30->31, 39->40, 43->44).
+    chapitres = [2, 10, 14, 17, 20, 24, 31, 40, 44]
     for idx in chapitres:
         slide = prs.slides[idx - 1]
         cadre = gen._find_frame_by_geom(slide.slide_layout.shapes, "teardrop")
@@ -153,21 +170,23 @@ def main():
 
     print("Cadre photo bien calé (slide vision — layout 'cadre blanc', round2DiagRect) :")
     # v2.8 : slide_vision décale de 3 -> 6 (chapitre 01 Exec summary inséré avant elle).
-    slide_vision = prs.slides[5]
+    # v2.30 : +3 slides insérées avant elle dans le chapitre 01 (specificites_infra,
+    # synthese_pourquoi_quoi_comment, infra_as_product_exemple) — 6 -> 9.
+    slide_vision = prs.slides[8]
     cadre_vision = gen._find_frame_in_group(
         slide_vision.slide_layout.shapes, "Google Shape;212;p17", "Google Shape;213;p17")
     images_vision = _images(slide_vision)
-    check(len(images_vision) == 1, f"slide 6 (vision) : exactement 1 image posée (reçu {len(images_vision)})")
-    check(cadre_vision is not None, "slide 6 (vision) : cadre 'cadre blanc' trouvé sur le layout")
+    check(len(images_vision) == 1, f"slide 9 (vision) : exactement 1 image posée (reçu {len(images_vision)})")
+    check(cadre_vision is not None, "slide 9 (vision) : cadre 'cadre blanc' trouvé sur le layout")
     if images_vision and cadre_vision:
         pic = images_vision[0]
         l, t, w, h, _ = cadre_vision
         check((pic.left, pic.top, pic.width, pic.height) == (l, t, w, h),
-              f"slide 6 (vision) : image alignée exactement sur le cadre "
+              f"slide 9 (vision) : image alignée exactement sur le cadre "
               f"(image=({pic.left},{pic.top},{pic.width},{pic.height}) vs cadre=({l},{t},{w},{h}))")
         g = pic._element.spPr.find(qn("a:prstGeom"))
         check(g is not None and g.get("prst") == "round2DiagRect",
-              "slide 6 (vision) : image clippée au bon preset (round2DiagRect)")
+              "slide 9 (vision) : image clippée au bon preset (round2DiagRect)")
 
     print("Aucun cadre laissé vide (texte gabarit « ici mettre une Photo » résiduel) :")
     texte_complet = "\n".join(
@@ -198,7 +217,12 @@ def main():
             noms = {o["name"] for o in obstructions}
             check(noms <= attendus, f"slide {idx} : pas d'obstruction inattendue (trouvé {noms - attendus or 'aucune'})")
 
-    print("Police — aucune police générique explicitement posée (Arial/Calibri/...) :")
+    print("Police — Outfit partout, sauf repli Arial documenté sur les glyphes hors couverture :")
+    # v2.30 : _appliquer_police_deck pose Outfit sur tout le deck, avec un repli
+    # volontaire en Arial (POLICE_SECOURS) sur les seuls runs des glyphes
+    # ①②③⟲ (GLYPHES_HORS_POLICE_DECK — absents du cmap Outfit, vérifié sur
+    # LibreOffice ET PowerPoint COM). Tout AUTRE run en police générique reste
+    # un vrai défaut.
     generiques = {"arial", "calibri", "times new roman", "segoe ui"}
     trouve = set()
     for slide in prs.slides:
@@ -206,9 +230,10 @@ def main():
             if shp.has_text_frame:
                 for p in shp.text_frame.paragraphs:
                     for r in p.runs:
-                        if r.font.name and r.font.name.lower() in generiques:
-                            trouve.add(r.font.name)
-    check(not trouve, f"aucune police générique posée{' (trouvé ' + str(sorted(trouve)) + ')' if trouve else ''}")
+                        if (r.font.name and r.font.name.lower() in generiques
+                                and r.text.strip() not in gen.GLYPHES_HORS_POLICE_DECK):
+                            trouve.add((r.font.name, r.text))
+    check(not trouve, f"aucune police générique posée hors repli documenté{' (trouvé ' + str(sorted(trouve)) + ')' if trouve else ''}")
 
     print("Rendu réel (LibreOffice — conversion PDF, comptage de pages) :")
     import tempfile
