@@ -383,7 +383,7 @@ def _write_diag(tmp_path, payload):
 
 def test_write_diagnostic_valide_et_horodate(tmp_path):
     out = _write_diag(tmp_path, {"findings": [
-        {"categorie": "agent-mort", "titre": "46 skills BMAD sans usage",
+        {"categorie": "agent-mort", "cible": "bmad-*", "titre": "46 skills BMAD sans usage",
          "preuve": "0 invocation depuis l'install du 2026-07-16", "priorite": 4},
     ]})
     assert out.returncode == 0, out.stderr
@@ -400,11 +400,11 @@ def test_write_diagnostic_valide_et_horodate(tmp_path):
 
 def test_write_diagnostic_rejette_sans_preuve_ou_categorie_inconnue(tmp_path):
     sans_preuve = _write_diag(tmp_path, {"findings": [
-        {"categorie": "inefficacite", "titre": "trop de fan-out"},
+        {"categorie": "inefficacite", "cible": "Explore", "titre": "trop de fan-out"},
     ]})
     assert sans_preuve.returncode == 1 and "preuve" in sans_preuve.stdout
     mauvaise_cat = _write_diag(tmp_path, {"findings": [
-        {"categorie": "ressenti", "titre": "t", "preuve": "p"},
+        {"categorie": "ressenti", "cible": "Explore", "titre": "t", "preuve": "p"},
     ]})
     assert mauvaise_cat.returncode == 1 and "categorie invalide" in mauvaise_cat.stdout
     assert not (tmp_path / "diagnostic.json").exists()
@@ -418,7 +418,7 @@ def test_proposition_de_challenge_rendue_dans_la_page(tmp_path):
     tdir.mkdir()
     (tdir / "s1.jsonl").write_text(_line(skill="run-dev-server"), encoding="utf-8")
     assert _write_diag(tmp_path, {"findings": [
-        {"categorie": "agent-mort", "titre": "slide-text-polish sans usage",
+        {"categorie": "agent-mort", "cible": "slide-text-polish", "titre": "slide-text-polish sans usage",
          "preuve": "0 invocation depuis 2026-07-15",
          "proposition": "élargir son déclencheur à toute revue de deck, sinon désinstaller"},
     ]}).returncode == 0
@@ -454,7 +454,7 @@ def test_diagnostic_perime_par_activite_meme_recent(tmp_path):
     tdir.mkdir()
     (tdir / "s1.jsonl").write_text(_line(skill="run-dev-server"), encoding="utf-8")
     assert _write_diag(tmp_path, {"findings": [
-        {"categorie": "autre", "titre": "t", "preuve": "p"},
+        {"categorie": "autre", "cible": "Explore", "titre": "t", "preuve": "p"},
     ]}).returncode == 0
     # 3 runs postérieurs au diagnostic : périmé malgré une date récente.
     futur = "2099-01-01T00:00:00+00:00"
