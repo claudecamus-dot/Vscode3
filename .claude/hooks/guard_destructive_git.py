@@ -1,17 +1,24 @@
-r"""PreToolUse hook (Bash/PowerShell) — garde-fou deterministe.
+r"""PreToolUse hook (Bash/PowerShell) — garde-fou deterministe, version unifiee
+de la flotte (fusion des deux lignees le 2026-09-08).
 
 Bloque trois familles de commandes :
-1. `git push --force` (sans `--force-with-lease`) et `git reset --hard` ;
-2. la lecture des chemins proteges (`.env`, `secrets/**`,
+1. l'HISTORIQUE : `git push --force` (sans `--force-with-lease`), la refspec
+   forcee par `+` (`git push origin +main`) et `git reset --hard`, y compris
+   ses abreviations non ambigues (`--har`, `--h`) ;
+2. l'ARBRE : les commandes qui ecrasent le travail non commite d'un fichier
+   (`git checkout -- <chemin>`, `git restore <chemin>`, `git clean -f`,
+   `git stash drop/clear`, `git rm -f`, `git worktree remove --force`) ;
+3. la LECTURE des chemins proteges (`.env`, `secrets/**`,
    `config/credentials.json`) — miroir des deny rules `Read(...)` de
    `.claude/settings.json`, qui ne couvrent QUE l'outil `Read` : cote shell,
-   `cat .env` sortait sans aucune resistance ;
-3. les commandes qui ECRASENT le travail non commite d'un fichier dans l'arbre
-   (`git checkout -- <chemin>`, `git restore <chemin>`, `git clean -f`,
-   `git stash drop/clear`) — backporte de VSCode2 le 2026-09-07, sur un
-   incident reel ou un sous-agent de revue avait joue `git checkout --` pour
-   mesurer le code d'avant et efface le travail non commite de la session
-   appelante.
+   `cat .env` sortait sans aucune resistance.
+
+Plus, transversalement, les WRAPPERS et INDIRECTIONS qui executent l'une de ces
+commandes sans que le token de tete soit `git` : `eval`, `env`, `xargs`, `sudo`,
+l'operateur d'appel PowerShell `&` et `.`, mais aussi `iex` /
+`Invoke-Expression`, `powershell -Command`, `-EncodedCommand` (base64),
+`bash -c`, `cmd /c`, et les executables `git.exe` / `git.cmd` / `git.bat` /
+`git.ps1`.
 
 CE QUE CE HOOK N'EST PAS. Un garde-fou contre l'accident et le contournement
 de confort, pas une frontiere de securite. Il `fail open` sur tout ce qu'il ne
@@ -20,27 +27,19 @@ sans rapport. Une indirection construite dynamiquement (`$g = 'git'; & $g push
 --force`) lui echappe encore. Ne pas s'en servir pour justifier de baisser la
 garde ailleurs.
 
-Analyse :
+Analyse (tokenizer `shlex` du 2026-07-16, repris d'un projet frere : il gerait
+deja les `VAR=value` de tete, la ou la version regex precedente
+(`^git\s+push\b`) laissait passer `FOO=1 git push --force`) :
 1. retirer les corps de heredoc (toujours de la donnee, jamais une commande —
-   p.ex. un message de commit qui *decrit* ce hook via `git commit -F - <<'EOF'`,
-   convention documentee de ce depot) ;
-2. decouper sur les operateurs shell (&&, ||, ;, |, saut de ligne) sans casser
-   les segments a l'interieur des quotes ;
-3. `shlex.split()` chaque segment, sauter les `VAR=value` de tete et
-   l'operateur d'appel PowerShell `&`, puis normaliser l'executable
-   (basename, sans `.exe`/`.cmd`/`.bat`/`.ps1`) ;
-4. si la commande en EXECUTE une autre (`iex`, `Invoke-Expression`, `eval`,
-   `powershell -Command`, `bash -c`, `-EncodedCommand` en base64), re-analyser
-   la charge utile comme une commande a part entiere, en bornant la recursion.
-
-Historique. Le tokenizer `shlex` (2026-07-16, repris d'un projet frere) gerait
-deja les `VAR=value` de tete, la ou la version regex precedente (`^git\s+push\b`)
-laissait passer `FOO=1 git push --force`. Mais il ne comparait qu'au token
-litteral « git » et ne regardait aucune lecture de fichier : mesure du
-2026-09-01 sur 10 variantes dangereuses, **6 passaient** — `git.exe`,
-`& git`, `iex "..."`, `Invoke-Expression`, `powershell -Command`, et toutes les
-lectures de `.env`. Verrouille depuis par `tests/test_guard_destructive_git.py`
-(39 cas, dont les faux positifs a ne PAS bloquer).
+   p.ex. un message de commit qui *decrit* ce hook via
+   `git commit -F - <<'EOF' ... EOF`, convention documentee de ces depots) ;
+2. decouper sur les operateurs shell (&&, ||, ;, |, (, ), saut de ligne) sans
+   casser les segments a l'interieur des quotes ;
+3. `shlex.split()` chaque segment, sauter les `VAR=value` de tete, puis
+   normaliser l'executable (basename, sans `.exe`/`.cmd`/`.bat`/`.ps1`) ;
+4. si la commande en EXECUTE une autre (wrapper ou indirection), re-analyser la
+   charge utile comme une commande a part entiere, en bornant la recursion a
+   `_MAX_DEPTH`.
 """
 import base64
 import json
@@ -115,40 +114,68 @@ def _segments(cmd: str):
 
 _MAX_DEPTH = 3
 
-# Un `git` peut s'ecrire de plusieurs facons que le tokenizer d'origine ne
-# reconnaissait pas : il ne comparait qu'au token litteral « git ». Mesure du
-# 2026-09-01 sur 10 variantes dangereuses : 6 passaient, dont `git.exe push
-# --force` et `& git push --force` (operateur d'appel PowerShell, shell
-# primaire de ce poste).
-def _exe_name(token: str) -> str:
-    """Nom de commande normalise : basename, sans extension Windows, minuscules."""
-    t = token.replace("\\", "/").rstrip("/")
-    t = t.rsplit("/", 1)[-1].lower()
+# Wrappers qui EXECUTENT leur argument : sans les reconnaitre,
+# `eval "git push --force"` et `bash -c "git push --force"` passaient, le token de
+# tete n'etant pas le mot `git`.
+_WRAPPERS = frozenset({
+    "eval", "exec", "command", "builtin", "env", "sudo", "doas", "nohup", "nice",
+    "time", "xargs", "sh", "bash", "zsh", "dash", "ksh", "busybox",
+    # `&` est l OPERATEUR D APPEL de PowerShell — le shell PRIMAIRE de cet
+    # environnement, et ce hook est monte sur le matcher `Bash|PowerShell`. Il execute
+    # ce qui le suit exactement comme `eval` : `& git push --force` passait, alors que
+    # `git push --force` etait bloque. Verifie que l operateur lance bien git avant de
+    # le traiter comme un wrapper (revue de securite du 2026-09-01).
+    "&", ".",
+})
+
+
+def _nom_binaire(tok: str) -> str:
+    """Nom du binaire invoque : `git`, `git.exe`, `/usr/bin/git` ou un chemin Windows
+    absolu -> `git`. Le test litteral `lower[start] != "git"` exigeait le mot nu et
+    laissait donc passer toute autre forme d'invocation (verifie en rejouant le hook
+    avec un payload PreToolUse reel, 2026-08-31).
+
+    Les extensions executables de Windows autres que `.exe` valent le meme
+    contournement : `git.cmd push --force` PASSAIT ici alors qu'il etait bloque sur
+    la lignee VSCode3 (mesure du 2026-09-07, rejeu par le chemin de production).
+    `.cmd`/`.bat`/`.ps1` sont donc retirees comme `.exe`. Le `\\` est normalise en
+    `/` avant le basename pour ne pas dependre du `os.path` de la plateforme."""
+    nom = tok.replace("\\", "/").rstrip("/")
+    nom = nom.rsplit("/", 1)[-1].lower()
     for ext in (".exe", ".cmd", ".bat", ".ps1"):
-        if t.endswith(ext):
-            return t[: -len(ext)]
-    return t
+        if nom.endswith(ext):
+            return nom[: -len(ext)]
+    return nom
 
 
-# Commandes qui EXECUTENT leur argument. Aucune ne commence par « git », donc
-# aucune n'etait vue : `iex "git push --force"` executait bel et bien la
-# commande bloquee. On re-analyse la charge utile comme une commande a part
-# entiere, en bornant la recursion.
-_INDIRECTION = {"iex", "invoke-expression", "eval", "exec"}
-_SHELL_RUNNERS = {"powershell", "pwsh", "cmd", "bash", "sh", "zsh"}
-_RUNNER_FLAGS = {"-c", "-command", "/c", "/k"}
-_ENCODED_FLAGS = {"-encodedcommand", "-enc", "-ec"}
+# --------------------------------------------------------------------------- #
+# Indirections : la vraie commande est la CHARGE UTILE d'un argument
+# --------------------------------------------------------------------------- #
+# Repris de la lignee VSCode3 le 2026-09-08. Aucune de ces commandes ne commence
+# par « git », donc aucune n'etait vue ici : mesure du 2026-09-07 par le chemin
+# de production, `iex 'git push --force'`, `powershell -Command 'git checkout --
+# f.txt'` et `git.cmd push --force` PASSAIENT au hub et sur VSCode1/2/4, et
+# etaient bloques sur VSCode3. On re-analyse la charge utile comme une commande a
+# part entiere, en bornant la recursion.
+#
+# Ces indirections ne remplacent PAS `_WRAPPERS` : `-EncodedCommand` demande un
+# decodage base64 qu'aucune re-analyse token-par-token ne peut faire, et
+# `_WRAPPERS` couvre a l'inverse `env`/`xargs`/`sudo`/`&`, absents ici.
+_INDIRECTION = frozenset({"iex", "invoke-expression", "eval", "exec"})
+_SHELL_RUNNERS = frozenset({"powershell", "pwsh", "cmd", "bash", "sh", "zsh"})
+_RUNNER_FLAGS = frozenset({"-c", "-command", "/c", "/k"})
+_ENCODED_FLAGS = frozenset({"-encodedcommand", "-enc", "-ec"})
 
 
-def _inner_command(head: str, args: list):
+def _commande_interne(tete: str, args: list):
     """La commande reellement executee par une indirection, ou None."""
-    if head in _INDIRECTION:
+    if tete in _INDIRECTION:
         return " ".join(args) if args else None
-    if head not in _SHELL_RUNNERS:
+    if tete not in _SHELL_RUNNERS:
         return None
     for i, a in enumerate(args):
         al = a.lower()
-        if head in ("powershell", "pwsh") and al in _ENCODED_FLAGS and i + 1 < len(args):
+        if tete in ("powershell", "pwsh") and al in _ENCODED_FLAGS and i + 1 < len(args):
             try:
                 return base64.b64decode(args[i + 1]).decode("utf-16-le", "replace")
             except Exception:
@@ -158,16 +185,20 @@ def _inner_command(head: str, args: list):
     return None
 
 
-# Miroir des deny rules `Read(...)` de .claude/settings.json, qui ne couvrent
-# QUE l'outil Read : mesure du 2026-09-01, `cat .env`, `Get-Content .env` et
-# `type config/credentials.json` sortaient sans aucune resistance cote shell.
-_READERS = {"cat", "type", "more", "less", "head", "tail", "nl", "od", "xxd",
-            "strings", "get-content", "gc", "select-string", "sls", "findstr",
-            "grep", "rg", "copy", "cp", "move", "mv", "curl", "wget"}
-_INTERPRETERS = {"python", "python3", "py", "node", "perl", "ruby", "deno"}
+# --------------------------------------------------------------------------- #
+# Lecture d'un chemin protege
+# --------------------------------------------------------------------------- #
+# Repris de la lignee VSCode3 le 2026-09-08. Miroir des deny rules `Read(...)` de
+# .claude/settings.json, qui ne couvrent QUE l'outil Read : mesure du 2026-09-01,
+# `cat .env`, `Get-Content .env` et `type config/credentials.json` sortaient sans
+# aucune resistance cote shell.
+_READERS = frozenset({"cat", "type", "more", "less", "head", "tail", "nl", "od", "xxd",
+                      "strings", "get-content", "gc", "select-string", "sls", "findstr",
+                      "grep", "rg", "copy", "cp", "move", "mv", "curl", "wget"})
+_INTERPRETERS = frozenset({"python", "python3", "py", "node", "perl", "ruby", "deno"})
 
 
-def _is_protected_path(token: str) -> bool:
+def _est_un_chemin_protege(token: str) -> bool:
     # `curl -d @.env` / `curl -d@.env` : la syntaxe « @fichier » des clients HTTP
     # est un vecteur d'exfiltration direct, et le chemin n'y est pas un argument
     # nu. On teste donc aussi ce qui suit le « @ ».
@@ -190,81 +221,123 @@ def _is_protected_path(token: str) -> bool:
     return p.endswith("config/credentials.json")
 
 
-def _blocked_reason(segment: str, _depth: int = 0):
-    # shlex respecte les quotes, donc une chaine citee comme -m "... git push
-    # --force ..." reste un seul token au lieu d'etre eclatee en "git"/"push".
+def _analyser(cmd: str, profondeur: int = 0):
+    for seg in _segments(cmd):
+        raison = _blocked_reason(seg, profondeur)
+        if raison:
+            return raison
+    return None
+
+
+def _blocked_reason(segment: str, profondeur: int = 0):
+    # shlex respects quoting, so a quoted string like -m "... git push
+    # --force ..." collapses into a single token instead of being split
+    # into separate "git"/"push"/"--force" words.
     try:
         tokens = shlex.split(segment, posix=True)
     except ValueError:
-        return None  # quotes desequilibrees etc. — fail open, on ne devine pas
+        return None  # unbalanced quotes etc. — fail open, don't guess
     if not tokens:
         return None
 
-    # Sauter les affectations d'env en tete (`FOO=1 git push --force`) et
-    # l'operateur d'appel PowerShell (`& git push --force`).
+    lower = [t.lower() for t in tokens]
+
+    # Skip leading VAR=value env-var assignments so `FOO=1 git push --force`
+    # is still recognized as a `git` invocation, not dismissed because the
+    # segment doesn't start with the literal string "git".
     start = 0
-    while start < len(tokens) and (
-        re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", tokens[start]) or tokens[start] == "&"
-    ):
+    while start < len(tokens) and re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", tokens[start]):
         start += 1
+
     if start >= len(tokens):
         return None
+    tete = _nom_binaire(tokens[start])
+    apres_tete = tokens[start + 1 :]
 
-    tokens = tokens[start:]
-    head = _exe_name(tokens[0])
-    args = tokens[1:]
+    # 1. Indirection : la vraie commande est la CHARGE UTILE d'un argument
+    #    (`iex '...'`, `powershell -Command '...'`, `-EncodedCommand <base64>`,
+    #    `cmd /c ...`). On la re-analyse comme une commande a part entiere.
+    if profondeur < _MAX_DEPTH:
+        interne = _commande_interne(tete, apres_tete)
+        if interne:
+            raison = _analyser(_strip_heredocs(interne), profondeur + 1)
+            if raison:
+                return raison
 
-    # 1. Indirection : la vraie commande est dans l'argument, on la ré-analyse.
-    if _depth < _MAX_DEPTH:
-        inner = _inner_command(head, args)
-        if inner:
-            for seg in _segments(_strip_heredocs(inner)):
-                raison = _blocked_reason(seg, _depth + 1)
-                if raison:
-                    return raison
+    # 2. `eval "git push --force"` : la vraie commande est dans les arguments du wrapper.
+    # Profondeur bornee (fail-open assume : on ne devine pas au-dela).
+    if tete in _WRAPPERS:
+        if profondeur >= _MAX_DEPTH:
+            return None
+        for candidat in [*apres_tete, " ".join(apres_tete)]:
+            raison = _analyser(candidat, profondeur + 1)
+            if raison:
+                return raison
+        return None
 
-    # 2. Lecture d'un chemin protege par un lecteur ou un interpreteur.
-    if head in _READERS or head in _INTERPRETERS:
-        vises = [t for t in args if _is_protected_path(t)]
-        if not vises and head in _INTERPRETERS:
+    # 3. Lecture d'un chemin protege par un lecteur ou un interpreteur.
+    if tete in _READERS or tete in _INTERPRETERS:
+        vises = [t for t in apres_tete if _est_un_chemin_protege(t)]
+        if not vises and tete in _INTERPRETERS:
             # `python -c "print(open('.env').read())"` : le chemin est DANS la
             # charge utile, pas dans un argument a lui seul.
-            for cand in re.findall(r"""['\"]([^'\"]+)['\"]""", " ".join(args)):
-                if _is_protected_path(cand):
+            for cand in re.findall(r"""['\"]([^'\"]+)['\"]""", " ".join(apres_tete)):
+                if _est_un_chemin_protege(cand):
                     vises = [cand]
                     break
         if vises:
             return (
-                f"Lecture d'un fichier protege ({vises[0]}) bloquee par un hook projet — "
+                "Lecture d'un fichier protege (%s) bloquee par un hook projet — "
                 "meme perimetre que les deny rules Read(...) de .claude/settings.json, "
                 "qui ne couvrent pas le shell. Confirmez explicitement avec l'utilisateur "
-                "si cette lecture est legitime."
+                "si cette lecture est legitime." % vises[0]
             )
 
-    # 3. git destructif.
-    if head != "git":
+    # 4. git destructif.
+    if tete != "git":
         return None
-    rest = [t.lower() for t in args]
+    rest = lower[start + 1 :]
 
     if "push" in rest:
         has_force = any(t in ("--force", "-f") or t.startswith("--force=") for t in rest)
         has_lease = any(
             t == "--force-with-lease" or t.startswith("--force-with-lease=") for t in rest
         )
+        # La forme LA PLUS COURANTE du push force ne contient pas le mot `--force` :
+        # `git push origin +main` force la mise a jour. Reproduit sur un remote
+        # jetable : `git push origin master` refuse (non fast-forward), `+master`
+        # accepte avec « (forced update) ».
+        has_plus = any(t.startswith("+") and len(t) > 1 for t in rest)
+        if has_plus and not has_lease:
+            return (
+                "git push avec une refspec forcee (« + » devant la ref) est bloque par "
+                "un hook projet : c'est un push force qui ne dit pas son nom. Utilisez "
+                "--force-with-lease si necessaire, ou confirmez explicitement avec "
+                "l'utilisateur."
+            )
         if has_force and not has_lease:
             return (
-                "git push --force (sans --force-with-lease) est bloque par un hook projet. "
-                "Utilisez --force-with-lease si necessaire, ou confirmez explicitement avec "
+                "git push --force (sans --force-with-lease) est bloqué par un hook projet. "
+                "Utilisez --force-with-lease si nécessaire, ou confirmez explicitement avec "
                 "l'utilisateur avant de contourner ce garde-fou."
             )
 
-    if "reset" in rest and "--hard" in rest:
+    # git accepte tout PREFIXE NON AMBIGU d une option longue : `--har`, `--ha` et
+    # meme `--h` font un reset dur complet — verifie par execution, le travail non
+    # commite est bien detruit. Le test litteral `"--hard" in rest` les laissait tous
+    # passer. On borne a 3 caracteres (`--h`), la plus courte forme que git accepte
+    # ici, et on exige que ce soit un prefixe de `--hard` : `--hi` n est pas bloque,
+    # un garde-fou qui crie a tort finit desarme.
+    def _vaut_hard(t: str) -> bool:
+        return t.startswith("--h") and "--hard".startswith(t)
+
+    if "reset" in rest and any(_vaut_hard(t) for t in rest):
         return (
-            "git reset --hard est bloque par un hook projet (perte de modifications non "
-            "commitees). Utilisez git stash, ou confirmez explicitement avec l'utilisateur."
+            "git reset --hard est bloqué par un hook projet (perte de modifications non "
+            "commitées). Utilisez git stash, ou confirmez explicitement avec l'utilisateur."
         )
 
-    raison = _blocked_worktree(args, rest)
+    raison = _blocked_worktree(tokens[start + 1 :], rest)
     if raison:
         return raison
 
@@ -274,7 +347,7 @@ def _blocked_reason(segment: str, _depth: int = 0):
 # --------------------------------------------------------------------------- #
 # Commandes qui DÉTRUISENT le travail non commité d'un fichier
 # --------------------------------------------------------------------------- #
-# Ajouté le 2026-09-02 (VSCode2), backporté ici le 2026-09-07 sur un incident réel :
+# Ajouté le 2026-09-02 (VSCode2), propagé à toute la flotte le 2026-09-07 sur un incident réel :
 # un sous-agent de revue, dont le mandat dit pourtant qu'il « ne corrige rien », a joué
 # `git checkout --` sur deux templates pour mesurer le code d'avant. Les correctifs non
 # commités de la session appelante ont disparu du disque. Ils ont pu être reconstruits
@@ -503,11 +576,7 @@ def main() -> None:
     cmd = (data.get("tool_input") or {}).get("command") or ""
     cmd = _strip_heredocs(cmd)
 
-    blocked = None
-    for seg in _segments(cmd):
-        blocked = _blocked_reason(seg)
-        if blocked:
-            break
+    blocked = _analyser(cmd)
 
     if blocked:
         print(json.dumps({
