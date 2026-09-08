@@ -229,3 +229,75 @@ def test_vscode3_silencieux_si_pptx_verify_a_tourne(monkeypatch, tmp_path, capsy
         transcript_tool_use=tool_use,
     )
     assert out == ""
+
+
+# --- (e) `-a`/`--all`, y compris en option courte GROUPEE ---------------------
+# Finding robustesse de l'audit VScode5 du 2026-09-02 : `_staged_files` ne
+# reconnaissait que les tokens EXACTS "-a"/"--all", alors que `_commit_message`
+# savait deja decomposer un groupe court (`-am`, `-amwip`). Un `git commit -am`
+# faisait donc rater au garde-fou les fichiers modifies-non-stages du perimetre
+# surveille — c'est-a-dire tout le commit dans la forme la plus courante.
+
+def _staged_for(monkeypatch, commande, staged, unstaged):
+    monkeypatch.setattr(hook.subprocess, "run", _fake_git_run(staged, unstaged=unstaged))
+    flags = hook._git_commit_flags(commande)
+    assert flags is not None, f"{commande!r} aurait du etre reconnu comme un git commit"
+    return hook._staged_files("C:/VSCode3", flags)
+
+
+FORMES_ALL = [
+    'git commit -am "msg"',
+    "git commit -am wip",
+    "git commit -amwip",
+    "git commit -a -m x",
+    "git commit --all -m x",
+    "git commit -a",
+    "git commit --all",
+]
+
+
+def test_toutes_les_formes_de_all_ajoutent_les_modifs_non_stagees(monkeypatch):
+    for commande in FORMES_ALL:
+        files = _staged_for(monkeypatch, commande,
+                            staged=["README.md"],
+                            unstaged=["docs/cadrage-ppt/generate_deck.py"])
+        assert files == ["README.md", "docs/cadrage-ppt/generate_deck.py"], (
+            f"{commande!r} vaut --all : le fichier surveille modifie-non-stage "
+            f"doit entrer dans le perimetre du garde-fou (obtenu {files!r})")
+
+
+def test_sans_all_le_perimetre_reste_l_index(monkeypatch):
+    for commande in ['git commit -m "x"', "git commit -mwip", "git commit"]:
+        files = _staged_for(monkeypatch, commande,
+                            staged=["README.md"],
+                            unstaged=["docs/cadrage-ppt/generate_deck.py"])
+        assert files == ["README.md"], f"{commande!r} ne vaut pas --all (obtenu {files!r})"
+
+
+def test_un_a_dans_le_message_n_est_pas_le_drapeau_all(monkeypatch):
+    """`-ma` et `-m -a` portent un message qui commence par « a » / vaut « -a » :
+    ce qui suit le `m` d'un groupe court est le message, jamais un drapeau."""
+    for commande in ["git commit -ma", "git commit -m -a", 'git commit -m "--all"']:
+        files = _staged_for(monkeypatch, commande,
+                            staged=["README.md"],
+                            unstaged=["docs/cadrage-ppt/generate_deck.py"])
+        assert files == ["README.md"], f"{commande!r} ne vaut pas --all (obtenu {files!r})"
+
+
+def test_declenche_sur_un_fichier_surveille_seulement_modifie_avec_am(monkeypatch, tmp_path, capsys):
+    """Bout en bout : `git commit -am` sur un fichier surveille non stage doit
+    reveiller le rappel de verif, pas passer en silence."""
+    monkeypatch.setattr(hook.subprocess, "run",
+                        _fake_git_run([], unstaged=["docs/cadrage-ppt/generate_deck.py"]))
+    transcript = tmp_path / "transcript.jsonl"
+    transcript.write_text("", encoding="utf-8")
+    payload = {
+        "tool_input": {"command": 'git commit -am "wip"'},
+        "cwd": "C:/VSCode3",
+        "transcript_path": str(transcript),
+    }
+    monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps(payload)))
+    hook.main()
+    out = capsys.readouterr().out
+    assert out.strip(), "le hook aurait du se declencher sur `git commit -am`"
+    assert "docs/cadrage-ppt/" in json.loads(out)["systemMessage"]
