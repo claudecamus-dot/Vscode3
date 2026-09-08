@@ -155,7 +155,7 @@ def test_generateur_bmad_resout_le_dag(tmp_path):
     # Le brief (preceded-by de la PRD) est tiré même s'il n'est pas required.
     assert "bmad-product-brief" in agents
     # Le cycle story est complet et code-review (EXTRA) présent.
-    for expected in ("bmad-prd", "bmad-architecture", "bmad-dev-story", "bmad-code-review"):
+    for expected in ("bmad-prd", "bmad-architecture", "bmad-build", "bmad-code-review"):  # bmad-dev-story -> bmad-build (v6.12.0)
         assert expected in agents
     # bmad-ux (ni required ni preceded d'un required) est exclu.
     assert "bmad-ux" not in agents
