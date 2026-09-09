@@ -7,7 +7,12 @@
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-extend-exclude = [".claude/skills", "_bmad", "_bmad-output"]
+# Scratch et instantanes figes : linter les copies d'archive gonfle la dette
+# mesuree sans qu'aucune correction soit possible (corriger une archive n'a
+# pas de sens). docs/cadrage-ppt/archives/ est deja ecarte du depot par le
+# .gitignore pour la meme raison. Verrouille par tests/test_lint_perimetre.py.
+extend-exclude = [".claude/skills", "_bmad", "_bmad-output",
+                  "docs/cadrage-ppt/archives"]
 
 [tool.ruff.lint]
 # F = pyflakes (vrais bugs)  ·  I = imports  ·  UP = modernisations  ·  B = bugbear
