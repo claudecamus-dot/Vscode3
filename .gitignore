@@ -28,12 +28,30 @@ _bmad-output/
 # + nature_images) - regenerables via generate_deck.py, pas a committer.
 docs/cadrage-ppt/_img/
 
-# Archives de versions intermediaires du deck (.pptx, 19-23 Mo chacune) -
-# scratch de travail regenerable via generate_deck.py, jamais du contenu a
-# committer (finding risque_technique de l'audit-technique VScode5 du
-# 2026-09-04 : 10 .pptx lourds deja versionnes, .git a 105 Mo). Mitigation
-# uniquement : n'empeche pas les commits deja faits, stoppe la croissance.
-docs/cadrage-ppt/archives/*.pptx
+# Archives de versions intermediaires du deck - scratch de travail regenerable
+# via generate_deck.py, jamais du contenu a committer (finding risque_technique
+# de l'audit-technique VScode5 du 2026-09-04 : 10 .pptx lourds deja versionnes,
+# .git a 105 Mo). Mitigation uniquement : n'empeche pas les commits deja faits,
+# stoppe la croissance.
+#
+# Le dossier ENTIER, pas seulement ses .pptx (audit VScode5 du 2026-09-09) : la
+# regle ne couvrait que `archives/*.pptx`, et un instantane .py fige de 271 Ko
+# (generate_deck-v2.29-avant-refonte-graphique.py) y attendait un `git add -A`.
+# C'est le meme trou que celui deja bouche cote ruff (pyproject.toml
+# extend-exclude) : une archive ne se corrige pas, elle ne se versionne pas non
+# plus.
+docs/cadrage-ppt/archives/
+
+# Les .pptx de travail poses A COTE du generateur (checks de slide, copies,
+# variantes de refonte : 2,2 Mo piece, 4 non suivis au 2026-09-09) - meme raison
+# que les archives, mais aucune regle ne les couvrait : un `git add -A` distrait
+# en embarquait ~8,9 Mo d'un coup dans un .git deja mesure a 109 Mo.
+# Les DEUX .pptx qui sont du contenu source, eux, restent versionnes et le
+# disent explicitement : le deck livre, et le gabarit OCTO sans lequel
+# generate_deck.py refuse de demarrer (_exiger_template).
+docs/cadrage-ppt/*.pptx
+!docs/cadrage-ppt/bmad-iap-cadrage-synthese.pptx
+!docs/cadrage-ppt/template-octo.pptx
 
 # Fichier verrou PowerPoint (cree quand le .pptx est ouvert via COM, ex. le
 # script de rendu pptx-verify) - artefact temporaire, jamais du contenu.

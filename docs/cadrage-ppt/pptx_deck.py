@@ -1,14 +1,27 @@
 """pptx_deck — petite bibliotheque d'aide pour construire des slides python-pptx
 "de qualite" : echelle typographique coherente, formes (barres, jauge, cartes),
-couleurs, et surtout un controle geometrique automatique (`verifier_geometrie`)
-qui detecte toute forme qui sort de la slide — le defaut classique des decks
-generes a la main.
+couleurs, et surtout quatre filets de controle automatique :
+
+  - `verifier_geometrie` — toute forme qui sort de la slide (le defaut classique
+    des decks generes a la main) ;
+  - `verifier_debordements_texte` — le texte qui deborde de SA PROPRE boite,
+    que le controle des bords ne peut pas voir ;
+  - `verifier_chrome_gabarit` — la forme de contenu qui recouvre le badge de
+    pagination herite du gabarit (il vient du master : ce n'est pas une forme
+    de la slide, donc `verifier_geometrie` l'ignore) ;
+  - `verifier_plancher_de_dessin` — le bas de bande que le generateur s'impose,
+    confronte au gabarit reellement charge.
+
+Les trois derniers sont portes des homologues de la flotte (VSCode4
+scripts/pptx_deck.py, VSCode2 app/services/pptx_deck.py) le 2026-09-09, sur
+finding robustesse de l'audit VScode5 du meme jour, et adaptes aux constantes de
+ce gabarit (voir `_ZONE_NUMERO_PAGE_IN` et `verifier_plancher_de_dessin`).
 
 Reutilisable hors de ce projet : aucune dependance au domaine metier ici.
 Les coordonnees des helpers sont exprimees en POUCES (float) pour la lisibilite.
 """
 from pptx.dml.color import RGBColor
-from pptx.enum.shapes import MSO_SHAPE
+from pptx.enum.shapes import MSO_SHAPE, MSO_SHAPE_TYPE
 from pptx.enum.text import MSO_ANCHOR, MSO_AUTO_SIZE, PP_ALIGN
 from pptx.oxml.ns import qn
 from pptx.util import Emu, Inches, Pt
@@ -251,6 +264,129 @@ def tronquer_a_lignes(texte, largeur_in, taille_pt, max_lignes, cpi_ref=11.0,
     return tronque.rstrip(" ,;:.") + "…"
 
 
+def _noter(compte, cle):
+    """Incremente `compte[cle]` quand un compteur est fourni. Le dict est cree
+    par l'APPELANT : un filet appele sans compteur garde exactement son
+    comportement d'avant."""
+    if compte is not None:
+        compte[cle] = compte.get(cle, 0) + 1
+
+
+def verifier_debordements_texte(prs, cpi_pessimiste=10.7, tolerance_in=0.15,
+                                compte=None):
+    """Filet « le texte tient dans sa boite » — complementaire de
+    `verifier_geometrie`, qui ne voit que les BORDS des formes et jamais le
+    rendu du texte a l'interieur. Pour chaque zone de texte dessinee (repli de
+    mots actif, auto-size desactive, ancrage haut), estime la hauteur du
+    contenu avec une calibration PESSIMISTE (`cpi_pessimiste` < la calibration
+    nominale de `estimer_lignes`) et signale les boites dont le contenu estime
+    depasse la hauteur declaree + `tolerance_in`. Renvoie une liste de constats
+    (vide = OK) ; l'appelant decide (defaut dur, ou simple log).
+
+    Porte depuis les homologues de la flotte (VSCode4 scripts/pptx_deck.py,
+    VSCode2 app/services/pptx_deck.py) le 2026-09-09, sur finding robustesse de
+    l'audit VScode5 : c'est exactement le defaut qui a mordu ce deck deux fois
+    (4e puce masquee par le chip de pied, slide 4 ; texte estime plus haut que
+    sa carte) et que le controle geometrique seul ne peut pas voir.
+
+    CE QUE CE FILET NE REGARDE PAS, ET POURQUOI. Sont ecartees : les boites
+    AUTO-AGRANDISSANTES (`SHAPE_TO_FIT_TEXT` — PowerPoint recalcule leur
+    hauteur, la valeur declaree n'est qu'une amorce), les boites en
+    `TEXT_TO_FIT_SHAPE` (PowerPoint y REDUIT la police, une estimation a taille
+    nominale n'y dit rien), les placeholders (le gabarit les gere), les formes
+    tournees (geometrie non comparable) et les ancrages MIDDLE/BOTTOM (contenu
+    deja borne par l'appelant). Sur VSCode4, inclure les auto-agrandissantes a
+    ete essaye puis retire sur mesure : 17 constats sur un deck qui se rend
+    correctement — un filet qui crie sur des zones correctes finit debranche.
+
+    La plus grosse exclusion n'est aucune de celles-la : c'est `word_wrap`
+    (503 des 904 zones ecartees du deck reel, mesure du 2026-09-09). Attention,
+    `not tf.word_wrap` traite `None` — repli HERITE, que PowerPoint replie bel
+    et bien — comme un repli desactive : une zone de texte qui laisse le repli
+    herite echappe au filet. Sans consequence sur ce deck (ces 503 zones sont
+    toutes a texte vide, et `add_text` pose `word_wrap` explicitement), mais
+    tout texte pose hors de `add_text` tombe dans ce trou en silence.
+    Les formes GROUPEES sont hors filet elles aussi : on n'y descend pas.
+
+    `compte` : dict optionnel rempli avec le nombre de zones `examinees` et
+    `ignorees`. Un filet qui ne dit pas combien de zones il a REGARDEES laisse
+    croire que son vert couvre tout le deck.
+
+    A LIRE AVANT DE LE BRANCHER EN DEFAUT DUR. Mesure du 2026-09-09 sur
+    bmad-iap-cadrage-synthese.pptx (49 slides, lecture seule) : 302 zones
+    examinees, 904 hors filet, et 58 constats a la tolerance par defaut — dont
+    l'ecart median n'est que de 0.22in (max 0.52in). A 0.40in de tolerance il
+    en reste 3, a 0.60in aucun. Le meme filet a ete essaye puis restreint chez
+    VSCode4 pour cette raison exacte. La calibration est un ESTIMATEUR, pas une
+    mesure de rendu : brancher ce filet en anomalie de build sans avoir d'abord
+    trie ces constats contre un rendu PowerPoint reel bloquerait un deck qui se
+    rend correctement — et un filet qui bloque a tort finit debranche.
+
+    Une part de ces 58 vient de l'ESTIMATEUR, pas du deck : le modele de hauteur
+    de ligne est une constante (`taille * 0.017 + 4/72`) qui ignore le
+    `line_spacing` et les `space_before`/`space_after` que `add_text` pose
+    pourtant. Mesure de la revue du 2026-09-09 : en honorant ces valeurs, les
+    constats tombent a 22. Regler la tolerance avant de corriger le modele, ce
+    serait fixer un seuil sur du bruit."""
+    if compte is not None:
+        compte.setdefault("examinees", 0)
+        compte.setdefault("ignorees", 0)
+
+    def _ignorer():
+        if compte is not None:
+            compte["ignorees"] += 1
+
+    problemes = []
+    for num, slide in enumerate(prs.slides, start=1):
+        for sh in slide.shapes:
+            if not getattr(sh, "has_text_frame", False):
+                continue
+            if getattr(sh, "is_placeholder", False):
+                _ignorer()
+                continue
+            tf = sh.text_frame
+            try:
+                if not tf.word_wrap or tf.auto_size != MSO_AUTO_SIZE.NONE:
+                    _ignorer()
+                    continue
+                if tf.vertical_anchor not in (None, MSO_ANCHOR.TOP):
+                    _ignorer()
+                    continue
+                if getattr(sh, "rotation", 0):
+                    _ignorer()
+                    continue
+                w_in = Emu(sh.width).inches
+                h_in = Emu(sh.height).inches
+            except Exception:
+                _ignorer()
+                continue
+            if w_in <= 0 or h_in <= 0:
+                _ignorer()
+                continue
+            if compte is not None:
+                compte["examinees"] += 1
+            est = 0.0
+            texte_court = ""
+            for p in tf.paragraphs:
+                t = "".join(r.text for r in p.runs)
+                if not t.strip():
+                    continue
+                # max des runs styles, pas le premier : un prefixe en petit
+                # devant un corps plus grand sous-estimerait toute la hauteur.
+                tailles = [r.font.size.pt for r in p.runs if r.font.size]
+                taille = max(tailles) if tailles else TYPE["body"]
+                lignes = estimer_lignes(t, w_in, taille, cpi_ref=cpi_pessimiste)
+                # meme modele de hauteur de ligne que le layout (le +4/72 couvre
+                # deja le space_after usuel — pas de double comptage)
+                est += lignes * (taille * 0.017 + 4 / 72)
+                texte_court = texte_court or t[:40]
+            if est > h_in + tolerance_in:
+                problemes.append(
+                    f"slide {num}: texte ~{est:.2f}in > boite {h_in:.2f}in "
+                    f"(« {texte_court}… »)")
+    return problemes
+
+
 def verifier_geometrie(prs, marge_in=0.02):
     """Retourne la liste des problemes : toute forme dont les bords depassent la
     slide (au-dela d'une petite marge de tolerance). Liste vide = OK."""
@@ -272,6 +408,205 @@ def verifier_geometrie(prs, marge_in=0.02):
                     f"(l={Emu(l).inches:.2f} t={Emu(t).inches:.2f} "
                     f"r={Emu(l + w).inches:.2f} b={Emu(t + h).inches:.2f} ; "
                     f"slide {Emu(W).inches:.2f}x{Emu(H).inches:.2f})")
+    return problemes
+
+
+# Zone du badge de pagination heritee du gabarit OCTO. Ce numero n'est PAS un
+# placeholder pose sur chaque slide : PowerPoint le rend depuis le master/layout,
+# donc `verifier_geometrie` (qui ne regarde que les formes DE LA SLIDE) ne peut
+# pas le proteger — une forme de contenu peut le recouvrir sans jamais depasser
+# la slide.
+#
+# La zone est LUE SUR LE GABARIT (`zones_numero_page`), pas codee en dur. La
+# valeur ci-dessous n'est qu'un REPLI, pour un gabarit qui ne declarerait aucun
+# champ de numero de page. Elle est mesuree sur template-octo.pptx (master
+# « Google Shape;10;p1 » : 9.2512 / 5.0874 / 9.7974 / 5.3374 in) et arrondie
+# VERS L'EXTERIEUR pour ne pas sous-declarer la zone a proteger.
+_ZONE_NUMERO_PAGE_IN = (9.25, 5.08, 9.80, 5.34)  # left, top, right, bottom
+
+
+def _xfrm_de_groupe_non_transforme(shp):
+    """True si `shp` est un groupe dont l'espace ENFANT coincide avec l'espace
+    slide (chOff == off, chExt == ext, ni rotation ni miroir) : les coordonnees
+    de ses enfants sont alors directement lisibles en coordonnees de slide.
+    Sinon False — l'appelant retombe sur la boite englobante du groupe plutot
+    que de rendre une position fausse."""
+    try:
+        grp = shp._element.find(qn("p:grpSpPr"))
+        xfrm = grp.find(qn("a:xfrm")) if grp is not None else None
+        if xfrm is None:
+            return False
+        if xfrm.get("rot") or xfrm.get("flipH") or xfrm.get("flipV"):
+            return False
+        off, ext = xfrm.find(qn("a:off")), xfrm.find(qn("a:ext"))
+        choff, chext = xfrm.find(qn("a:chOff")), xfrm.find(qn("a:chExt"))
+        if None in (off, ext, choff, chext):
+            return False
+        return (off.get("x") == choff.get("x") and off.get("y") == choff.get("y")
+                and ext.get("cx") == chext.get("cx")
+                and ext.get("cy") == chext.get("cy"))
+    except Exception:
+        return False
+
+
+def _porte_un_champ_numero(shp):
+    element = getattr(shp, "_element", None)
+    if element is None:
+        return False
+    return any(f.get("type") == "slidenum" for f in element.iter(qn("a:fld")))
+
+
+def _bornes_in(shp):
+    """(l, t, r, b) en POUCES, ou None si la forme n'a pas de geometrie lisible."""
+    try:
+        l, t, w, h = shp.left, shp.top, shp.width, shp.height
+    except Exception:
+        return None
+    if None in (l, t, w, h):
+        return None
+    return (Emu(l).inches, Emu(t).inches, Emu(l + w).inches, Emu(t + h).inches)
+
+
+def _zones_numero_page_de(conteneur):
+    """Bornes (l, t, r, b) en POUCES de chaque bloc de numero de page porte par
+    `conteneur` (un master ou un layout).
+
+    Reconnu par le CHAMP qu'il contient (`<a:fld type="slidenum">`), jamais par
+    son nom ni par sa position : le nom (« Google Shape;10;p1 ») est un artefact
+    de l'export Google Slides de CE gabarit, et une heuristique de position
+    (« en bas a droite ») designerait la premiere forme qui passe par la.
+
+    ADAPTATION AU GABARIT OCTO DE CE PROJET (mesuree le 2026-09-09, elle n'est
+    pas dans l'homologue VSCode4) : sur 10 des layouts de template-octo.pptx, le
+    champ n'est pas porte par une forme de premier niveau mais par un ENFANT
+    d'un groupe qui couvre presque toute la slide (ex. « 63 - Titre, contenu et
+    visuel a droite » : groupe de 0.30/0.32 a 9.80/5.34). S'arreter au premier
+    niveau — comme `element.iter()` y invite — rendrait une zone de 9,5 x 5,0 in
+    et ferait crier `verifier_chrome_gabarit` sur toute forme de contenu de ces
+    slides : un filet vrai partout est un filet qu'on debranche. On descend donc
+    dans les groupes dont l'espace enfant n'est pas transforme (verifie sur ce
+    gabarit : chOff == off, chExt == ext), et on retombe sur la boite englobante
+    pour tout groupe transforme."""
+    zones = []
+    for shp in conteneur.shapes:
+        if not _porte_un_champ_numero(shp):
+            continue
+        enfants = getattr(shp, "shapes", None)
+        if enfants is not None and _xfrm_de_groupe_non_transforme(shp):
+            sous_zones = _zones_numero_page_de(shp)
+            if sous_zones:  # sinon (enfants sans geometrie lisible) on retombe
+                zones.extend(sous_zones)  # sur la boite du groupe : une zone
+                continue                  # trop large vaut mieux qu'aucune
+        bornes = _bornes_in(shp)
+        if bornes is not None:
+            zones.append(bornes)
+    return zones
+
+
+def zones_numero_page(slide, defaut=_ZONE_NUMERO_PAGE_IN):
+    """Les zones de numero de page qui s'appliquent a `slide` : celles de son
+    LAYOUT et celles de son MASTER (le gabarit OCTO redouble le bloc a
+    l'identique sur les deux), dedoublonnees. Repli sur `defaut` si le gabarit
+    n'en declare aucune — un deck sans numero de page n'a rien a proteger, mais
+    un repli muet vaut mieux qu'un filet qui disparait en silence."""
+    layout = slide.slide_layout
+    zones = _zones_numero_page_de(layout) + _zones_numero_page_de(layout.slide_master)
+    uniques = {tuple(round(v, 4) for v in z) for z in zones}
+    return sorted(uniques) or [defaut]
+
+
+def verifier_plancher_de_dessin(prs, plancher_in, bord_droit_in=None):
+    """Retourne un probleme si le bas de bande que les slides s'imposent
+    (`plancher_in`) descend AU NIVEAU du numero de page reellement declare par
+    le gabarit charge.
+
+    Les slides derivent ce plancher d'une constante (`CONTENT_BOTTOM` cote
+    generateur). Un gabarit qui remonterait son numero de page rendrait cette
+    constante fausse EN SILENCE : les slides continueraient de dessiner jusqu'a
+    l'ancien plancher, et rien ne dirait pourquoi.
+
+    ADAPTATION AU CANAL DE CE PROJET : le generateur ne dessine pas pleine
+    largeur — il s'arrete a `BORD_DROIT` (9.15 in), a GAUCHE du badge de
+    pagination (qui commence a 9.25 in), alors que son `CONTENT_BOTTOM` (5.45
+    in) passe SOUS le haut de ce badge (5.09 in). Une comparaison purement
+    verticale, comme chez l'homologue VSCode4 qui dessine pleine largeur,
+    crierait donc a tort sur chaque build. `bord_droit_in`, quand il est fourni,
+    exige EN PLUS un recouvrement horizontal : le constat ne tombe que si la
+    bande dessinee atteint reellement le badge. Sans lui, comportement identique
+    a l'homologue.
+
+    CE QUE `bord_droit_in` COUTE, ET IL FAUT LE SAVOIR (revue bmad-code-review
+    du 2026-09-09). Avec les valeurs reelles de ce projet (bande a gauche du
+    badge), le filet est vert QUEL QUE SOIT `plancher_in` — meme absurde : ce
+    n'est pas un filet inerte, c'est un verdict « pas de recouvrement », mais
+    les deux se ressemblent de l'exterieur. Ce qui le fait tomber, c'est donc
+    une derive qui ramene le badge DANS la bande (gabarit qui deplace le bloc
+    vers la gauche, ou generateur qui elargit `BORD_DROIT`) — le cas verrouille
+    par `test_badge_qui_derive_dans_la_bande_est_signale`. Une derive purement
+    verticale d'un badge qui reste a droite de la bande ne le fait pas tomber,
+    et c'est correct : rien ne se recouvre."""
+    zones = [zone for slide in prs.slides for zone in zones_numero_page(slide)]
+    if not zones:
+        return []
+    if bord_droit_in is not None:
+        zones = [z for z in zones if bord_droit_in > z[0]]
+        if not zones:
+            return []
+    plus_haut = min(z[1] for z in zones)
+    if plancher_in <= plus_haut:
+        return []
+    return [f"plancher de dessin ({plancher_in:.2f}in) sous le haut de la zone "
+            f"du numero de page declaree par le gabarit ({plus_haut:.2f}in) : "
+            f"la constante de repli _ZONE_NUMERO_PAGE_IN a decroche du gabarit"]
+
+
+def verifier_chrome_gabarit(prs, zone_in=None, marge_in=0.02, compte=None):
+    """Retourne la liste des problemes : toute forme DE CONTENU (posee sur une
+    slide, pas sur le layout/master) dont les bords chevauchent la zone du
+    numero de page heritee du gabarit. Liste vide = OK.
+
+    `zone_in` force une zone unique pour toutes les slides (tests) ; par defaut
+    la zone est LUE sur le layout/master de CHAQUE slide.
+
+    Meme forme de resultat que `verifier_geometrie` (chaine « slide N: … »),
+    pour rester agregeable telle quelle dans le self-check de `build()`.
+
+    `compte` : dict optionnel (`examinees`, `ignorees`, `groupes`), pour la meme
+    raison que sur `verifier_debordements_texte`. Les formes groupees sont
+    examinees sur leur boite ENGLOBANTE : un enfant fautif se signale alors au
+    nom du groupe, jamais au sien."""
+    if compte is not None:
+        # Les trois clefs sont posees d'avance : le docstring les promet, et
+        # « 0 groupe » doit se lire 0, pas se deviner d'une clef absente (revue
+        # bmad-code-review du 2026-09-09 — un KeyError chez l'appelant).
+        for cle in ("examinees", "ignorees", "groupes"):
+            compte.setdefault(cle, 0)
+    tol_in = marge_in
+    problemes = []
+    for si, slide in enumerate(prs.slides, start=1):
+        zones = [zone_in] if zone_in is not None else zones_numero_page(slide)
+        for shp in slide.shapes:
+            bornes = _bornes_in(shp)
+            if bornes is None:
+                _noter(compte, "ignorees")
+                continue
+            _noter(compte, "examinees")
+            if getattr(shp, "shape_type", None) == MSO_SHAPE_TYPE.GROUP:
+                _noter(compte, "groupes")
+            l, t, r, b = bornes
+            for zone in zones:
+                zl, zt, zr, zb = zone
+                chevauche = (l < zr - tol_in and r > zl + tol_in
+                             and t < zb - tol_in and b > zt + tol_in)
+                if not chevauche:
+                    continue
+                nom = shp.name or "shape"
+                problemes.append(
+                    f"slide {si}: '{nom}' recouvre la zone du numero de page "
+                    f"(l={l:.2f} t={t:.2f} r={r:.2f} b={b:.2f} ; "
+                    f"zone {zone[0]:.2f}-{zone[2]:.2f} x "
+                    f"{zone[1]:.2f}-{zone[3]:.2f})")
+                break
     return problemes
 
 
