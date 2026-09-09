@@ -40,25 +40,41 @@ def _log_run(tmp_path, payload, via_stdin=False):
     )
 
 
-def _gate(prompt):
+def _gate(prompt, tmp_path):
+    # `AGENT_ORCHESTRATION_PROMPTS` obligatoire : le hook journalise UNE LIGNE PAR
+    # PROMPT VU, et sans surcharge il écrivait dans le vrai
+    # `.claude/orchestration/prompts.jsonl` — journal que `scan_transcripts.py` LIT.
+    # Constaté ici : 12 lignes accumulées en six exécutions de la suite, toutes du
+    # même échantillon de test. Un journal d'usage pollué par ses propres tests ne
+    # peut servir à décider de rien (même leçon que `jobs.jsonl` au hub).
     return subprocess.run(
         [sys.executable, str(GATE)],
         input=json.dumps({"prompt": prompt}),
+        env=dict(os.environ, AGENT_ORCHESTRATION_PROMPTS=str(tmp_path / "prompts.jsonl")),
         capture_output=True, text=True, timeout=30, encoding="utf-8",
     )
 
 
 def test_log_run_appends_valid_run_with_ts(tmp_path):
+    # Un run `succes`/`orchestre` doit porter sa DoD : depuis le canon du 2026-09-04,
+    # `verifier_revue_increment` REFUSE (rc=1, rien d'écrit) un tel run sans étape
+    # terminale revue-increment, sans mention dans `notes`, ni `derogation_revue`.
+    # L'échantillon prend donc la première échappatoire — celle que les playbooks de
+    # dev de ce dépôt appliquent déjà (cf.
+    # `test_playbooks_de_dev_se_terminent_par_revue_increment`).
     payload = {
         "demande": "revue design parallèle",
         "qualification": "orchestre",
-        "plan": [{"etape": "revue", "agent": "Explore", "mode": "parallele", "modele": "haiku"}],
+        "plan": [
+            {"etape": "revue", "agent": "Explore", "mode": "parallele", "modele": "haiku"},
+            {"etape": "dod", "agent": "revue-increment", "mode": "cascade", "modele": "sonnet"},
+        ],
         "resultat": "succes",
         "reprises": 0,
     }
     result = _log_run(tmp_path, payload)
     assert result.returncode == 0, result.stderr
-    assert "1 etape(s)" in result.stdout
+    assert "2 etape(s)" in result.stdout
     lines = (tmp_path / "runs.jsonl").read_text(encoding="utf-8").strip().splitlines()
     assert len(lines) == 1
     run = json.loads(lines[0])
@@ -77,14 +93,57 @@ def test_log_run_rejects_missing_fields_and_bad_qualification(tmp_path):
     assert not (tmp_path / "runs.jsonl").exists()
 
 
-def test_gate_injects_grid_except_for_slash_commands():
-    result = _gate("corrige le bug d'export PPT et vérifie le rendu")
+def test_log_run_refuse_un_succes_orchestre_sans_revue_increment(tmp_path):
+    """Canon du 2026-09-04 (`verifier_revue_increment`) : la boucle de revue de fin
+    d'incrément n'est plus rappelée par un `print()` ignorable — un run `succes` +
+    `orchestre` qui n'en porte aucune trace est REFUSÉ, et rien n'est journalisé.
+
+    Trois échappatoires, et trois seulement : une étape revue-increment au plan
+    (couverte par `test_log_run_appends_valid_run_with_ts`), une mention
+    `revue-increment` dans `notes` (revue de campagne couvrant plusieurs runs), ou un
+    champ `derogation_revue` motivé. On vérifie ici le refus et les deux échappatoires
+    non couvertes ailleurs — un garde-fou qu'on ne fait jamais crier n'est pas testé."""
+    sans_revue = {
+        "demande": "export du deck",
+        "qualification": "orchestre",
+        "plan": [{"etape": "impl", "agent": "general-purpose", "mode": "cascade",
+                  "modele": "sonnet"}],
+        "resultat": "succes",
+        "reprises": 0,
+    }
+    refus = _log_run(tmp_path, sans_revue)
+    assert refus.returncode == 1
+    assert "revue-increment" in refus.stdout
+    assert not (tmp_path / "runs.jsonl").exists(), "un run refusé ne s'écrit pas"
+
+    # Échappatoire 2 : la trace dans `notes` (revue de campagne).
+    par_notes = _log_run(tmp_path, dict(sans_revue, notes="revue-increment de campagne"))
+    assert par_notes.returncode == 0, par_notes.stdout
+
+    # Échappatoire 3 : la dérogation motivée. Une chaîne vide ne suffit pas — c'est un
+    # motif explicite qui est exigé, pas la présence du champ.
+    assert _log_run(tmp_path, dict(sans_revue, derogation_revue="  ")).returncode == 1
+    assert _log_run(
+        tmp_path, dict(sans_revue, derogation_revue="run de mesure, aucun livrable")
+    ).returncode == 0
+
+    # Le refus ne vise QUE le couple succes+orchestre : un run non soldé passe.
+    assert _log_run(tmp_path, dict(sans_revue, resultat="en-cours")).returncode == 0
+    lignes = (tmp_path / "runs.jsonl").read_text(encoding="utf-8").strip().splitlines()
+    assert len(lignes) == 3, "3 runs acceptés, aucun des 2 refusés"
+
+
+def test_gate_injects_grid_except_for_slash_commands(tmp_path):
+    result = _gate("corrige le bug d'export PPT et vérifie le rendu", tmp_path)
     assert result.returncode == 0
     assert "agent-orchestrator" in result.stdout
 
-    result = _gate("/code-review high")
+    result = _gate("/code-review high", tmp_path)
     assert result.returncode == 0
     assert result.stdout.strip() == ""
+
+    # Les deux prompts sont bien journalisés — dans le journal ISOLÉ, pas celui du dépôt.
+    assert (tmp_path / "prompts.jsonl").read_text(encoding="utf-8").count("\n") == 2
 
 
 # --- Étage O-B : playbooks + générateur ---------------------------------------

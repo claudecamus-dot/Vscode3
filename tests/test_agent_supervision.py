@@ -36,6 +36,17 @@ def _env(tmp_path):
         # Jamais la vraie base app ni les vrais arbitrages par défaut dans les tests.
         AGENT_SUPERVISION_OPENHUB_DB=str(tmp_path / "absent.db"),
         AGENT_SUPERVISION_ARBITRAGES=str(tmp_path / "arbitrages.json"),
+        # Le canon lit désormais un TROISIÈME canal d'usage — `usage.jsonl`, écrit par
+        # le hook à l'instant de l'appel — en plus des transcripts, et un journal de
+        # prompts. Sans ces surcharges, le scan des tests lisait le journal RÉEL de ce
+        # dépôt : l'échantillon de 2 événements en rendait 79, `revue-increment` y
+        # figurait comme utilisée et les skills BMAD n'étaient plus « 0 invocation ».
+        # Même contrat que les lignes ci-dessus : aucun test ne lit ni n'écrit un
+        # journal de production (`scan_incidents.jsonl` est ÉCRIT par le scan quand il
+        # plante — l'omettre salirait .claude/supervision/).
+        AGENT_SUPERVISION_USAGE=str(tmp_path / "usage.jsonl"),
+        AGENT_ORCHESTRATION_PROMPTS=str(tmp_path / "prompts.jsonl"),
+        AGENT_SUPERVISION_SCAN_INCIDENTS=str(tmp_path / "scan_incidents.jsonl"),
     )
 
 
@@ -191,13 +202,18 @@ def test_routing_hints_croisent_usage_et_runs(tmp_path):
     # `en-attente-validation` et `partiel` rejoignent `en-cours` : comptés à part,
     # jamais dans `n` (canon du hub, 2026-08-31 — un playbook sans aucun échec
     # s'affichait à 83 % parce que ses runs non soldés gonflaient le dénominateur).
+    # `runs_fortes_reprises` (canon du 2026-09-04, finding `prudence-routage-inerte`) :
+    # nombre de runs à >= REPRISE_PRUDENCE_SEUIL (2) reprises, compté AVANT le
+    # early-return des états non terminaux — la branche `echecs` de la prudence ne
+    # s'était jamais déclenchée en 131 runs, celle-ci la complète. Ici : le seul run à
+    # 2 reprises, donc 1 côté playbook comme côté agent.
     assert hints["playbooks"]["dev-verifie"] == {
         "n": 2, "succes": 1, "echecs": 1, "reprises": 2, "en_cours": 1,
-        "en_attente_validation": 0, "partiels": 0,
+        "en_attente_validation": 0, "partiels": 0, "runs_fortes_reprises": 1,
     }
     assert hints["agents"]["Explore"] == {
         "n": 1, "succes": 0, "echecs": 1, "reprises": 2, "en_cours": 0,
-        "en_attente_validation": 0, "partiels": 0,
+        "en_attente_validation": 0, "partiels": 0, "runs_fortes_reprises": 1,
     }
     # Pas de diagnostic étage 2 : signalé comme à lancer.
     assert hints["diagnostic_a_jour"] is False
@@ -504,9 +520,16 @@ def test_arbitrages_closent_les_todos_et_restent_affiches(tmp_path):
     (tdir / "s1.jsonl").write_text(_line(skill="run-dev-server"), encoding="utf-8")
 
     # Sans arbitrage : les constats d'usage nagguent (skills BMAD réels du repo, 0 invocation).
+    # Le canon scinde désormais le TODO BMAD en deux (2026-09-04, finding
+    # `bmad-catalogue-elagage`) : « Désinstaller les shims BMAD dépréciés », fondé sur
+    # la `description` de l'éditeur et non sur notre compteur, et « Trier / Élaguer les
+    # skills BMAD », fondé sur l'usage mesuré. « Trier » ne sort que si AUCUNE skill
+    # n'est dépréciée ; ce dépôt en installe 21 sur 50, donc c'est « Élaguer :
+    # 29/50 » qu'il faut attendre ici — c'est bien le même TODO d'usage, celui que
+    # l'arbitrage `famille:BMAD` doit clore.
     _run(tmp_path)
     page = (tmp_path / "page.md").read_text(encoding="utf-8")
-    assert "Trier les skills BMAD" in page
+    assert "Élaguer les skills BMAD" in page
     assert "Arbitrages enregistrés" not in page
 
     # Avec arbitrages : le TODO correspondant disparaît, la décision reste visible
@@ -528,7 +551,7 @@ def test_arbitrages_closent_les_todos_et_restent_affiches(tmp_path):
     result = _run(tmp_path)
     assert result.returncode == 0, result.stderr
     page = (tmp_path / "page.md").read_text(encoding="utf-8")
-    assert "Trier les skills BMAD" not in page
+    assert "Élaguer les skills BMAD" not in page
     assert "## Arbitrages enregistrés" in page
     assert "tri exécuté le 2026-07-18" in page
     # La skill arbitrée sort de la ligne TODO « Skills projet sans usage »…
