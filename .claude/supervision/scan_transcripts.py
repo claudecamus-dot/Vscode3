@@ -4,7 +4,7 @@
 # | garder : la signaler au hub, qui corrige le canon et re-synchronise.
 # | (Depuis le hub : « py .claude/dispositif/sync_dispositif.py » — ce script
 # |  n'est pas déployé, il n'existe pas dans ce dépôt.)
-# | Provenance canon : 47a1926 du 2026-09-09 — permet, au prochain sync, de dire si
+# | Provenance canon : ced0e22 du 2026-09-09 — permet, au prochain sync, de dire si
 # | une différence vient d'une édition locale ou d'une avance du canon (voir
 # | `determiner_cause` dans sync_dispositif.py au hub).
 # +---------------------------------------------------------------------------
@@ -52,10 +52,10 @@ import glob
 import hashlib
 import json
 import os
-import traceback
 import re
 import subprocess
 import sys
+import traceback
 
 SUP_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(SUP_DIR))
