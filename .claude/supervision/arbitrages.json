@@ -231,6 +231,18 @@
       ],
       "decision": "ACCEPTE + APPLIQUE : dette de lint traitee (5 blocs d'imports ruff I001 : generate_deck.py:373,375,396 ; pptx_deck.py:10 ; test_generate_deck.py:39), retriee a la main bloc par bloc (jamais `ruff --fix` en aveugle, regle du projet) en suivant exactement la sortie `ruff check --select I001` comme guide. Verifie : `ruff check --select I001` propre sur les 3 fichiers, py_compile propre, ET `python test_generate_deck.py` rejoue en entier apres coup (49/49 pages rendues, TOUS LES TESTS PASSENT) -- aucune regression fonctionnelle malgre le WIP actif sur ces memes fichiers.",
       "source": "diagnostic etage 2 du 2026-09-04 (agent-supervisor), finding pratique-dev \"dette de lint\" -- applique sur /orchestre du 2026-09-07"
+    },
+    {
+      "cible": "docs/cadrage-ppt/generate_deck.py:slide_executive_summary",
+      "date": "2026-09-07",
+      "categories": [],
+      "decision": "ACCEPTE + APPLIQUE : le contrat de deck-design-review passe de 4 a 5 blocs (OFFRE + POURQUOI/QUOI/COMMENT/RESULTAT) sur arbitrage utilisateur explicite -- le bloc OFFRE fait sens depuis l'ajout du chapitre 01 Exec Summary (le contrat a 4 blocs datait d'avant cet ajout). SKILL.md mis a jour, aucune modification du code du deck (la slide reste telle quelle).",
+      "source": "audit design deck-design-review du 2026-09-07 -- arbitre sur /orchestre du meme jour"
+    },
+    {
+      "cible": "VSCode3:audit-2026-09-02",
+      "date": "2026-09-09",
+      "decision": "TRAITE PARTIELLEMENT (mandat utilisateur du 2026-09-09, << traite les projets par ordre de risque >> ; VSCode3 traite en dernier comme le moins risque). Cadrage R1 constat par constat : deux etaient DEJA FERMES (les zip() sans strict=True par 17993b0, le hook qui ne reconnaissait pas -am par 986e0b7 -- les deux derniers zip() le sont dans le working tree de la session qui travaille sur le deck, ils partiront a son commit). UN SEUL etait libre de collision et il a ete corrige (commit d541f09) : la mesure de lint etait devenue illisible -- ruff remontait 16 erreurs dont 10 venaient d'un unique instantane fige de 271 Ko dans archives/, y compris 5 points deja corriges en amont. archives/ sort du perimetre mesure (pyproject.toml) et un test verifie les DEUX sens : l'archive est ignoree ET le code vivant reste lu, pour qu'une exclusion trop large ne puisse pas eteindre le linter en silence. Mesure : 16 erreurs -> 7, toutes sur du code vivant ; suite 173 -> 175 passed. NON APPLIQUE, decrit pour la session proprietaire du chantier deck : ITEM_SIZE_DEFAUT assigne jamais lu, deux blocs d'imports non tries dans des scripts non encore versionnes, archives/ non gitignore en entier (un snapshot de 4700 lignes est committable), et quatre .pptx de 2,2 Mo non suivis qu'un git add -A embarquerait. RESTENT A ARBITRER par l'utilisateur : la taille de generate_deck.py (3793 lignes au 2026-09-02, 4740 au dernier commit, 5091 en working tree, soit +34 % en 7 jours -- c'est le finding ouvert du diagnostic local depuis le 2026-09-03, a trancher entre rythme attendu d'une refonte et derive a ralentir), la purge d'historique (.git a 106 Mo pour 28 commits sur un binaire de 22,6 Mo), et la remontee des helpers de pptx_deck.py (305 lignes ici contre 988 chez VSCode2 et 1124 chez VSCode4)."
     }
   ]
 }
