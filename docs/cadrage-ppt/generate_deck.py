@@ -4885,6 +4885,28 @@ def _appliquer_police_deck(prs, police=POLICE_DECK, secours=POLICE_SECOURS):
           f"({n_secours} run(s) laissé(s) en {secours} — glyphe hors couverture).")
 
 
+def _controler(prs):
+    """Le self-check de `build()` : tous les filets consultés, en un seul endroit.
+
+    Extrait de `build()` pour être testable sans reconstruire les 49 slides —
+    la couture qui manquait pour prouver qu'un filet est réellement BRANCHÉ et
+    pas seulement présent dans `pptx_deck.py` (finding du hub du 2026-09-09 :
+    les trois filets étaient portés et testés, aucun n'était appelé).
+
+    `verifier_debordements_texte` reste volontairement DEHORS. Mesuré sur le
+    deck réel du 2026-09-10 : 58 constats pour 0 aux trois autres, dont une part
+    vient de l'estimateur qui ignore `line_spacing`. Or ce résultat gouverne le
+    NOM du fichier écrit (`.INVALIDE.pptx` si non vide) : le brancher avant
+    d'avoir réglé son seuil contre un rendu PowerPoint réel bloquerait la
+    livraison d'un deck correct.
+    """
+    return (D.verifier_geometrie(prs)
+            + D.verifier_chrome_gabarit(prs)
+            + D.verifier_plancher_de_dessin(prs, CONTENT_BOTTOM,
+                                            bord_droit_in=BORD_DROIT)
+            + _ANOMALIES_BUILD)
+
+
 def build():
     prs = new_prs()
     slide_cover(prs)
@@ -5059,7 +5081,7 @@ def build():
 
     _appliquer_police_deck(prs)
 
-    problemes = D.verifier_geometrie(prs) + _ANOMALIES_BUILD
+    problemes = _controler(prs)
     if problemes:
         print(f"GEOMETRIE: {len(problemes)} probleme(s)")
         for p in problemes:

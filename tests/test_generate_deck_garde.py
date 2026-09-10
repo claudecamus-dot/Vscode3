@@ -116,3 +116,66 @@ def test_cadre_introuvable_remonte_dans_les_problemes(generate_deck):
     generate_deck._ANOMALIES_BUILD[:] = []
     generate_deck._remplir_cadre(None, None, "canyon")
     assert generate_deck._ANOMALIES_BUILD,         "cadre introuvable : le defaut doit rejoindre les problemes remontes par build()"
+
+
+# --- Les trois filets sont-ils BRANCHÉS, pas seulement présents ? ------------
+# Finding du hub du 2026-09-09 : verifier_debordements_texte,
+# verifier_chrome_gabarit et verifier_plancher_de_dessin étaient portés et
+# testés dans pptx_deck.py (16 tests, 8 mutants) sans qu'aucun ne soit appelé
+# par generate_deck. Un filet non branché ne protège rien, et sa suite de tests
+# verte donne l'illusion inverse. Ces tests-ci portent sur le CÂBLAGE.
+
+@pytest.fixture
+def prs_minimal(generate_deck):
+    """Une présentation vide : on teste le câblage, pas le contenu du deck."""
+    generate_deck._ANOMALIES_BUILD[:] = []
+    return generate_deck.new_prs()
+
+
+@pytest.mark.parametrize("filet", [
+    "verifier_geometrie",
+    "verifier_chrome_gabarit",
+    "verifier_plancher_de_dessin",
+])
+def test_chaque_filet_branche_remonte_dans_le_self_check(
+        generate_deck, prs_minimal, monkeypatch, filet):
+    """Un constat injecté dans un filet doit ressortir du contrôle de build().
+
+    Le test échoue si le filet est débranché — c'est exactement l'état que le
+    finding décrivait, et le seul que la suite de pptx_deck.py ne pouvait pas
+    voir puisqu'elle teste les filets isolément.
+    """
+    marqueur = f"CONSTAT INJECTE PAR LE TEST ({filet})"
+    monkeypatch.setattr(generate_deck.D, filet,
+                        lambda *a, **k: [marqueur])
+    assert marqueur in generate_deck._controler(prs_minimal), (
+        f"{filet} n'est pas consulte par le self-check de build() : "
+        "un filet non branche ne protege rien")
+
+
+def test_les_anomalies_de_build_restent_dans_le_self_check(
+        generate_deck, prs_minimal):
+    """Le câblage des filets ne doit pas avoir évincé _ANOMALIES_BUILD."""
+    generate_deck._ANOMALIES_BUILD.append("ANOMALIE INJECTEE PAR LE TEST")
+    try:
+        assert "ANOMALIE INJECTEE PAR LE TEST" in generate_deck._controler(prs_minimal)
+    finally:
+        generate_deck._ANOMALIES_BUILD[:] = []
+
+
+def test_debordements_texte_reste_hors_du_self_check(
+        generate_deck, prs_minimal, monkeypatch):
+    """Décision explicite, pas un oubli : son seuil n'est pas réglé.
+
+    Mesuré sur le deck réel du 2026-09-10 : 58 constats, contre 0 aux trois
+    autres filets. Ce résultat gouverne le nom du fichier écrit (.INVALIDE.pptx
+    si non vide), donc le brancher bloquerait la livraison d'un deck correct.
+    Ce test tombera le jour où quelqu'un le branche — c'est le but : la décision
+    devra être reprise avec sa mesure, pas glissée dans un diff.
+    """
+    monkeypatch.setattr(generate_deck.D, "verifier_debordements_texte",
+                        lambda *a, **k: ["CONSTAT QUI NE DOIT PAS REMONTER"])
+    assert "CONSTAT QUI NE DOIT PAS REMONTER" not in generate_deck._controler(prs_minimal), (
+        "verifier_debordements_texte a ete branche sans que son seuil soit "
+        "regle contre un rendu PowerPoint reel : il rendait 58 constats sur un "
+        "deck correct, ce qui ecrit .INVALIDE.pptx et bloque la livraison")
