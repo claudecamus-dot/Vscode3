@@ -1484,7 +1484,7 @@ def slide_pitch_iap(prs):
         # `dispo` avec une marge de sécurité — jamais en dessous du plancher.
         marge = 0.03
         item_size = item_ls = items_h = None
-        for size in (7, 6.75, 6.5, 6.25):
+        for size in (ITEM_SIZE_DEFAUT, 6.75, 6.5, ITEM_SIZE_PLANCHER):
             for ls in (1.2, 1.1, 1.0):
                 lh = size * ls / 72.0
                 h = [_lignes(t, usable - 0.14, size) * lh + 0.02 for t in items]
@@ -2164,7 +2164,13 @@ def slide_mission(prs):
 def slide_pourquoi_contexte(prs):
     """Nouveau (point ②) : dans le chapitre Contexte, le POURQUOI — pourquoi
     proposer cette transformation à un client infra, et maintenant. Trois
-    déclencheurs + un pont trait-pour-trait vers la double mission (slide_mission)."""
+    déclencheurs + un pont trait-pour-trait vers la double mission (slide_mission).
+    Forme (refonte graphique, deck-design-library pattern 4 « schéma des N
+    freins en flux numéroté ») : badge rond numéroté + connecteur vertical +
+    titre/corps, SANS carte à bordure — les 3 cartes plates précédentes
+    (bordure colorée + paragraphe) ne portaient aucune idée de forme propre,
+    juste une redite du gabarit générique du deck. Le badge remplace le
+    micro-label « DÉCLENCHEUR N » : l'ordinal se lit d'un coup d'œil."""
     s = content_slide(prs, "Contexte",
                        "Pourquoi cette transformation, pour un client infra — et maintenant",
                        color=D.PALETTE[0])
@@ -2188,19 +2194,33 @@ def slide_pourquoi_contexte(prs):
     ]
     lead_h, bridge_h = 0.55, 0.72
     top0 = CONTENT_TOP + lead_h + 0.1
-    card_h = (CONTENT_BOTTOM - bridge_h - 0.18) - top0
-    pad = 0.22
+    badge_d = 0.46
+    connector_h = 0.16
+    text_top = top0 + badge_d + connector_h + 0.05
+
+    def lh(pt, spacing):
+        return pt * spacing / 72.0
+
+    # Bloc badge+texte dimensionné à SON contenu (pas étiré jusqu'au pont du
+    # bas) — sinon la suppression de la carte à bordure (qui absorbait le vide
+    # visuellement) laisse un grand blanc entre le texte et le pont, trouvé au
+    # rendu (cf. « panneau sur-étiré »).
+    _, col_w3 = col_x(0, 3)
+    text_h_besoin = max(
+        _lignes(titre, col_w3, D.TYPE["small"]) * lh(D.TYPE["small"], 1.05)
+        + lh(8, 1.0) + _lignes(corps, col_w3, 9) * lh(9, 1.25)
+        for _, titre, corps in triggers)
     for i, (color, titre, corps) in enumerate(triggers):
         x, w = col_x(i, 3)
-        D.add_card(s, x, top0, w, card_h, color)
-        tx = x + 0.08 + pad
-        tw = w - 0.08 - 2 * pad
-        D.add_text(s, tx, top0 + 0.22, tw, card_h - 0.44, [
-            (f"DÉCLENCHEUR {i + 1}", dict(size=6.5, bold=True, color=MUTED)),
-            (titre, dict(size=D.TYPE["small"], bold=True, color=color, space_before=3, line_spacing=1.05)),
+        cx = x + badge_d / 2
+        _badge(s, cx, top0 + badge_d / 2, badge_d, color, str(i + 1), size=15)
+        D.add_rect(s, cx - 0.011, top0 + badge_d, 0.022, connector_h, fill=NAVY,
+                   rounded=True, radius=0.5)
+        D.add_text(s, x, text_top, w, text_h_besoin, [
+            (titre, dict(size=D.TYPE["small"], bold=True, color=color, line_spacing=1.05)),
             (corps, dict(size=9, color=NAVY, space_before=8, line_spacing=1.25)),
         ])
-    bridge_top = CONTENT_BOTTOM - bridge_h
+    bridge_top = min(text_top + text_h_besoin + 0.32, CONTENT_BOTTOM - bridge_h)
     D.add_rect(s, MARGIN, bridge_top, CONTENT_W, bridge_h, fill=TRACK, rounded=True, radius=0.1)
     D.add_rect(s, MARGIN, bridge_top, 0.08, bridge_h, fill=D.PALETTE[0], rounded=True, radius=0.5)
     D.add_text(s, MARGIN + 0.28, bridge_top, CONTENT_W - 0.46, bridge_h, [
@@ -2218,17 +2238,23 @@ def slide_pourquoi_contexte(prs):
 # §Positionnement & achat du cadrage (l.36) fait foi POUR LE DECK depuis la
 # v2.3, mais n'y avait jamais été redescendue : 40 slides disaient COMMENT on
 # fait la mission, aucune contre quel achat alternatif elle se gagne.
-# Forme retenue (deck-design-library) : grille-référentiel à libellé propre par
-# ligne (pattern 15) — lignes = les 4 achats alternatifs (cadrage l.52-57),
-# colonnes = ce qu'il apporte / ce qui lui manque ; la règle « un sur N en
-# accent » est appliquée à la COLONNE de droite (teinte pâle), c'est là que
-# l'offre gagne. En pied, bandeau transverse (pattern 18) : collision de nom
-# (l.63) et réponse au sponsor « je ne veux que la baisse de coûts » (l.57, l.78).
+# Forme (refonte graphique 2026-09-07, deck-design-library) : la 1re version
+# (grille-référentiel pattern 15) restait un tableau déguisé — 4 lignes x 3
+# colonnes, l'audit design l'a signalé. Remplacée par 4 fiches signature
+# (coin coupé, ROUND_2_DIAG_RECTANGLE) à DEUX zones empilées : haut blanc
+# neutre = ce que l'achat alternatif apporte, bas navy plein = ce qui lui
+# manque + la réponse IAP (variante du « ticket » bipartite, pattern 21 —
+# le contraste de fond porte le message avant même la lecture du texte).
+# La ligne de partage est à la MÊME hauteur pour les 4 cartes (dimensionnée
+# sur le contenu le plus long, pas étirée) : le nom et le "ce qui manque" de
+# chaque alternative restent alignés en rangée malgré des textes de longueur
+# différente. En pied, bandeau transverse (pattern 18) inchangé : collision
+# de nom (l.63) et réponse au sponsor « je ne veux que la baisse de coûts »
+# (l.57, l.78).
 def slide_qui_achete(prs):
     s = content_slide(prs, "Contexte",
                        "Le sponsor est la DSI — l'offre se gagne contre quatre achats partiels",
                        color=D.PALETTE[0])
-    couleur = D.PALETTE[0]
 
     def lh(pt):
         return pt * 1.25 / 72.0
@@ -2266,7 +2292,7 @@ def slide_qui_achete(prs):
     band_h = 2 * band_pad + lh(7) + 0.04 + band_lignes * lh(7) + 0.03
     band_top = CONTENT_BOTTOM - band_h
 
-    # --- Grille : 4 lignes (les alternatives) x 3 colonnes ------------------
+    # --- 4 fiches signature (coin coupé) à deux zones empilées --------------
     alternatives = [
         ("Ne rien faire",
          "Zéro coût apparent.",
@@ -2287,44 +2313,54 @@ def slide_qui_achete(prs):
          "Automatise le RUN sans transformer",
          "Plus de 40 % des projets agentic seront abandonnés d'ici 2027 (Gartner, juin 2025)."),
     ]
-    c1_w, c2_w = 1.80, 2.45
-    c3_w = CONTENT_W - c1_w - c2_w
-    c1_x = MARGIN
-    c2_x = c1_x + c1_w
-    c3_x = c2_x + c2_w
+    col_w = (CONTENT_W - 3 * GAP) / 4
+    pad_x = 0.13
+    label_h = lh(6) + 0.04  # « ACHAT ALTERNATIF » / « RÉPONSE IAP », 1 ligne fixe
 
-    head_h = 0.18
-    head_top = CONTENT_TOP + lead_h + 0.10
-    grid_top = head_top + head_h + 0.05
-    grid_h = band_top - 0.16 - grid_top
-    row_h = grid_h / len(alternatives)
+    def _zone_h(titre, corps, titre_size, pad_top, pad_bot):
+        return (pad_top + label_h
+                + _lignes(titre, col_w - 2 * pad_x, titre_size) * lh(titre_size) + 0.04
+                + _lignes(corps, col_w - 2 * pad_x, 7.3) * lh(7.3) + pad_bot)
 
-    _header_cell(s, c1_x, head_top, c1_w, head_h, "L'ACHAT ALTERNATIF")
-    _header_cell(s, c2_x + 0.12, head_top, c2_w - 0.12, head_h, "CE QU'IL APPORTE")
-    _header_cell(s, c3_x + 0.14, head_top, c3_w - 0.14, head_h,
-                 "CE QUI LUI MANQUE — LA RÉPONSE IAP", color=couleur)
+    # Hauteur de chaque zone dimensionnée sur l'alternative la PLUS longue à
+    # décrire, pas étirée à l'espace disponible (cf. « panneau sur-étiré ») —
+    # la ligne de partage reste néanmoins à la MÊME hauteur pour les 4 cartes :
+    # nom et « ce qui manque » s'alignent en rangée malgré des textes inégaux.
+    top_h = max(_zone_h(nom, apporte, 8.5, 0.07, 0.06) for nom, apporte, _, _ in alternatives)
+    bot_h = max(_zone_h(manque, reponse, 7.5, 0.08, 0.09) for _, _, manque, reponse in alternatives)
+    card_h = top_h + bot_h
+    grid_top = CONTENT_TOP + lead_h + 0.14
+    row_top = grid_top + max(0.0, (band_top - 0.16 - grid_top - card_h) / 2)
 
-    # « Un sur N en accent » porté par la COLONNE, pas par une ligne : la
-    # troisième colonne est la seule teintée — c'est là que l'offre répond.
-    D.add_rect(s, c3_x, grid_top, c3_w, grid_h, fill="#D9ECFF", rounded=True, radius=0.06)
-
-    chip_h = 0.40
     for i, (nom, apporte, manque, reponse) in enumerate(alternatives):
-        y = grid_top + i * row_h
-        if i:  # séparateurs fins : la grille sans le tableau (pattern 11)
-            D.add_rect(s, MARGIN, y, CONTENT_W, 0.012, fill=LINE)
-        chip_y = y + row_h / 2 - chip_h / 2
-        D.add_rect(s, c1_x, chip_y, c1_w - 0.16, chip_h, fill=TRACK, rounded=True, radius=0.1)
-        D.add_text(s, c1_x + 0.10, chip_y, c1_w - 0.36, chip_h, [
-            (nom, dict(size=8, bold=True, color=NAVY, line_spacing=1.05)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
-        D.add_text(s, c2_x + 0.12, y, c2_w - 0.24, row_h, [
-            (apporte, dict(size=7.5, color=NAVY, line_spacing=1.25)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
-        D.add_text(s, c3_x + 0.14, y, c3_w - 0.28, row_h, [
-            (manque, dict(size=7.5, bold=True, color=couleur, line_spacing=1.1)),
-            (reponse, dict(size=7.5, color=NAVY, space_before=2, line_spacing=1.25)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
+        x, w = col_x(i, 4)
+        carte = s.shapes.add_shape(MSO_SHAPE.ROUND_2_DIAG_RECTANGLE,
+                                    Inches(x), Inches(row_top), Inches(w), Inches(card_h))
+        try:
+            carte.shadow.inherit = False
+        except Exception:
+            pass
+        carte.fill.solid()
+        carte.fill.fore_color.rgb = _rgb("#ffffff")
+        carte.line.color.rgb = _rgb(LINE)
+        carte.line.width = Pt(1.0)
+        carte.text_frame.paragraphs[0].text = ""
+        # Zone basse navy pleine = la réponse IAP — le contraste de fond porte
+        # le message avant même la lecture du texte (« un sur N » appliqué à
+        # la ZONE partagée par les 4 cartes, pas à une carte isolée : les 4
+        # réponses pèsent également).
+        D.add_rect(s, x + 0.05, row_top + top_h, w - 0.10, bot_h - 0.05,
+                   fill=NAVY, rounded=True, radius=0.10)
+        D.add_text(s, x + pad_x, row_top + 0.07, w - 2 * pad_x, top_h - 0.07, [
+            ("ACHAT ALTERNATIF", dict(size=6, bold=True, color=MUTED)),
+            (nom, dict(size=8.5, bold=True, color=NAVY, space_before=3, line_spacing=1.05)),
+            (apporte, dict(size=7.3, color=NAVY, space_before=4, line_spacing=1.2)),
+        ])
+        D.add_text(s, x + pad_x, row_top + top_h + 0.08, w - 2 * pad_x, bot_h - 0.08, [
+            ("RÉPONSE IAP", dict(size=6, bold=True, color="#8891b3")),
+            (manque, dict(size=7.5, bold=True, color=ACCENT, space_before=3, line_spacing=1.1)),
+            (reponse, dict(size=7.3, color="#ffffff", space_before=3, line_spacing=1.2)),
+        ])
 
     for i, (fill, label_c, texte_c, label, corps) in enumerate(bandeaux):
         x, w = col_x(i, 2)
@@ -2404,20 +2440,60 @@ def slide_why_iap(prs):
          "des KPIs de mission — pas du reporting-miroir.",
          "Management & Sponsor"),
     ]
-    top = CONTENT_TOP + claim_h + 0.25
-    card_h = CONTENT_BOTTOM - top
-    pad = 0.22
+
+    # Refonte graphique (lot 2, ch.05) : les 3 cartes bordées cédaient un effet
+    # de simple répétition — remplacées par le pattern deck-design-library #14
+    # ("processus en étapes numérotées, colonnes de détail dans UNE carte") :
+    # 3 badges numérotés en frise, reliés par un connecteur à UNE carte unique
+    # divisée par de fins séparateurs — la forme dit "une seule thèse à 3
+    # facettes", pas 3 idées indépendantes. Le motif « légende + chip couleur »
+    # reprend celui de slide_douleurs (fil rouge visuel entre les 2 slides).
+    n = len(piliers)
+    badge_d = 0.32
+    connector_h = 0.12
+    badge_gap = 0.16
+    badge_top = CONTENT_TOP + claim_h + badge_gap
+    card_top = badge_top + badge_d + connector_h
+    card_h = CONTENT_BOTTOM - card_top
+    col_w = CONTENT_W / n
+    pad_h = 0.24
+
+    D.add_rect(s, MARGIN, card_top, CONTENT_W, card_h, fill="#ffffff", line=LINE,
+               line_w=0.75, rounded=True, radius=0.05)
+
+    corps_size = 9
+    corps_lh = corps_size * 1.25 / 72.0
+    content_w = col_w - 2 * pad_h
+    corps_lines = max(_lignes(p[2], content_w, corps_size) for p in piliers)
+    title_h, title_gap, corps_gap, footer_h = 0.34, 0.05, 0.16, 0.42
+    corps_h = corps_lines * corps_lh + 0.04
+    block_h = title_h + title_gap + corps_h + corps_gap + footer_h
+    block_top = card_top + max(0.14, (card_h - block_h) / 2.0)
+
     for i, (color, titre, corps, ancre) in enumerate(piliers):
-        cx, cw = col_x(i, 3)
-        D.add_card(s, cx, top, cw, card_h, color)
-        tx = cx + 0.08 + pad
-        tw = cw - 0.08 - 2 * pad
-        D.add_text(s, tx, top + 0.22, tw, card_h - 0.44, [
-            (titre, dict(size=D.TYPE["small"], bold=True, color=color, line_spacing=1.05)),
-            (corps, dict(size=9, color=NAVY, space_before=8, line_spacing=1.25)),
-            ("RÉPOND À", dict(size=6.5, bold=True, color=MUTED, space_before=12)),
-            (ancre, dict(size=9, bold=True, color=color, space_before=2)),
+        cx = MARGIN + i * col_w
+        col_cx = cx + col_w / 2.0
+        D.add_dot(s, col_cx - badge_d / 2, badge_top, badge_d, color)
+        D.add_text(s, cx, badge_top, col_w, badge_d, [
+            (str(i + 1), dict(size=10, bold=True, color="#ffffff", align=PP_ALIGN.CENTER)),
+        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+        D.add_rect(s, col_cx - 0.011, badge_top + badge_d, 0.022, connector_h, fill=color)
+        if i > 0:
+            D.add_rect(s, cx, card_top + 0.16, 0.012, card_h - 0.32, fill=LINE)
+
+        tx = cx + pad_h
+        D.add_text(s, tx, block_top, content_w, title_h, [
+            (titre, dict(size=D.TYPE["small"], bold=True, color=color, line_spacing=1.1)),
         ])
+        corps_top = block_top + title_h + title_gap
+        D.add_text(s, tx, corps_top, content_w, corps_h, [
+            (corps, dict(size=corps_size, color=NAVY, line_spacing=1.25)),
+        ])
+        footer_top = corps_top + corps_h + corps_gap
+        D.add_text(s, tx, footer_top, content_w, 0.14, [
+            ("RÉPOND À", dict(size=6.5, bold=True, color=MUTED)),
+        ])
+        chip(s, tx, footer_top + 0.16, content_w, footer_h - 0.16, ancre, color, size=8)
     return s
 
 
@@ -2431,7 +2507,7 @@ def slide_maturite(prs):
     # différente ; le KPI = le DELTA dans le temps, pas le niveau absolu. Ambiguïté
     # « Remplace le M0–M4 » toujours levée (badge « Où se lit l'axe IA »).
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.42, [
-        ("La 3ᵉ famille de KPIs. Deux lectures qui ne mesurent pas la même chose et se lisent "
+        ("La 3e famille de KPIs. Deux lectures qui ne mesurent pas la même chose et se lisent "
          "séparément ; le KPI de progression, c'est le DELTA par pilier entre T0 et chaque "
          "réévaluation — pas le niveau absolu.",
          dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
@@ -2857,97 +2933,155 @@ def slide_douleurs(prs):
          "Décisionnel · IA (gadget)"),
     ]
 
-    # Colonnes (comme slide_architecture_si) : en-têtes une seule fois, puis 4
-    # rangées à liseré = couleur persona, anchor MIDDLE. Hauteur de rangée
-    # calée sur le contenu le plus long (colonne douleur), pas d'étirement.
-    headers = ["PERSONA", "LA DOULEUR, APPROFONDIE", "SIGNAL / MESURE", "FAMILLE(S)"]
-    col_widths = [1.3, 3.6, 1.85, 1.425]
-    col_gap = 0.12
-    xs = []
-    cx = MARGIN
-    for cw in col_widths:
-        xs.append(cx)
-        cx += cw + col_gap
-
-    header_y = CONTENT_TOP + 0.45
-    for x, w, label in zip(xs, col_widths, headers):
-        D.add_text(s, x + (0.12 if x == xs[0] else 0), header_y, w, 0.2, [
-            (label, dict(size=7, bold=True, color=MUTED)),
-        ])
-
-    # Hauteur de rangée calée sur le contenu, MAIS bornée pour toujours réserver
-    # la ligne-pont du bas (« → slide suivante ») — sans ce plafond, 4 rangées de
-    # 4 lignes remplissaient jusqu'au bas et escamotaient la ligne-pont.
+    # Refonte graphique (lot 2, ch.04) : la table Persona/Signal/Famille cédait
+    # à l'effet tableau plat — remplacée par un flux diagnostique en 4 lanes
+    # verticales (deck-design-library #4, "schéma des N freins en flux
+    # numéroté, badge + connecteur") : badge numéroté → connecteur → persona →
+    # douleur → signal mesuré → famille(s), plutôt que des colonnes alignées.
+    # Hauteurs de bloc calées sur le contenu le PLUS long (pas d'étirement par
+    # lane) : chaque étape (douleur, signal) partage la même hauteur dans les
+    # 4 lanes pour que badges/connecteurs/chips restent alignés horizontalement.
     n = len(rows)
-    row_gap = 0.12
-    note_reserve = 0.5
-    row_top = header_y + 0.26
-    region_bot = CONTENT_BOTTOM - note_reserve
-    size = 8
-    lh = size * 1.2 / 72.0
-    row_lines = max(
-        max(_lignes(r[2], col_widths[1] - 0.2, size), _lignes(r[3], col_widths[2] - 0.15, size))
-        for r in rows)
-    row_h = min(row_lines * lh + 0.26, (region_bot - row_top - (n - 1) * row_gap) / n)
-    for i, (nom, color, douleur, signal, famille) in enumerate(rows):
-        y = row_top + i * (row_h + row_gap)
-        D.add_rect(s, MARGIN, y, CONTENT_W, row_h, fill="#ffffff", line=LINE, line_w=0.75,
-                   rounded=True, radius=0.08)
-        D.add_rect(s, MARGIN, y, 0.06, row_h, fill=color, rounded=True, radius=0.5)
-        D.add_text(s, xs[0] + 0.12, y + 0.08, col_widths[0] - 0.12, row_h - 0.16, [
-            (nom, dict(size=D.TYPE["tiny"], bold=True, color=color, line_spacing=1.1)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
-        D.add_text(s, xs[1], y + 0.08, col_widths[1] - 0.15, row_h - 0.16, [
-            (douleur, dict(size=size, color=NAVY, line_spacing=1.2)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
-        D.add_text(s, xs[2], y + 0.08, col_widths[2] - 0.12, row_h - 0.16, [
-            (signal, dict(size=size, color=MUTED, italic=True, line_spacing=1.2)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
-        D.add_text(s, xs[3], y + 0.08, col_widths[3], row_h - 0.16, [
-            (famille, dict(size=size, bold=True, color=color, line_spacing=1.2)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
+    lane_gap = 0.16
+    lane_w = (CONTENT_W - (n - 1) * lane_gap) / n
+    lane_xs = [MARGIN + i * (lane_w + lane_gap) for i in range(n)]
+    pad = 0.06
+    body_w = lane_w - 2 * pad
 
-    note_top = row_top + len(rows) * row_h + (len(rows) - 1) * row_gap + 0.14
-    note_h = min(0.4, CONTENT_BOTTOM - note_top)
-    if note_h > 0.12:
-        D.add_text(s, MARGIN, note_top, CONTENT_W, note_h, [
-            ("Ces douleurs se rangent en 8 familles de gaspillage → slide suivante.",
-             dict(size=8, bold=True, color=D.PALETTE[2], line_spacing=1.15)),
+    lane_top = CONTENT_TOP + 0.44
+    badge_d = 0.5
+    connector_h = 0.16
+    headline_size = 8.5
+    headline_h = 0.34
+    douleur_size = 9
+    douleur_lh = douleur_size * 1.25 / 72.0
+    signal_size = 8
+    signal_lh = signal_size * 1.2 / 72.0
+
+    douleur_lines = max(_lignes(r[2], body_w, douleur_size) for r in rows)
+    douleur_h = douleur_lines * douleur_lh + 0.04
+    signal_lines = max(_lignes(r[3], body_w, signal_size) for r in rows)
+    signal_h = signal_lines * signal_lh + 0.04
+
+    badge_top = lane_top
+    connector_top = badge_top + badge_d
+    headline_top = connector_top + connector_h
+    douleur_top = headline_top + headline_h
+    signal_label_top = douleur_top + douleur_h + 0.10
+    signal_top = signal_label_top + 0.16
+    famille_top = signal_top + signal_h + 0.14
+    famille_h = 0.3
+
+    for i, (nom, color, douleur, signal, famille) in enumerate(rows):
+        x = lane_xs[i]
+        cxm = x + lane_w / 2.0
+        D.add_dot(s, cxm - badge_d / 2, badge_top, badge_d, color)
+        D.add_text(s, x, badge_top, lane_w, badge_d, [
+            (str(i + 1), dict(size=13, bold=True, color="#ffffff", align=PP_ALIGN.CENTER)),
+        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+        D.add_rect(s, cxm - 0.011, connector_top, 0.022, connector_h, fill=color)
+        D.add_text(s, x, headline_top, lane_w, headline_h, [
+            (nom, dict(size=headline_size, bold=True, color=color,
+                       align=PP_ALIGN.CENTER, line_spacing=1.05)),
+        ], anchor=MSO_ANCHOR.TOP, align=PP_ALIGN.CENTER)
+        D.add_text(s, x + pad, douleur_top, body_w, douleur_h, [
+            (douleur, dict(size=douleur_size, color=NAVY, line_spacing=1.25)),
         ])
+        D.add_text(s, x + pad, signal_label_top, body_w, 0.14, [
+            ("SIGNAL / MESURE", dict(size=6.5, bold=True, color=MUTED)),
+        ])
+        D.add_text(s, x + pad, signal_top, body_w, signal_h, [
+            (signal, dict(size=signal_size, color=MUTED, italic=True, line_spacing=1.2)),
+        ])
+        chip(s, x + pad, famille_top, body_w, famille_h, famille, color, size=7)
+
+    note_top = famille_top + famille_h + 0.18
+    note_h = CONTENT_BOTTOM - note_top
+    if note_h > 0.3:
+        D.add_rect(s, MARGIN, note_top, CONTENT_W, note_h, fill=TRACK, rounded=True, radius=0.14)
+        D.add_rect(s, MARGIN, note_top, 0.07, note_h, fill=D.PALETTE[2], rounded=True, radius=0.5)
+        D.add_text(s, MARGIN + 0.26, note_top, CONTENT_W - 0.5, note_h, [
+            ("Ces 4 douleurs se rangent en 8 familles de gaspillage → slide suivante.",
+             dict(size=9, bold=True, color=D.PALETTE[2], line_spacing=1.15)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
     return s
 
 
 # ---------------------------------------------------------------- slide 9
 def slide_team_topologies(prs):
     s = content_slide(prs, "Proposition", "La cible IAP est une Platform Team — agents IA compris", color=D.PALETTE[1])
-    types = [
+    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.26, [
+        ("Team Topologies décrit 4 archétypes reliés entre eux, pas des silos : les 3 autres "
+         "s'articulent tous autour de la Platform Team.",
+         dict(size=8, color=MUTED, italic=True, line_spacing=1.15)),
+    ])
+
+    # Refonte graphique (lot 2, ch.05) : 4 cartes plates cédaient la place à un
+    # diagramme de topologie (deck-design-library situation "Modèle
+    # d'organisation cible") — 3 archétypes en frise convergent, par un
+    # connecteur en arête, vers la Platform Team en hub accentué ("un sur N en
+    # accent") : la FORME dit "un réseau qui converge", pas "4 cases égales".
+    # Aucune paire archétype/mode d'interaction n'est assertée par une étiquette
+    # (le détail des 3+1 modes reste dans l'encart ci-dessous, texte inchangé)
+    # pour ne pas fabriquer une affirmation absente de la source.
+    satellites = [
         ("Stream-aligned", D.PALETTE[0], "Flux de valeur métier continu",
          "Équipes applicatives clientes de la plateforme infra"),
-        ("Platform", D.PALETTE[1], "Capacités en self-service (X-as-a-Service)",
-         "La cible même de la transformation IAP"),
         ("Enabling", D.PALETTE[3], "Montée en compétence temporaire",
          "Posture du coach BMAD IAP — jamais permanente"),
         ("Complicated-subsystem", D.PALETTE[4], "Expertise pointue, compétences rares",
          "Un vrai sous-système complexe, pas un produit plateforme classique"),
     ]
-    n = 4
-    card_h = 1.55
-    top0 = CONTENT_TOP + 0.05
-    for i, (titre, color, role, lecture) in enumerate(types):
-        x, w = col_x(i, n)
-        D.add_card(s, x, top0, w, card_h, color)
-        pad = 0.16
-        D.add_text(s, x + pad, top0 + 0.14, w - 2 * pad, 0.45, [
-            (titre, dict(size=8, bold=True, color=color, line_spacing=1.05)),
-        ])
-        D.add_text(s, x + pad, top0 + 0.58, w - 2 * pad, 0.4, [
-            (role, dict(size=8, color=NAVY, line_spacing=1.15)),
-        ])
-        D.add_text(s, x + pad, top0 + 1.0, w - 2 * pad, card_h - 1.1, [
-            (lecture, dict(size=8, color=MUTED, italic=True, line_spacing=1.15)),
-        ])
+    platform = ("Platform", D.PALETTE[1], "Capacités en self-service (X-as-a-Service)",
+                "La cible même de la transformation IAP")
 
-    note_top = top0 + card_h + 0.18
+    n = len(satellites)
+    node_top = CONTENT_TOP + 0.36
+    node_h = 0.92
+    node_bot = node_top + node_h
+    stub_h = 0.14
+    bus_y = node_bot + stub_h
+    trunk_h = 0.32
+    platform_top = bus_y + trunk_h
+    platform_h = 1.0
+    platform_w = 3.6
+    platform_x = MARGIN + (CONTENT_W - platform_w) / 2.0
+    pad = 0.14
+
+    centers = []
+    for i, (titre, color, role, lecture) in enumerate(satellites):
+        x, w = col_x(i, n)
+        centers.append(x + w / 2.0)
+        D.add_card(s, x, node_top, w, node_h, color)
+        D.add_text(s, x + pad, node_top, w - 2 * pad, node_h, [
+            (titre, dict(size=8.5, bold=True, color=color, line_spacing=1.1)),
+            (role, dict(size=7.5, color=NAVY, space_before=3, line_spacing=1.1)),
+            (lecture, dict(size=7, color=MUTED, italic=True, space_before=3, line_spacing=1.1)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+
+    platform_cx = platform_x + platform_w / 2.0
+    # Bus horizontal reliant les 3 archétypes (agrégation neutre), puis tronc
+    # unique jusqu'à la Platform Team (coloré à son accent : le flux "devient
+    # plateforme" en y entrant).
+    D.add_rect(s, min(centers), bus_y - 0.01, max(centers) - min(centers), 0.02, fill=LINE)
+    for cx in centers:
+        D.add_rect(s, cx - 0.011, node_bot, 0.022, stub_h, fill=LINE)
+        D.add_dot(s, cx - 0.035, bus_y - 0.035, 0.07, MUTED)
+    D.add_rect(s, platform_cx - 0.014, bus_y, 0.028, trunk_h, fill=D.PALETTE[1])
+    D.add_text(s, platform_cx - 0.2, platform_top - 0.16, 0.4, 0.16, [
+        ("▾", dict(size=9, bold=True, color=D.PALETTE[1], align=PP_ALIGN.CENTER)),
+    ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+
+    titre, color, role, lecture = platform
+    D.add_rect(s, platform_x, platform_top, platform_w, platform_h, fill=color,
+               rounded=True, radius=0.09)
+    D.add_text(s, platform_x + 0.3, platform_top, platform_w - 0.6, platform_h, [
+        (titre.upper(), dict(size=11, bold=True, color="#ffffff", line_spacing=1.05)),
+        (role, dict(size=8.5, color="#ffffff", space_before=4, line_spacing=1.15)),
+        (lecture, dict(size=8, bold=True, color="#ffffff", space_before=4, line_spacing=1.15)),
+    ], anchor=MSO_ANCHOR.MIDDLE)
+
+    note_top = platform_top + platform_h + 0.16
     note_h = min(1.5, CONTENT_BOTTOM - note_top)
     D.add_rect(s, MARGIN, note_top, CONTENT_W, note_h, fill=TRACK, rounded=True, radius=0.08)
     D.add_text(s, MARGIN + 0.22, note_top, CONTENT_W - 0.44, note_h, [
@@ -2955,7 +3089,7 @@ def slide_team_topologies(prs):
          dict(size=D.TYPE["tiny"], bold=True, color=NAVY)),
         ("Un agent peut être membre d'une Stream-aligned team ou capacité exposée par la "
          "Platform Team. Aux 3 modes d'interaction Team Topologies — Collaboration, "
-         "X-as-a-Service, Facilitating — s'ajoute un 4ᵉ candidat : Supervision. "
+         "X-as-a-Service, Facilitating — s'ajoute un 4e candidat : Supervision. "
          "L'adoption suit la trajectoire "
          "Coach → Délégué (assisté → supervisé → délégué) : mandat écrit (ce que l'agent "
          "décide seul / ce qui escalade / qui répond de ses erreurs) avant tout palier "
@@ -4061,6 +4195,14 @@ def slide_kpis(prs):
 # --- Brainstorm KPIs relancé (v2.1, docs/bmad-iap-cadrage.md §KPIs) — pourquoi
 # chaque famille, quoi mesurer précisément, comment la mettre en place, et un
 # exemple chiffré sur le cas nominal déjà posé pour l'export markdown.
+# Badge-lettre partagé par les 2 slides KPI redessinées (lot 4/4, ci-dessous) —
+# même ordre que les tuples `familles` des deux fonctions (Mission/Usage/
+# Maturité) : le lecteur voit tout de suite que ces 2 slides parlent des 3
+# MÊMES familles sous 2 angles (pourquoi/quoi, puis mise en place), sans
+# reprendre le vocabulaire A/B/C déjà pris par les niveaux d'ambition.
+_LETTRES_FAMILLES_KPI = ["M", "U", "G"]
+
+
 def slide_kpis_pourquoi_quoi(prs):
     s = content_slide(prs, "KPI", "KPIs : pourquoi chaque famille, et quoi mesurer précisément", color=D.PALETTE[0])
     familles = [
@@ -4080,25 +4222,62 @@ def slide_kpis_pourquoi_quoi(prs):
          "Delta par pilier (pas un score agrégé qui masquerait un recul) ; même instrument (grille "
          "V3.2) à T0 et à chaque re-assessment."),
     ]
-    top0 = CONTENT_TOP + 0.05
-    row_h = (CONTENT_H - 0.05 - 2 * 0.12) / 3
+    # Refonte graphique lot 4/4 (audit design, ch.09) : 3 rangées de tableau
+    # (nom | pourquoi | quoi), alignées en colonnes strictes, cédaient à
+    # l'effet tableau plat — transposées en 3 FICHES verticales (deck-design-
+    # library #13, « icône ronde + étiquette + carte ») : un badge-lettre par
+    # famille au-dessus d'une carte à 2 rubriques empilées (POURQUOI puis QUOI,
+    # séparateur fin) plutôt que 3 lignes lisant les 2 questions côte à côte.
+    n = len(familles)
+    badge_d = 0.5
+    pad = 0.2
+    _, colw = col_x(0, n)
+    usable = colw - 2 * pad
+    name_h = 0.3
+    label_h = 0.16
+    txt_size = 8.5
+    lh = txt_size * 1.25 / 72.0
+    top_pad = 0.16
+    label_gap = 0.04
+    mid_gap = 0.20
+    divider_th = 0.012
+    bottom_pad = 0.16
+
+    pourquoi_lines = max(_lignes(p, usable, txt_size) for _, _, p, _ in familles)
+    quoi_lines = max(_lignes(q, usable, txt_size) for _, _, _, q in familles)
+    pourquoi_h = pourquoi_lines * lh
+    quoi_h = quoi_lines * lh
+    card_h = (top_pad + label_h + label_gap + pourquoi_h + mid_gap
+              + label_h + label_gap + quoi_h + bottom_pad)
+
+    block_h = badge_d + 0.1 + name_h + 0.1 + card_h
+    top0 = CONTENT_TOP + max(0.0, (CONTENT_H - block_h) / 2)
+
     for i, (nom, color, pourquoi, quoi) in enumerate(familles):
-        y = top0 + i * (row_h + 0.12)
-        D.add_card(s, MARGIN, y, CONTENT_W, row_h, color)
-        pad = 0.18
-        D.add_text(s, MARGIN + pad, y + 0.12, 1.7, row_h - 0.24, [
-            (nom, dict(size=8, bold=True, color=color, line_spacing=1.15)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
-        colw = (CONTENT_W - 2 * pad - 1.7 - 0.2) / 2
-        x1 = MARGIN + pad + 1.7 + 0.2
-        D.add_text(s, x1, y + 0.12, colw, row_h - 0.24, [
+        x, w = col_x(i, n)
+        cx = x + w / 2
+        _badge(s, cx, top0 + badge_d / 2, badge_d, color, _LETTRES_FAMILLES_KPI[i], size=15)
+        D.add_text(s, x, top0 + badge_d + 0.1, w, name_h, [
+            (nom, dict(size=9.5, bold=True, color=color, align=PP_ALIGN.CENTER, line_spacing=1.05)),
+        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+        card_top = top0 + badge_d + 0.1 + name_h + 0.1
+        D.add_rect(s, x, card_top, w, card_h, fill="#ffffff", line=LINE, line_w=0.75,
+                   rounded=True, radius=0.08)
+        y1 = card_top + top_pad
+        D.add_text(s, x + pad, y1, usable, label_h, [
             ("POURQUOI", dict(size=7, bold=True, color=MUTED)),
-            (pourquoi, dict(size=8, color=NAVY, space_before=3, line_spacing=1.2)),
         ])
-        x2 = x1 + colw + 0.15
-        D.add_text(s, x2, y + 0.12, colw, row_h - 0.24, [
+        D.add_text(s, x + pad, y1 + label_h + label_gap, usable, pourquoi_h, [
+            (pourquoi, dict(size=txt_size, color=NAVY, line_spacing=1.25)),
+        ])
+        divider_y = y1 + label_h + label_gap + pourquoi_h + (mid_gap - divider_th) / 2
+        D.add_rect(s, x + pad, divider_y, usable, divider_th, fill=LINE)
+        y2 = y1 + label_h + label_gap + pourquoi_h + mid_gap
+        D.add_text(s, x + pad, y2, usable, label_h, [
             ("QUOI, PRÉCISÉMENT", dict(size=7, bold=True, color=MUTED)),
-            (quoi, dict(size=8, color=NAVY, space_before=3, line_spacing=1.2)),
+        ])
+        D.add_text(s, x + pad, y2 + label_h + label_gap, usable, quoi_h, [
+            (quoi, dict(size=txt_size, color=NAVY, line_spacing=1.25)),
         ])
     return s
 
@@ -4116,26 +4295,57 @@ def slide_kpis_mise_en_place(prs):
          "Grille V3.2 repassée en atelier ou en interview",
          "T0 (① Assessment flash) puis chaque boucle ⟲"),
     ]
-    top0 = CONTENT_TOP + 0.05
-    row_h = 1.0
-    name_w = 2.0
-    for i, (nom, color, owner, source, cadence) in enumerate(familles):
-        y = top0 + i * (row_h + 0.12)
-        D.add_rect(s, MARGIN, y, CONTENT_W, row_h, fill="#ffffff", line=LINE, line_w=0.75, rounded=True, radius=0.08)
-        D.add_rect(s, MARGIN, y, 0.06, row_h, fill=color, rounded=True, radius=0.5)
-        D.add_text(s, MARGIN + 0.2, y + 0.1, name_w, row_h - 0.2, [
-            (nom, dict(size=8, bold=True, color=color, line_spacing=1.15)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
-        colw = (CONTENT_W - 0.2 - name_w - 3 * 0.15) / 3
-        specs = [("OWNER", owner), ("SOURCE DES DONNÉES", source), ("CADENCE", cadence)]
-        for j, (label, val) in enumerate(specs):
-            xj = MARGIN + 0.2 + name_w + 0.15 + j * (colw + 0.15)
-            D.add_text(s, xj, y + 0.1, colw, row_h - 0.2, [
-                (label, dict(size=7, bold=True, color=MUTED)),
-                (val, dict(size=8, color=NAVY, space_before=3, line_spacing=1.15)),
-            ], anchor=MSO_ANCHOR.MIDDLE)
+    # Refonte graphique lot 4/4 (audit design, ch.09) : table plate à 4
+    # colonnes (nom | owner | source | cadence) — owner/source/cadence sont en
+    # fait une séquence opérationnelle (qui produit la mesure -> d'où vient la
+    # donnée -> à quelle fréquence elle est relue), pas 3 attributs isolés.
+    # Chaque famille devient une ligne de MINI-PIPELINE : badge-lettre (même
+    # M/U/G que la slide précédente) + 3 pastilles reliées par un chevron de
+    # flux (`_chevron_arrow`, déjà le vocabulaire de flux du deck) au lieu de
+    # 3 cellules alignées sans relation visuelle entre elles.
+    n_familles = len(familles)
+    label_w = 1.55
+    badge_d = 0.34
+    n_steps = 3
+    step_gap = 0.26
+    steps_x0 = MARGIN + label_w + 0.16
+    steps_total_w = CONTENT_W - label_w - 0.16
+    step_w = (steps_total_w - (n_steps - 1) * step_gap) / n_steps
+    step_pad = 0.14
+    usable_step = step_w - 2 * step_pad
+    step_label_h = 0.15
+    step_size = 8
+    step_lh = step_size * 1.2 / 72.0
 
-    note_top = top0 + 3 * row_h + 2 * 0.12 + 0.15
+    specs_par_famille = [
+        [("OWNER", owner), ("SOURCE DES DONNÉES", source), ("CADENCE", cadence)]
+        for (_, _, owner, source, cadence) in familles
+    ]
+    max_lines = max(_lignes(val, usable_step, step_size)
+                     for specs in specs_par_famille for _, val in specs)
+    step_val_h = max_lines * step_lh
+    row_h = step_pad + step_label_h + 0.03 + step_val_h + step_pad
+    row_gap = 0.16
+
+    top0 = CONTENT_TOP + 0.05
+    for i, (nom, color, _owner, _source, _cadence) in enumerate(familles):
+        y = top0 + i * (row_h + row_gap)
+        cy = y + row_h / 2
+        _badge(s, MARGIN + badge_d / 2, cy, badge_d, color, _LETTRES_FAMILLES_KPI[i], size=11)
+        D.add_text(s, MARGIN + badge_d + 0.14, y, label_w - badge_d - 0.14, row_h, [
+            (nom, dict(size=8.5, bold=True, color=color, line_spacing=1.15)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+        for j, (label, val) in enumerate(specs_par_famille[i]):
+            x = steps_x0 + j * (step_w + step_gap)
+            D.add_rect(s, x, y, step_w, row_h, fill=_pale(color, 0.10), rounded=True, radius=0.14)
+            D.add_text(s, x + step_pad, y + step_pad, usable_step, row_h - 2 * step_pad, [
+                (label, dict(size=6.5, bold=True, color=MUTED)),
+                (val, dict(size=step_size, color=NAVY, space_before=3, line_spacing=1.2)),
+            ])
+            if j < n_steps - 1:
+                _chevron_arrow(s, x + step_w, y, step_gap, row_h, color=color)
+
+    note_top = top0 + n_familles * row_h + (n_familles - 1) * row_gap + 0.16
     note_h = min(0.85, CONTENT_BOTTOM - note_top)
     D.add_rect(s, MARGIN, note_top, CONTENT_W, note_h, fill=TRACK, rounded=True, radius=0.08)
     D.add_text(s, MARGIN + 0.2, note_top, CONTENT_W - 0.4, note_h, [
@@ -4217,45 +4427,105 @@ def slide_kpis_exemple(prs):
 # carte reprend la couleur de sa famille de gaspillage (RUN=rouge, Financier=or,
 # Cognitif=violet) via l'argument `color` — cohérence intentionnelle avec
 # slide_familles, pas un hasard de palette.
+#
+# Refonte graphique lot 3/4 (audit design, ch.06) : les 3 appels de cette
+# fonction template rendaient des slides visuellement IDENTIQUES (mêmes 3
+# bandeaux bordés empilés), sans repère propre à chaque agent. Deux
+# changements, tous deux pilotés par les paramètres déjà passés (générique,
+# rien de codé en dur pour un agent en particulier) :
+#   - un médaillon-icône par `famille` (vocabulaire de silhouettes MSO_SHAPE,
+#     comme _picto plus haut — pas de glyphe exotique) : GEAR_6 = tâche
+#     répétitive (RUN), CLOUD = ressources cloud scannées (Financier),
+#     FOLDED_CORNER = document indexé (Cognitif) ;
+#   - le flux why/what/gain n'est plus 3 cartes bordées identiques mais UNE
+#     chaîne connectée (spine verticale + pilules-étiquettes, pattern 6 du
+#     catalogue deck-design-library) qui part du médaillon — la forme dit
+#     « un seul agent, un enchaînement », pas « trois blocs de texte ».
+_ICONES_FAMILLE_AGENT = {
+    "RUN": MSO_SHAPE.GEAR_6,
+    "Financier": MSO_SHAPE.CLOUD,
+    "Cognitif": MSO_SHAPE.FOLDED_CORNER,
+}
+
+
 def slide_agent_ia(prs, titre, nom_agent, famille, why, what, gain, color, note=None):
     s = content_slide(prs, "IA", titre, color=D.PALETTE[4])
+    icon_d = 0.4
+    icon = s.shapes.add_shape(_ICONES_FAMILLE_AGENT[famille], Inches(MARGIN), Inches(CONTENT_TOP),
+                               Inches(icon_d), Inches(icon_d))
+    try:
+        icon.shadow.inherit = False
+    except Exception:
+        pass
+    icon.fill.solid()
+    icon.fill.fore_color.rgb = _rgb(color)
+    icon.line.fill.background()
+    icon.text_frame.paragraphs[0].text = ""
+
     # v2.6 (point ④) : badge de série en haut à droite — l'en-tête cède la
     # largeur du badge pour ne pas passer dessous.
-    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W - BADGE_AGENTIC_W - 0.2, 0.45, [
+    head_x = MARGIN + icon_d + 0.16
+    D.add_text(s, head_x, CONTENT_TOP, CONTENT_W - icon_d - 0.16 - BADGE_AGENTIC_W - 0.2, icon_d, [
         (nom_agent, dict(size=D.TYPE["h3"], bold=True, color=color)),
         (f"Gaspillage {famille}", dict(size=8, color=MUTED, italic=True, space_before=2)),
-    ])
+    ], anchor=MSO_ANCHOR.MIDDLE)
     badge_deploiement_agentic(s)
-    top0 = CONTENT_TOP + 0.55
+
+    top0_min = CONTENT_TOP + icon_d + 0.20
     bands = [
         ("POURQUOI", why),
         ("CE QUE FAIT L'AGENT", what),
         ("GAIN", gain),
     ]
+    # Largeur de pilule par LIBELLÉ (générique — ces 3 libellés sont fixes,
+    # identiques aux 3 appels, pas un réglage propre à un agent).
+    chip_w = {"POURQUOI": 1.05, "CE QUE FAIT L'AGENT": 2.15, "GAIN": 0.75}
+    chip_h = 0.26
+    pad_x = 0.34
     txt_size = 9
     line_h = txt_size * 1.25 / 72.0
-    usable = CONTENT_W - 0.44
-    # Chaque bandeau plafonné à SON contenu — le bandeau GAIN (souvent 1 ligne)
+    usable = CONTENT_W - pad_x
+    # Chaque étage plafonné à SON contenu — le bandeau GAIN (souvent 1 ligne)
     # ne garde plus la hauteur fixe d'un bandeau à 2 lignes (défaut « panneau
-    # sur-étiré » constaté slides 10/11) — puis les 3 bandeaux sont répartis
-    # pour remplir la zone, donc pas de vide résiduel en bas non plus.
-    heights = [0.42 + _lignes(t, usable, txt_size) * line_h for _, t in bands]
+    # sur-étiré » constaté slides 10/11).
+    heights = [chip_h + 0.10 + _lignes(t, usable, txt_size) * line_h for _, t in bands]
     n = len(bands)
     region_bot = CONTENT_BOTTOM - (0.5 if note else 0.0)
     total = sum(heights)
-    gap = max(0.10, min(0.5, (region_bot - top0 - total) / (n - 1)))
+    avail = region_bot - top0_min
+    gap = max(0.14, min(0.42, (avail - total) / (n - 1)))
+    # Le flux est parfois bien plus court que sa zone (ex. l'agent de triage,
+    # gain en 1 ligne) : le reliquat après un gap plafonné se répartit moitié
+    # au-dessus/moitié en dessous du flux plutôt que de tout laisser filer
+    # sous la dernière pilule — sinon la fin de slide se lit comme un vide
+    # résiduel (même défaut « panneau non ajusté au contenu », en miroir).
+    leftover = max(0.0, avail - total - (n - 1) * gap)
+    top0 = top0_min + leftover / 2
+
     y = top0
     last_bottom = top0
+    node_centers = []
     for i, (label, texte) in enumerate(bands):
         h = heights[i]
-        D.add_rect(s, MARGIN, y, CONTENT_W, h, fill="#ffffff", line=LINE, line_w=0.75, rounded=True, radius=0.08)
-        D.add_rect(s, MARGIN, y, 0.06, h, fill=color, rounded=True, radius=0.5)
-        D.add_text(s, MARGIN + 0.22, y + 0.12, CONTENT_W - 0.44, h - 0.24, [
-            (label, dict(size=7, bold=True, color=color)),
-            (texte, dict(size=txt_size, color=NAVY, space_before=4, line_spacing=1.25)),
+        node_centers.append(y + chip_h / 2)
+        D.add_rect(s, MARGIN + pad_x, y, chip_w[label], chip_h, fill=color, rounded=True, radius=0.5)
+        D.add_text(s, MARGIN + pad_x, y, chip_w[label], chip_h, [
+            (label, dict(size=7.5, bold=True, color="#ffffff", align=PP_ALIGN.CENTER)),
+        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+        D.add_text(s, MARGIN + pad_x, y + chip_h + 0.08, usable, h - chip_h - 0.08, [
+            (texte, dict(size=txt_size, color=NAVY, line_spacing=1.25)),
         ])
         last_bottom = y + h
         y = last_bottom + gap
+
+    # Spine + nœuds : le fil qui part du médaillon et traverse les 3 pilules —
+    # aucun chevauchement avec les pilules (marge de ~0.08in), donc l'ordre de
+    # dessin n'a pas d'incidence visuelle.
+    spine_x = MARGIN + icon_d / 2
+    spine_top = CONTENT_TOP + icon_d + 0.06
+    D.add_rect(s, spine_x - 0.006, spine_top, 0.012, node_centers[-1] - spine_top, fill=color)
+    for cy in node_centers:
+        D.add_rect(s, spine_x - 0.06, cy - 0.06, 0.12, 0.12, fill=color, rounded=True, radius=0.5)
 
     if note:
         note_top = last_bottom + 0.16
@@ -4270,6 +4540,16 @@ def slide_agent_ia(prs, titre, nom_agent, famille, why, what, gain, color, note=
 # cite "prudence IA" sans jamais l'expliquer — cette slide la décompose. Dans le
 # chapitre IA, juste après le gate IA (qui l'a rejoint) et avant les 3 candidats
 # d'agent : on pose d'abord le frein, ensuite seulement les cas d'usage.
+#
+# Refonte graphique lot 3/4 (audit design, ch.06) : les 3 facteurs ne sont pas
+# 3 items juxtaposés, ils s'ADDITIONNENT en un seul score (déjà dit par le
+# sous-titre) — 3 cartes plates isolées ne montrait pas cette composition.
+# Nouvelle forme : UNE carte à colonnes (pattern 14 du catalogue
+# deck-design-library) avec des badges numérotés chevauchant son bord haut
+# (pattern 10, déjà utilisé par slide_fil_humain — cohérence intra-deck) et
+# des signes « + » posés sur les séparateurs internes ; la carte se prolonge
+# vers un chip « = SCORE DE PRUDENCE IA » qui introduit l'encart d'explication
+# — la lecture verticale devient littéralement l'équation du sous-titre.
 def slide_prudence_ia(prs):
     s = content_slide(prs, "IA", "La prudence IA est un frein chiffré, pas un veto", color=D.PALETTE[4])
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.4, [
@@ -4278,41 +4558,79 @@ def slide_prudence_ia(prs):
     ])
 
     facteurs = [
-        ("CONFIDENTIALITÉ", D.PALETTE[0],
+        ("1", "CONFIDENTIALITÉ", D.PALETTE[0],
          "Reprend directement la classification du gate IA (D0-D4, slide précédente) — "
          "plus la donnée est sensible, plus le score monte."),
-        ("BESOIN DE SUPERVISION", D.PALETTE[3],
+        ("2", "BESOIN DE SUPERVISION", D.PALETTE[3],
          "Le palier d'adoption visé (assisté / supervisé / délégué) — un agent encore "
          "au stade assisté pèse plus lourd qu'un agent déjà éprouvé."),
-        ("CRITICITÉ DE LA DÉCISION", D.PALETTE[2],
+        ("3", "CRITICITÉ DE LA DÉCISION", D.PALETTE[2],
          "L'impact d'une erreur si l'agent se trompe seul — une recommandation "
          "réversible pèse moins qu'une décision irréversible."),
     ]
-    top0 = CONTENT_TOP + 0.55
-    n = 3
-    card_h = 1.55
-    for i, (label, color, texte) in enumerate(facteurs):
-        x, w = col_x(i, n)
-        D.add_card(s, x, top0, w, card_h, color)
-        pad = 0.16
-        D.add_text(s, x + pad, top0 + 0.14, w - 2 * pad, 0.4, [
-            (label, dict(size=8, bold=True, color=color, line_spacing=1.1)),
-        ])
-        D.add_text(s, x + pad, top0 + 0.55, w - 2 * pad, card_h - 0.65, [
+    n = len(facteurs)
+    badge_d = 0.42
+    pad = 0.16
+    col_w = CONTENT_W / n
+    usable = col_w - 2 * pad
+
+    # Hauteurs dérivées du CONTENU (jamais « jusqu'à CONTENT_BOTTOM »).
+    label_h = 0.36
+    body_lines = max(_lignes(t, usable, 8) for _, _, _, t in facteurs)
+    body_h = body_lines * (8 * 1.25 / 72.0) + 0.04
+    card_h = badge_d / 2 + 0.10 + label_h + 0.05 + body_h + 0.14
+
+    top1 = CONTENT_TOP + 0.55
+    card_top = top1 + badge_d / 2
+    D.add_rect(s, MARGIN, card_top, CONTENT_W, card_h, fill="#ffffff",
+               line=LINE, line_w=0.75, rounded=True, radius=0.06)
+
+    for i, (num, label, color, texte) in enumerate(facteurs):
+        x = MARGIN + i * col_w
+        if i > 0:
+            D.add_rect(s, x, card_top + 0.14, 0.012, card_h - 0.28, fill=LINE)
+            # Les facteurs s'ADDITIONNENT — un « + » à cheval sur le
+            # séparateur, à hauteur des badges, pas une simple liste côte à côte.
+            D.add_text(s, x - 0.18, top1 - 0.02, 0.36, badge_d + 0.04, [
+                ("+", dict(size=16, bold=True, color=MUTED, align=PP_ALIGN.CENTER)),
+            ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+        cx = x + col_w / 2 - badge_d / 2
+        D.add_rect(s, cx, top1, badge_d, badge_d, fill=color, rounded=True, radius=0.5)
+        D.add_text(s, cx, top1, badge_d, badge_d, [
+            (num, dict(size=13, bold=True, color="#ffffff", align=PP_ALIGN.CENTER)),
+        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+        label_y = top1 + badge_d + 0.10
+        D.add_text(s, x + pad, label_y, usable, label_h, [
+            (label, dict(size=8, bold=True, color=color, align=PP_ALIGN.CENTER, line_spacing=1.1)),
+        ], align=PP_ALIGN.CENTER)
+        text_y = label_y + label_h + 0.02
+        D.add_text(s, x + pad, text_y, usable, body_h, [
             (texte, dict(size=8, color=NAVY, line_spacing=1.25)),
         ])
 
-    note_top = top0 + card_h + 0.18
-    note_h = min(1.15, CONTENT_BOTTOM - note_top)
+    # Convergence visuelle : les 3 termes ci-dessus = un score, explicité par
+    # l'encart en dessous — pas un simple bloc de conclusion posé à côté.
+    card_bottom = card_top + card_h
+    pill_w, pill_h = 2.7, 0.32
+    pill_x = MARGIN + CONTENT_W / 2 - pill_w / 2
+    pill_y = card_bottom + 0.14
+    D.add_rect(s, pill_x, pill_y, pill_w, pill_h, fill=D.PALETTE[4], rounded=True, radius=0.5)
+    D.add_text(s, pill_x, pill_y, pill_w, pill_h, [
+        ("=  SCORE DE PRUDENCE IA", dict(size=8.5, bold=True, color="#ffffff", align=PP_ALIGN.CENTER)),
+    ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+
+    note_top = pill_y + pill_h + 0.14
+    note_texte = ("Le score est SOUSTRAIT de impact × faisabilité — un candidat facile et à fort "
+                  "impact peut quand même être écarté si sa prudence IA est trop "
+                  "haute. Le score ne remplace pas l'arbitrage humain : il le rend "
+                  "explicite. Avancer malgré un score élevé reste possible, mais se documente comme une "
+                  "décision à part entière (même discipline que la dérogation du gate DevOps).")
+    note_lines = _lignes(note_texte, CONTENT_W - 0.44, 8)
+    note_h = min(0.20 + note_lines * (8 * 1.25 / 72.0) + 0.28, CONTENT_BOTTOM - note_top)
     D.add_rect(s, MARGIN, note_top, CONTENT_W, note_h, fill=NAVY, rounded=True, radius=0.08)
     D.add_text(s, MARGIN + 0.22, note_top, CONTENT_W - 0.44, note_h, [
         ("Un frein, pas un veto automatique", dict(size=D.TYPE["tiny"], bold=True, color="#ffffff")),
-        ("Le score est SOUSTRAIT de impact × faisabilité — un candidat facile et à fort "
-         "impact peut quand même être écarté si sa prudence IA est trop "
-         "haute. Le score ne remplace pas l'arbitrage humain : il le rend "
-         "explicite. Avancer malgré un score élevé reste possible, mais se documente comme une "
-         "décision à part entière (même discipline que la dérogation du gate DevOps).",
-         dict(size=8, color="#c7cbe0", space_before=3, line_spacing=1.25)),
+        (note_texte, dict(size=8, color="#c7cbe0", space_before=3, line_spacing=1.25)),
     ], anchor=MSO_ANCHOR.MIDDLE)
     return s
 
@@ -4324,23 +4642,22 @@ def slide_prudence_ia(prs):
 def slide_architecture_si(prs):
     # v2.5 (chantier ④) : déplacée de la Proposition vers l'Outillage IAP, avec
     # slide_ambition (qui reste la slide précédente).
+    #
+    # Refonte graphique lot 4/4 (audit design, ch.08) : le tableau plat
+    # NIVEAU/SOURCES/CONNEXION/LIVRABLES cédait à l'effet tableau — l'index
+    # situation de deck-design-library mappe justement « Architecture / vision
+    # en couches » sur le pattern #8 (blueprint en bandes teintées). Chaque
+    # niveau A/B/C devient une bande pleine largeur teintée (badge-lettre au
+    # lieu d'une cellule de texte), MÊME code couleur que slide_ambition (la
+    # slide précédente : A=bleu, B=or, C=rouge) pour que les deux slides
+    # parlent le même langage. Volontairement AUCUN connecteur/flèche entre
+    # les bandes : slide_ambition affirme explicitement « pas un spectre
+    # linéaire » et cette slide dit qu'un cabinet peut rester durablement au
+    # niveau A/B — un fil descendant aurait suggéré une progression forcée que
+    # la doctrine dément.
     s = content_slide(prs, "Outillage IAP",
                        "Le lien avec le SI du client change avec le niveau d'ambition, pas la méthode",
                        color=D.PALETTE[5])
-    headers = ["NIVEAU", "SOURCES", "MODE DE CONNEXION", "LIVRABLES"]
-    col_widths = [1.1, 2.55, 2.75, 1.95]
-    xs = []
-    cx = MARGIN
-    for cw in col_widths:
-        xs.append(cx)
-        cx += cw + 0.1
-
-    header_y = CONTENT_TOP + 0.05
-    for x, w, label in zip(xs, col_widths, headers):
-        D.add_text(s, x, header_y, w, 0.22, [
-            (label, dict(size=7, bold=True, color=MUTED)),
-        ])
-
     rows = [
         ("A", D.PALETTE[0], "Aide au coach",
          "Exports ponctuels (ServiceNow/Jira), interviews",
@@ -4355,29 +4672,63 @@ def slide_architecture_si(prs):
          "Connecteurs API directs, en continu",
          "Livrables mis à jour en continu"),
     ]
-    row_top = header_y + 0.3
-    row_h = 1.05
-    row_gap = 0.1
-    for i, (code, color, niveau, sources, connexion, livrables) in enumerate(rows):
-        y = row_top + i * (row_h + row_gap)
-        D.add_rect(s, MARGIN, y, CONTENT_W, row_h, fill="#ffffff", line=LINE, line_w=0.75, rounded=True, radius=0.08)
-        D.add_rect(s, MARGIN, y, 0.06, row_h, fill=color, rounded=True, radius=0.5)
-        D.add_text(s, xs[0] + 0.12, y, col_widths[0] - 0.12, row_h, [
-            (code, dict(size=D.TYPE["h3"], bold=True, color=color)),
-            (niveau, dict(size=7, color=MUTED, space_before=2, line_spacing=1.1)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
-        D.add_text(s, xs[1], y, col_widths[1] - 0.1, row_h, [
-            (sources, dict(size=8, color=NAVY, line_spacing=1.2)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
-        D.add_text(s, xs[2], y, col_widths[2] - 0.1, row_h, [
-            (connexion, dict(size=8, color=NAVY, line_spacing=1.2)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
-        D.add_text(s, xs[3], y, col_widths[3] - 0.1, row_h, [
-            (livrables, dict(size=8, color=NAVY, line_spacing=1.2)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
+    champs = ["SOURCES", "MODE DE CONNEXION", "LIVRABLES"]
 
-    note_top = row_top + 3 * row_h + 2 * row_gap + 0.15
-    note_h = min(0.5, CONTENT_BOTTOM - note_top)
+    accent_w = 0.06
+    badge_d = 0.42
+    left_w = 1.95
+    badge_cx = MARGIN + accent_w + 0.16 + badge_d / 2
+    text_x = badge_cx + badge_d / 2 + 0.14
+    text_w = MARGIN + left_w - text_x
+    field_x0 = MARGIN + left_w + 0.18
+    field_gap = 0.16
+    field_w = (CONTENT_W - left_w - 0.18 - 2 * field_gap) / 3
+    field_pad = 0.16
+    usable_field = field_w - 2 * field_pad
+    label_h = 0.16
+    body_size = 8
+    body_lh = body_size * 1.25 / 72.0
+    band_pad_y = 0.16
+
+    band_hs = []
+    for (_code, _color, _niveau, sources, connexion, livrables) in rows:
+        lignes = max(_lignes(t, usable_field, body_size) for t in (sources, connexion, livrables))
+        contenu_h = label_h + 0.03 + lignes * body_lh
+        band_hs.append(max(badge_d + 2 * band_pad_y, contenu_h + 2 * band_pad_y))
+
+    row_gap = 0.16
+    note_h = 0.5
+    note_gap = 0.16
+    total = sum(band_hs) + 2 * row_gap + note_gap + note_h
+    top0 = CONTENT_TOP + max(0.03, (CONTENT_H - total) / 2)
+
+    y = top0
+    for i, (code, color, niveau, sources, connexion, livrables) in enumerate(rows):
+        band_h = band_hs[i]
+        pale = _pale(color, 0.14)
+        D.add_rect(s, MARGIN, y, CONTENT_W, band_h, fill=pale, rounded=True, radius=0.08)
+        D.add_rect(s, MARGIN, y, accent_w, band_h, fill=color, rounded=True, radius=0.5)
+        cy = y + band_h / 2
+        _badge(s, badge_cx, cy, badge_d, color, code, size=14)
+        D.add_text(s, text_x, y, text_w, band_h, [
+            (f"NIVEAU {code}", dict(size=6.5, bold=True, color=MUTED)),
+            (niveau, dict(size=9, bold=True, color=color, space_before=2, line_spacing=1.1)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+        D.add_rect(s, MARGIN + left_w, y + band_pad_y, 0.012, band_h - 2 * band_pad_y, fill=LINE)
+        valeurs = [sources, connexion, livrables]
+        for j, (label, val) in enumerate(zip(champs, valeurs, strict=True)):
+            x = field_x0 + j * (field_w + field_gap)
+            if j > 0:
+                D.add_rect(s, x - field_gap / 2, y + band_pad_y, 0.012,
+                           band_h - 2 * band_pad_y, fill=LINE)
+            D.add_text(s, x, y + band_pad_y, field_w, band_h - 2 * band_pad_y, [
+                (label, dict(size=6.5, bold=True, color=MUTED)),
+                (val, dict(size=body_size, color=NAVY, space_before=3, line_spacing=1.25)),
+            ])
+        y += band_h + row_gap
+
+    note_top = y - row_gap + note_gap
+    note_h = min(note_h, CONTENT_BOTTOM - note_top)
     D.add_text(s, MARGIN, note_top, CONTENT_W, note_h, [
         ("Le niveau C suppose un accès direct aux données de production du client — un cabinet "
          "peut durablement rester au niveau A ou B par choix de gouvernance (slide précédente).",

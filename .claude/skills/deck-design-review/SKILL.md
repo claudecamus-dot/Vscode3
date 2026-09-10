@@ -1,6 +1,6 @@
 ---
 name: deck-design-review
-description: Revue de design slide-par-slide du deck de synthèse de CE projet (cadrage BMAD IAP, docs/cadrage-ppt/generate_deck.py, 42 slides sur 8 chapitres, template OCTO rendu via LibreOffice) — régénérer le vrai export, rendre TOUTES les slides, et confronter chaque type de slide à son propre contrat de design (couverture, exec summary 4 blocs, intercalaires teardrop, personas, douleurs, gaspillages, gate IA, trajectoire, schémas, KPI, maturité). C'est L'ÉTAPE design-review du playbook export-ppt-verifie — obligatoire dès qu'une version ajoute ou restructure des slides — et elle se lance aussi à la demande quand le PPT exporté « n'est pas au niveau ».
+description: Revue de design slide-par-slide du deck de synthèse de CE projet (cadrage BMAD IAP, docs/cadrage-ppt/generate_deck.py, 49 slides sur 8 chapitres, template OCTO rendu via LibreOffice) — régénérer le vrai export, rendre TOUTES les slides, et confronter chaque type de slide à son propre contrat de design (couverture, exec summary 5 blocs, intercalaires teardrop, personas, douleurs, gaspillages, gate IA, trajectoire, schémas, KPI, maturité). C'est L'ÉTAPE design-review du playbook export-ppt-verifie — obligatoire dès qu'une version ajoute ou restructure des slides — et elle se lance aussi à la demande quand le PPT exporté « n'est pas au niveau ».
 ---
 
 # deck-design-review — la revue de design du deck ENTIER (cadrage IAP)
@@ -33,8 +33,9 @@ du playbook `export-ppt-verifie` nommait une AUTRE skill (`restitution-deck-desi
 elle-même jamais utilisée sur ce dépôt. Le projet payait deux instruments de revue de
 design et n'en lançait aucun. L'étape pointe désormais ici, et n'est plus conditionnelle.
 
-**TROU CONNU, à dire au lieu de le taire.** La table ci-dessous couvre **21 des 34**
-fonctions `slide_*` du générateur (compte mesuré le 2026-09-01, pas estimé). Les 13
+**TROU CONNU, à dire au lieu de le taire.** La table ci-dessous couvre **27 des 40**
+fonctions `slide_*` du générateur (compte mesuré le 2026-09-07 : 34 au 2026-09-01 + 6
+créées depuis, dont les 3 de la refonte graphique intégrée le 2026-09-04). Les 13
 suivantes n'ont PAS de contrat écrit : `slide_ambition`, `slide_architecture_si`,
 `slide_conditions_reussite`, `slide_export_markdown`, `slide_fil_humain`,
 `slide_kpis_mise_en_place`, `slide_kpis_pourquoi_quoi`, `slide_mission`,
@@ -43,12 +44,15 @@ suivantes n'ont PAS de contrat écrit : `slide_ambition`, `slide_architecture_si
 ne porte que sur les deux tiers du deck : les signaler comme NON REVUES fait partie du
 verdict. Leur écrire un contrat est un travail à part, qui appartient à ce projet — il
 n'a pas été fait ici, pour ne pas inventer des exigences de design sur des slides
-qu'aucune mesure n'a instruites.
+qu'aucune mesure n'a instruites. **6 autres fonctions étaient un angle mort NON déclaré**
+(créées après la dernière mesure du 2026-09-01, ni dans les 21 couvertes ni dans les 13
+listées ci-dessus) — trouvées par l'audit du 2026-09-07 et comblées ci-dessous : ce
+deuxième trou-là est clos, le premier (les 13) reste ouvert.
 
 | Slide (fonction) | Contrat (au rendu) |
 | --- | --- |
 | `slide_cover` | Couverture de marque OCTO : titre = cadrage BMAD IAP, sous-titre, date. Bandeau métadonnées (statut/langue/confidentialité) **retiré** — ne pas le réintroduire. |
-| `slide_executive_summary` | **4 blocs** POURQUOI / QUOI / COMMENT / RÉSULTAT (pas 3, pas 5), avec renvois par CHAPITRE (jamais par numéro de page). |
+| `slide_executive_summary` | **5 blocs** OFFRE + POURQUOI / QUOI / COMMENT / RÉSULTAT (le bloc OFFRE a été acté le 2026-09-07, arbitrage utilisateur, suite à l'ajout du chapitre 01 Exec Summary — 4 blocs faisait référence avant cet ajout), avec renvois par CHAPITRE (jamais par numéro de page). |
 | `slide_chapitre` | Intercalaire teardrop : **numéro DANS l'encart** + titre coloré (couleur du chapitre) + **vraie photo clippée au teardrop**. ⚠️ Le cadre teardrop est **CARRÉ** : juger sur la photo rendue (aspect `square`), pas sur un probe `wide`. Le numéro est une exigence PERSISTANTE. |
 | `slide_sous_chapitre` | Bloc-titre léger, sans photo ni numéro. **Sans appelant depuis v2.6** : s'il réapparaît, c'est un régression. |
 | `slide_personas` | Cartes **2×2** + pastille de posture (allié / sceptique / vigilant). Parité des 4 cartes (même gabarit). |
@@ -62,6 +66,12 @@ qu'aucune mesure n'a instruites.
 | `slide_schema_fonctionnement` / `slide_architecture_agents` / `slide_iap_contexte_client` | Schémas : boîtes alignées, zones colorées cohérentes avec le chapitre, renvois par badge de série (« cf. chapitre 07 »), jamais de flèche qui traverse une boîte. |
 | `slide_kpis*` (3 familles) → `slide_maturite` → `slide_kpis_exemple` | Familles KPI homogènes ; la grille de maturité porte « à quoi sert chaque échelle » + message « le KPI = le DELTA T0→réévaluation, pas le niveau ». |
 | `slide_agent_ia` / `slide_prudence_ia` | Cartes agent (why/what/gain) ancrées sur une famille de gaspillage réelle ; prudence = décomposition confidentialité/supervision/criticité. |
+| `slide_pitch_iap` | 3 cartes côte à côte (douleurs vécues / outillage côté consultant / option côté client), badge-icône + couleur `D.PALETTE` distincte par carte (rouge / teal / violet), pied de carte en pastille colorée avec renvoi par CHAPITRE (jamais par page). Bandeau gris « matériau de cadrage » en pied de slide. |
+| `slide_demarche_avec_sans_agentic` | Grille 3 étapes (①②③, badges NAVY communs sur une frise reliée par flèches — la démarche ne se dédouble JAMAIS) × 3 registres (sans outillage / avec le module côté consultant / agentic chez le client), une ligne « ce que ça change » entre les deux ; seule la couleur de FOND par registre change (gris-bleu / teal / violet), jamais les badges d'étape. |
+| `slide_synthese_pourquoi_quoi_comment` | Frise de 5 phases (①②③⟲ + une étape OPTIONNELLE en cercle à CONTOUR POINTILLÉ marquée « + », jamais pleine comme les 4 autres) avec durée, description, repère TECH et livrable par phase ; 2 encarts « AGENTIQUE » (consultant / client) sous la frise. |
+| `slide_offre_iap` | Chapo + citation-thèse VERBATIM (document source, ne pas reformuler) puis un schéma en 2 rangées (parcours de mission) où chaque forme suit l'une de 3 conventions déclarées dans une LÉGENDE EXPLICITE en pied de schéma : contour navy plein = mouvement du socle (toujours présent) ; contour or plein = variante conditionnée au contexte ; contour or POINTILLÉ = mécanisme additif (extension/checklist). Kicker « Démarche », couleur or (`D.PALETTE[3]`). |
+| `slide_specificites_infra` | 2 paires « douleur → réponse » en cartes à coins arrondis reliées par un chevron (douleur bordure `MUTED`, réponse bordure `ACCENT`), plus un encart « avec l'arrivée de l'IA » distinct (badge rond « IA ») qui reformule la même douleur comme amplifiée — jamais résolue — par l'IA. |
+| `slide_infra_as_product_exemple` | 2 cartes AVANT/APRÈS reliées par une flèche horizontale centrale, badge tagué en coin haut-gauche par carte ; items à tiret « — » côté AVANT vs coche « ✓ » (accent) côté APRÈS — jamais l'inverse. |
 
 ## 2. Transversal (tout le deck, à chaque revue)
 
