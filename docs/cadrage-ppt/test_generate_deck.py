@@ -113,9 +113,10 @@ def main():
     print("Structure :")
     # Chiffre volontairement EN DUR : c'est un fil-piege contre une slide
     # ajoutee ou perdue sans intention. Il se met a jour quand on change le
-    # deck exprès — 49 -> 52 le 2026-09-10 avec le chapitre « Specificites
-    # de l'infra » (intercalaire + 2 slides neuves).
-    check(len(prs.slides) == 52, f"52 slides — reçu {len(prs.slides)}")
+    # deck exprès. Le 2026-09-10 : 49 -> 52 (chapitre « Specificites de
+    # l'infra » : intercalaire + 2 slides neuves), puis 52 -> 53 (le
+    # traitement partage du gaspillage, au chapitre Proposition).
+    check(len(prs.slides) == 53, f"53 slides — reçu {len(prs.slides)}")
     check(bool(_vu), "build() consulte bien _controler (tous les filets), "
                      "et pas un sous-ensemble câblé en dur")
     check(not problemes,

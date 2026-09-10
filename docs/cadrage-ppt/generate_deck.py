@@ -3173,6 +3173,138 @@ def slide_gaspillages(prs):
     return s
 
 
+# v2.31 (2026-09-10, demande utilisateur) : « une démarche plus centrée sur
+# comment traiter le gaspillage comme partagé ». Arbitrage : les DEUX lectures
+# à la fois — mutualisé entre équipes (chapitre 03 · Spécificités de l'infra :
+# « un gaspillage que personne ne porte, personne ne le réduit ») ET co-traité
+# avec le client, pas rendu comme un verdict de consultant.
+#
+# Cette slide ne remplace pas `slide_gaspillages` : elle la RETOURNE. La chaîne
+# des 10 étapes et le score y étaient présentés côté cabinet, de bout en bout —
+# ce qui décrit exactement le contraire de ce que la demande vise. On reprend la
+# même chaîne, regroupée en trois moments, et on dit qui fait quoi. La colonne
+# qui compte est la troisième de chaque bloc : ce qui se tranche À DEUX, seul
+# endroit où un gaspillage mutualisé acquiert un porteur.
+def slide_gaspillage_partage(prs):
+    s = content_slide(prs, "Proposition",
+                      "Un gaspillage partagé se traite à deux — sinon il retourne à personne",
+                      color=ENCRE)
+
+    # Chapô DIMENSIONNÉ par son texte : posé à une distance fixe, sa 2e ligne
+    # mordait sur les pilules de moment (vu au rendu du 2026-09-10 — le
+    # self-check géométrique ne voit pas un chevauchement de zones de texte,
+    # seulement une forme hors cadre).
+    # Deux lignes, MESURÉES (`_lignes`) et non estimées : à trois, le bandeau de
+    # clôture chevauchait les colonnes de 0,234in et la garde de fin de fonction
+    # refusait le build. Raccourcir la copie plutôt que réduire le corps ou
+    # rogner les marges — règle du catalogue de design.
+    chapo = ("Cette chaîne se joue AVEC le client, moment par moment. Sans décision "
+             "partagée, une économie qui ne pèse sur aucun budget d'équipe ne trouve "
+             "pas de porteur.")
+    chapo_size = D.TYPE["small"]
+    chapo_h = _lignes(chapo, CONTENT_W, chapo_size) * (chapo_size * 1.25 / 72.0) + 0.04
+    D.add_text(s, MARGIN, CONTENT_TOP - 0.02, CONTENT_W, chapo_h, [
+        (chapo, dict(size=chapo_size, color=NAVY, italic=True, line_spacing=1.25)),
+    ])
+
+    moments = [
+        ("Objectiver ensemble", "Détecter → Quantifier",
+         "Ouvre ses données — CMDB, facturation, tickets — et nomme ce qui le gêne "
+         "vraiment, au-delà de ce qui se mesure facilement.",
+         "Apporte la grille des 8 familles et la méthode de quantification, sans "
+         "présumer du résultat.",
+         "Le périmètre mesuré, et ce qu'on accepte d'appeler gaspillage."),
+        ("Décider ensemble", "Cause racine → Prioriser",
+         "Arbitre entre ses équipes ce qu'aucune ne peut trancher seule : fermer un "
+         "service, standardiser, décommissionner.",
+         "Instruit les causes racines et propose le score — une proposition argumentée, "
+         "jamais un verdict.",
+         "Le backlog priorisé et, pour chaque ligne, le porteur nommé."),
+        ("Tenir dans la durée", "Expérimenter → Prévenir",
+         "Porte les expérimentations dans ses équipes et libère le temps qu'elles "
+         "demandent.",
+         "Outille, mesure le delta réel et industrialise ce qui a marché.",
+         "Le seuil au-delà duquel on généralise — ou on arrête."),
+    ]
+
+    n = len(moments)
+    gap = 0.18
+    col_w = (CONTENT_W - (n - 1) * gap) / n
+    pad = 0.13
+    tw = col_w - 2 * pad
+
+    chip_h = 0.34
+    lbl_h = 0.135
+    corps_size = 8
+    corps_lh = corps_size * 1.25 / 72.0
+
+    def _h(idx):
+        return max(_lignes(m[idx], tw, corps_size) for m in moments) * corps_lh + 0.04
+
+    client_h, octo_h, ens_h = _h(2), _h(3), _h(4)
+    sous_titre_h = 0.16
+
+    chip_top = CONTENT_TOP - 0.02 + chapo_h + 0.06
+    st_top = chip_top + chip_h + 0.05
+    carte_top = st_top + sous_titre_h + 0.06
+
+    # Deux blocs « qui fait quoi », puis le bloc à deux — visuellement détaché
+    # par son fond de support et sa barre cyan : c'est l'unique accent de la
+    # slide, et il tombe sur ce que la demande visait.
+    y_client_lbl = carte_top + pad
+    y_client = y_client_lbl + lbl_h
+    y_octo_lbl = y_client + client_h + 0.07
+    y_octo = y_octo_lbl + lbl_h
+    ens_bloc_top = y_octo + octo_h + 0.09
+    ens_h_bloc = pad * 0.7 + lbl_h + ens_h + pad * 0.7
+    carte_h = (ens_bloc_top + ens_h_bloc + pad) - carte_top
+
+    for i, (titre, etapes, client, octo, ensemble) in enumerate(moments):
+        x = MARGIN + i * (col_w + gap)
+        chip(s, x, chip_top, col_w, chip_h, f"{i + 1}.  {titre}", ENCRE,
+             size=9.5)
+        D.add_text(s, x, st_top, col_w, sous_titre_h, [
+            (etapes, dict(size=7, bold=True, color=MUTED, align=PP_ALIGN.CENTER)),
+        ], align=PP_ALIGN.CENTER)
+
+        D.add_rect(s, x, carte_top, col_w, carte_h, fill=WHITE, line=ENCRE,
+                   line_w=1.15, rounded=True, radius=0.09)
+        for lbl, texte, y_lbl, y_txt, h_txt in (
+                ("CÔTÉ CLIENT", client, y_client_lbl, y_client, client_h),
+                ("CÔTÉ OCTO", octo, y_octo_lbl, y_octo, octo_h)):
+            D.add_text(s, x + pad, y_lbl, tw, lbl_h, [
+                (lbl, dict(size=6.5, bold=True, color=MUTED)),
+            ])
+            D.add_text(s, x + pad, y_txt, tw, h_txt, [
+                (texte, dict(size=corps_size, color=NAVY, line_spacing=1.25)),
+            ])
+
+        D.add_rect(s, x + 0.07, ens_bloc_top, col_w - 0.14, ens_h_bloc,
+                   fill=SUPPORT, rounded=True, radius=0.07)
+        D.add_rect(s, x + 0.14, ens_bloc_top + pad * 0.5, 0.045,
+                   ens_h_bloc - pad, fill=ACCENT_PLEIN, rounded=True, radius=0.5)
+        D.add_text(s, x + 0.28, ens_bloc_top + pad * 0.7, tw - 0.16, lbl_h, [
+            ("TRANCHÉ ENSEMBLE", dict(size=6.5, bold=True, color=ENCRE)),
+        ])
+        D.add_text(s, x + 0.28, ens_bloc_top + pad * 0.7 + lbl_h, tw - 0.16, ens_h, [
+            (ensemble, dict(size=corps_size, bold=True, color=NAVY, line_spacing=1.25)),
+        ])
+
+    concl_txt = ("Ce qui change : le gaspillage cesse d'être orphelin — il a un "
+                 "porteur nommé et un objectif partagé.")
+    concl_h = _lignes(concl_txt, CONTENT_W - 0.60, 12) * (12 * 1.2 / 72.0) + 0.34
+    concl_top = CONTENT_BOTTOM - concl_h
+    bas_contenu = carte_top + carte_h + 0.12
+    if concl_top < bas_contenu:
+        raise SystemExit(
+            f"slide_gaspillage_partage : le bandeau de clôture chevauche les "
+            f"colonnes ({bas_contenu - concl_top:.3f}in de trop) — resserrer "
+            f"avant de régénérer."
+        )
+    _quote_banner(s, MARGIN, concl_top, CONTENT_W, concl_h, concl_txt, size=12)
+    return s
+
+
 # ---------------------------------------------------------------- Besoins & douleurs
 # Nouveau (restructuration 2026-07-22) : va PLUS LOIN que slide_personas (qui porte
 # un irritant + une attente d'une ligne par persona). Ici chaque douleur est
@@ -5293,6 +5425,10 @@ def build():
                    ENCRE, "dunes", seed=0)
     slide_why_iap(prs)
     slide_gaspillages(prs)
+    # v2.31 : la chaine de traitement ci-dessus est presentee cote cabinet de
+    # bout en bout. Celle-ci la retourne — qui fait quoi, et ce qui se tranche
+    # a deux — parce qu'un gaspillage mutualise n'acquiert de porteur que la.
+    slide_gaspillage_partage(prs)
     slide_team_topologies(prs)
 
     # === Chapitre 07 — IA : tirée APRÈS la proposition (l'IA amplifie, n'est jamais la réponse) ===
