@@ -1,5 +1,5 @@
 ---
-updated: 2026-09-07
+updated: 2026-09-10
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -8,50 +8,55 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-09-07T09:24:19+02:00 · **23 sessions** (transcripts) · **36** invocations de skills · **74** lancements de sous-agents.
+Dernier scan : 2026-09-10T08:02:10+02:00 · **23 sessions** (transcripts) · **42** invocations de skills · **81** lancements de sous-agents.
 
 ## Skills — usage réel
 
 | Skill | Famille | Invocations | Première | Dernière |
 | --- | --- | --- | --- | --- |
-| `agent-orchestrator` | projet | 18 | 2026-07-21 | 2026-09-07 |
-| `agent-supervisor` | projet | 6 | 2026-07-21 | 2026-07-23 |
+| `agent-orchestrator` | projet | 20 | 2026-07-21 | 2026-09-07 |
+| `agent-supervisor` | projet | 6 | 2026-07-21 | 2026-09-03 |
 | `artifact-design` | (builtin/session) | 2 | 2026-07-06 | 2026-07-07 |
-| `pptx-deck` | global | 2 | 2026-07-08 | 2026-07-09 |
+| `pptx-deck` | projet | 2 | 2026-07-08 | 2026-07-09 |
 | `revue-increment` | projet | 2 | 2026-07-21 | 2026-07-22 |
+| `audit-technique` | projet | 1 | 2026-09-03 | 2026-09-03 |
 | `bmad-agent-pm` | BMAD | 1 | 2026-07-22 | 2026-07-22 |
 | `bmad-party-mode` | BMAD | 1 | 2026-09-02 | 2026-09-02 |
+| `bmad-review` | BMAD | 1 | 2026-09-07 | 2026-09-07 |
 | `deck-design-library` | projet | 1 | 2026-09-03 | 2026-09-03 |
-| `pptx-verify` | global | 1 | 2026-07-08 | 2026-07-08 |
-| `restitution-deck-design` | global | 1 | 2026-07-08 | 2026-07-08 |
+| `deck-design-review` | projet | 1 | 2026-09-07 | 2026-09-07 |
+| `pptx-verify` | projet | 1 | 2026-07-08 | 2026-07-08 |
+| `restitution-deck-design` | projet | 1 | 2026-07-08 | 2026-07-08 |
 | `roadmap-keeper` | global | 1 | 2026-07-07 | 2026-07-07 |
+| `update-config` | (builtin/session) | 1 | 2026-09-07 | 2026-09-07 |
 
 ## Sous-agents
 
 | Sous-agent | Lancements | Premier | Dernier |
 | --- | --- | --- | --- |
-| `general-purpose` | 46 | 2026-07-06 | 2026-09-04 |
-| `ppt-designer` | 17 | 2026-07-21 | 2026-09-04 |
-| `Explore` | 7 | 2026-07-21 | 2026-09-01 |
+| `general-purpose` | 47 | 2026-07-06 | 2026-09-07 |
+| `ppt-designer` | 22 | 2026-07-21 | 2026-09-07 |
+| `Explore` | 7 | 2026-07-21 | 2026-09-03 |
 | `agent-supervisor` | 2 | 2026-09-03 | 2026-09-03 |
 | `Plan` | 1 | 2026-07-21 | 2026-07-21 |
+| `bmad-revue` | 1 | 2026-09-07 | 2026-09-07 |
 | `claude-code-guide` | 1 | 2026-07-21 | 2026-07-21 |
 
 ## Jamais utilisés
 
-**projet** — 3/10 jamais invoqués :
+**projet** — 1/13 jamais invoqués :
 
-`audit-technique`, `deck-design-review`, `veille-agentic`
+`veille-agentic`
 
-**BMAD** — 44/46 jamais invoqués :
+**BMAD** — 47/50 jamais invoqués :
 
 <details><summary>Voir la liste</summary>
 
-`bmad-advanced-elicitation`, `bmad-agent-analyst`, `bmad-agent-architect`, `bmad-agent-dev`, `bmad-agent-tech-writer`, `bmad-agent-ux-designer`, `bmad-architecture`, `bmad-brainstorming`, `bmad-check-implementation-readiness`, `bmad-checkpoint-preview`, `bmad-code-review`, `bmad-correct-course`, `bmad-create-architecture`, `bmad-create-epics-and-stories`, `bmad-create-prd`, `bmad-create-story`, `bmad-customize`, `bmad-dev-auto`, `bmad-dev-story`, `bmad-document-project`, `bmad-domain-research`, `bmad-edit-prd`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-forge-idea`, `bmad-generate-project-context`, `bmad-help`, `bmad-index-docs`, `bmad-market-research`, `bmad-prd`, `bmad-prfaq`, `bmad-product-brief`, `bmad-qa-generate-e2e-tests`, `bmad-quick-dev`, `bmad-retrospective`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-shard-doc`, `bmad-spec`, `bmad-sprint-planning`, `bmad-sprint-status`, `bmad-technical-research`, `bmad-ux`, `bmad-validate-prd`
+`bmad-advanced-elicitation`, `bmad-agent-analyst`, `bmad-agent-architect`, `bmad-agent-dev`, `bmad-agent-ux-designer`, `bmad-architecture`, `bmad-brainstorming`, `bmad-build`, `bmad-build-auto`, `bmad-checkpoint-preview`, `bmad-code-review`, `bmad-correct-course`, `bmad-create-architecture`, `bmad-create-epics-and-stories`, `bmad-create-prd`, `bmad-create-story`, `bmad-customize`, `bmad-deep-recon`, `bmad-dev-auto`, `bmad-dev-story`, `bmad-document-project`, `bmad-domain-research`, `bmad-edit-prd`, `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-forge-idea`, `bmad-generate-project-context`, `bmad-help`, `bmad-market-research`, `bmad-prd`, `bmad-prfaq`, `bmad-product-brief`, `bmad-project-context`, `bmad-qa-generate-e2e-tests`, `bmad-quick-dev`, `bmad-retrospective`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-review-verification-gap`, `bmad-spec`, `bmad-sprint-planning`, `bmad-sprint-status`, `bmad-technical-research`, `bmad-ux`, `bmad-validate-prd`, `bmad-walkthrough`
 
 </details>
 
-**global** — 1/5 jamais invoqués :
+**global** — 1/2 jamais invoqués :
 
 `skill-creator`
 
@@ -63,8 +68,11 @@ _Consommés en lisant/exécutant leurs `scripts/`, ou via un sous-agent qui les 
 
 ## TODO agents (constats automatiques)
 
-1. **Skills projet sans usage** : `audit-technique`, `veille-agentic` — vérifier pertinence et déclencheurs.
-2. **Skills en sommeil (>30 j sans usage)** : `Plan`, `artifact-design`, `bmad-agent-pm`, `claude-code-guide`, `pptx-deck`, `pptx-verify`, `restitution-deck-design`, `revue-increment`, `roadmap-keeper`.
+⚠️ **Mesure incomplète** — 14 transcript(s) sur 23 absent(s) du disque. Un `n=0` ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.
+
+1. **Désinstaller les shims BMAD dépréciés** (17) : `bmad-checkpoint-preview`, `bmad-create-architecture`, `bmad-create-prd`, `bmad-create-story`, `bmad-dev-story`, `bmad-document-project`, `bmad-edit-prd`, `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-generate-project-context`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-review-verification-gap`, `bmad-sprint-status`, `bmad-technical-research`, `bmad-validate-prd` — dépréciés par BMAD dans leur propre `description`, chacun avec son remplaçant ; le seul élagage qui ne repose pas sur notre mesure d'usage.
+2. **Skills projet sans usage** : `veille-agentic` — vérifier pertinence et déclencheurs.
+3. **Skills en sommeil (>30 j sans usage)** : `bmad-agent-pm`, `pptx-deck`, `pptx-verify`, `restitution-deck-design`, `roadmap-keeper`.
 
 ## Arbitrages enregistrés
 
@@ -104,14 +112,25 @@ Ce que 'traiter' ces 3 points pourrait vouloir dire (a instruire au hub, pas tra
 - **`.claude/supervision/write_diagnostic.py`** (2026-09-03) : REMIS A L'ARBITRAGE — correctif hub, pas local (regle durable CLAUDE.md : 'le dispositif vient du hub, corriger la-bas puis regenerer l'export, jamais localement, lecon P1'). Mesure du diagnostic : l'ecrivain local refuse les 6 categories pratique-* que son propre consommateur (scan_transcripts.py l.574-575) accepte deja depuis le 2026-07-28 -- correctif applique au consommateur, jamais au producteur. Consequence concrete et non theorique : le volet 'pratiques d'ingenierie' est INEXPRIMABLE depuis ce depot, les 4 findings de pratique du diagnostic de ce jour ont du etre replies sur verification-manquante/autre. Canon hub : 141 lignes contre 84 ici, diff de 225 lignes. RIEN MODIFIE LOCALEMENT. A faire au hub : regenerer write_diagnostic.py depuis le canon, puis balayer la flotte -- le correctif de juillet n'a peut-etre atteint aucun write_diagnostic.py des projets cibles.
 - **`docs/cadrage-ppt/generate_deck.py:taille`** (2026-09-03) : REMIS A L'ARBITRAGE (mesure faite, geste non pose — il coute et il engage). Mesure du diagnostic : 2781 l (audit 2026-07-30) -> 3149 l (2026-09-02) -> 3911 l aujourd'hui, soit +40,6 % au total et une croissance d'un seul jour (+762 l) superieure au cumul des 33 jours precedents. Fichier unique, 66 def dont 37 slide_*. La pastille 'risque technique moyen' du hub repose donc sur un chiffre faux de plus de 1100 lignes. NUANCE CONSERVEE, elle compte : le filet fonctionnel tient (95 % de couverture, 46 pages rendues, geometrie verte, 90 tests) -- c'est un risque de LISIBILITE, pas de casse. Deux gestes proposes, aucun pose : (1) lancer audit-technique (skill jamais utilisee, audit facture qui LIT le code) pour re-coter le risque, verdict a ecrire cote hub ; (2) decouper par chapitre SEULEMENT si l'audit le confirme. Geste immediat independant et non bloquant, lui aussi non fait : les 2 vraies erreurs pyflakes (F841, F541) parmi les 14 ruff -- jamais par `ruff --fix` aveugle (lecon VSCode2).
 - **`write_diagnostic.py:sync-2026-09-04`** (2026-09-04) : ACCEPTE + APPLIQUE : suite a l'arbitrage du 2026-09-03 (cible .claude/supervision/write_diagnostic.py, decision « correctif hub, pas local »), le fichier est resynchronise depuis le canon du hub (diff verifie propre au prealable : aucune divergence locale a preserver). CATEGORIES passe de 7 a 13 valeurs (ajout des 6 categories pratique-*), plus trois ameliorations de securite deja presentes cote hub et absentes ici : validation du champ cible (requis), avertissement sur les findings qui disparaissent silencieusement d'une reecriture, ecriture atomique (tmp + os.replace) pour eviter un diagnostic.json tronque. Verifie : py_compile propre, ecriture reelle testee via AGENT_SUPERVISION_DIAGNOSTIC sur un fichier scratch (jamais sur le diagnostic reel) avec une categorie pratique-test -> acceptee. diagnostic.json corrige dans la foulee : 4 findings deja ACCEPTE+APPLIQUE le 2026-09-03 (tests/test_generate_deck_garde.py, write_diagnostic.py lui-meme, CLAUDE.md couverture, generate_deck.py::content_slide) mais jamais retires du fichier apres leur arbitrage sont pruned ; ne reste que le finding docs/cadrage-ppt/generate_deck.py:taille, toujours REMIS A L'ARBITRAGE depuis le 2026-09-03.
+- **`docs/cadrage-ppt/generate_deck.py:taille`** (2026-09-07) : ACCEPTE : arbitrage utilisateur explicite (2026-09-07) — la croissance mesuree (+40,6% cumule, +762 lignes en 24h le 2026-09-03) est due a la refonte graphique en cours (check_slide_synthese v2.13->v3-refonte, integree au deck de prod en v2.30 le 2026-09-04, deck aujourd'hui a v2.32), pas une derive non maitrisee. Confirme la NUANCE deja posee par le diagnostic du 2026-09-03 : filet fonctionnel intact (couverture mesuree, geometrie verte, tests generateur au vert y compris apres ce run). Ne cloture PAS le decoupage modulaire (cf. arbitrage separe flotte:23-items-cadres) : la refonte assumee dit seulement que le rythme actuel n'est pas un signal d'alarme a lui seul.
+- **`flotte:23-items-cadres`** (2026-09-07) : REMIS A L'ARBITRAGE, confirme (pas d'action) : le decoupage modulaire de generate_deck.py (4738+ lignes, 66+ fonctions) reste differe jusqu'a stabilisation du WIP -- la proposition du diagnostic le disait deja ("decouper maintenant = conflits garantis"), et l'etat reel au 2026-09-07 le confirme : 17 fichiers non commites sur ce meme chantier de refonte graphique, dont generate_deck.py (+868/-354 lignes de diff). Decision explicite plutot que silence : revisiter une fois le chantier refonte graphique (check_slide_synthese v3, integration deck v2.30+) commite.
+- **`flotte:23-items-cadres`** (2026-09-07) : ACCEPTE + APPLIQUE : dette de lint traitee (5 blocs d'imports ruff I001 : generate_deck.py:373,375,396 ; pptx_deck.py:10 ; test_generate_deck.py:39), retriee a la main bloc par bloc (jamais `ruff --fix` en aveugle, regle du projet) en suivant exactement la sortie `ruff check --select I001` comme guide. Verifie : `ruff check --select I001` propre sur les 3 fichiers, py_compile propre, ET `python test_generate_deck.py` rejoue en entier apres coup (49/49 pages rendues, TOUS LES TESTS PASSENT) -- aucune regression fonctionnelle malgre le WIP actif sur ces memes fichiers.
+- **`docs/cadrage-ppt/generate_deck.py:slide_executive_summary`** (2026-09-07) : ACCEPTE + APPLIQUE : le contrat de deck-design-review passe de 4 a 5 blocs (OFFRE + POURQUOI/QUOI/COMMENT/RESULTAT) sur arbitrage utilisateur explicite -- le bloc OFFRE fait sens depuis l'ajout du chapitre 01 Exec Summary (le contrat a 4 blocs datait d'avant cet ajout). SKILL.md mis a jour, aucune modification du code du deck (la slide reste telle quelle).
+- **`VSCode3:audit-2026-09-02`** (2026-09-09) : TRAITE PARTIELLEMENT (mandat utilisateur du 2026-09-09, << traite les projets par ordre de risque >> ; VSCode3 traite en dernier comme le moins risque). Cadrage R1 constat par constat : deux etaient DEJA FERMES (les zip() sans strict=True par 17993b0, le hook qui ne reconnaissait pas -am par 986e0b7 -- les deux derniers zip() le sont dans le working tree de la session qui travaille sur le deck, ils partiront a son commit). UN SEUL etait libre de collision et il a ete corrige (commit d541f09) : la mesure de lint etait devenue illisible -- ruff remontait 16 erreurs dont 10 venaient d'un unique instantane fige de 271 Ko dans archives/, y compris 5 points deja corriges en amont. archives/ sort du perimetre mesure (pyproject.toml) et un test verifie les DEUX sens : l'archive est ignoree ET le code vivant reste lu, pour qu'une exclusion trop large ne puisse pas eteindre le linter en silence. Mesure : 16 erreurs -> 7, toutes sur du code vivant ; suite 173 -> 175 passed. NON APPLIQUE, decrit pour la session proprietaire du chantier deck : ITEM_SIZE_DEFAUT assigne jamais lu, deux blocs d'imports non tries dans des scripts non encore versionnes, archives/ non gitignore en entier (un snapshot de 4700 lignes est committable), et quatre .pptx de 2,2 Mo non suivis qu'un git add -A embarquerait. RESTENT A ARBITRER par l'utilisateur : la taille de generate_deck.py (3793 lignes au 2026-09-02, 4740 au dernier commit, 5091 en working tree, soit +34 % en 7 jours -- c'est le finding ouvert du diagnostic local depuis le 2026-09-03, a trancher entre rythme attendu d'une refonte et derive a ralentir), la purge d'historique (.git a 106 Mo pour 28 commits sur un binaire de 22,6 Mo), et la remontee des helpers de pptx_deck.py (305 lignes ici contre 988 chez VSCode2 et 1124 chez VSCode4).
+- **`VSCode3:audit-2026-09-09`** (2026-09-09) : ACCEPTE + APPLIQUE (meme mandat). Deux commits pousses. c20d1da : les TROIS filets de controle des homologues portes dans docs/cadrage-ppt/pptx_deck.py (305 -> 648 lignes) — verifier_debordements_texte, verifier_chrome_gabarit, verifier_plancher_de_dessin — avec 16 tests sur presentations construites en memoire, plus le .gitignore ferme sur archives/ entier et les .pptx lourds, avec DEUX exclusions explicites (le deck livre et template-octo.pptx, tous deux suivis et sources). 95a0ff5 : canon (scan_transcripts.py, log_run.py) resynchronise et guard_destructive_git.py rattrape depuis l'export — retard pur verifie ligne a ligne avant ecriture, 3 erreurs ruff (2 UP031 + 1 I001) ramenees a zero, suites du dispositif rejouees comme l'exige la regle du canon (31 passed). DEUX ADAPTATIONS DE GABARIT que la copie brute aurait cassees, et c'est le fond du travail : sur 10 des 34 layouts de template-octo.pptx, le champ de numero de page est porte par un ENFANT d'un groupe couvrant presque toute la slide (layout 63 : 0,30/0,32 -> 9,80/5,34) — sans la descente dans les groupes non transformes, la zone « protegee » ferait 9,5 x 5,0 pouces et le filet crierait sur tout le contenu ; et le plancher exige en plus un recouvrement HORIZONTAL, parce que le bord droit de ce projet passe a gauche du badge, la ou VSCode4 dessine pleine largeur. PASSE ADVERSARIALE reelle : huit mutants du code sous test rejoues dans un bac a sable, huit attrapes ; frontieres fixees DANS LES DEUX SENS (le filet se tait a -0,10 pouce et crie des 0,05 ; un recouvrement de 1 pt = 0,0139 pouce passe sous la tolerance de 0,02, mesure et non suppose). Elle a trouve un vrai trou dans le travail lui-meme : avec le bord droit a 9,15 le filet de plancher etait vert QUEL QUE SOIT le plancher, meme a 99 — un test « == [] » ne distinguait pas « rien ne se recouvre » de « filet inerte ». Corrige par un test qui pose une derive reelle. SUITE : 175 -> 191 passed. RESTE : 5 constats au chantier deck en cours (zip strict sur HEAD, ITEM_SIZE_DEFAUT, imports non tries des gen_check_slide_synthese*), et le depot a 109 Mo — decision utilisateur, irreversible. Effet de bord a signaler a la session deck : ses 4 .pptx de check n'apparaissent plus dans git status, ils sont desormais ignores. REMONTE AU HUB comme finding VScode5:kit-pptx-deck-en-retard-sur-ses-propres-cibles : la skill pptx-deck que le hub PUBLIE ne porte qu'un filet sur trois, alors que VSCode4 et desormais VSCode3 en ont trois — le hub distribue la version la plus pauvre des trois.
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 
 _Diagnostic à jour._
 
 1. **+762 lignes en 24 h : le generateur a plus que double en un jour la croissance de ses 33 jours precedents, et le re-cotage renvoye « au prochain diagnostic etage 2 » n'a plus d'excuse** — Trancher explicitement si ce rythme est attendu (refonte en cours) ou un signal de derive a ralentir. · **Proposition** : A arbitrer avec l'utilisateur : confirmer le contexte (refonte graphique v2.11-v2.13) avant de qualifier ce point de risque ou de non-evenement.
-2. **generate_deck.py jamais decoupe (4738 lignes en working tree, 66+ fonctions)** — Decoupage modulaire par chapitre une fois le WIP en cours stabilise et commite. · **Proposition** : Effort XL, risque eleve dans l'immediat (WIP actif dessus, decouper maintenant = conflits garantis) -- attendre stabilisation.
-3. **Dette de lint mesuree non traitee : 5 blocs d'imports non tries (ruff I001)** — Retrier a la main bloc par bloc (le projet interdit ruff --fix aveugle), en conservant chaque # noqa: E402. · **Proposition** : Effort S, risque faible -- mais meme fichier generate_deck.py en WIP actif, a faire apres stabilisation.
+2. **Les trois filets de controle sont portes et testes dans pptx_deck.py mais AUCUN n'est branche : le point d'appel appartient au chantier deck en cours** — Un filet non branche ne protege rien. Deux des trois sont branchables tels quels, mesure le jour du portage sur le deck reel (49 slides, 1216 formes) : verifier_chrome_gabarit rend 0 constat, verifier_plancher_de_dessin rend une liste vide. · **Proposition** : A generate_deck.py:5062, remplacer par : problemes = D.verifier_geometrie(prs) + D.verifier_chrome_gabarit(prs) + D.verifier_plancher_de_dessin(prs, CONTENT_BOTTOM, bord_droit_in=BORD_DROIT) + _ANOMALIES_BUILD. NE PAS brancher verifier_debordements_texte en defaut dur sans regler son seuil : il rend 58 constats pour 302 zones examinees (ecart median 0,22 pouce, max 0,52 ; 3 constats a 0,40 de tolerance, aucun a 0,60), et une part vient de l'estimateur qui ignore line_spacing. Le seuil se regle contre un rendu PowerPoint reel. Attention : le self-check de build() gouverne le nom du fichier ecrit (.INVALIDE.pptx si non vide) — un filet bruyant y bloquerait la livraison d'un deck correct.
+3. **Trois points de lint et deux zip() sans strict=True restent sur le chantier deck : corriges dans le working tree pour les zip, jamais commites** — Rien a corriger par un tiers : ces points vivent dans un chantier actif. Ils se ferment au commit de ce chantier, pas avant. · **Proposition** : Au moment de committer le chantier deck : retirer ITEM_SIZE_DEFAUT ou l'utiliser, passer ruff --fix sur les deux scripts de check s'ils sont destines a etre versionnes (sinon les gitignorer explicitement plutot que de les laisser en non-suivi), et verifier que les deux zip() strict=True partent bien avec le commit.
+4. **Le hook qui liste ce qui attend une decision n'existe QUE au hub : les 5 cibles ne l'ont pas, et le kit ne le distribue pas** — Le hub a construit ce hook pour lui-meme le 2026-09-09 (finding : les decisions n'etaient affichees nulle part). La flotte a exactement le meme besoin, et son mandat de garant l'oblige a propager ce qu'il se donne. Attention : sa fonction ligne_decisions_audit() lit .claude/audits/, repertoire qui n'existe QUE au hub — la version distribuee doit degrader proprement (repertoire absent = ligne vide, le fail-open est deja ecrit). · **Proposition** : (A) Ajouter point_du_jour.py au kit exporte et le cabler en SessionStart chez les 5 cibles, apres verification qu'il degrade bien sans repertoire d'audits. (B) Ou, si l'on juge que le point du jour est une fonction de pilotage propre au hub, le dire explicitement dans la doc du kit — pour que l'absence soit un choix trace et non un oubli.
+
+## Seuil de qualification — la mesure
+
+_Journal de prompts vide : `orchestrator_gate.py` vient d'être outillé (finding `VScode5:seuil-qualification-non-mesurable`). Le ratio apparaîtra dès les premières demandes vues._
 
 ---
 
