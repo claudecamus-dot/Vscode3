@@ -441,14 +441,19 @@ TH = D.theme_colors(Presentation(TEMPLATE))
 NAVY = TH.get("dk1", D.INK)          # #0E2356 — texte principal, titres
 DK2 = TH.get("dk2", NAVY)            # #3E4F78 — navy secondaire (palier de gradient sans PALETTE)
 WHITE = TH.get("lt1", "#FFFFFF")
-ACCENT = TH.get("accent3", D.PALETTE[0])   # #00D2DD — cyan OCTO, identité du deck
+ACCENT = TH.get("accent3", NAVY)    # #00D2DD — cyan OCTO, identité du deck
 MUTED = TH.get("lt2", D.MUTED)       # #586586 — slate 600, texte secondaire
 ACCENT1 = TH.get("accent1", MUTED)   # #6E7B9A — bleu-gris clair (palier de gradient sans PALETTE)
 ACCENT2 = TH.get("accent2", ACCENT1)  # #9FA7BB — bleu-gris très clair, le plus clair du thème
 LINE = TH.get("accent5", D.LINE)     # #CFD3DD — slate 200, bordures de cards
 TRACK = TH.get("accent6", D.TRACK)   # #E7E9EE — slate 100, fonds d'encarts
 
-SEVERITE = ["#1e6b34", "#5b8a3c", "#b8860b", "#c1651e", "#b3261e"]  # D0..D4, vert -> rouge
+# D0..D4 : rampe MONOCHROME de la famille navy, du clair au foncé. Une
+# échelle ordonnée se rend par une rampe, pas par des teintes étrangères —
+# le vert->rouge d'avant lisait comme un feu tricolore sur un thème qui n'a
+# ni vert ni rouge. Les 5 tons portent tous du texte blanc (chip() écrit en
+# blanc par défaut) : le plus clair, #586586, tient 5,0:1 sur blanc.
+SEVERITE = ["#586586", "#4A5A80", "#3E4F78", "#26386A", "#0E2356"]
 
 
 def _rgb(hexcolor):
@@ -470,19 +475,77 @@ def new_prs():
     return prs
 
 
-# Couleur de chapitre par groupe de slides — signal de navigation plus fort
-# que le seul kicker textuel (piste retenue dans analyse-template-alternatif.md).
-# Un code couleur par chapitre, passé explicitement à chaque appel de
-# content_slide() ET repris sur l'intercalaire du chapitre (v2.9, 9 chapitres) :
-#   01 Exec summary        = NAVY           (le pitch de l'offre, en ouverture)
-#   02 Contexte            = D.PALETTE[0]  (bleu)
-#   03 Personas            = D.PALETTE[5]  (teal)
-#   04 Besoins & douleurs  = D.PALETTE[2]  (rouge)
-#   05 Proposition         = D.PALETTE[1]  (vert)
-#   06 IA                  = D.PALETTE[4]  (violet)
-#   07 Démarche            = D.PALETTE[3]  (or)
-#   08 Outillage IAP       = D.PALETTE[5]  (teal — réutilisé, comme KPI réutilise le bleu)
-#   09 KPI                 = D.PALETTE[0]  (bleu)
+# Couleur de chapitre — DÉRIVÉE DU THÈME DU TEMPLATE, plus de `D.PALETTE`.
+#
+# Constat du 2026-09-10 (retour utilisateur « le deck n'est pas selon le
+# template OCTO ») : les 6 couleurs de `D.PALETTE` — bleu #2c5cc5, vert
+# #1e6b34, rouge #b3261e, or #b8860b, violet #6a3d9a, turquoise #138086 — ne
+# figurent NULLE PART dans le thème du template. Elles viennent du radar web
+# (`radar-svg.js`), dont ce dépôt ne porte aucune copie : la cohérence
+# invoquée par le commentaire de `pptx_deck.py` n'est vérifiable par rien ici,
+# alors que l'écart à la charte, lui, se voyait à chaque intercalaire — un
+# chapitre en vert, un autre en violet, sur un thème navy/cyan.
+#
+# `D.PALETTE` n'est PAS modifiée : elle est partagée avec le radar, et la
+# corriger ici ferait diverger l'autre consommateur. C'est le deck qui cesse de
+# s'en servir pour ses chapitres.
+#
+# CONTRAINTE ASSUMÉE, pas un oubli : le thème n'offre que quatre tons assez
+# contrastés sur blanc pour porter un titre de chapitre. Le cyan #00D2DD, lui,
+# plafonne à ~1,9:1 — il reste l'ACCENT (comme sur la couverture), jamais un
+# titre. Neuf chapitres pour quatre tons : ils cyclent, en garantissant
+# seulement que deux chapitres VOISINS ne partagent jamais leur ton. Le
+# différenciateur principal redevient donc le grand numéro de l'intercalaire,
+# ce que fait le template nativement — c'est un signal de navigation plus
+# faible qu'un code couleur à 9 teintes, et c'est le prix de la charte.
+PALETTE_CHAPITRES = [NAVY, DK2, MUTED, ACCENT1]
+
+
+def couleur_chapitre(numero):
+    """Ton de chapitre, cyclé sur la palette du thème (« 01 » -> index 0)."""
+    return PALETTE_CHAPITRES[(int(numero) - 1) % len(PALETTE_CHAPITRES)]
+
+
+# --- Vocabulaire de différenciation SANS code couleur (arbitrage du 2026-09-10)
+#
+# La couleur ne porte plus le sens. Les 160 sites qui appelaient `D.PALETTE[n]`
+# — un bleu pour l'infra, un teal pour l'utilisateur, un or pour le management,
+# un violet pour le sponsor — pointent tous sur `ENCRE`. Ce qui différencie
+# désormais deux éléments de même niveau, dans l'ordre où le catalogue des decks
+# OCTO réels les emploie (`deck-design-library`) :
+#
+#   1. « UN SUR N EN ACCENT » — dans une série d'éléments égaux, un SEUL reçoit
+#      un aplat plein (cyan ou navy), les autres restent blancs à contour. Le
+#      catalogue le donne comme le mécanisme de hiérarchie le plus systématique
+#      du deck, avant même la taille de police.
+#   2. La NUMÉROTATION (badge « goutte » + connecteur) et la POSITION (quinconce
+#      plutôt qu'alignement en tableau).
+#   3. La FORME-SIGNATURE : coins arrondis + un coin coupé pour le contenu
+#      riche, pilule pour les chips et étiquettes.
+#   4. La TYPOGRAPHIE : accroche grasse + complément régulier, sous-en-têtes en
+#      majuscules 8-9pt comme rupture sans bordure.
+#
+# RÈGLE DURE, mesurée au rendu du 2026-09-10 : le cyan ne porte JAMAIS de texte
+# sur blanc — il plafonne à ~1,9:1 et le libellé se délave (constaté sur
+# « Infra & RUN » de la slide personas). Cyan = aplat, badge, chip, connecteur.
+ENCRE = NAVY                 # tout ce qui porte du sens : texte, contours, filets
+ACCENT_PLEIN = ACCENT        # cyan — l'élément mis en avant d'une série, EN APLAT
+SUPPORT = TRACK              # fond neutre d'encart, jamais porteur de sens
+SUPPORT_LIGNE = LINE         # bordures discrètes
+
+
+def encre_de(color):
+    """Couleur de TEXTE sûre pour un élément dont l'accent est `color`.
+
+    Beaucoup de renderers font piloter la bordure, la barre d'accent ET le
+    libellé par une seule variable `color`. C'est commode tant que la couleur
+    est sombre — et faux dès qu'elle vaut le cyan : le texte se délave à
+    ~1,9:1 sur blanc (constaté au rendu du 2026-09-10 sur l'exec summary et sur
+    « Infra & RUN »). Cette garde laisse passer les tons sombres et rabat le
+    seul cyan sur l'encre, pour que l'accent reste VISIBLE (bordure, barre,
+    aplat) sans que le libellé devienne illisible.
+    """
+    return ENCRE if str(color).lower() == str(ACCENT).lower() else color
 
 
 def content_slide(prs, kicker, title, color):
@@ -535,7 +598,7 @@ def slide_sous_chapitre(prs, kicker, titre, sous_titre, color):
     tw = CONTENT_W - 0.45
     D.add_text(s, tx, bar_top, tw, bar_h, [
         (kicker.upper() + "  ·  SOUS-CHAPITRE",
-         dict(size=D.TYPE["tiny"], bold=True, color=color, line_spacing=1.0)),
+         dict(size=D.TYPE["tiny"], bold=True, color=encre_de(color), line_spacing=1.0)),
         (titre, dict(size=34, bold=True, color=NAVY, space_before=8, line_spacing=1.0)),
         (sous_titre, dict(size=D.TYPE["small"], color=MUTED, italic=True, space_before=12, line_spacing=1.2)),
     ], anchor=MSO_ANCHOR.MIDDLE)
@@ -947,10 +1010,10 @@ def _pilule_variante(slide, x, y, w, h, texte, size=6.2):
     if h is None:
         lignes = _lignes(texte, w - 2 * pad, size)
         h = 2 * pad + lignes * (size * 1.15 / 72.0)
-    D.add_rect(slide, x, y, w, h, fill="#f7ecd2", line=D.PALETTE[3], line_w=1.0,
+    D.add_rect(slide, x, y, w, h, fill="#E7E9EE", line=ENCRE, line_w=1.0,
                rounded=True, radius=0.35)
     D.add_text(slide, x + 0.05, y, w - 0.10, h, [
-        (texte, dict(size=size, bold=True, color=D.PALETTE[3], align=PP_ALIGN.CENTER, line_spacing=1.05)),
+        (texte, dict(size=size, bold=True, color=ENCRE, align=PP_ALIGN.CENTER, line_spacing=1.05)),
     ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
     return h
 
@@ -961,9 +1024,9 @@ def _note_mecanisme(slide, x, y, w, titre, corps, title_size=6.4, body_size=6.0,
     « panneau sur-étiré » du dépôt) ; retourne la hauteur effectivement utilisée."""
     lignes = _lignes(corps, w - 2 * pad, body_size)
     h = 2 * pad + (title_size * 1.1 / 72.0) + 0.02 + lignes * (body_size * 1.15 / 72.0)
-    _dashed_rect(slide, x, y, w, h, fill="#fdf8ec", line=D.PALETTE[3], line_w=0.9, radius=0.10)
+    _dashed_rect(slide, x, y, w, h, fill="#F2F4F8", line=ENCRE, line_w=0.9, radius=0.10)
     D.add_text(slide, x + pad, y + pad * 0.6, w - 2 * pad, h - pad * 1.2, [
-        (titre, dict(size=title_size, bold=True, color=D.PALETTE[3], line_spacing=1.05)),
+        (titre, dict(size=title_size, bold=True, color=ENCRE, line_spacing=1.05)),
         (corps, dict(size=body_size, color=MUTED, italic=True, space_before=2, line_spacing=1.15)),
     ])
     return h
@@ -973,7 +1036,7 @@ def _fleche_h(slide, x, y, w, h, color=MUTED, size=10):
     """Flèche « → » centrée dans une cellule (vocabulaire de flux du schéma de
     parcours — même simplification texte que slide_iap_contexte_client)."""
     D.add_text(slide, x, y, w, h, [
-        ("→", dict(size=size, bold=True, color=color, align=PP_ALIGN.CENTER)),
+        ("→", dict(size=size, bold=True, color=encre_de(color), align=PP_ALIGN.CENTER)),
     ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
 
 
@@ -982,7 +1045,7 @@ def _fleche_h(slide, x, y, w, h, color=MUTED, size=10):
 # markdown) portent le MÊME petit badge — signal visuel récurrent et discret qui
 # les relie à la zone « déploiement agentic » du schéma d'architecture
 # (slide_iap_contexte_client, chapitre 08). Renvoi par CHAPITRE, jamais par
-# numéro de page (les numéros bougent). Violet D.PALETTE[4] = couleur du
+# numéro de page (les numéros bougent). ENCRE = encre navy, la couleur du
 # chapitre IA, la même que la zone du schéma.
 BADGE_AGENTIC_W = 2.3
 
@@ -991,10 +1054,10 @@ def badge_deploiement_agentic(slide):
     x = BORD_DROIT - BADGE_AGENTIC_W
     h = 0.42
     D.add_rect(slide, x, CONTENT_TOP, BADGE_AGENTIC_W, h, fill="#ffffff",
-               line=D.PALETTE[4], line_w=1.0, rounded=True, radius=0.18)
+               line=ENCRE, line_w=1.0, rounded=True, radius=0.18)
     D.add_text(slide, x + 0.12, CONTENT_TOP, BADGE_AGENTIC_W - 0.24, h, [
         ("DÉPLOIEMENT AGENTIC CHEZ LE CLIENT",
-         dict(size=6, bold=True, color=D.PALETTE[4], line_spacing=1.1)),
+         dict(size=6, bold=True, color=ENCRE, line_spacing=1.1)),
         ("cf. schéma d'architecture · chapitre 08",
          dict(size=6, italic=True, color=MUTED, space_before=1)),
     ], anchor=MSO_ANCHOR.MIDDLE)
@@ -1100,15 +1163,15 @@ def slide_executive_summary(prs):
          "Leurs douleurs, notre outillage de consultant, l'agentic chez eux en option — "
          "déclinés sur les trois mêmes temps, outillés ou non.",
          "Chapitre 01"),
-        ("POURQUOI", D.PALETTE[0], "L'infra subie coûte de plus en plus cher.",
+        ("POURQUOI", ENCRE, "L'infra subie coûte de plus en plus cher.",
          "Trois déclencheurs, quatre personas interrogés séparément, des douleurs "
          "mesurables plutôt que des plaintes.",
          "Chapitres 02–04"),
-        ("QUOI", D.PALETTE[1], "Traiter l'infra comme un produit — et assainir.",
+        ("QUOI", ENCRE, "Traiter l'infra comme un produit — et assainir.",
          "Double mission, méthode scorée (impact × faisabilité − prudence IA), IA sous "
          "gate : jamais la réponse à un problème d'abord organisationnel.",
          "Chapitres 05–06"),
-        ("COMMENT", D.PALETTE[3], "Trois temps et une boucle, personnes comprises.",
+        ("COMMENT", ENCRE, "Trois temps et une boucle, personnes comprises.",
          "Démarche ①②③⟲ avec son fil humain de bout en bout ; l'outillage IAP au "
          "service de la démarche — jamais l'inverse.",
          "Chapitres 07–08"),
@@ -1153,7 +1216,7 @@ def slide_executive_summary(prs):
         ])
         D.add_text(s, x + pad, top0 + card_h - 0.38, w - 2 * pad, 0.26, [
             (renvoi, dict(size=7.5, bold=True, color="#8fd6db" if accent else
-                          (D.PALETTE[0] if etape == "RÉSULTAT" else color))),
+                          (ENCRE if etape == "RÉSULTAT" else color))),
         ], anchor=MSO_ANCHOR.BOTTOM)
         if i < n - 1:   # le fil : flèche dans l'inter-colonne
             D.add_text(s, x + w - 0.02, top0 + card_h / 2 - 0.12, GAP + 0.04, 0.24, [
@@ -1168,7 +1231,7 @@ def slide_offre_iap(prs):
     le chapitre 07 · Démarche, juste avant slide_schema_fonctionnement : le
     parcours de mission détaillé est un objet de COMMENT, pas d'ouverture — le
     sommaire du deck reste slide_executive_summary. Contenu inchangé ; seuls le
-    kicker et la couleur suivent le chapitre d'accueil (D.PALETTE[3], or).
+    kicker et la couleur suivent le chapitre d'accueil (ENCRE, or).
 
     Nouveau (v2.8) — reprend la slide 2 du pitch source (chapô + citation-thèse,
     VERBATIM — document source, ne pas reformuler) et son schéma du parcours de
@@ -1181,7 +1244,7 @@ def slide_offre_iap(prs):
     corrigée ici (cf. docstring de module)."""
     s = content_slide(prs, "Démarche",
                        "Accompagnement Infra as a Product : transformer une fonction infra en produit interne",
-                       color=D.PALETTE[3])
+                       color=ENCRE)
 
     chapo = ("L'offre proposée est une méthodologie d'accompagnement pour transformer « une "
              "fonction infra ou une plateforme interne » en un véritable produit interne : un "
@@ -1241,11 +1304,11 @@ def slide_offre_iap(prs):
     # --- Rangée 1 : mouvements du socle ---
     row1_top = band_a_bottom + 0.14
     D.add_text(s, x0n + w0n * 0.15, band_a_bottom + 0.04, 0.5, 0.14, [
-        ("↓", dict(size=8, bold=True, color=D.PALETTE[3], align=PP_ALIGN.CENTER)),
+        ("↓", dict(size=8, bold=True, color=ENCRE, align=PP_ALIGN.CENTER)),
     ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
     x3, w3 = col_x(3, grid_n)
     D.add_text(s, x3 + w3 * 0.65, band_a_bottom + 0.04, 0.5, 0.14, [
-        ("↓", dict(size=8, bold=True, color=D.PALETTE[3], align=PP_ALIGN.CENTER)),
+        ("↓", dict(size=8, bold=True, color=ENCRE, align=PP_ALIGN.CENTER)),
     ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
 
     socle_row1 = [
@@ -1313,8 +1376,8 @@ def slide_offre_iap(prs):
     legend_top = checklist_bottom + 0.04
     legend = [
         ("#dce6f5", NAVY, False, "mouvement du socle (toujours présent)"),
-        ("#f7ecd2", D.PALETTE[3], False, "variante ou section conditionnée au contexte"),
-        ("#fdf8ec", D.PALETTE[3], True, "mécanisme additif (extension, checklist transverse)"),
+        ("#E7E9EE", ENCRE, False, "variante ou section conditionnée au contexte"),
+        ("#F2F4F8", ENCRE, True, "mécanisme additif (extension, checklist transverse)"),
     ]
     lx = MARGIN
     sw = 0.14
@@ -1401,7 +1464,7 @@ def slide_pitch_iap(prs):
     ])
 
     cartes = [
-        ("CE QU'ILS VIVENT", D.PALETTE[2], "alerte",
+        ("CE QU'ILS VIVENT", ENCRE, "alerte",
          "Douleurs & besoins de ces organisations",
          "Quatre personas interrogés séparément, huit familles de gaspillage.",
          ["Infra & RUN — incidents subis en boucle, BUILD sacrifié à l'astreinte",
@@ -1409,14 +1472,14 @@ def slide_pitch_iap(prs):
           "Management — expert devenu manager malgré lui, reporting miroir",
           "Sponsor — pression à « mettre de l'IA » sans cas d'usage démontré"],
          "Détaillé aux chapitres 03 et 04"),
-        ("NOTRE OUTILLAGE · CÔTÉ CONSULTANT", D.PALETTE[5], "engrenage",
+        ("NOTRE OUTILLAGE · CÔTÉ CONSULTANT", ENCRE, "engrenage",
          "Notre démarche, outillée par un module agentic",
          "Le module BMAD IAP tourne sur le poste du consultant.",
          ["11 agents spécialisés : stratégie, produit, RUN, gaspillages, métriques, IA, changement",
           "Workflows, templates et checklists outillent la démarche — ils ne la remplacent pas",
           "Rien ne s'installe chez le client par défaut : les livrables sortent, c'est tout"],
          "L'outil du consultant — chapitres 07 et 08"),
-        ("EN OPTION · CÔTÉ CLIENT", D.PALETTE[4], "deploiement",
+        ("EN OPTION · CÔTÉ CLIENT", ENCRE, "deploiement",
          "Déployer de l'agentic chez le client",
          "Ouverte seulement si le contexte du client s'y prête.",
          ["Gate IA d'abord : la donnée est classée (D0–D4) avant tout usage d'IA",
@@ -1453,7 +1516,7 @@ def slide_pitch_iap(prs):
         y = cards_top + 0.16
         _picto(s, picto, x + pad, y, picto_d, color)
         D.add_text(s, x + pad + picto_d + 0.10, y, usable - picto_d - 0.10, picto_d, [
-            (label, dict(size=6.5, bold=True, color=color, line_spacing=1.1)),
+            (label, dict(size=6.5, bold=True, color=encre_de(color), line_spacing=1.1)),
         ], anchor=MSO_ANCHOR.MIDDLE)
 
         y += picto_d + 0.10
@@ -1588,8 +1651,8 @@ def slide_demarche_avec_sans_agentic(prs):
     ])
 
     SOCLE_FILL, SOCLE_LINE = "#dce6f5", MUTED           # gris-navy neutre
-    MODULE_FILL, MODULE_LINE = "#e1fdfa", D.PALETTE[5]  # teal — outillage consultant
-    CLIENT_FILL, CLIENT_LINE = "#efe7f7", D.PALETTE[4]  # violet — agentic chez le client
+    MODULE_FILL, MODULE_LINE = "#e1fdfa", ENCRE  # outillage consultant
+    CLIENT_FILL, CLIENT_LINE = "#E7E9EE", ENCRE  # agentic chez le client
 
     etapes = [
         ("①", "COMPRENDRE",
@@ -1605,9 +1668,9 @@ def slide_demarche_avec_sans_agentic(prs):
     registres = [
         ("SANS OUTILLAGE", "présence du consultant", None, SOCLE_FILL, SOCLE_LINE, NAVY),
         ("AVEC LE MODULE", "côté consultant · décliné chapitre 07", "engrenage",
-         MODULE_FILL, MODULE_LINE, D.PALETTE[5]),
+         MODULE_FILL, MODULE_LINE, ENCRE),
         ("AGENTIC CHEZ LE CLIENT", "en option, sous gate IA · déployé chapitre 08", "deploiement",
-         CLIENT_FILL, CLIENT_LINE, D.PALETTE[4]),
+         CLIENT_FILL, CLIENT_LINE, ENCRE),
     ]
 
     label_w = 1.30
@@ -1871,7 +1934,7 @@ def slide_synthese_pourquoi_quoi_comment(prs):
         D.add_rect(s, x + 0.12, agents_top + pad_v * 0.6, bar_w2, agents_h - pad_v * 1.2,
                    fill=color, rounded=True, radius=0.5)
         D.add_text(s, x + txt_x_off, agents_top + pad_v / 2, aw, agents_h - pad_v, [
-            (label, dict(size=7.5, bold=True, color=color, line_spacing=1.1)),
+            (label, dict(size=7.5, bold=True, color=encre_de(color), line_spacing=1.1)),
             (texte, dict(size=7.5, color=NAVY, space_before=3, line_spacing=1.2)),
         ], anchor=MSO_ANCHOR.MIDDLE)
 
@@ -2096,13 +2159,13 @@ def slide_infra_as_product_exemple(prs):
 
 
 def slide_mission(prs):
-    s = content_slide(prs, "Contexte", "Une double mission : transformer ET assainir", color=D.PALETTE[0])
+    s = content_slide(prs, "Contexte", "Une double mission : transformer ET assainir", color=ENCRE)
     cards = [
-        ("TRANSFORMER", D.PALETTE[0],
+        ("TRANSFORMER", ENCRE,
          "Cible produit/plateforme : utilisateurs identifiés, valeur, roadmap, "
          "engagements de qualité, gouvernance lisible.",
          "La vision à moyen terme — ce que le sponsor achète."),
-        ("ASSAINIR", D.PALETTE[2],
+        ("ASSAINIR", ENCRE,
          "Traitement mesurable des gaspillages : flux, RUN, humain, financier, "
          "cognitif, décisionnel, environnemental, IA.",
          # v2.3 : promesse instrumentée, pas un acquis — même honnêteté que le
@@ -2133,7 +2196,7 @@ def slide_mission(prs):
         D.add_card(s, x, top0, w, card_h, color)
         pad = 0.22
         D.add_text(s, x + pad, top0 + 0.18, w - 2 * pad, 0.3, [
-            (titre, dict(size=D.TYPE["h3"], bold=True, color=color))
+            (titre, dict(size=D.TYPE["h3"], bold=True, color=encre_de(color)))
         ])
         D.add_text(s, x + pad, top0 + 0.58, w - 2 * pad, 0.62, [
             ("CE QU'IL VISE", dict(size=D.TYPE["tiny"], bold=True, color=MUTED)),
@@ -2173,22 +2236,22 @@ def slide_pourquoi_contexte(prs):
     micro-label « DÉCLENCHEUR N » : l'ordinal se lit d'un coup d'œil."""
     s = content_slide(prs, "Contexte",
                        "Pourquoi cette transformation, pour un client infra — et maintenant",
-                       color=D.PALETTE[0])
+                       color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.5, [
         ("Trois bascules rendent l'Infra-as-a-Product pertinente — et urgente — pour un client "
          "dont l'infrastructure est encore vécue comme un centre de coûts et un guichet.",
          dict(size=D.TYPE["small"], color=NAVY, italic=True, line_spacing=1.25)),
     ])
     triggers = [
-        (D.PALETTE[2], "L'infra subie n'est plus tenable",
+        (ENCRE, "L'infra subie n'est plus tenable",
          "RUN subi, experts seniors drainés sur du répétitif, gaspillage cloud non maîtrisé, "
          "plateforme contournée : le coût du statu quo ne cesse de monter."),
         # Le « MAIS » du cadrage (l.43) est le motif d'achat du pilier Assainir :
         # sans lui, ce declencheur ne declenche rien. Restaure le 2026-09-01.
-        (D.PALETTE[1], "Le modèle produit/plateforme est prouvé",
+        (ENCRE, "Le modèle produit/plateforme est prouvé",
          "Devenu un standard — mais Gartner : 80 % de grandes organisations avec platform "
          "team en 2026, moins de 30 % de gains mesurables. C'est cet écart qu'Assainir adresse."),
-        (D.PALETTE[4], "L'IA rebat les cartes — l'organisation d'abord",
+        (ENCRE, "L'IA rebat les cartes — l'organisation d'abord",
          "L'IA amplifie une organisation mûre, jamais l'inverse. S'y préparer maintenant "
          "(doctrine confidentialité-first) évite de la subir plus tard."),
     ]
@@ -2217,12 +2280,12 @@ def slide_pourquoi_contexte(prs):
         D.add_rect(s, cx - 0.011, top0 + badge_d, 0.022, connector_h, fill=NAVY,
                    rounded=True, radius=0.5)
         D.add_text(s, x, text_top, w, text_h_besoin, [
-            (titre, dict(size=D.TYPE["small"], bold=True, color=color, line_spacing=1.05)),
+            (titre, dict(size=D.TYPE["small"], bold=True, color=encre_de(color), line_spacing=1.05)),
             (corps, dict(size=9, color=NAVY, space_before=8, line_spacing=1.25)),
         ])
     bridge_top = min(text_top + text_h_besoin + 0.32, CONTENT_BOTTOM - bridge_h)
     D.add_rect(s, MARGIN, bridge_top, CONTENT_W, bridge_h, fill=TRACK, rounded=True, radius=0.1)
-    D.add_rect(s, MARGIN, bridge_top, 0.08, bridge_h, fill=D.PALETTE[0], rounded=True, radius=0.5)
+    D.add_rect(s, MARGIN, bridge_top, 0.08, bridge_h, fill=ENCRE, rounded=True, radius=0.5)
     D.add_text(s, MARGIN + 0.28, bridge_top, CONTENT_W - 0.46, bridge_h, [
         ("Et surtout — nos deux missions répondent trait pour trait aux deux douleurs du client.",
          dict(size=8.5, bold=True, color=NAVY, line_spacing=1.05)),
@@ -2254,7 +2317,7 @@ def slide_pourquoi_contexte(prs):
 def slide_qui_achete(prs):
     s = content_slide(prs, "Contexte",
                        "Le sponsor est la DSI — l'offre se gagne contre quatre achats partiels",
-                       color=D.PALETTE[0])
+                       color=ENCRE)
 
     def lh(pt):
         return pt * 1.25 / 72.0
@@ -2375,7 +2438,7 @@ def slide_qui_achete(prs):
 
 # ---------------------------------------------------------------- slide 4
 def slide_gate_ia(prs):
-    s = content_slide(prs, "IA", "Les données du client gouvernent le choix du modèle IA", color=D.PALETTE[4])
+    s = content_slide(prs, "IA", "Les données du client gouvernent le choix du modèle IA", color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.35, [
         ("Checkpoint toujours humain avant tout usage IA sur données client — "
          "iap-ai-data-confidentiality-gate, quel que soit le mode d'exécution retenu.",
@@ -2414,10 +2477,10 @@ def slide_why_iap(prs):
     sous-chapitre « Technique IAP » a donc disparu — why_iap ouvre la Proposition.)"""
     s = content_slide(prs, "Proposition",
                        "Pourquoi « Infrastructure as a Product » — le socle de la proposition",
-                       color=D.PALETTE[1])
+                       color=ENCRE)
     claim_h = 0.95
     D.add_rect(s, MARGIN, CONTENT_TOP, CONTENT_W, claim_h, fill=TRACK, rounded=True, radius=0.1)
-    D.add_rect(s, MARGIN, CONTENT_TOP, 0.08, claim_h, fill=D.PALETTE[1], rounded=True, radius=0.5)
+    D.add_rect(s, MARGIN, CONTENT_TOP, 0.08, claim_h, fill=ENCRE, rounded=True, radius=0.5)
     D.add_text(s, MARGIN + 0.3, CONTENT_TOP, CONTENT_W - 0.5, claim_h, [
         ("Traiter l'infrastructure comme un produit, pas comme un guichet de tickets.",
          dict(size=14, bold=True, color=NAVY, line_spacing=1.05)),
@@ -2427,15 +2490,15 @@ def slide_why_iap(prs):
     ], anchor=MSO_ANCHOR.MIDDLE)
 
     piliers = [
-        (D.PALETTE[5], "Des utilisateurs, pas des tickets",
+        (ENCRE, "Des utilisateurs, pas des tickets",
          "On conçoit l'adoption — self-service, onboarding, parcours — au lieu de subir un "
          "guichet que le contournement rend inutile.",
          "l'Utilisateur applicatif"),
-        (D.PALETTE[0], "Un cycle de vie, une équipe qui en répond",
+        (ENCRE, "Un cycle de vie, une équipe qui en répond",
          "Le produit a un propriétaire, une roadmap et une dette gérée : on sort du RUN subi "
          "et on récupère de la capacité.",
          "Infra & RUN"),
-        (D.PALETTE[3], "Un pilotage par la valeur",
+        (ENCRE, "Un pilotage par la valeur",
          "On mesure l'usage et la valeur produite, pas l'activité : un signal de flux fiable, "
          "des KPIs de mission — pas du reporting-miroir.",
          "Management & Sponsor"),
@@ -2483,7 +2546,7 @@ def slide_why_iap(prs):
 
         tx = cx + pad_h
         D.add_text(s, tx, block_top, content_w, title_h, [
-            (titre, dict(size=D.TYPE["small"], bold=True, color=color, line_spacing=1.1)),
+            (titre, dict(size=D.TYPE["small"], bold=True, color=encre_de(color), line_spacing=1.1)),
         ])
         corps_top = block_top + title_h + title_gap
         D.add_text(s, tx, corps_top, content_w, corps_h, [
@@ -2500,7 +2563,7 @@ def slide_why_iap(prs):
 def slide_maturite(prs):
     s = content_slide(prs, "KPI",
                        "La grille de maturité : deux échelles distinctes, mesurées dans le temps",
-                       color=D.PALETTE[0])
+                       color=ENCRE)
     # Placée en fin de chapitre KPI (juste avant le cas chiffré) et CLARIFIÉE
     # (point ①) : c'est la 3e famille de KPIs (grille de maturité). Message resserré :
     # deux échelles ne mesurant PAS la même chose, chacune gouvernant une décision
@@ -2519,7 +2582,7 @@ def slide_maturite(prs):
     D.add_text(s, x0, head_top, w0, 0.5, [
         ("CAPACITÉ IA DU CLIENT (M0–M4)", dict(size=D.TYPE["tiny"], bold=True, color=NAVY)),
         ("→ gouverne le choix du modèle IA et le gate",
-         dict(size=7.5, color=D.PALETTE[0], space_before=2, line_spacing=1.05)),
+         dict(size=7.5, color=ENCRE, space_before=2, line_spacing=1.05)),
     ])
     niveaux = [
         ("M0", "Pas d'IA interne utilisable", "Méthodo générique, données anonymisées"),
@@ -2533,7 +2596,7 @@ def slide_maturite(prs):
     row_gap = 0.06
     for i, (code, titre, strat) in enumerate(niveaux):
         y = row_top + i * (row_h + row_gap)
-        chip(s, x0, y, 0.62, row_h, code, D.PALETTE[0], size=D.TYPE["tiny"])
+        chip(s, x0, y, 0.62, row_h, code, ENCRE, size=D.TYPE["tiny"])
         D.add_text(s, x0 + 0.62 + 0.15, y, w0 - 0.77 - 0.15, row_h, [
             (titre, dict(size=D.TYPE["tiny"], bold=True, color=NAVY)),
             (strat, dict(size=8, color=MUTED, space_before=1, line_spacing=1.1)),
@@ -2542,7 +2605,7 @@ def slide_maturite(prs):
     D.add_text(s, x1, head_top, w1, 0.5, [
         ("MATURITÉ PRODUIT / PLATEFORME (grille V3.2)", dict(size=D.TYPE["tiny"], bold=True, color=NAVY)),
         ("→ gouverne la trajectoire de transformation",
-         dict(size=7.5, color=D.PALETTE[1], space_before=2, line_spacing=1.05)),
+         dict(size=7.5, color=ENCRE, space_before=2, line_spacing=1.05)),
     ])
     piliers = [
         ("Équipe Produit", "Adjacent", False),
@@ -2576,7 +2639,7 @@ def slide_maturite(prs):
 def slide_personas(prs):
     s = content_slide(prs, "Personas",
                        "Quatre parties prenantes interrogées séparément — leur voix, leur posture",
-                       color=D.PALETTE[5])
+                       color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.5, [
         ("Product Discovery fusionnée dans iap-product-definition en MVP1 — mais chaque partie "
          "prenante répond à la même trame, pour révéler convergences ET divergences plutôt qu'un "
@@ -2649,7 +2712,7 @@ def slide_personas_divergences(prs):
     s = content_slide(prs, "Personas",
                        "Interroger chaque persona séparément révèle des tensions "
                        "qu'un diagnostic fusionné lisserait",
-                       color=D.PALETTE[5])
+                       color=ENCRE)
     # Note d'intro retirée (redondante avec le sous-titre) : les rangées démarrent
     # plus haut pour laisser place, en bas, à la synthèse « pont » vers la Proposition.
     # Passe de design 2026-07-23 — pattern 7 du catalogue deck-design-library
@@ -2657,11 +2720,14 @@ def slide_personas_divergences(prs):
     # est la seule teintée (fond rouge très pâle + contour rouge) — rouge =
     # sémantique d'alerte, pas décoration ; les 3 tensions instruites restent
     # des cartes blanches identiques.
-    c_infra = D.PALETTE[0]   # Infra & RUN — bleu (comme slide_personas)
-    c_user = D.PALETTE[5]    # Utilisateur applicatif — teal
-    c_mgmt = D.PALETTE[3]    # Management — or
-    c_spon = D.PALETTE[4]    # Sponsor — violet
-    c_rssi = D.PALETTE[2]    # RSSI — rouge = porteur du gate, criticité/blocage
+    # Les 5 parties prenantes partageaient 5 teintes ; elles partagent
+    # desormais l'encre. Leur distinction passe par le libelle et la position
+    # (lot 1) ; l'accent « un sur N » sera pose au lot du chapitre 03.
+    c_infra = ENCRE   # Infra & RUN
+    c_user = ENCRE    # Utilisateur applicatif
+    c_mgmt = ENCRE    # Management
+    c_spon = ENCRE    # Sponsor
+    c_rssi = ENCRE    # RSSI — porteur du gate (criticité portée par le libellé)
     rows = [
         (("Management", c_mgmt), ("Infra & RUN", c_infra), None,
          "Le même métrique de flux, lu « signal de pilotage de confiance » d'un côté, "
@@ -2690,7 +2756,7 @@ def slide_personas_divergences(prs):
         y = top0 + i * (row_h + row_gap)
         accent = tag is not None   # « un sur N » : l'angle mort, seul non instruit
         D.add_rect(s, MARGIN, y, CONTENT_W, row_h,
-                   fill="#fbeeed" if accent else "#ffffff",
+                   fill="#E7E9EE" if accent else "#ffffff",
                    line=c_rssi if accent else LINE,
                    line_w=1.0 if accent else 0.75,
                    rounded=True, radius=0.08)
@@ -2749,7 +2815,7 @@ def slide_personas_divergences(prs):
 def slide_familles(prs):
     s = content_slide(prs, "Besoins & douleurs",
                        "Les 8 familles de gaspillage — le langage commun qui rend les douleurs traitables",
-                       color=D.PALETTE[2])
+                       color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.42, [
         ("Nommer la famille, c'est déjà pouvoir la détecter, la quantifier et la prioriser "
          "(méthode de traitement → chapitre Proposition).",
@@ -2783,7 +2849,7 @@ def slide_familles(prs):
         else:
             D.add_rect(s, x, y, w, row_h, fill="#ffffff", line=LINE, line_w=0.75,
                        rounded=True, radius=0.1)
-        D.add_rect(s, x, y, 0.06, row_h, fill=D.PALETTE[2], rounded=True, radius=0.5)
+        D.add_rect(s, x, y, 0.06, row_h, fill=ENCRE, rounded=True, radius=0.5)
         D.add_text(s, x + 0.2, y + 0.06, w - 0.34, row_h - 0.12, [
             (f"{i + 1}. {nom}", dict(size=D.TYPE["small"], bold=True,
                                      color="#ffffff" if accent else NAVY)),
@@ -2809,7 +2875,7 @@ def slide_familles(prs):
 def slide_gaspillages(prs):
     s = content_slide(prs, "Proposition",
                        "Du gaspillage au backlog priorisé : chaîne de traitement + score",
-                       color=D.PALETTE[1])
+                       color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.5, [
         ("Chaque famille de gaspillage (chapitre précédent) passe par la même chaîne de "
          "traitement, puis reçoit un score explicite qui la classe dans un backlog priorisé "
@@ -2842,17 +2908,17 @@ def slide_gaspillages(prs):
             accent = (i == accent_idx)
             bx = x0 + col * slot + slot / 2 - badge_d / 2
             D.add_rect(s, bx, y, badge_d, badge_d,
-                       fill=D.PALETTE[1] if accent else "#ffffff",
-                       line=None if accent else D.PALETTE[1], line_w=1.0,
+                       fill=ENCRE if accent else "#ffffff",
+                       line=None if accent else ENCRE, line_w=1.0,
                        rounded=True, radius=0.5)
             D.add_text(s, bx, y, badge_d, badge_d, [
                 (str(i + 1), dict(size=8, bold=True,
-                                  color="#ffffff" if accent else D.PALETTE[1],
+                                  color="#ffffff" if accent else ENCRE,
                                   align=PP_ALIGN.CENTER)),
             ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
             D.add_text(s, x0 + col * slot, y + badge_d + 0.04, slot, 0.22, [
                 (etapes[i], dict(size=8, bold=True,
-                                 color=D.PALETTE[1] if accent else NAVY,
+                                 color=ENCRE if accent else NAVY,
                                  align=PP_ALIGN.CENTER)),
             ], align=PP_ALIGN.CENTER)
 
@@ -2903,7 +2969,7 @@ def slide_gaspillages(prs):
 def slide_douleurs(prs):
     s = content_slide(prs, "Besoins & douleurs",
                        "Les douleurs des clients infra : mesurables, pas des plaintes",
-                       color=D.PALETTE[2])
+                       color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.4, [
         ("Chaque douleur appartient à un persona et se range dans une famille de gaspillage "
          "— c'est ce qui la rend traitable plutôt que subie.",
@@ -2911,22 +2977,22 @@ def slide_douleurs(prs):
     ])
 
     rows = [
-        ("Infra & RUN", D.PALETTE[0],
+        ("Infra & RUN", ENCRE,
          "RUN subi : les mêmes incidents reviennent et mobilisent les experts seniors, le BUILD "
          "est sacrifié à l'astreinte.",
          "Tickets récurrents/mois, part du temps en RUN non maîtrisé.",
          "RUN · Humain"),
-        ("Utilisateur applicatif", D.PALETTE[5],
+        ("Utilisateur applicatif", ENCRE,
          "Aucun self-service ni parcours conçu : tout passe par un guichet, le contournement "
          "(shadow IT) va plus vite que la demande officielle.",
          "Taux de contournement, délai de mise à disposition.",
          "Flux · Cognitif"),
-        ("Management", D.PALETTE[3],
+        ("Management", ENCRE,
          "« Expert devenu manager malgré lui » : reporting miroir et micromanagement "
          "compensatoire, faute de signal fiable sur le flux.",
          "Ratio temps reporting / temps résolution d'obstacles.",
          "Décisionnel · Humain"),
-        ("Sponsor", D.PALETTE[4],
+        ("Sponsor", ENCRE,
          "Pression à « mettre de l'IA » sans cas d'usage, peur d'une transformation cosmétique : "
          "beaucoup d'activité, peu de valeur démontrée.",
          "Valeur / capacité récupérée démontrée vs promise.",
@@ -2981,7 +3047,7 @@ def slide_douleurs(prs):
         ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
         D.add_rect(s, cxm - 0.011, connector_top, 0.022, connector_h, fill=color)
         D.add_text(s, x, headline_top, lane_w, headline_h, [
-            (nom, dict(size=headline_size, bold=True, color=color,
+            (nom, dict(size=headline_size, bold=True, color=encre_de(color),
                        align=PP_ALIGN.CENTER, line_spacing=1.05)),
         ], anchor=MSO_ANCHOR.TOP, align=PP_ALIGN.CENTER)
         D.add_text(s, x + pad, douleur_top, body_w, douleur_h, [
@@ -2999,17 +3065,17 @@ def slide_douleurs(prs):
     note_h = CONTENT_BOTTOM - note_top
     if note_h > 0.3:
         D.add_rect(s, MARGIN, note_top, CONTENT_W, note_h, fill=TRACK, rounded=True, radius=0.14)
-        D.add_rect(s, MARGIN, note_top, 0.07, note_h, fill=D.PALETTE[2], rounded=True, radius=0.5)
+        D.add_rect(s, MARGIN, note_top, 0.07, note_h, fill=ENCRE, rounded=True, radius=0.5)
         D.add_text(s, MARGIN + 0.26, note_top, CONTENT_W - 0.5, note_h, [
             ("Ces 4 douleurs se rangent en 8 familles de gaspillage → slide suivante.",
-             dict(size=9, bold=True, color=D.PALETTE[2], line_spacing=1.15)),
+             dict(size=9, bold=True, color=ENCRE, line_spacing=1.15)),
         ], anchor=MSO_ANCHOR.MIDDLE)
     return s
 
 
 # ---------------------------------------------------------------- slide 9
 def slide_team_topologies(prs):
-    s = content_slide(prs, "Proposition", "La cible IAP est une Platform Team — agents IA compris", color=D.PALETTE[1])
+    s = content_slide(prs, "Proposition", "La cible IAP est une Platform Team — agents IA compris", color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.26, [
         ("Team Topologies décrit 4 archétypes reliés entre eux, pas des silos : les 3 autres "
          "s'articulent tous autour de la Platform Team.",
@@ -3025,14 +3091,14 @@ def slide_team_topologies(prs):
     # (le détail des 3+1 modes reste dans l'encart ci-dessous, texte inchangé)
     # pour ne pas fabriquer une affirmation absente de la source.
     satellites = [
-        ("Stream-aligned", D.PALETTE[0], "Flux de valeur métier continu",
+        ("Stream-aligned", ENCRE, "Flux de valeur métier continu",
          "Équipes applicatives clientes de la plateforme infra"),
-        ("Enabling", D.PALETTE[3], "Montée en compétence temporaire",
+        ("Enabling", ENCRE, "Montée en compétence temporaire",
          "Posture du coach BMAD IAP — jamais permanente"),
-        ("Complicated-subsystem", D.PALETTE[4], "Expertise pointue, compétences rares",
+        ("Complicated-subsystem", ENCRE, "Expertise pointue, compétences rares",
          "Un vrai sous-système complexe, pas un produit plateforme classique"),
     ]
-    platform = ("Platform", D.PALETTE[1], "Capacités en self-service (X-as-a-Service)",
+    platform = ("Platform", ENCRE, "Capacités en self-service (X-as-a-Service)",
                 "La cible même de la transformation IAP")
 
     n = len(satellites)
@@ -3054,7 +3120,7 @@ def slide_team_topologies(prs):
         centers.append(x + w / 2.0)
         D.add_card(s, x, node_top, w, node_h, color)
         D.add_text(s, x + pad, node_top, w - 2 * pad, node_h, [
-            (titre, dict(size=8.5, bold=True, color=color, line_spacing=1.1)),
+            (titre, dict(size=8.5, bold=True, color=encre_de(color), line_spacing=1.1)),
             (role, dict(size=7.5, color=NAVY, space_before=3, line_spacing=1.1)),
             (lecture, dict(size=7, color=MUTED, italic=True, space_before=3, line_spacing=1.1)),
         ], anchor=MSO_ANCHOR.MIDDLE)
@@ -3067,9 +3133,9 @@ def slide_team_topologies(prs):
     for cx in centers:
         D.add_rect(s, cx - 0.011, node_bot, 0.022, stub_h, fill=LINE)
         D.add_dot(s, cx - 0.035, bus_y - 0.035, 0.07, MUTED)
-    D.add_rect(s, platform_cx - 0.014, bus_y, 0.028, trunk_h, fill=D.PALETTE[1])
+    D.add_rect(s, platform_cx - 0.014, bus_y, 0.028, trunk_h, fill=ENCRE)
     D.add_text(s, platform_cx - 0.2, platform_top - 0.16, 0.4, 0.16, [
-        ("▾", dict(size=9, bold=True, color=D.PALETTE[1], align=PP_ALIGN.CENTER)),
+        ("▾", dict(size=9, bold=True, color=ENCRE, align=PP_ALIGN.CENTER)),
     ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
 
     titre, color, role, lecture = platform
@@ -3114,7 +3180,7 @@ def slide_schema_fonctionnement(prs):
     # « comment la mission tourne », pas ce qu'on propose.
     s = content_slide(prs, "Démarche",
                        "La Gate IA s'applique à chaque étape, de la collecte à la boucle de réévaluation",
-                       color=D.PALETTE[3])
+                       color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.26, [
         ("Deux sources de collecte convergent vers un diagnostic structuré ; une boucle de "
          "réévaluation referme le cycle.", dict(size=8, color=MUTED, italic=True, line_spacing=1.1)),
@@ -3129,16 +3195,16 @@ def slide_schema_fonctionnement(prs):
     ], anchor=MSO_ANCHOR.MIDDLE)
 
     etapes = [
-        ("COLLECTE", D.PALETTE[0],
+        ("COLLECTE", ENCRE,
          ["Interviews par persona (trame / thème / question)",
           "Import outils : ServiceNow/Jira/CMDB si accès"]),
-        ("DIAGNOSTIC", D.PALETTE[4],
+        ("DIAGNOSTIC", ENCRE,
          ["Synthèse par thème puis synthèse globale",
           "Registre de gaspillage (tags CONFIRMÉ/DÉDUIT/INCERTAIN)"]),
-        ("CONCEPTION", D.PALETTE[3],
+        ("CONCEPTION", ENCRE,
          ["Définition produit (+ cible MVP)",
           "Operating model + traitement du gaspillage (décisions actées)"]),
-        ("RESTITUTION", D.PALETTE[1],
+        ("RESTITUTION", ENCRE,
          ["Deck exécutif : axes valeur/complexité",
           "+ radar de maturité"]),
     ]
@@ -3149,7 +3215,7 @@ def slide_schema_fonctionnement(prs):
         x, w = col_x(i, n)
         D.add_rect(s, x, col_top, w, 0.05, fill=color)
         D.add_text(s, x, col_top + 0.1, w, 0.26, [
-            (titre, dict(size=8, bold=True, color=color, align=PP_ALIGN.CENTER)),
+            (titre, dict(size=8, bold=True, color=encre_de(color), align=PP_ALIGN.CENTER)),
         ], align=PP_ALIGN.CENTER)
         card_y = col_top + 0.4
         D.add_rect(s, x, card_y, w, card_h - 0.4, fill=TRACK, rounded=True, radius=0.08)
@@ -3172,7 +3238,7 @@ def slide_schema_fonctionnement(prs):
 
     loop_top = reviewer_top + reviewer_h + 0.14
     loop_h = min(0.55, CONTENT_BOTTOM - loop_top)
-    D.add_rect(s, MARGIN, loop_top, CONTENT_W, loop_h, fill=D.PALETTE[2], rounded=True, radius=0.1)
+    D.add_rect(s, MARGIN, loop_top, CONTENT_W, loop_h, fill=ENCRE, rounded=True, radius=0.1)
     D.add_text(s, MARGIN + 0.2, loop_top, CONTENT_W - 0.4, loop_h, [
         ("⟲ Boucle de réévaluation — iap-re-assessment, T+6-12 mois, alimente la bibliothèque de REX, "
          "reboucle vers la Collecte", dict(size=8, bold=False, color="#ffffff", line_spacing=1.15)),
@@ -3188,18 +3254,18 @@ def slide_schema_fonctionnement(prs):
 def slide_trajectoire(prs):
     s = content_slide(prs, "Démarche",
                        "Trois temps et une boucle — chaque phase produit son livrable de décision",
-                       color=D.PALETTE[3])
+                       color=ENCRE)
     phases = [
-        ("①", "Assessment flash", "1–2 sem.", D.PALETTE[0],
+        ("①", "Assessment flash", "1–2 sem.", ENCRE,
          "= Schéma de fonctionnement déjà cadré (Collecte → Diagnostic → Conception → Restitution).",
          "Deck exécutif de restitution"),
-        ("②", "Premier déploiement", "4–5 sem.", D.PALETTE[3],
+        ("②", "Premier déploiement", "4–5 sem.", ENCRE,
          "1-2 équipes pilotes, mode Coach dominant. Piste agent IA (si retenue) : qualifier, cadrer, mandater.",
          "Deck de plan de déploiement · export markdown (1re version)"),
-        ("③", "Implémentation itérative", "→ T+6-12 mois", D.PALETTE[1],
+        ("③", "Implémentation itérative", "→ T+6-12 mois", ENCRE,
          "Généralisation équipe par équipe, bascule Coach → Délégué. Piste agent IA : supervisé puis délégué.",
          "Deck de comité de pilotage (périodique)"),
-        ("⟲", "Boucle de réévaluation", "T+6-12 mois", D.PALETTE[2],
+        ("⟲", "Boucle de réévaluation", "T+6-12 mois", ENCRE,
          "iap-re-assessment reboucle vers la Collecte — alimente la bibliothèque de REX.",
          "Deck de bilan / ré-évaluation · markdown amendé"),
     ]
@@ -3236,7 +3302,7 @@ def slide_trajectoire(prs):
         D.add_rect(s, x, livr_y, w, livr_h, fill=TRACK, rounded=True, radius=0.1)
         D.add_text(s, x + 0.1, livr_y, w - 0.2, livr_h, [
             ("LIVRABLE-CLÉ", dict(size=6.5, bold=True, color=MUTED, align=PP_ALIGN.CENTER)),
-            (livrable, dict(size=7.5, bold=True, color=color, space_before=2,
+            (livrable, dict(size=7.5, bold=True, color=encre_de(color), space_before=2,
                             align=PP_ALIGN.CENTER, line_spacing=1.15)),
         ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
 
@@ -3265,7 +3331,7 @@ def slide_trajectoire(prs):
 def slide_fil_humain(prs):
     s = content_slide(prs, "Démarche",
                        "La trajectoire accompagne aussi les personnes, de bout en bout",
-                       color=D.PALETTE[3])
+                       color=ENCRE)
 
     # --- Accroche argumentaire : le chiffre Kotter en bloc accent + intro.
     stat_w, stat_h = 1.05, 0.62
@@ -3287,20 +3353,20 @@ def slide_fil_humain(prs):
     ], anchor=MSO_ANCHOR.MIDDLE)
 
     phases = [
-        ("①", "ASSESSMENT FLASH", "Engager", D.PALETTE[0],
+        ("①", "ASSESSMENT FLASH", "Engager", ENCRE,
          "L'engagement personnel du sponsor est testé dès l'intake, avant signature ; "
          "les interviews écoutent les tensions ; la restitution revient aux interviewés, "
          "pas au seul sponsor.",
          "iap-change-coach · iap-intake"),
-        ("②", "PREMIER DÉPLOIEMENT", "Expérimenter", D.PALETTE[3],
+        ("②", "PREMIER DÉPLOIEMENT", "Expérimenter", ENCRE,
          "Équipes pilotes volontaires, jamais désignées d'office ; formation sur les cas "
          "réels de l'équipe — « pas de formation sans coaching ».",
          "iap-change-coach · équipe pilote"),
-        ("③", "IMPLÉMENTATION ITÉRATIVE", "Outiller & relayer", D.PALETTE[1],
+        ("③", "IMPLÉMENTATION ITÉRATIVE", "Outiller & relayer", ENCRE,
          "Les résistances sont un signal à écouter ; communauté de managers (N+1/N+2 "
          "embarqués) ; relais internes formés — le consultant se rend dispensable.",
          "iap-change-coach · operating-model-architect"),
-        ("⟲", "BOUCLE DE RÉÉVALUATION", "Mesurer", D.PALETTE[2],
+        ("⟲", "BOUCLE DE RÉÉVALUATION", "Mesurer", ENCRE,
          "Satisfaction et adhésion mesurées au même instrument à T0 et à la réévaluation — "
          "le delta humain se lit à côté du delta de maturité.",
          "iap-change-coach · metrics-sre-finops-lead"),
@@ -3341,7 +3407,7 @@ def slide_fil_humain(prs):
         ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
         head_y = top1 + badge_d + 0.10
         D.add_text(s, x + pad, head_y, usable, 0.22, [
-            (verbe, dict(size=9, bold=True, color=color, align=PP_ALIGN.CENTER)),
+            (verbe, dict(size=9, bold=True, color=encre_de(color), align=PP_ALIGN.CENTER)),
         ], align=PP_ALIGN.CENTER)
         D.add_text(s, x + pad, head_y + 0.22, usable, 0.16, [
             (phase, dict(size=6, bold=True, color=MUTED, align=PP_ALIGN.CENTER)),
@@ -3353,7 +3419,7 @@ def slide_fil_humain(prs):
         sep_y = body_y + body_h + 0.06
         D.add_rect(s, x + pad, sep_y, usable, 0.012, fill=LINE)
         D.add_text(s, x + pad, sep_y + 0.06, usable, owner_h, [
-            (owner, dict(size=6.5, bold=True, color=color, line_spacing=1.2)),
+            (owner, dict(size=6.5, bold=True, color=encre_de(color), line_spacing=1.2)),
         ])
 
     band_top = card_top + card_h + 0.18
@@ -3384,7 +3450,7 @@ def slide_fil_humain(prs):
 def slide_activites_humaines(prs):
     s = content_slide(prs, "Démarche",
                        "IAP outille une partie du fil humain — le reste est de la présence de consultant",
-                       color=D.PALETTE[3])
+                       color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.28, [
         ("Les mêmes quatre temps que la trajectoire : en haut, ce que le consultant fait "
          "avec le module ; en bas, ce qu'il fait sans lui.",
@@ -3392,10 +3458,10 @@ def slide_activites_humaines(prs):
     ])
 
     phases = [
-        ("①", "Assessment flash", D.PALETTE[0]),
-        ("②", "Premier déploiement", D.PALETTE[3]),
-        ("③", "Implémentation itérative", D.PALETTE[1]),
-        ("⟲", "Boucle de réévaluation", D.PALETTE[2]),
+        ("①", "Assessment flash", ENCRE),
+        ("②", "Premier déploiement", ENCRE),
+        ("③", "Implémentation itérative", ENCRE),
+        ("⟲", "Boucle de réévaluation", ENCRE),
     ]
     avec_iap = [
         ["Trames d'interview par persona, versées à la Collecte",
@@ -3439,7 +3505,7 @@ def slide_activites_humaines(prs):
             (sym, dict(size=9, bold=(sym != "⟲"), color="#ffffff", align=PP_ALIGN.CENTER)),
         ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
         D.add_text(s, x, head_top + badge_d + 0.02, col_w, 0.16, [
-            (nom, dict(size=6.5, bold=True, color=color, align=PP_ALIGN.CENTER)),
+            (nom, dict(size=6.5, bold=True, color=encre_de(color), align=PP_ALIGN.CENTER)),
         ], align=PP_ALIGN.CENTER)
 
     # Hauteur de bande dérivée du CONTENU (colonne la plus fournie).
@@ -3504,8 +3570,8 @@ def slide_activites_humaines(prs):
 def slide_conditions_reussite(prs):
     s = content_slide(prs, "Démarche",
                        "Sans ces quatre conditions, la mission ne s'engage pas",
-                       color=D.PALETTE[3])
-    couleur = D.PALETTE[3]
+                       color=ENCRE)
+    couleur = ENCRE
 
     def lh(pt):
         return pt * 1.25 / 72.0
@@ -3616,7 +3682,7 @@ def slide_conditions_reussite(prs):
 
     D.add_rect(s, pan_x, pan_top, pan_w, pan_h, fill=NAVY, rounded=True, radius=0.08)
     y = pan_top + pad
-    D.add_rect(s, pan_x + pad, y, chip_l, chip_h, fill=D.PALETTE[2], rounded=True, radius=0.5)
+    D.add_rect(s, pan_x + pad, y, chip_l, chip_h, fill=ENCRE, rounded=True, radius=0.5)
     D.add_text(s, pan_x + pad, y, chip_l, chip_h, [
         ("NON-ENGAGEMENT", dict(size=7, bold=True, color="#ffffff", align=PP_ALIGN.CENTER)),
     ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
@@ -3650,7 +3716,7 @@ def slide_conditions_reussite(prs):
     for nom, question in risques:
         n = _lignes(nom, tw, 7) + _lignes(question, tw, 7)
         D.add_text(s, pan_x + pad, ry, tw, n * lh(7), [
-            (nom, dict(size=7, bold=True, color=D.PALETTE[3], line_spacing=1.25)),
+            (nom, dict(size=7, bold=True, color=ENCRE, line_spacing=1.25)),
             (question, dict(size=7, color="#c7cbe0", line_spacing=1.25)),
         ])
         ry += n * lh(7) + 0.05
@@ -3673,7 +3739,7 @@ def slide_livrables_ppt(prs):
     # v2.5 (chantier ④) : déplacée de la Proposition vers la Démarche, avec la
     # trajectoire fusionnée qui ne porte que les NOMS de livrables — ici le
     # détail des 4 profils (audience, contenu).
-    s = content_slide(prs, "Démarche", "Livrables PPT par étape — piste à valider", color=D.PALETTE[3])
+    s = content_slide(prs, "Démarche", "Livrables PPT par étape — piste à valider", color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.4, [
         ("iap-deck-builder est cadré comme un seul deck modulaire 16 sections, produit une fois "
          "à la Restitution — la trajectoire ci-avant implique plusieurs publics et moments de "
@@ -3681,13 +3747,13 @@ def slide_livrables_ppt(prs):
          dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
     ])
     cols = [
-        ("①", "Assessment flash", D.PALETTE[0], "Sponsor, comité de lancement",
+        ("①", "Assessment flash", ENCRE, "Sponsor, comité de lancement",
          "Deck exécutif de restitution", "(déjà cadré) synthèse globale, axes valeur/complexité, radar T0"),
-        ("②", "Premier déploiement", D.PALETTE[3], "Équipes pilotes + management",
+        ("②", "Premier déploiement", ENCRE, "Équipes pilotes + management",
          "Deck de plan de déploiement", "(nouveau) Cible TOM détaillée, backlog Coach/Délégué, mandat agent IA"),
-        ("③", "Implémentation itérative", D.PALETTE[1], "Instance de comitologie",
+        ("③", "Implémentation itérative", ENCRE, "Instance de comitologie",
          "Deck de comité de pilotage", "(nouveau, périodique) Avancement backlog, delta KPIs, risques actifs"),
-        ("⟲", "Boucle de réévaluation", D.PALETTE[2], "Sponsor",
+        ("⟲", "Boucle de réévaluation", ENCRE, "Sponsor",
          "Deck de bilan / ré-évaluation", "(nouveau) Delta maturité T0→T+6-12, REX consolidé"),
     ]
     n = len(cols)
@@ -3712,7 +3778,7 @@ def slide_livrables_ppt(prs):
             (sym, dict(size=11, bold=(sym != "⟲"), color="#ffffff", align=PP_ALIGN.CENTER)),
         ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
         D.add_text(s, x + pad + badge_d + 0.08, top0 + 0.14, w - 2 * pad - badge_d - 0.08, badge_d, [
-            (titre, dict(size=8, bold=True, color=color, line_spacing=1.0)),
+            (titre, dict(size=8, bold=True, color=encre_de(color), line_spacing=1.0)),
         ], anchor=MSO_ANCHOR.MIDDLE)
         line_y = top0 + 0.14 + badge_d + 0.1
         D.add_rect(s, x + pad, line_y, w - 2 * pad, 0.012, fill=LINE)
@@ -3767,11 +3833,11 @@ def slide_vision(prs):
     # Couleurs = sémantique déjà en place : bleu Contexte (constat), rouge
     # ASSAINIR/gaspillage (coût), navy accent (l'exigence — la thèse).
     blocs = [
-        ("LE CONSTAT", D.PALETTE[0],
+        ("LE CONSTAT", ENCRE,
          "Une infrastructure guichet ou centre de coûts subit la demande au lieu "
          "de la piloter.",
          "Ni utilisateurs identifiés, ni feuille de route, ni levier d'adoption."),
-        ("CE QUE ÇA COÛTE", D.PALETTE[2],
+        ("CE QUE ÇA COÛTE", ENCRE,
          "La capacité disponible part en gaspillage.",
          "RUN subi (l'exploitation quotidienne), ressources orphelines, seniors "
          "sur du répétitif — et le réflexe « plus d'outils » ou « mettons de "
@@ -3867,7 +3933,7 @@ def slide_vision(prs):
 def slide_export_markdown(prs):
     s = content_slide(prs, "IA",
                        "Export markdown — agentic ou documentation, selon le contexte client (piste à valider)",
-                       color=D.PALETTE[4])
+                       color=ENCRE)
     # v2.6 (point ④) : badge de série (comme les 3 slides d'agent candidat) —
     # l'intro cède la largeur du badge. Le renvoi aux 4 decks vise le chapitre
     # Démarche (slide_livrables_ppt y a déménagé en v2.5 — la mention
@@ -3880,10 +3946,10 @@ def slide_export_markdown(prs):
     ])
 
     cards = [
-        ("DOCUMENTATION-FIRST", D.PALETTE[2],
+        ("DOCUMENTATION-FIRST", ENCRE,
          "Agentic Readiness [0]-[1], données D3-D4 sans LLM local, ou score de gaspillage faible.",
          "Runbook du processus", "iap-adoption-plan"),
-        ("AGENTIC-IMPLEMENTATION", D.PALETTE[0],
+        ("AGENTIC-IMPLEMENTATION", ENCRE,
          "Agentic Readiness [2]-[3], données D0-D2 (ou D3-D4 avec LLM local), score positif.",
          "Plan d'implémentation agentic", "iap-agentic-opportunities"),
     ]
@@ -3895,7 +3961,7 @@ def slide_export_markdown(prs):
         D.add_card(s, x, top0, w, card_h, color)
         pad = 0.2
         D.add_text(s, x + pad, top0 + 0.14, w - 2 * pad, 0.3, [
-            (titre, dict(size=D.TYPE["h3"], bold=True, color=color)),
+            (titre, dict(size=D.TYPE["h3"], bold=True, color=encre_de(color))),
         ])
         D.add_text(s, x + pad, top0 + 0.5, w - 2 * pad, 0.55, [
             ("QUAND", dict(size=D.TYPE["tiny"], bold=True, color=MUTED)),
@@ -3946,12 +4012,12 @@ def slide_export_markdown(prs):
 # SUIVANTES), et entre les deux les FLUX (collecte entrante, livrables
 # sortants, agents retenus). La zone « déploiement agentic chez le client »
 # est le seul bloc en aplat plein (« un sur N en accent »), violet
-# D.PALETTE[4] = couleur du chapitre 06 · IA — la même que le badge de série
+# ENCRE = encre navy — le chapitre 06 · IA ne se signale plus par sa teinte
 # posé sur les 4 slides de proposition agentic (point ④).
 def slide_iap_contexte_client(prs):
     s = content_slide(prs, "Outillage IAP",
                        "IAP tourne sur le poste du consultant — seuls les agents retenus passent chez le client",
-                       color=D.PALETTE[5])
+                       color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.30, [
         ("Rien ne s'installe côté client par défaut : les interviews et les exports entrent, "
          "les livrables sortent — le déploiement d'agents est une décision de ②/③, pas un prérequis.",
@@ -3972,8 +4038,8 @@ def slide_iap_contexte_client(prs):
         ("POSTE DU CONSULTANT", dict(size=8, bold=True, color=NAVY)),
         ("Le module IAP · 11 workflows outillés", dict(size=7, color=MUTED, space_before=2)),
     ])
-    etapes = [("COLLECTE", D.PALETTE[0]), ("DIAGNOSTIC", D.PALETTE[4]),
-              ("CONCEPTION", D.PALETTE[3]), ("RESTITUTION", D.PALETTE[1])]
+    etapes = [("COLLECTE", ENCRE), ("DIAGNOSTIC", ENCRE),
+              ("CONCEPTION", ENCRE), ("RESTITUTION", ENCRE)]
     pill_w = (cons_w - 2 * pad - 0.10) / 2
     pill_h = 0.30
     pills_top = z_top + 0.60
@@ -4002,14 +4068,14 @@ def slide_iap_contexte_client(prs):
     flux = [
         ("←", ACCENT, "COLLECTE ENTRANTE", "interviews · exports d'outils"),
         ("→", ACCENT, "LIVRABLES SORTANTS", "deck exécutif · export markdown"),
-        ("→", D.PALETTE[4], "AGENTS RETENUS (②/③)", "supervisés puis délégués"),
+        ("→", ENCRE, "AGENTS RETENUS (②/③)", "supervisés puis délégués"),
     ]
     f_h = 0.72
     f_gap = (z_h - 3 * f_h) / 2
     for i, (fleche, color, label, detail) in enumerate(flux):
         fy = z_top + i * (f_h + f_gap)
         D.add_text(s, flux_x, fy, flux_w, 0.30, [
-            (fleche, dict(size=16, bold=True, color=color, align=PP_ALIGN.CENTER)),
+            (fleche, dict(size=16, bold=True, color=encre_de(color), align=PP_ALIGN.CENTER)),
         ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
         D.add_text(s, flux_x - 0.06, fy + 0.30, flux_w + 0.12, f_h - 0.30, [
             (label, dict(size=6.5, bold=True, color=NAVY, align=PP_ALIGN.CENTER, line_spacing=1.1)),
@@ -4043,11 +4109,11 @@ def slide_iap_contexte_client(prs):
     # Zone mise en évidence — le seul aplat plein du schéma (« un sur N »).
     b3_top = b2_top + b2_h + 0.12
     b3_h = z_top + z_h - 0.14 - b3_top
-    D.add_rect(s, bloc_x, b3_top, bloc_w, b3_h, fill=D.PALETTE[4], rounded=True, radius=0.10)
+    D.add_rect(s, bloc_x, b3_top, bloc_w, b3_h, fill=ENCRE, rounded=True, radius=0.10)
     D.add_text(s, bloc_x + 0.12, b3_top, bloc_w - 0.24, b3_h, [
         ("DÉPLOIEMENT AGENTIC CHEZ LE CLIENT", dict(size=7, bold=True, color="#ffffff")),
         ("Les agents candidats retenus se déploient ici en ②/③ — supervisés puis délégués",
-         dict(size=6.5, color="#e8def5", space_before=2, line_spacing=1.2)),
+         dict(size=6.5, color="#CFD3DD", space_before=2, line_spacing=1.2)),
     ], anchor=MSO_ANCHOR.MIDDLE)
 
     # --- Renvoi de focus (point ④a) : même langage visuel que le badge de
@@ -4055,10 +4121,10 @@ def slide_iap_contexte_client(prs):
     band_top = z_top + z_h + 0.16
     band_h = min(0.66, CONTENT_BOTTOM - band_top)
     D.add_rect(s, MARGIN, band_top, CONTENT_W, band_h, fill="#ffffff",
-               line=D.PALETTE[4], line_w=1.0, rounded=True, radius=0.10)
+               line=ENCRE, line_w=1.0, rounded=True, radius=0.10)
     D.add_text(s, MARGIN + 0.2, band_top, CONTENT_W - 0.4, band_h, [
         ("QUATRE PROPOSITIONS DE DÉPLOIEMENT AGENTIC — DÉTAILLÉES AU CHAPITRE 06 · IA",
-         dict(size=7, bold=True, color=D.PALETTE[4])),
+         dict(size=7, bold=True, color=ENCRE)),
         ("Agent de triage RUN · veille FinOps · agent documentaire (RAG) · export markdown "
          "(qui porte la décision agentic/documentation) — chacune porte le badge "
          "« déploiement agentic chez le client ».",
@@ -4071,15 +4137,15 @@ def slide_iap_contexte_client(prs):
 def slide_ambition(prs):
     # v2.5 (chantier ④) : déplacée de la Proposition vers l'Outillage IAP —
     # le niveau d'ambition qualifie l'outil, pas la proposition de transformation.
-    s = content_slide(prs, "Outillage IAP", "Trois niveaux d'ambition, pas un spectre linéaire", color=D.PALETTE[5])
+    s = content_slide(prs, "Outillage IAP", "Trois niveaux d'ambition, pas un spectre linéaire", color=ENCRE)
     niveaux = [
-        ("A", "Aide au coach", D.PALETTE[0],
+        ("A", "Aide au coach", ENCRE,
          "Génère un livrable à la demande — aucune initiative propre. Le consultant pilote à 100 %.",
          "État actuel du cadrage (MVP0–MVP5)"),
-        ("B", "Assistant interactif", D.PALETTE[3],
+        ("B", "Assistant interactif", ENCRE,
          "Guide pas à pas, pose des questions de clarification, signale les incohérences.",
          "Palier intermédiaire, entre MVP5 et MVP6"),
-        ("C", "Companion connecté", D.PALETTE[2],
+        ("C", "Companion connecté", ENCRE,
          # « quasi autonome » seul survendait C comme une autonomie décisionnelle,
          # ce que le cadrage (l.733) demande explicitement d'éviter.
          "Connecté en direct à ServiceNow/Jira/Confluence/Datadog/CMDB/FinOps : quasi "
@@ -4137,17 +4203,17 @@ def slide_ambition(prs):
 
 # ---------------------------------------------------------------- slide 12
 def slide_kpis(prs):
-    s = content_slide(prs, "KPI", "Trois familles de KPIs, à ne jamais confondre", color=D.PALETTE[0])
+    s = content_slide(prs, "KPI", "Trois familles de KPIs, à ne jamais confondre", color=ENCRE)
     familles = [
-        ("KPIs de mission", D.PALETTE[0], "Côté client",
+        ("KPIs de mission", ENCRE, "Côté client",
          ["Gaspillage traité (capacité RUN récupérée)", "Adoption produit (self-service)",
           "Fiabilité & coût (MTTR : délai moyen de résolution, coût/capacité)", "Gouvernance IA (supervision, incidents)",
           "Maturité (delta par pilier, T0→réévaluation)"]),
-        ("KPIs d'usage du module", D.PALETTE[1], "Côté cabinet",
+        ("KPIs d'usage du module", ENCRE, "Côté cabinet",
          ["Accélération (temps pour un cadrage flash)", "Réutilisation (templates vs ad hoc)",
           "Cohérence (écarts détectés par risk-reviewer)", "Capitalisation (REX ajoutés)",
           "Adoption interne (consultants, missions)"]),
-        ("Grille de maturité", D.PALETTE[3], "Progression dans le temps",
+        ("Grille de maturité", ENCRE, "Progression dans le temps",
          ["Delta par pilier (Excellence Tech., Agilité, IA/Agentic)",
           "Re-assessment T+6–12 mois",
           "Score de priorisation ≠ KPI de résultat"]),
@@ -4204,19 +4270,19 @@ _LETTRES_FAMILLES_KPI = ["M", "U", "G"]
 
 
 def slide_kpis_pourquoi_quoi(prs):
-    s = content_slide(prs, "KPI", "KPIs : pourquoi chaque famille, et quoi mesurer précisément", color=D.PALETTE[0])
+    s = content_slide(prs, "KPI", "KPIs : pourquoi chaque famille, et quoi mesurer précisément", color=ENCRE)
     familles = [
-        ("KPIs de mission", D.PALETTE[0],
+        ("KPIs de mission", ENCRE,
          "Sans eux, un deck peut être livré dans les règles sans jamais savoir si le client va "
          "réellement mieux — la « transformation cosmétique » appliquée cette fois au résultat.",
          "Capacité RUN récupérée en heures/mois ; delta de MTTR en minutes ; taux de self-service "
          "sur la capacité livrée — pas un pourcentage vague."),
-        ("KPIs d'usage du module", D.PALETTE[1],
+        ("KPIs d'usage du module", ENCRE,
          "Le module est réutilisé mission après mission — sans mesure d'usage, impossible de "
          "distinguer une méthode qui s'améliore d'une méthode qui stagne.",
          "Temps en heures consultant pour un cadrage flash ; part des livrables issus d'un template "
          "sans réécriture substantielle — pas juste « utilisé un template »."),
-        ("Grille de maturité", D.PALETTE[3],
+        ("Grille de maturité", ENCRE,
          "Sans mesure répétée dans le temps, la maturité reste une opinion de consultant, pas un "
          "delta objectivable — ce qui rend la boucle ⟲ vérifiable plutôt que déclarative.",
          "Delta par pilier (pas un score agrégé qui masquerait un recul) ; même instrument (grille "
@@ -4258,7 +4324,7 @@ def slide_kpis_pourquoi_quoi(prs):
         cx = x + w / 2
         _badge(s, cx, top0 + badge_d / 2, badge_d, color, _LETTRES_FAMILLES_KPI[i], size=15)
         D.add_text(s, x, top0 + badge_d + 0.1, w, name_h, [
-            (nom, dict(size=9.5, bold=True, color=color, align=PP_ALIGN.CENTER, line_spacing=1.05)),
+            (nom, dict(size=9.5, bold=True, color=encre_de(color), align=PP_ALIGN.CENTER, line_spacing=1.05)),
         ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
         card_top = top0 + badge_d + 0.1 + name_h + 0.1
         D.add_rect(s, x, card_top, w, card_h, fill="#ffffff", line=LINE, line_w=0.75,
@@ -4283,15 +4349,15 @@ def slide_kpis_pourquoi_quoi(prs):
 
 
 def slide_kpis_mise_en_place(prs):
-    s = content_slide(prs, "KPI", "KPIs : comment on les met en place, concrètement", color=D.PALETTE[0])
+    s = content_slide(prs, "KPI", "KPIs : comment on les met en place, concrètement", color=ENCRE)
     familles = [
-        ("KPIs de mission", D.PALETTE[0], "iap-metrics-sre-finops-lead",
+        ("KPIs de mission", ENCRE, "iap-metrics-sre-finops-lead",
          "ServiceNow/Jira/CMDB si accès (preuves externes), sinon déclaratif — tagué DÉDUIT",
          "Continu, lu à chaque étape ②③⟲"),
-        ("KPIs d'usage du module", D.PALETTE[1], "Le consultant, au fil des missions",
+        ("KPIs d'usage du module", ENCRE, "Le consultant, au fil des missions",
          "Journal de mission + bibliothèque de REX",
          "Par mission, consolidé à MVP5"),
-        ("Grille de maturité", D.PALETTE[3], "iap-strategy-lead",
+        ("Grille de maturité", ENCRE, "iap-strategy-lead",
          "Grille V3.2 repassée en atelier ou en interview",
          "T0 (① Assessment flash) puis chaque boucle ⟲"),
     ]
@@ -4333,7 +4399,7 @@ def slide_kpis_mise_en_place(prs):
         cy = y + row_h / 2
         _badge(s, MARGIN + badge_d / 2, cy, badge_d, color, _LETTRES_FAMILLES_KPI[i], size=11)
         D.add_text(s, MARGIN + badge_d + 0.14, y, label_w - badge_d - 0.14, row_h, [
-            (nom, dict(size=8.5, bold=True, color=color, line_spacing=1.15)),
+            (nom, dict(size=8.5, bold=True, color=encre_de(color), line_spacing=1.15)),
         ], anchor=MSO_ANCHOR.MIDDLE)
         for j, (label, val) in enumerate(specs_par_famille[i]):
             x = steps_x0 + j * (step_w + step_gap)
@@ -4358,7 +4424,7 @@ def slide_kpis_mise_en_place(prs):
 
 
 def slide_kpis_exemple(prs):
-    s = content_slide(prs, "KPI", "KPIs en pratique : le cas nominal RUN massif, avant/après", color=D.PALETTE[0])
+    s = content_slide(prs, "KPI", "KPIs en pratique : le cas nominal RUN massif, avant/après", color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.28, [
         ("Même fixture illustrative que le cas nominal de l'export markdown (chapitre IA) — pas un client réel.",
          dict(size=8, color=MUTED, italic=True)),
@@ -4449,7 +4515,7 @@ _ICONES_FAMILLE_AGENT = {
 
 
 def slide_agent_ia(prs, titre, nom_agent, famille, why, what, gain, color, note=None):
-    s = content_slide(prs, "IA", titre, color=D.PALETTE[4])
+    s = content_slide(prs, "IA", titre, color=ENCRE)
     icon_d = 0.4
     icon = s.shapes.add_shape(_ICONES_FAMILLE_AGENT[famille], Inches(MARGIN), Inches(CONTENT_TOP),
                                Inches(icon_d), Inches(icon_d))
@@ -4466,7 +4532,7 @@ def slide_agent_ia(prs, titre, nom_agent, famille, why, what, gain, color, note=
     # largeur du badge pour ne pas passer dessous.
     head_x = MARGIN + icon_d + 0.16
     D.add_text(s, head_x, CONTENT_TOP, CONTENT_W - icon_d - 0.16 - BADGE_AGENTIC_W - 0.2, icon_d, [
-        (nom_agent, dict(size=D.TYPE["h3"], bold=True, color=color)),
+        (nom_agent, dict(size=D.TYPE["h3"], bold=True, color=encre_de(color))),
         (f"Gaspillage {famille}", dict(size=8, color=MUTED, italic=True, space_before=2)),
     ], anchor=MSO_ANCHOR.MIDDLE)
     badge_deploiement_agentic(s)
@@ -4551,20 +4617,20 @@ def slide_agent_ia(prs, titre, nom_agent, famille, why, what, gain, color, note=
 # vers un chip « = SCORE DE PRUDENCE IA » qui introduit l'encart d'explication
 # — la lecture verticale devient littéralement l'équation du sous-titre.
 def slide_prudence_ia(prs):
-    s = content_slide(prs, "IA", "La prudence IA est un frein chiffré, pas un veto", color=D.PALETTE[4])
+    s = content_slide(prs, "IA", "La prudence IA est un frein chiffré, pas un veto", color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.4, [
         ("Prudence IA = confidentialité + besoin de supervision + criticité de la décision",
          dict(size=D.TYPE["small"], bold=True, color=NAVY, line_spacing=1.2)),
     ])
 
     facteurs = [
-        ("1", "CONFIDENTIALITÉ", D.PALETTE[0],
+        ("1", "CONFIDENTIALITÉ", ENCRE,
          "Reprend directement la classification du gate IA (D0-D4, slide précédente) — "
          "plus la donnée est sensible, plus le score monte."),
-        ("2", "BESOIN DE SUPERVISION", D.PALETTE[3],
+        ("2", "BESOIN DE SUPERVISION", ENCRE,
          "Le palier d'adoption visé (assisté / supervisé / délégué) — un agent encore "
          "au stade assisté pèse plus lourd qu'un agent déjà éprouvé."),
-        ("3", "CRITICITÉ DE LA DÉCISION", D.PALETTE[2],
+        ("3", "CRITICITÉ DE LA DÉCISION", ENCRE,
          "L'impact d'une erreur si l'agent se trompe seul — une recommandation "
          "réversible pèse moins qu'une décision irréversible."),
     ]
@@ -4601,7 +4667,7 @@ def slide_prudence_ia(prs):
         ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
         label_y = top1 + badge_d + 0.10
         D.add_text(s, x + pad, label_y, usable, label_h, [
-            (label, dict(size=8, bold=True, color=color, align=PP_ALIGN.CENTER, line_spacing=1.1)),
+            (label, dict(size=8, bold=True, color=encre_de(color), align=PP_ALIGN.CENTER, line_spacing=1.1)),
         ], align=PP_ALIGN.CENTER)
         text_y = label_y + label_h + 0.02
         D.add_text(s, x + pad, text_y, usable, body_h, [
@@ -4614,7 +4680,7 @@ def slide_prudence_ia(prs):
     pill_w, pill_h = 2.7, 0.32
     pill_x = MARGIN + CONTENT_W / 2 - pill_w / 2
     pill_y = card_bottom + 0.14
-    D.add_rect(s, pill_x, pill_y, pill_w, pill_h, fill=D.PALETTE[4], rounded=True, radius=0.5)
+    D.add_rect(s, pill_x, pill_y, pill_w, pill_h, fill=ENCRE, rounded=True, radius=0.5)
     D.add_text(s, pill_x, pill_y, pill_w, pill_h, [
         ("=  SCORE DE PRUDENCE IA", dict(size=8.5, bold=True, color="#ffffff", align=PP_ALIGN.CENTER)),
     ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
@@ -4657,17 +4723,17 @@ def slide_architecture_si(prs):
     # la doctrine dément.
     s = content_slide(prs, "Outillage IAP",
                        "Le lien avec le SI du client change avec le niveau d'ambition, pas la méthode",
-                       color=D.PALETTE[5])
+                       color=ENCRE)
     rows = [
-        ("A", D.PALETTE[0], "Aide au coach",
+        ("A", ENCRE, "Aide au coach",
          "Exports ponctuels (ServiceNow/Jira), interviews",
          "Aucune — tout est apporté par le consultant",
          "Markdown + deck, à la demande"),
-        ("B", D.PALETTE[3], "Assistant interactif",
+        ("B", ENCRE, "Assistant interactif",
          "Exports + App companion (capture terrain)",
          "Site web centralisé, orchestration assistée",
          "+ tableau de bord multi-engagements"),
-        ("C", D.PALETTE[2], "Companion connecté (non engagé)",
+        ("C", ENCRE, "Companion connecté (non engagé)",
          "ServiceNow/Jira/Confluence/Datadog/CMDB/FinOps",
          "Connecteurs API directs, en continu",
          "Livrables mis à jour en continu"),
@@ -4712,7 +4778,7 @@ def slide_architecture_si(prs):
         _badge(s, badge_cx, cy, badge_d, color, code, size=14)
         D.add_text(s, text_x, y, text_w, band_h, [
             (f"NIVEAU {code}", dict(size=6.5, bold=True, color=MUTED)),
-            (niveau, dict(size=9, bold=True, color=color, space_before=2, line_spacing=1.1)),
+            (niveau, dict(size=9, bold=True, color=encre_de(color), space_before=2, line_spacing=1.1)),
         ], anchor=MSO_ANCHOR.MIDDLE)
         D.add_rect(s, MARGIN + left_w, y + band_pad_y, 0.012, band_h - 2 * band_pad_y, fill=LINE)
         valeurs = [sources, connexion, livrables]
@@ -4751,7 +4817,7 @@ def slide_architecture_si(prs):
 def slide_architecture_agents(prs):
     s = content_slide(prs, "Démarche",
                        "Onze workflows outillés, un seul bloquant : le gate confidentialité les traverse tous",
-                       color=D.PALETTE[3])
+                       color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.5, [
         ("Un mandat unique par workflow, regroupés par étape. Le gate confidentialité est le seul "
          "à pouvoir arrêter la chaîne — transversal, il précède tout usage d'un modèle IA sur "
@@ -4759,22 +4825,22 @@ def slide_architecture_agents(prs):
     ])
 
     familles = [
-        ("INTAKE", D.PALETTE[0], [
+        ("INTAKE", ENCRE, [
             ("iap-intake",
              "Qualifie le contexte client, le positionne sur les deux échelles de maturité, "
              "puis choisit le chemin de mission : diagnostic, pilote, adoption ou gate d'abord."),
         ]),
-        ("DIAGNOSTIC", D.PALETTE[4], [
+        ("DIAGNOSTIC", ENCRE, [
             ("iap-diagnostic-systemique", "Structure, flux, RUN, posture management"),
             ("iap-discovery-gaspillage", "Preuves, causes racines, options de traitement"),
         ]),
-        ("CONCEPTION", D.PALETTE[3], [
+        ("CONCEPTION", ENCRE, [
             ("iap-waste-treatment", "Backlog priorisé et scoré des gaspillages"),
             ("iap-product-definition", "Personas, capacités, valeur, roadmap"),
             ("iap-operating-model", "Rôles, gouvernance, financement (décisions actées)"),
             ("iap-agentic-opportunities", "Le gaspillage d'abord, l'IA ensuite"),
         ]),
-        ("ADOPTION & RESTITUTION", D.PALETTE[1], [
+        ("ADOPTION & RESTITUTION", ENCRE, [
             ("iap-adoption-plan", "Onboarding, documentation, communautés"),
             ("iap-scenario-playbook", "Adapte la démarche au scénario client"),
             ("iap-deck-builder", "Deck modulaire, restitution exécutive"),
@@ -4801,7 +4867,7 @@ def slide_architecture_agents(prs):
         x, w = col_x(i, n)
         D.add_card(s, x, top0, w, card_h, color)
         D.add_text(s, x + pad, top0 + 0.12, w - 2 * pad, 0.36, [
-            (nom, dict(size=8, bold=True, color=color, line_spacing=1.0)),
+            (nom, dict(size=8, bold=True, color=encre_de(color), line_spacing=1.0)),
             (f"{len(agents)} workflow" + ("s" if len(agents) > 1 else ""),
              dict(size=6.5, color=MUTED, space_before=1)),
         ])
@@ -4964,7 +5030,7 @@ def build():
     # === Chapitre 02 — CONTEXTE : le problème ===
     slide_chapitre(prs, "02", "Contexte",
                    "La double mission, et pourquoi cette transformation a du sens pour un client infra maintenant.",
-                   D.PALETTE[0], "mountains", seed=0)
+                   ENCRE, "mountains", seed=0)
     slide_mission(prs)
     slide_pourquoi_contexte(prs)
     # 2026-09-01 : « qui achète, contre quoi » — la section §Positionnement &
@@ -4976,14 +5042,14 @@ def build():
     # === Chapitre 03 — PERSONAS : qui l'on transforme ===
     slide_chapitre(prs, "03", "Personas",
                    "Quatre parties prenantes interrogées séparément — leurs voix, leurs postures, les tensions.",
-                   D.PALETTE[5], "forest", seed=0)
+                   ENCRE, "forest", seed=0)
     slide_personas(prs)
     slide_personas_divergences(prs)
 
     # === Chapitre 04 — BESOINS & DOULEURS : ce qui fait mal ===
     slide_chapitre(prs, "04", "Besoins & douleurs",
                    "Les douleurs approfondies et mesurables, et les 8 familles de gaspillage qui les rangent.",
-                   D.PALETTE[2], "ocean", seed=0)
+                   ENCRE, "ocean", seed=0)
     slide_douleurs(prs)
     slide_familles(prs)
 
@@ -4995,7 +5061,7 @@ def build():
     # illustratives) est supprimé à la demande — git garde l'historique (v2.5).
     slide_chapitre(prs, "05", "Proposition",
                    "Traiter l'infra comme un produit : la thèse, la méthode scorée et l'organisation cible.",
-                   D.PALETTE[1], "dunes", seed=0)
+                   ENCRE, "dunes", seed=0)
     slide_why_iap(prs)
     slide_gaspillages(prs)
     slide_team_topologies(prs)
@@ -5003,7 +5069,7 @@ def build():
     # === Chapitre 06 — IA : tirée APRÈS la proposition (l'IA amplifie, n'est jamais la réponse) ===
     slide_chapitre(prs, "06", "IA",
                    "L'IA au service de la réponse : le gate confidentialité, la prudence, les agents candidats, l'export.",
-                   D.PALETTE[4], "nightsky", seed=0)
+                   ENCRE, "nightsky", seed=0)
     slide_gate_ia(prs)
     slide_prudence_ia(prs)
     slide_agent_ia(
@@ -5016,7 +5082,7 @@ def build():
         "négociable) — jamais l'inverse.",
         "Capacité RUN récupérée : dans le cas nominal du cadrage, jusqu'à 15 tickets/mois "
         "traités sans intervention humaine, temps de triage divisé par deux.",
-        D.PALETTE[2])
+        ENCRE)
     slide_agent_ia(
         prs, "Un agent de veille FinOps rend le décommissionnement continu, pas ponctuel",
         "Agent de veille FinOps", "Financier",
@@ -5027,7 +5093,7 @@ def build():
         "jamais seul.",
         "Coût récupéré et directement mesurable (ressources décommissionnées par mois) — un KPI "
         "de mission déjà cadré, pas à inventer.",
-        D.PALETTE[3])
+        ENCRE)
     slide_agent_ia(
         prs, "Un agent documentaire réduit la charge cognitive sans remplacer l'expert",
         "Agent documentaire (RAG)", "Cognitif",
@@ -5037,7 +5103,7 @@ def build():
         "questions fréquentes avec la source citée — jamais une réponse sans preuve.",
         "Charge cognitive réduite, onboarding plus rapide, moins d'interruptions des experts "
         "seniors pour des questions déjà documentées.",
-        D.PALETTE[4],
+        ENCRE,
         note=("Ces 3 candidats restent soumis au scoring (chapitre Proposition) et au gate IA (ouverture de ce chapitre) "
               "avant toute décision — des exemples illustratifs, pas une liste actée."))
     slide_export_markdown(prs)
@@ -5047,7 +5113,7 @@ def build():
     slide_chapitre(prs, "07", "Démarche",
                    "La trajectoire et ses livrables par phase, le fil humain, le schéma de "
                    "fonctionnement et l'inventaire des agents.",
-                   D.PALETTE[3], "canyon", seed=0)
+                   ENCRE, "canyon", seed=0)
     # v2.5 (chantier ①) : trajectoire fusionnée avec la vue bout-en-bout.
     slide_trajectoire(prs)
     # v2.4 : le fil humain décline la trame ①②③⟲ de slide_trajectoire côté
@@ -5076,7 +5142,7 @@ def build():
     slide_chapitre(prs, "08", "Outillage IAP",
                    "Ce que le module met dans les mains du consultant : l'architecture en "
                    "contexte client, trois niveaux d'ambition, le lien avec le SI.",
-                   D.PALETTE[5], "tropical", seed=0)
+                   ENCRE, "tropical", seed=0)
     # v2.6 (point ③) : le chapitre OUVRE sur le schéma d'architecture en
     # contexte client — ambition et lien SI le déclinent ensuite.
     slide_iap_contexte_client(prs)
@@ -5090,7 +5156,7 @@ def build():
     # ferme le deck.
     slide_chapitre(prs, "09", "KPI",
                    "Trois familles de KPIs à ne jamais confondre, leur mise en place, la grille de maturité, et le cas chiffré.",
-                   D.PALETTE[0], "meadow", seed=1)
+                   ENCRE, "meadow", seed=1)
     slide_kpis(prs)
     slide_kpis_pourquoi_quoi(prs)
     slide_kpis_mise_en_place(prs)
