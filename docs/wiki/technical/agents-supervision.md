@@ -8,7 +8,7 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-09-10T12:17:23+02:00 · **24 sessions** (transcripts) · **45** invocations de skills · **82** lancements de sous-agents.
+Dernier scan : 2026-09-10T17:07:56+02:00 · **24 sessions** (transcripts) · **48** invocations de skills · **83** lancements de sous-agents.
 
 ## Skills — usage réel
 
@@ -16,15 +16,15 @@ Dernier scan : 2026-09-10T12:17:23+02:00 · **24 sessions** (transcripts) · **4
 | --- | --- | --- | --- | --- |
 | `agent-orchestrator` | projet | 21 | 2026-07-21 | 2026-09-10 |
 | `agent-supervisor` | projet | 6 | 2026-07-21 | 2026-09-03 |
-| `revue-increment` | projet | 3 | 2026-07-21 | 2026-09-10 |
+| `revue-increment` | projet | 4 | 2026-07-21 | 2026-09-10 |
 | `artifact-design` | (builtin/session) | 2 | 2026-07-06 | 2026-07-07 |
+| `bmad-code-review` | BMAD | 2 | 2026-09-10 | 2026-09-10 |
+| `deck-design-library` | projet | 2 | 2026-09-03 | 2026-09-10 |
 | `pptx-deck` | projet | 2 | 2026-07-08 | 2026-07-09 |
 | `audit-technique` | projet | 1 | 2026-09-03 | 2026-09-03 |
 | `bmad-agent-pm` | BMAD | 1 | 2026-07-22 | 2026-07-22 |
-| `bmad-code-review` | BMAD | 1 | 2026-09-10 | 2026-09-10 |
 | `bmad-party-mode` | BMAD | 1 | 2026-09-02 | 2026-09-02 |
 | `bmad-review` | BMAD | 1 | 2026-09-07 | 2026-09-07 |
-| `deck-design-library` | projet | 1 | 2026-09-03 | 2026-09-03 |
 | `deck-design-review` | projet | 1 | 2026-09-07 | 2026-09-07 |
 | `pptx-verify` | projet | 1 | 2026-07-08 | 2026-07-08 |
 | `restitution-deck-design` | projet | 1 | 2026-07-08 | 2026-07-08 |
@@ -38,8 +38,8 @@ Dernier scan : 2026-09-10T12:17:23+02:00 · **24 sessions** (transcripts) · **4
 | `general-purpose` | 47 | 2026-07-06 | 2026-09-10 |
 | `ppt-designer` | 22 | 2026-07-21 | 2026-09-07 |
 | `Explore` | 7 | 2026-07-21 | 2026-09-03 |
+| `bmad-revue` | 3 | 2026-09-07 | 2026-09-10 |
 | `agent-supervisor` | 2 | 2026-09-03 | 2026-09-03 |
-| `bmad-revue` | 2 | 2026-09-07 | 2026-09-10 |
 | `Plan` | 1 | 2026-07-21 | 2026-07-21 |
 | `claude-code-guide` | 1 | 2026-07-21 | 2026-07-21 |
 
@@ -139,7 +139,7 @@ _5 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir 
 
 ## Seuil de qualification — la mesure
 
-Depuis le 2026-09-10 : **2** demande(s) vue(s) hors commande slash (+ 1 slash), **1** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **50 %** des demandes orchestrées.
+Depuis le 2026-09-10 : **10** demande(s) vue(s) hors commande slash (+ 1 slash), **2** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **20 %** des demandes orchestrées.
 _Ce chiffre ne dit pas ce qui AURAIT dû être orchestré : le hook compte, il ne juge pas. Il donne le dénominateur qui manquait pour arbitrer le seuil sur données plutôt que sur habitude._
 
 ---
