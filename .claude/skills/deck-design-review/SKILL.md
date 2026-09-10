@@ -1,6 +1,6 @@
 ---
 name: deck-design-review
-description: Revue de design slide-par-slide du deck de synthèse de CE projet (cadrage BMAD IAP, docs/cadrage-ppt/generate_deck.py, 49 slides sur 8 chapitres, template OCTO rendu via LibreOffice) — régénérer le vrai export, rendre TOUTES les slides, et confronter chaque type de slide à son propre contrat de design (couverture, exec summary 5 blocs, intercalaires teardrop, personas, douleurs, gaspillages, gate IA, trajectoire, schémas, KPI, maturité). C'est L'ÉTAPE design-review du playbook export-ppt-verifie — obligatoire dès qu'une version ajoute ou restructure des slides — et elle se lance aussi à la demande quand le PPT exporté « n'est pas au niveau ».
+description: Revue de design slide-par-slide du deck de synthèse de CE projet (cadrage BMAD IAP, docs/cadrage-ppt/generate_deck.py, template OCTO rendu via LibreOffice) — régénérer le vrai export, rendre TOUTES les slides, et confronter chaque type de slide à son propre contrat de design (couverture, exec summary 5 blocs, intercalaires teardrop, personas, douleurs, gaspillages, gate IA, trajectoire, schémas, KPI, maturité). C'est L'ÉTAPE design-review du playbook export-ppt-verifie — obligatoire dès qu'une version ajoute ou restructure des slides — et elle se lance aussi à la demande quand le PPT exporté « n'est pas au niveau ».
 ---
 
 # deck-design-review — la revue de design du deck ENTIER (cadrage IAP)
@@ -24,9 +24,18 @@ traiter ») — réécrit pour le canal réel de ce projet, pas copié.
 
 ## 1. Contrat par type de slide
 
-Le deck suit le fil rouge **SCALE en 8 chapitres** (01 Contexte · 02 Personas ·
-03 Besoins & douleurs · 04 Proposition · 05 IA · 06 Démarche · 07 Outillage IAP ·
-08 KPI), chaque chapitre = une couleur `D.PALETTE` (mapping en tête de `generate_deck.py`).
+Le deck suit un fil rouge en chapitres numérotés — **la liste n'est PAS recopiée
+ici** : elle a été fausse deux fois (« 01 Contexte » alors que le chapitre 01 est
+l'Exec summary depuis le 2026-09-02, puis 8 chapitres pour 10 après l'ajout des
+« Spécificités de l'infra » le 2026-09-10). La source est `build()` dans
+`generate_deck.py` ; la lire là plutôt que se fier à cette page.
+
+**La couleur ne distingue plus les chapitres** (arbitrage du 2026-09-10) : le
+mapping `D.PALETTE` par chapitre est supprimé, tout pointe sur l'encre navy. Ce
+qui différencie deux éléments de même niveau — « un sur N en accent », la
+numérotation, la position, la forme — est documenté en tête de `generate_deck.py`.
+Le cyan ne porte JAMAIS de texte. Une revue de design qui chercherait encore un
+code couleur par chapitre chercherait un dispositif retiré.
 
 **Recâblée le 2026-09-01**, après 40 jours à zéro invocation : l'étape `design-review`
 du playbook `export-ppt-verifie` nommait une AUTRE skill (`restitution-deck-design`),

@@ -1,8 +1,18 @@
 # VSCode3
 
-Cadrage BMAD IAP : le livrable est un deck de synthèse (`docs/cadrage-ppt/`,
-48 slides sur le vrai template OCTO) — l'historique de ses versions vit dans
-`git log docs/cadrage-ppt/`, pas ici.
+Cadrage BMAD IAP : le livrable est un deck de synthèse (`docs/cadrage-ppt/`)
+sur le vrai template OCTO — l'historique de ses versions vit dans
+`git log docs/cadrage-ppt/`, pas ici. Le nombre de slides n'est **pas** figé
+ici : il disait 48 pour 53 réelles au 2026-09-10, et le fil-piège qui compte
+vraiment est dans `test_generate_deck.py`, à jour parce qu'il échoue sinon.
+
+Charte : la couleur ne porte PAS le sens (arbitrage du 2026-09-10). Navy encre,
+cyan en aplat seulement — jamais sur du texte, il plafonne à ~1,9:1 sur blanc.
+Ce qui différencie deux éléments de même niveau : « un sur N en accent », la
+numérotation, la position, la forme, la typo. Vocabulaire complet en tête de
+`generate_deck.py`, patterns dans la skill `deck-design-library`.
+Un chapitre se cite par son NOM, jamais par son numéro — une renumérotation
+rendrait les renvois faux en silence (test dédié).
 
 ## Commandes
 

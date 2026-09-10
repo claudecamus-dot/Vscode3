@@ -142,28 +142,61 @@ def main():
     # chapitre par son NOM, jamais par son numéro. Une renumérotation ne peut
     # alors plus rien casser, et le lecteur n'a pas à compter les intercalaires.
     print("Renvois de chapitre — par nom, jamais par numéro :")
+
+    def _formes(conteneur):
+        """Descend dans les groupes — un renvoi peut y être enfermé."""
+        for shp in conteneur:
+            if shp.shape_type == MSO_SHAPE_TYPE.GROUP:
+                yield from _formes(shp.shapes)
+            else:
+                yield shp
+
     chapitres = {}
     for sl in prs.slides:
         if sl.slide_layout.name.startswith("50 - Chapitre"):
             phs = {ph.placeholder_format.idx: ph for ph in sl.placeholders}
-            chapitres[phs[1].text_frame.text.strip()] =                 phs[0].text_frame.paragraphs[0].text.strip()
+            numero = phs[1].text_frame.text.strip()
+            chapitres[numero] = phs[0].text_frame.paragraphs[0].text.strip()
     check(bool(chapitres), f"intercalaires détectés — {len(chapitres)} chapitre(s)")
+
+    # La séquence, pas seulement la présence : `chapitres` est indexé par le
+    # numéro imprimé, donc un doublon écraserait silencieusement son jumeau. Ce
+    # chantier vient de renuméroter sept intercalaires à la main (2026-09-10) —
+    # c'est exactement le geste qui produit un trou ou un doublon.
+    attendu = [f"{i:02d}" for i in range(1, len(chapitres) + 1)]
+    check(sorted(chapitres) == attendu,
+          f"numéros de chapitre = suite continue depuis 01 — reçu {sorted(chapitres)}")
+
+    # Renvois RELATIFS : immunisés par nature à une renumérotation, rien à
+    # vérifier. La 1re version les reconnaissait à leur minuscule initiale, ce
+    # qui refusait « chapitre Précédent » en début de phrase et acceptait
+    # n'importe quel mot capitalisé. Liste explicite désormais.
+    RELATIFS = ("précédent", "precedent", "suivant", "suivante", "suivants",
+                "suivantes", "qui suit", "qui suivent", "ci-avant", "ci-après",
+                "ci-apres", "en cours", "courant", "de ce deck")
 
     numerotes, nommes = [], []
     for i, sl in enumerate(prs.slides, start=1):
-        for shp in sl.shapes:
+        for shp in _formes(sl.shapes):
             if not shp.has_text_frame:
                 continue
             texte = shp.text_frame.text
-            for m in re.finditer(r"chapitres?\s+(\d{2})", texte):
-                numerotes.append(f"slide {i} : « chapitre {m.group(1)} »")
-            for m in re.finditer(r"chapitres?\s+([^\n,;.)»]+)", texte):
+            # `re.I` et `\d{1,2}` ne sont PAS des raffinements : sans eux la
+            # garde ne voyait RIEN. Le deck écrit « Chapitres 02 », « CHAPITRE
+            # 06 » — majuscules — et la 1re version cherchait « chapitres » en
+            # minuscules avec exactement deux chiffres. Six renvois numérotés
+            # ont vécu dans le livrable pendant que le test annonçait « aucun »,
+            # et le mutant qui l'a « validée » était écrit en minuscules,
+            # c'est-à-dire à la forme de la regex qu'il devait éprouver
+            # (2026-09-10). Un mutant doit reproduire la DONNÉE réelle, pas la
+            # forme du contrôle.
+            for m in re.finditer(r"chapitres?\s+(\d{1,2})", texte, re.I):
+                numerotes.append(f"slide {i} : « {m.group(0)} »")
+            for m in re.finditer(r"chapitres?\s+([^\n,;.)»]+)", texte, re.I):
                 frag = m.group(1).strip()
-                # Les renvois RELATIFS (« chapitre précédent », « chapitres qui
-                # suivent ») sont immunisés par nature à une renumérotation :
-                # rien à vérifier. Ils se distinguent des noms de chapitre par
-                # la casse — tous les titres portent une majuscule initiale.
-                if not frag or not frag[0].isupper():
+                if not frag or frag[0].isdigit():
+                    continue
+                if any(r in frag.lower() for r in RELATIFS):
                     continue
                 nommes.append((i, frag))
 
@@ -171,10 +204,21 @@ def main():
           f"aucun renvoi par NUMÉRO — un décalage de chapitre les rendrait faux "
           f"silencieusement : {numerotes or 'aucun'}")
 
-    titres = [t.lower() for t in chapitres.values()]
+    # Ce qui suit « chapitre » doit COMMENCER par un titre connu. Deux pièges
+    # écartés par cette formulation :
+    #  - la sous-chaîne : `"ia" in "différenciation"` est vrai, donc « le
+    #    chapitre Différenciation » passait pour un renvoi valide vers IA ;
+    #  - le découpage sur « et » : il tronçonne une PHRASE, pas une liste de
+    #    noms. « les decks du chapitre Démarche restent pour sponsor et comité
+    #    de pilotage » produisait « comité de pilotage » en faux positif.
+    # LIMITE ASSUMÉE, à dire plutôt qu'à masquer : dans « chapitres Personas et
+    # Foobar », seul le premier nom est vérifié — le second passerait. Le
+    # couvrir demanderait de savoir où finit l'énumération et où reprend la
+    # phrase, ce que rien dans le texte ne dit.
+    titres = sorted((t.lower() for t in chapitres.values()), key=len, reverse=True)
     inconnus = sorted(
         f"slide {i} : « {frag} »" for i, frag in nommes
-        if not any(t in frag.lower() or frag.lower().startswith(t) for t in titres)
+        if not any(frag.lower().startswith(t) for t in titres)
     )
     check(not inconnus,
           f"tout renvoi nommé désigne un chapitre existant — inconnus : {inconnus or 'aucun'}")

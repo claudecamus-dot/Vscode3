@@ -1,31 +1,18 @@
-"""Génère une synthèse PPT (48 slides) des RÉSULTATS du cadrage BMAD IAP
+"""Génère la synthèse PPT des RÉSULTATS du cadrage BMAD IAP
 (docs/bmad-iap-cadrage.md) à partir des helpers pptx_deck, dessinée
 PAR-DESSUS le vrai template de marque OCTO (template-octo.pptx) —
 masters/layouts/thème conservés, pas un deck sur canevas vierge.
 
-Structure v2.9 en 9 chapitres, sur le fil rouge narratif des decks SCALE
+Le nombre de slides et la liste des chapitres ne sont PAS recopiés ici : ils
+ont été faux deux fois (48 annoncées pour 53 réelles, « 9 chapitres » et une
+liste décalée d'un rang après l'insertion du chapitre « Spécificités de
+l'infra » le 2026-09-10). La source est `build()`, en bas de ce fichier ; le
+fil rouge narratif reste celui des decks SCALE
 (docs/Import/notes-extraction-scale.md : POURQUOI → QUI → QUOI → COMMENT →
-RÉSULTAT) : 01 Exec summary (le pitch de l'offre en 3 faces, puis la démarche
-avec ou sans agentic — en ouverture)
-· 02 Contexte (pourquoi) · 03 Personas (qui) · 04 Besoins & douleurs
-(le pourquoi, mesuré) · 05 Proposition (quoi — thèse `why_iap` en ouverture,
-méthode scorée, cible d'organisation)
-· 06 IA (le quoi, côté IA — sous gate) · 07 Démarche (comment — trajectoire
-fusionnée avec la vue bout-en-bout, fil humain, activités humaines avec/sans
-l'outil (v2.6), parcours de mission (v2.9), schéma de fonctionnement,
-inventaire des agents, livrables)
-· 08 Outillage IAP (avec quoi — ouvre sur le schéma d'architecture en contexte
-client (v2.6), la slide « ce que le module met dans les mains du consultant »
-annoncée par le plan v2.5, puis ambition A/B/C et lien SI) · 09 KPI (la preuve
-— 3 familles → mise en place → grille de maturité
-→ cas chiffré, clôture). L'IA reste tirée APRÈS la proposition (doctrine :
-« l'IA amplifie l'organisation, elle n'est jamais la réponse à un problème
-d'abord organisationnel ») ; la Démarche vient APRÈS l'IA pour que le
-« comment » enchaîne directement sur l'outillage puis la preuve.
-L'executive summary (slide 2) reprend le même fil en 5 blocs
-OFFRE/POURQUOI/QUOI/COMMENT/RÉSULTAT avec renvoi aux chapitres (v2.10 : le
-bloc OFFRE, qui référence le chapitre 01, manquait — le sommaire ne
-mentionnait aucun chapitre avant "02–04").
+RÉSULTAT).
+
+CHARTE (arbitrage du 2026-09-10) : la couleur ne porte PAS le sens. Voir le
+bloc « Vocabulaire de différenciation » près de `ENCRE`.
 
 v2.6 : le sous-chapitre « Exemples » de la Proposition (séparateur + 3 slides
 illustratives) est SUPPRIMÉ à la demande — git garde l'historique (v2.5) ; en
@@ -330,6 +317,22 @@ inventé pour l'occasion. Décalage d'index : intercalaires 12/15/18/22/29/38/
 01 et l'intercalaire du chapitre 02 lui-même, en 2 et 7, inchangés — l'ajout vient
 après eux).
 
+v2.33 (2026-09-10, demande utilisateur en 3 lots) : le deck passe EN CHARTE
+OCTO et gagne un chapitre. (1) La couleur cesse de porter le sens — mesure
+fondatrice : les 9 slides d'exemple du template ne posent que 3 couleurs
+(#0E2356, #FFFFFF, #00D2DD). Les 160 sites `D.PALETTE[n]` tombent sur `ENCRE` ;
+`SEVERITE` passe du vert->rouge a une rampe monochrome ; la differenciation
+passe par « un sur N en accent », la numerotation, la position et la forme.
+Le cyan ne porte JAMAIS de texte (1,86:1 sur blanc) : garde `encre_de()`.
+(2) Nouveau chapitre 03 « Specificites de l'infra » — `slide_infra_run` et
+`slide_infra_transverse` neuves, les 2 slides infra remontent du chapitre 01,
+et 03..09 deviennent 04..10. Les renvois entre chapitres citent desormais le
+NOM et plus le numero : une renumerotation ne peut plus les rendre faux.
+(3) `slide_gaspillage_partage` neuve au chapitre Proposition : la chaine de
+traitement, jusque-la presentee cote cabinet, est retournee en « qui fait quoi
+et ce qui se tranche a deux ». 49 -> 53 slides. Les index de slides des tests
+sont DERIVES du deck (layouts) au lieu d'etre recomptes a la main.
+
 v2.30 (2026-09-04, demande utilisateur) : les 3 slides de refonte graphique
 validées isolément (`check_slide_synthese-v3-refonte.pptx` — système "contour"
 : conteneurs en trait, chevrons non pivotés, badges chevauchant un bord plutôt
@@ -388,8 +391,8 @@ from pptx.util import Emu, Inches, Pt
 # 4 bumps de version consecutifs (v2.9 a v2.11 ont toutes laisse "v2.8 · date
 # perimee" sur la SLIDE LA PLUS VISIBLE du deck). Un seul endroit a changer
 # desormais.
-VERSION_DECK = "v2.30"
-DATE_VERSION_DECK = "2026-09-04"
+VERSION_DECK = "v2.33"
+DATE_VERSION_DECK = "2026-09-10"
 
 HERE = os.path.dirname(__file__)
 TEMPLATE = os.path.join(HERE, "template-octo.pptx")
@@ -452,7 +455,13 @@ TRACK = TH.get("accent6", D.TRACK)   # #E7E9EE — slate 100, fonds d'encarts
 # échelle ordonnée se rend par une rampe, pas par des teintes étrangères —
 # le vert->rouge d'avant lisait comme un feu tricolore sur un thème qui n'a
 # ni vert ni rouge. Les 5 tons portent tous du texte blanc (chip() écrit en
-# blanc par défaut) : le plus clair, #586586, tient 5,0:1 sur blanc.
+# blanc par défaut) : le plus clair, #586586, tient 5,80:1 — un chiffre estimé
+# à 5,0 de tête ici le 2026-09-10, puis mesuré. Le rejouer plutôt que le citer :
+#   ratio = (L1+0,05)/(L2+0,05), L = luminance relative WCAG 2.x.
+# ATTENTION, mesuré aussi : la rampe ne discrimine plus ses paliers adjacents
+# (1,18 / 1,18 / 1,40 / 1,33). D0 et D2 — « CONFIRMÉ » et « DÉDUIT » — ne se
+# distinguent QUE par leur texte. C'est assumé tant qu'un libellé les
+# accompagne ; une échelle lue à l'œil seul demanderait plus d'amplitude.
 SEVERITE = ["#586586", "#4A5A80", "#3E4F78", "#26386A", "#0E2356"]
 
 
@@ -475,37 +484,14 @@ def new_prs():
     return prs
 
 
-# Couleur de chapitre — DÉRIVÉE DU THÈME DU TEMPLATE, plus de `D.PALETTE`.
+# Il n'y a PLUS de couleur par chapitre. Un mecanisme `PALETTE_CHAPITRES` /
+# `couleur_chapitre()` a existe quelques heures le 2026-09-10, entre la mesure
+# de l'ecart a la charte et l'arbitrage qui a suivi : il cyclait 4 tons du
+# theme sur les chapitres. L'arbitrage — la couleur ne porte pas le sens — l'a
+# rendu caduc le jour meme. Retire plutot que laisse en place : ses 10 appels
+# reels passaient deja `ENCRE` en dur, et ses 2 seuls appelants residuels
+# donnaient un kicker GRIS a deux slides dont l'intercalaire est navy.
 #
-# Constat du 2026-09-10 (retour utilisateur « le deck n'est pas selon le
-# template OCTO ») : les 6 couleurs de `D.PALETTE` — bleu #2c5cc5, vert
-# #1e6b34, rouge #b3261e, or #b8860b, violet #6a3d9a, turquoise #138086 — ne
-# figurent NULLE PART dans le thème du template. Elles viennent du radar web
-# (`radar-svg.js`), dont ce dépôt ne porte aucune copie : la cohérence
-# invoquée par le commentaire de `pptx_deck.py` n'est vérifiable par rien ici,
-# alors que l'écart à la charte, lui, se voyait à chaque intercalaire — un
-# chapitre en vert, un autre en violet, sur un thème navy/cyan.
-#
-# `D.PALETTE` n'est PAS modifiée : elle est partagée avec le radar, et la
-# corriger ici ferait diverger l'autre consommateur. C'est le deck qui cesse de
-# s'en servir pour ses chapitres.
-#
-# CONTRAINTE ASSUMÉE, pas un oubli : le thème n'offre que quatre tons assez
-# contrastés sur blanc pour porter un titre de chapitre. Le cyan #00D2DD, lui,
-# plafonne à ~1,9:1 — il reste l'ACCENT (comme sur la couverture), jamais un
-# titre. Neuf chapitres pour quatre tons : ils cyclent, en garantissant
-# seulement que deux chapitres VOISINS ne partagent jamais leur ton. Le
-# différenciateur principal redevient donc le grand numéro de l'intercalaire,
-# ce que fait le template nativement — c'est un signal de navigation plus
-# faible qu'un code couleur à 9 teintes, et c'est le prix de la charte.
-PALETTE_CHAPITRES = [NAVY, DK2, MUTED, ACCENT1]
-
-
-def couleur_chapitre(numero):
-    """Ton de chapitre, cyclé sur la palette du thème (« 01 » -> index 0)."""
-    return PALETTE_CHAPITRES[(int(numero) - 1) % len(PALETTE_CHAPITRES)]
-
-
 # --- Vocabulaire de différenciation SANS code couleur (arbitrage du 2026-09-10)
 #
 # La couleur ne porte plus le sens. Les 160 sites qui appelaient `D.PALETTE[n]`
@@ -558,7 +544,9 @@ def content_slide(prs, kicker, title, color):
     s = prs.slides.add_slide(layout)
     ph = s.shapes.placeholders[0]
     box_w = Emu(ph.width).inches
-    kicker_color = color
+    # `encre_de` ici et pas ailleurs : c'est LE chemin de kicker du deck, et
+    # deux appelants lui passent ACCENT (kicker cyan sur blanc = 1,86:1).
+    kicker_color = encre_de(color)
     texte_complet = f"{kicker.upper()}   ·   {title}"
     taille, _ = D.ajuster_police([texte_complet], box_w, 17, 12,
                                   lambda t, lignes_max: lignes_max <= 1)
@@ -689,7 +677,7 @@ _REQUETES_PHOTO = {
     # sur les 4 bords — VÉRIFIÉE au rendu réel le 2026-09-02. Nom NEUF → repli
     # procédural qui PLANTE sauf mapping _SCENE_REPLI (ci-dessous).
     "wheatfield": "wheat field",
-    # riverdelta (Specificites de l'infra, chapitre 03, neuf en v2.31) : un delta
+    # riverdelta (Specificites de l'infra, chapitre 03, neuf en v2.33) : un delta
     # — un seul cours d'eau qui alimente toutes les branches — dit litteralement
     # le sujet du chapitre (une infra transverse sous plusieurs equipes). « canyon »
     # etait deja pris par la Demarche : deux chapitres a la meme photo se lisent
@@ -713,7 +701,13 @@ _SCENE_REPLI = {
     "nightsky": "sunset",    # composition de ciel (clair au lieu de sombre)
     "canyon": "mountains",   # relief rocheux
     "wheatfield": "meadow",  # champ ouvert, tons chauds proches
-    "riverdelta": "ocean",   # etendue d'eau, meme famille de tons
+    # « ocean » aurait ete le repli visuellement le plus proche, mais c'est la
+    # scene REELLE du chapitre 05 : hors ligne, les chapitres 03 et 05 auraient
+    # rendu la meme image. « sunset » n'est la scene reelle d'aucun chapitre —
+    # un repli doit degrader, pas dupliquer un voisin. (« canyon » -> mountains
+    # porte le meme defaut, anterieur a ce chantier : mountains est la scene du
+    # chapitre 02.)
+    "riverdelta": "sunset",
 }
 
 # Anomalies relevees pendant le build (pas seulement d'image, malgre le nom
@@ -980,6 +974,27 @@ def _badge(slide, cx, cy, d, color, symbol, filled=True, dashed=False, fill=None
     ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
 
 
+def _bandeau_cloture(slide, texte, bas_contenu, nom_slide, size=12):
+    """Bandeau de clôture dimensionné par SON TEXTE et posé en bas de slide.
+
+    Deux règles de dimensionnement coexistaient, dont une fausse. La variante
+    « étirée » (`h = CONTENT_BOTTOM - y`) remplit tout le vide restant : quand
+    le contenu est court, elle produit un pavé navy de plus d'un pouce de haut
+    pour une phrase — constaté au rendu du 2026-09-10, et deux slides du même
+    chapitre l'utilisaient encore juste à côté de deux slides corrigées.
+    Ici la hauteur vient du texte, le blanc restant respire, et le
+    chevauchement échoue AU BUILD plutôt qu'à la relecture.
+    """
+    h = _lignes(texte, CONTENT_W - 0.60, size) * (size * 1.2 / 72.0) + 0.34
+    top = CONTENT_BOTTOM - h
+    if top < bas_contenu:
+        raise SystemExit(
+            f"{nom_slide} : le bandeau de clôture chevauche le contenu "
+            f"({bas_contenu - top:.3f}in de trop) — resserrer avant de régénérer."
+        )
+    _quote_banner(slide, MARGIN, top, CONTENT_W, h, texte, size=size)
+
+
 def _quote_banner(slide, x, y, w, h, text, size=15.5):
     """Bandeau de clôture : fond navy plein (la phrase qu'on retient reste le
     SEUL aplat plein d'une slide en système « contour ») + guillemet décoratif
@@ -1050,7 +1065,7 @@ def _fleche_h(slide, x, y, w, h, color=MUTED, size=10):
 
 
 # --- Badge de série (v2.6, point ④) : les 4 slides « proposition de déploiement
-# agentic chez le client » du chapitre 06 · IA (3 agents candidats + export
+# agentic chez le client » du chapitre IA (3 agents candidats + export
 # markdown) portent le MÊME petit badge — signal visuel récurrent et discret qui
 # les relie à la zone « déploiement agentic » du schéma d'architecture
 # (slide_iap_contexte_client, chapitre 08). Renvoi par CHAPITRE, jamais par
@@ -1163,7 +1178,7 @@ def slide_executive_summary(prs):
     ])
 
     # v2.10 : bloc OFFRE ajouté en tête de rangée (arbitrage utilisateur) — le
-    # sommaire ne référençait aucun chapitre avant "Chapitres 02–04" alors que
+    # sommaire ne référençait aucun chapitre avant le bloc POURQUOI alors que
     # le chapitre 01 · Exec summary (slide_pitch_iap + slide_demarche_avec_sans_agentic,
     # juste après CETTE slide) restait invisible ici. Accent (fond plein) comme
     # RÉSULTAT : les deux bornent la rangée (l'offre ouvre, la preuve ferme).
@@ -1171,23 +1186,23 @@ def slide_executive_summary(prs):
         ("OFFRE", NAVY, "Trois faces à ne pas confondre, une démarche avec ou sans IA.",
          "Leurs douleurs, notre outillage de consultant, l'agentic chez eux en option — "
          "déclinés sur les trois mêmes temps, outillés ou non.",
-         "Chapitre 01"),
+         "Exec summary"),
         ("POURQUOI", ENCRE, "L'infra subie coûte de plus en plus cher.",
          "Trois déclencheurs, quatre personas interrogés séparément, des douleurs "
          "mesurables plutôt que des plaintes.",
-         "Chapitres 02–04"),
+         "Contexte → Besoins & douleurs"),
         ("QUOI", ENCRE, "Traiter l'infra comme un produit — et assainir.",
          "Double mission, méthode scorée (impact × faisabilité − prudence IA), IA sous "
          "gate : jamais la réponse à un problème d'abord organisationnel.",
-         "Chapitres 05–06"),
+         "Proposition → IA"),
         ("COMMENT", ENCRE, "Trois temps et une boucle, personnes comprises.",
          "Démarche ①②③⟲ avec son fil humain de bout en bout ; l'outillage IAP au "
          "service de la démarche — jamais l'inverse.",
-         "Chapitres 07–08"),
+         "Démarche → Outillage IAP"),
         ("RÉSULTAT", NAVY, "Le delta instrumenté T0 → réévaluation.",
          "Trois familles de KPIs, même instrument aux deux instants — la preuve, "
          "pas une opinion.",
-         "Chapitre 09"),
+         "KPI"),
     ]
     n = len(items)
     pad = 0.16
@@ -1224,8 +1239,10 @@ def slide_executive_summary(prs):
                         line_spacing=1.3)),
         ])
         D.add_text(s, x + pad, top0 + card_h - 0.38, w - 2 * pad, 0.26, [
-            (renvoi, dict(size=7.5, bold=True, color="#8fd6db" if accent else
-                          (ENCRE if etape == "RÉSULTAT" else color))),
+            # Deux branches valant toutes deux navy depuis la bascule : le
+            # conditionnel se lisait comme une emphase et ne rendait rien.
+            (renvoi, dict(size=7.5, bold=True,
+                          color="#8fd6db" if accent else ENCRE)),
         ], anchor=MSO_ANCHOR.BOTTOM)
         if i < n - 1:   # le fil : flèche dans l'inter-colonne
             D.add_text(s, x + w - 0.02, top0 + card_h / 2 - 0.12, GAP + 0.04, 0.24, [
@@ -1237,10 +1254,11 @@ def slide_executive_summary(prs):
 # ---------------------------------------------------------------- chapitre 07 (v2.9)
 def slide_offre_iap(prs):
     """DÉPLACÉE en v2.9 (arbitrage utilisateur) du chapitre 01 · Exec summary vers
-    le chapitre 07 · Démarche, juste avant slide_schema_fonctionnement : le
+    le chapitre Démarche, juste avant slide_schema_fonctionnement : le
     parcours de mission détaillé est un objet de COMMENT, pas d'ouverture — le
     sommaire du deck reste slide_executive_summary. Contenu inchangé ; seuls le
-    kicker et la couleur suivent le chapitre d'accueil (ENCRE, or).
+    kicker et la couleur suivent le chapitre d'accueil (ENCRE — la glose
+    « or » a survecu au remplacement de D.PALETTE[3], corrigee le 2026-09-10).
 
     Nouveau (v2.8) — reprend la slide 2 du pitch source (chapô + citation-thèse,
     VERBATIM — document source, ne pas reformuler) et son schéma du parcours de
@@ -1444,7 +1462,7 @@ def _picto(slide, kind, x, y, d, color):
 
 # ---------------------------------------------------------------- chapitre 01 (v2.9)
 # Nouveau (v2.9, 2026-09-02) : ouvre le chapitre Exec summary à la place de
-# slide_offre_iap (partie au chapitre 07 · Démarche). Trois cartes ÉGALES en
+# slide_offre_iap (partie au chapitre Démarche). Trois cartes ÉGALES en
 # rangée — le client, le consultant, l'option chez le client — puis, HORS de la
 # rangée, une bande pleine largeur collée sous les cartes (fond gris, texte plus
 # petit) : un poids visuel moindre sans casser l'alignement d'une rangée censée
@@ -1660,7 +1678,7 @@ def slide_demarche_avec_sans_agentic(prs):
     ])
 
     SOCLE_FILL, SOCLE_LINE = "#dce6f5", MUTED           # gris-navy neutre
-    MODULE_FILL, MODULE_LINE = "#e1fdfa", ENCRE  # outillage consultant
+    MODULE_FILL, MODULE_LINE = "#E1FDFA", ENCRE  # cyan tres pale, fond de support
     CLIENT_FILL, CLIENT_LINE = "#E7E9EE", ENCRE  # agentic chez le client
 
     etapes = [
@@ -1964,12 +1982,13 @@ def slide_synthese_pourquoi_quoi_comment(prs):
 
 
 # v2.32 (2026-09-04, refonte graphique) : DÉPLACÉE du chapitre 02 · Contexte
-# vers le chapitre 01 · Exec summary (demande utilisateur), juste après
-# slide_synthese_pourquoi_quoi_comment ci-dessus. Corps redessiné selon le
+# vers le chapitre 01 · Exec summary (demande utilisateur) — puis REMONTÉE au
+# chapitre 03 « Spécificités de l'infra » le 2026-09-10, où elle est
+# aujourd'hui. Corps redessiné selon le
 # même système de design "contour" (voir historique ci-dessus pour le détail
 # du contenu — inchangé, seule la forme change).
 def slide_specificites_infra(prs):
-    s = content_slide(prs, "Les spécificités de l'infra",
+    s = content_slide(prs, "Spécificités de l'infra",
                        "D'un guichet sursollicité à une infra as a product — l'IA rend ce virage nécessaire.",
                        color=ACCENT)
 
@@ -1997,8 +2016,11 @@ def slide_specificites_infra(prs):
     sub_h1 = _lignes(douleur_sub_plain, dw, 9) * (9 * 1.25 / 72.0) + 0.03
     h1 = max(2 * pill_pad + titre_h1 + 0.06 + sub_h1, _pill_h("Assainir et travailler le gaspillage"))
 
-    y = CONTENT_TOP + 0.05
-    row_gap = 0.13
+    y = CONTENT_TOP + 0.02
+    # 0,13 -> 0,08 : migrer le bandeau de cloture vers la regle dimensionnee
+    # a fait apparaitre un debordement de 0,153in que la variante ETIREE
+    # masquait — elle absorbait la place restante, si petite soit-elle.
+    row_gap = 0.08
     D.add_rect(s, MARGIN, y, pill_w, h1, fill=WHITE, line=COUL_DOULEUR, line_w=1.3, rounded=True, radius=0.13)
     inner_y = y + (h1 - (titre_h1 + 0.06 + sub_h1)) / 2
     D.add_text(s, MARGIN + pill_pad, inner_y, dw, titre_h1, [
@@ -2024,7 +2046,7 @@ def slide_specificites_infra(prs):
     _pill(MARGIN + pill_w + arrow_w, y, pill_w, h2, reponse_utilisateurs, COUL_REPONSE)
     y += h2 + row_gap
 
-    label_h = 0.16
+    label_h = 0.13
     D.add_text(s, MARGIN, y + 0.02, CONTENT_W, label_h, [
         ("AVEC L'ARRIVÉE DE L'IA", dict(size=8, bold=True, color=NAVY)),
     ])
@@ -2058,20 +2080,15 @@ def slide_specificites_infra(prs):
     _badge(s, card_x, card_top, badge_d, NAVY, "IA", filled=True, size=11)
     y = card_top + card_h + 0.14
 
-    concl_top = y
-    concl_h = CONTENT_BOTTOM - concl_top
-    if concl_h < 0.30:
-        raise SystemExit(
-            f"slide_specificites_infra : plus assez de place pour le bandeau de "
-            f"cloture ({concl_h:.3f}in) — resserrer la slide avant de régénérer."
-        )
-    _quote_banner(s, MARGIN, concl_top, CONTENT_W, concl_h, "L'objectif : infra as a product.")
+    _bandeau_cloture(s, "L'objectif : infra as a product.",
+                     y, "slide_specificites_infra")
     return s
 
 
 # v2.32 (2026-09-04, refonte graphique) : DÉPLACÉE du chapitre 02 · Contexte
-# vers le chapitre 01 · Exec summary (demande utilisateur), juste après
-# slide_specificites_infra ci-dessus. Corps redessiné selon le même système
+# vers le chapitre 01 · Exec summary (demande utilisateur) — puis REMONTÉE au
+# chapitre 03 « Spécificités de l'infra » le 2026-09-10, où elle ferme le
+# chapitre. Corps redessiné selon le même système
 # de design "contour" (contenu inchangé, seule la forme change).
 def slide_infra_as_product_exemple(prs):
     s = content_slide(prs, "Contexte",
@@ -2153,21 +2170,16 @@ def slide_infra_as_product_exemple(prs):
     _rich(s, apres_x + pad, card_top + 0.66, col_w - 2 * pad, card_h - 0.9, apres_paragraphs,
           anchor=MSO_ANCHOR.MIDDLE)
 
-    concl_top = card_top + card_h + 0.16
-    concl_h = CONTENT_BOTTOM - concl_top
-    concl_txt = ("Infra as a product, concrètement : le retour à une maîtrise de faire les "
-                 "bonnes choses au bon moment, un backlog piloté, des résultats concrets — "
-                 "dans notre approche l'agentique accélère la démarche, il ne la remplace pas.")
-    if concl_h < 0.30:
-        raise SystemExit(
-            f"slide_infra_as_product_exemple : plus assez de place pour le bandeau de "
-            f"cloture ({concl_h:.3f}in) — resserrer la slide avant de régénérer."
-        )
-    _quote_banner(s, MARGIN, concl_top, CONTENT_W, concl_h, concl_txt, size=12)
+    _bandeau_cloture(
+        s,
+        ("Infra as a product, concrètement : le retour à une maîtrise de faire les "
+         "bonnes choses au bon moment, un backlog piloté, des résultats concrets — "
+         "dans notre approche l'agentique accélère la démarche, il ne la remplace pas."),
+        card_top + card_h + 0.16, "slide_infra_as_product_exemple")
     return s
 
 
-# --- Chapitre 03 · Spécificités de l'infra (v2.31, demande utilisateur du
+# --- Chapitre 03 · Spécificités de l'infra (v2.33, demande utilisateur du
 # 2026-09-10 : « un chapitre dédié au traitement des spécificités de l'INFRA
 # comme le RUN ou le fait que l'infra soit transverse »). Les deux slides
 # ci-dessus (slide_specificites_infra, slide_infra_as_product_exemple) y sont
@@ -2187,7 +2199,7 @@ def slide_infra_run(prs):
     s = content_slide(prs, "Spécificités de l'infra",
                       "Le RUN n'est pas une phase du projet : c'est un régime permanent, "
                       "et c'est ce qui le rend impossible à traiter comme du BUILD",
-                      color=couleur_chapitre("03"))
+                      color=ENCRE)
 
     rows = [
         ("Il ne s'arrête jamais",
@@ -2238,7 +2250,12 @@ def slide_infra_run(prs):
         couleur = ACCENT_PLEIN if i == i_accent else ENCRE
         D.add_dot(s, cxm - badge_d / 2, lane_top, badge_d, couleur)
         D.add_text(s, x, lane_top, lane_w, badge_d, [
-            (str(i + 1), dict(size=13, bold=True, color=WHITE, align=PP_ALIGN.CENTER)),
+            # Le chiffre est DANS l'aplat : sur le badge accentue (cyan) le
+            # blanc tombe a 1,86:1. `encre_de` protege le libelle en dessous,
+            # pas le texte pose sur la couleur elle-meme.
+            (str(i + 1), dict(size=13, bold=True,
+                              color=NAVY if couleur == ACCENT_PLEIN else WHITE,
+                              align=PP_ALIGN.CENTER)),
         ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
         D.add_rect(s, cxm - 0.011, connector_top, 0.022, connector_h, fill=couleur)
         D.add_text(s, x, titre_top, lane_w, titre_h, [
@@ -2255,19 +2272,8 @@ def slide_infra_run(prs):
             (chute, dict(size=chute_size, color=MUTED, italic=True, line_spacing=1.2)),
         ])
 
-    # Bandeau dimensionne par SON TEXTE, pose en bas — pas etire sur toute la
-    # place restante : au rendu du 2026-09-10 il faisait un pave navy de plus
-    # d'un pouce de haut pour une seule phrase. Le blanc qui reste respire.
-    concl_txt = "Traiter le RUN comme un projet, c'est le perdre à chaque arbitrage."
-    dispo_bas = chute_top + chute_h + 0.14
-    concl_h = _lignes(concl_txt, CONTENT_W - 0.60, 12) * (12 * 1.2 / 72.0) + 0.34
-    concl_top = CONTENT_BOTTOM - concl_h
-    if concl_top < dispo_bas:
-        raise SystemExit(
-            f"slide_infra_run : le bandeau de clôture chevauche le contenu "
-            f"({dispo_bas - concl_top:.3f}in de trop) — resserrer avant de régénérer."
-        )
-    _quote_banner(s, MARGIN, concl_top, CONTENT_W, concl_h, concl_txt, size=12)
+    _bandeau_cloture(s, "Traiter le RUN comme un projet, c'est le perdre à chaque arbitrage.",
+                     chute_top + chute_h + 0.14, "slide_infra_run")
     return s
 
 
@@ -2283,7 +2289,7 @@ def slide_infra_transverse(prs):
     s = content_slide(prs, "Spécificités de l'infra",
                       "L'infra sert toutes les équipes et n'appartient à aucune — "
                       "c'est ce qui rend son gaspillage orphelin",
-                      color=couleur_chapitre("03"))
+                      color=ENCRE)
 
     servies = [
         ("Équipes produit", "Livrent de la valeur métier — l'infra est un moyen, jamais leur sujet."),
@@ -2356,19 +2362,8 @@ def slide_infra_transverse(prs):
             (corps, dict(size=corps_size, color=NAVY, line_spacing=1.25)),
         ])
 
-    # Bandeau dimensionne par SON TEXTE, pose en bas — pas etire sur toute la
-    # place restante : au rendu du 2026-09-10 il faisait un pave navy de plus
-    # d'un pouce de haut pour une seule phrase. Le blanc qui reste respire.
-    concl_txt = "Un gaspillage que personne ne porte, personne ne le réduit."
-    dispo_bas = cons_top + cons_h + 0.14
-    concl_h = _lignes(concl_txt, CONTENT_W - 0.60, 12) * (12 * 1.2 / 72.0) + 0.34
-    concl_top = CONTENT_BOTTOM - concl_h
-    if concl_top < dispo_bas:
-        raise SystemExit(
-            f"slide_infra_transverse : le bandeau de clôture chevauche le contenu "
-            f"({dispo_bas - concl_top:.3f}in de trop) — resserrer avant de régénérer."
-        )
-    _quote_banner(s, MARGIN, concl_top, CONTENT_W, concl_h, concl_txt, size=12)
+    _bandeau_cloture(s, "Un gaspillage que personne ne porte, personne ne le réduit.",
+                     cons_top + cons_h + 0.14, "slide_infra_transverse")
     return s
 
 
@@ -2861,32 +2856,41 @@ def slide_personas(prs):
          dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
     ])
 
-    P = D.PALETTE
     # 2×2 cartes persona. Tuple : nom, accent, rôle (1 ligne), verbatim, ce qu'il
-    # SUBIT, ce qu'il VISE, posture face à la transformation + sa couleur (feu
-    # tricolore sémantique : allié=vert, sceptique=rouge, vigilant=or). La posture
-    # est l'ajout du brainstorm — le comité lit le paysage politique, pas 4 listes.
+    # SUBIT, ce qu'il VISE, posture face à la transformation + sa couleur.
+    #
+    # Cette slide a ÉCHAPPÉ à la bascule de charte du 2026-09-10 : elle passait
+    # par un alias local `P = D.PALETTE` puis `P[0]`…`P[5]`, que la regex
+    # `D\.PALETTE\[\d\]` ne pouvait pas voir. Elle est restée la seule du deck
+    # à rendre le feu tricolore (allié=vert, sceptique=rouge, vigilant=or) —
+    # exactement le dispositif que le reste du deck venait d'abandonner, et
+    # exactement ce que le retour utilisateur reprochait. Trouvée par revue de
+    # code, pas par un test : aucun contrôle ne mesure la charte.
+    #
+    # L'accent de carte tombe donc sur l'encre, et la POSTURE — le seul endroit
+    # où une nuance portait vraiment du sens ici — se lit désormais au libellé,
+    # avec le cyan réservé au persona central (« un sur N en accent »).
     personas = [
-        ("Infra & RUN", P[0], "Tient l'exploitation, subit les astreintes.",
+        ("Infra & RUN", ACCENT_PLEIN, "Tient l'exploitation, subit les astreintes.",
          "« Opérable sans sacrifier le delivery ? »",
          "Experts seniors mobilisés sur du répétitif.",
          "Capacité récupérée, RUN maîtrisé.",
-         "Vigilant", P[3]),
-        ("Utilisateur applicatif", P[5], "Consomme la plateforme — ou la contourne.",
+         "Vigilant", ENCRE),
+        ("Utilisateur applicatif", ENCRE, "Consomme la plateforme — ou la contourne.",
          "« Pourquoi adopterais-je la plateforme ? »",
          "Guichet unique, contournement plus rapide.",
          "Un self-service adopté par choix.",
-         "Sceptique", P[2]),
-        ("Management", P[3], "Expert devenu manager, pilote à vue.",
+         "Sceptique", ENCRE),
+        ("Management", ENCRE, "Expert devenu manager, pilote à vue.",
          "« Comment piloter avec un signal fiable ? »",
          "Reporting-miroir et micromanagement.",
          "Un signal de flux de confiance.",
-         "Allié", P[1]),
-        ("Sponsor", P[4], "Porte le budget et la promesse business.",
+         "Allié", ENCRE),
+        ("Sponsor", ENCRE, "Porte le budget et la promesse business.",
          "« Quel problème business règle-t-on ? »",
          "Craint une transformation cosmétique.",
          "Problème business réglé, KPIs de mission.",
-         "Allié exigeant", P[1]),
+         "Allié exigeant", ENCRE),
     ]
     top0 = CONTENT_TOP + 0.62
     row_gap = 0.18
@@ -2901,11 +2905,15 @@ def slide_personas(prs):
         tx = cx + 0.07 + pad
         tw = cw - 0.07 - 2 * pad
         D.add_text(s, tx, cy + 0.15, tw, card_h - 0.15 - chip_h - 0.18, [
-            (nom, dict(size=D.TYPE["tiny"], bold=True, color=accent, line_spacing=1.0)),
+            # `encre_de` : sur la carte accentuee, `accent` vaut le cyan et le
+            # libelle se delaverait (1,86:1). Le liseré, lui, garde le cyan.
+            (nom, dict(size=D.TYPE["tiny"], bold=True, color=encre_de(accent),
+                       line_spacing=1.0)),
             (role, dict(size=8, color=MUTED, space_before=1, line_spacing=1.1)),
             (verbatim, dict(size=8, italic=True, color=NAVY, space_before=5, line_spacing=1.1)),
             ("Subit — " + subit, dict(size=8, color=MUTED, space_before=6, line_spacing=1.1)),
-            ("Vise — " + vise, dict(size=8, color=accent, space_before=3, line_spacing=1.1)),
+            ("Vise — " + vise, dict(size=8, color=encre_de(accent),
+                                    space_before=3, line_spacing=1.1)),
         ])
         chip(s, cx + cw - pad - chip_w, cy + card_h - 0.14 - chip_h, chip_w, chip_h,
              posture.upper(), cposture, size=6.5)
@@ -2931,12 +2939,13 @@ def slide_personas_divergences(prs):
     # plus haut pour laisser place, en bas, à la synthèse « pont » vers la Proposition.
     # Passe de design 2026-07-23 — pattern 7 du catalogue deck-design-library
     # (« rangée de cartes, une en accent ») : la rangée ANGLE MORT (Sponsor ⟂ RSSI)
-    # est la seule teintée (fond rouge très pâle + contour rouge) — rouge =
-    # sémantique d'alerte, pas décoration ; les 3 tensions instruites restent
-    # des cartes blanches identiques.
-    # Les 5 parties prenantes partageaient 5 teintes ; elles partagent
-    # desormais l'encre. Leur distinction passe par le libelle et la position
-    # (lot 1) ; l'accent « un sur N » sera pose au lot du chapitre 03.
+    # est la seule teintée — fond de support et contour d'encre depuis la
+    # bascule de charte du 2026-09-10 ; le « rouge très pâle + contour rouge »
+    # que décrivait ce commentaire n'existe plus, c'est le rang de la rangée et
+    # son fond qui la distinguent. Les 3 tensions instruites restent des cartes
+    # blanches identiques.
+    # De même, les 5 parties prenantes partageaient 5 teintes : elles partagent
+    # désormais l'encre, et se distinguent par le libellé et la position.
     c_infra = ENCRE   # Infra & RUN
     c_user = ENCRE    # Utilisateur applicatif
     c_mgmt = ENCRE    # Management
@@ -3161,7 +3170,7 @@ def slide_gaspillages(prs):
     gauge_rows = [
         ("Impact", 4, "#ffffff"),
         ("Faisabilité", 3, ACCENT),
-        ("Prudence IA", 1, SEVERITE[4]),
+        ("Prudence IA", 1, ACCENT2),
     ]
     for i, (label, score, color) in enumerate(gauge_rows):
         ry = rows_top + i * row_h2
@@ -3173,7 +3182,7 @@ def slide_gaspillages(prs):
     return s
 
 
-# v2.31 (2026-09-10, demande utilisateur) : « une démarche plus centrée sur
+# v2.33 (2026-09-10, demande utilisateur) : « une démarche plus centrée sur
 # comment traiter le gaspillage comme partagé ». Arbitrage : les DEUX lectures
 # à la fois — mutualisé entre équipes (chapitre 03 · Spécificités de l'infra :
 # « un gaspillage que personne ne porte, personne ne le réduit ») ET co-traité
@@ -3290,18 +3299,11 @@ def slide_gaspillage_partage(prs):
             (ensemble, dict(size=corps_size, bold=True, color=NAVY, line_spacing=1.25)),
         ])
 
-    concl_txt = ("Ce qui change : le gaspillage cesse d'être orphelin — il a un "
-                 "porteur nommé et un objectif partagé.")
-    concl_h = _lignes(concl_txt, CONTENT_W - 0.60, 12) * (12 * 1.2 / 72.0) + 0.34
-    concl_top = CONTENT_BOTTOM - concl_h
-    bas_contenu = carte_top + carte_h + 0.12
-    if concl_top < bas_contenu:
-        raise SystemExit(
-            f"slide_gaspillage_partage : le bandeau de clôture chevauche les "
-            f"colonnes ({bas_contenu - concl_top:.3f}in de trop) — resserrer "
-            f"avant de régénérer."
-        )
-    _quote_banner(s, MARGIN, concl_top, CONTENT_W, concl_h, concl_txt, size=12)
+    _bandeau_cloture(
+        s,
+        ("Ce qui change : le gaspillage cesse d'être orphelin — il a un "
+         "porteur nommé et un objectif partagé."),
+        carte_top + carte_h + 0.12, "slide_gaspillage_partage")
     return s
 
 
@@ -4028,9 +4030,12 @@ def slide_conditions_reussite(prs):
 
     D.add_rect(s, pan_x, pan_top, pan_w, pan_h, fill=NAVY, rounded=True, radius=0.08)
     y = pan_top + pad
-    D.add_rect(s, pan_x + pad, y, chip_l, chip_h, fill=ENCRE, rounded=True, radius=0.5)
+    # Pastille CYAN sur le panneau navy : en `ENCRE` elle etait navy sur navy,
+    # donc invisible, et son texte blanc flottait seul. Texte en navy parce
+    # que du blanc sur cyan ne vaut que 1,86:1.
+    D.add_rect(s, pan_x + pad, y, chip_l, chip_h, fill=ACCENT_PLEIN, rounded=True, radius=0.5)
     D.add_text(s, pan_x + pad, y, chip_l, chip_h, [
-        ("NON-ENGAGEMENT", dict(size=7, bold=True, color="#ffffff", align=PP_ALIGN.CENTER)),
+        ("NON-ENGAGEMENT", dict(size=7, bold=True, color=NAVY, align=PP_ALIGN.CENTER)),
     ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
     D.add_text(s, pan_x + pad, y + chip_h + 0.06, tw, b1_h - chip_h - 0.06, [
         (accroche, dict(size=9, bold=True, color="#ffffff", line_spacing=1.15)),
@@ -4062,7 +4067,9 @@ def slide_conditions_reussite(prs):
     for nom, question in risques:
         n = _lignes(nom, tw, 7) + _lignes(question, tw, 7)
         D.add_text(s, pan_x + pad, ry, tw, n * lh(7), [
-            (nom, dict(size=7, bold=True, color=ENCRE, line_spacing=1.25)),
+            # Sur PANNEAU NAVY : blanc, comme l'accroche au-dessus. `ENCRE`
+            # ici valait navy sur navy — 1,00:1, libelle invisible.
+            (nom, dict(size=7, bold=True, color="#ffffff", line_spacing=1.25)),
             (question, dict(size=7, color="#c7cbe0", line_spacing=1.25)),
         ])
         ry += n * lh(7) + 0.05
@@ -4358,7 +4365,7 @@ def slide_export_markdown(prs):
 # SUIVANTES), et entre les deux les FLUX (collecte entrante, livrables
 # sortants, agents retenus). La zone « déploiement agentic chez le client »
 # est le seul bloc en aplat plein (« un sur N en accent »), violet
-# ENCRE = encre navy — le chapitre 06 · IA ne se signale plus par sa teinte
+# ENCRE = encre navy — le chapitre IA ne se signale plus par sa teinte
 # posé sur les 4 slides de proposition agentic (point ④).
 def slide_iap_contexte_client(prs):
     s = content_slide(prs, "Outillage IAP",
@@ -4469,7 +4476,7 @@ def slide_iap_contexte_client(prs):
     D.add_rect(s, MARGIN, band_top, CONTENT_W, band_h, fill="#ffffff",
                line=ENCRE, line_w=1.0, rounded=True, radius=0.10)
     D.add_text(s, MARGIN + 0.2, band_top, CONTENT_W - 0.4, band_h, [
-        ("QUATRE PROPOSITIONS DE DÉPLOIEMENT AGENTIC — DÉTAILLÉES AU CHAPITRE 06 · IA",
+        ("QUATRE PROPOSITIONS DE DÉPLOIEMENT AGENTIC — DÉTAILLÉES AU CHAPITRE IA",
          dict(size=7, bold=True, color=ENCRE)),
         ("Agent de triage RUN · veille FinOps · agent documentaire (RAG) · export markdown "
          "(qui porte la décision agentic/documentation) — chacune porte le badge "
@@ -4520,7 +4527,10 @@ def slide_ambition(prs):
         accent = (i == accent_idx)
         if accent:
             D.add_rect(s, x, top0, w, card_h, fill=NAVY, rounded=True, radius=0.06)
-            D.add_rect(s, x, top0, 0.07, card_h, fill=color, rounded=True, radius=0.5)
+            # Lisere CYAN sur la carte accentuee : en `color` (= ENCRE) il
+            # etait navy sur navy, donc la carte mise en avant etait la
+            # SEULE sans marqueur visible.
+            D.add_rect(s, x, top0, 0.07, card_h, fill=ACCENT_PLEIN, rounded=True, radius=0.5)
         else:
             D.add_card(s, x, top0, w, card_h, color)
         D.add_text(s, x + pad, top0 + 0.15, w - 2 * pad, 0.35, [
@@ -4589,7 +4599,10 @@ def slide_kpis(prs):
         accent = (i == accent_idx)
         if accent:
             D.add_rect(s, x, top0, w, card_h, fill=NAVY, rounded=True, radius=0.06)
-            D.add_rect(s, x, top0, 0.07, card_h, fill=color, rounded=True, radius=0.5)
+            # Lisere CYAN sur la carte accentuee : en `color` (= ENCRE) il
+            # etait navy sur navy, donc la carte mise en avant etait la
+            # SEULE sans marqueur visible.
+            D.add_rect(s, x, top0, 0.07, card_h, fill=ACCENT_PLEIN, rounded=True, radius=0.5)
         else:
             D.add_card(s, x, top0, w, card_h, color)
         D.add_text(s, x + pad, top0 + 0.16, w - 2 * pad, 0.55, [
@@ -5239,7 +5252,8 @@ def slide_architecture_agents(prs):
     gate_top = top0 + card_h + 0.15
     D.add_rect(s, MARGIN, gate_top, CONTENT_W, gate_h, fill=NAVY, rounded=True, radius=0.1)
     chip_w = 1.15
-    chip(s, MARGIN + 0.16, gate_top + gate_h / 2 - 0.14, chip_w, 0.28, "BLOQUANT", SEVERITE[4], size=7)
+    chip(s, MARGIN + 0.16, gate_top + gate_h / 2 - 0.14, chip_w, 0.28, "BLOQUANT",
+         ACCENT_PLEIN, text_color=NAVY, size=7)
     D.add_text(s, MARGIN + 0.16 + chip_w + 0.2, gate_top + 0.1, CONTENT_W - chip_w - 0.55, gate_h - 0.2, [
         ("iap-ai-data-confidentiality-gate", dict(size=8, bold=True, color="#ffffff")),
         ("Classe les données (D0-D4), décide le mode d'exécution IA et pose les garde-fous — "
@@ -5343,7 +5357,7 @@ def build():
 
     # === Chapitre 01 — EXEC SUMMARY : le pitch de l'offre (v2.8, refondu v2.9) ===
     # v2.9 (arbitrage utilisateur) : le grand schéma du parcours de mission
-    # (slide_offre_iap) part au chapitre 07 · Démarche et la synthèse en une page
+    # (slide_offre_iap) part au chapitre Démarche et la synthèse en une page
     # (slide_offre_synthese) est supprimée — slide_executive_summary reste LE
     # sommaire du deck. À la place, deux slides qui parlent au prospect : les
     # trois faces de l'offre, puis la même démarche avec ou sans agentic.
@@ -5384,7 +5398,7 @@ def build():
     slide_qui_achete(prs)
 
     # === Chapitre 03 — SPÉCIFICITÉS DE L'INFRA : pourquoi ce terrain n'est pas
-    # un terrain comme un autre (v2.31, demande utilisateur du 2026-09-10).
+    # un terrain comme un autre (v2.33, demande utilisateur du 2026-09-10).
     # Placé APRÈS le contexte et AVANT les personas : ce qu'on dit ici — le RUN
     # comme régime permanent, l'infra transverse — conditionne la lecture des
     # douleurs et de la démarche qui suivent. slide_specificites_infra et
@@ -5425,7 +5439,7 @@ def build():
                    ENCRE, "dunes", seed=0)
     slide_why_iap(prs)
     slide_gaspillages(prs)
-    # v2.31 : la chaine de traitement ci-dessus est presentee cote cabinet de
+    # v2.33 : la chaine de traitement ci-dessus est presentee cote cabinet de
     # bout en bout. Celle-ci la retourne — qui fait quoi, et ce qui se tranche
     # a deux — parce qu'un gaspillage mutualise n'acquiert de porteur que la.
     slide_gaspillage_partage(prs)
