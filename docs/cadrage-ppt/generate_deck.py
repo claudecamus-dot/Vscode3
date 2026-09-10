@@ -689,6 +689,14 @@ _REQUETES_PHOTO = {
     # sur les 4 bords — VÉRIFIÉE au rendu réel le 2026-09-02. Nom NEUF → repli
     # procédural qui PLANTE sauf mapping _SCENE_REPLI (ci-dessous).
     "wheatfield": "wheat field",
+    # riverdelta (Specificites de l'infra, chapitre 03, neuf en v2.31) : un delta
+    # — un seul cours d'eau qui alimente toutes les branches — dit litteralement
+    # le sujet du chapitre (une infra transverse sous plusieurs equipes). « canyon »
+    # etait deja pris par la Demarche : deux chapitres a la meme photo se lisent
+    # comme une erreur de montage. Nom NEUF -> repli obligatoire ci-dessous.
+    # Photo A VERIFIER AU RENDU comme toutes les autres : une requete mot-cle
+    # n'a aucun jugement (cf. « desert dune » -> fossile de musee).
+    "riverdelta": "river delta aerial",
 }
 
 
@@ -705,6 +713,7 @@ _SCENE_REPLI = {
     "nightsky": "sunset",    # composition de ciel (clair au lieu de sombre)
     "canyon": "mountains",   # relief rocheux
     "wheatfield": "meadow",  # champ ouvert, tons chauds proches
+    "riverdelta": "ocean",   # etendue d'eau, meme famille de tons
 }
 
 # Anomalies relevees pendant le build (pas seulement d'image, malgre le nom
@@ -1058,7 +1067,7 @@ def badge_deploiement_agentic(slide):
     D.add_text(slide, x + 0.12, CONTENT_TOP, BADGE_AGENTIC_W - 0.24, h, [
         ("DÉPLOIEMENT AGENTIC CHEZ LE CLIENT",
          dict(size=6, bold=True, color=ENCRE, line_spacing=1.1)),
-        ("cf. schéma d'architecture · chapitre 08",
+        ("cf. schéma d'architecture · chapitre Outillage IAP",
          dict(size=6, italic=True, color=MUTED, space_before=1)),
     ], anchor=MSO_ANCHOR.MIDDLE)
 
@@ -1471,21 +1480,21 @@ def slide_pitch_iap(prs):
           "Utilisateur applicatif — sans self-service : guichet, contournements",
           "Management — expert devenu manager malgré lui, reporting miroir",
           "Sponsor — pression à « mettre de l'IA » sans cas d'usage démontré"],
-         "Détaillé aux chapitres 03 et 04"),
+         "Détaillé aux chapitres Personas et Besoins & douleurs"),
         ("NOTRE OUTILLAGE · CÔTÉ CONSULTANT", ENCRE, "engrenage",
          "Notre démarche, outillée par un module agentic",
          "Le module BMAD IAP tourne sur le poste du consultant.",
          ["11 agents spécialisés : stratégie, produit, RUN, gaspillages, métriques, IA, changement",
           "Workflows, templates et checklists outillent la démarche — ils ne la remplacent pas",
           "Rien ne s'installe chez le client par défaut : les livrables sortent, c'est tout"],
-         "L'outil du consultant — chapitres 07 et 08"),
+         "L'outil du consultant — chapitres Démarche et Outillage IAP"),
         ("EN OPTION · CÔTÉ CLIENT", ENCRE, "deploiement",
          "Déployer de l'agentic chez le client",
          "Ouverte seulement si le contexte du client s'y prête.",
          ["Gate IA d'abord : la donnée est classée (D0–D4) avant tout usage d'IA",
           "Agentic Readiness [0]–[1] oriente vers documentation-first ; [2]–[3] ouvre agentic-implementation",
           "Le processus doit être explicite avant l'agent, jamais l'inverse"],
-         "Une décision de mission — chapitre 06"),
+         "Une décision de mission — chapitre IA"),
     ]
 
     band_h = 0.56
@@ -1667,9 +1676,9 @@ def slide_demarche_avec_sans_agentic(prs):
     ]
     registres = [
         ("SANS OUTILLAGE", "présence du consultant", None, SOCLE_FILL, SOCLE_LINE, NAVY),
-        ("AVEC LE MODULE", "côté consultant · décliné chapitre 07", "engrenage",
+        ("AVEC LE MODULE", "côté consultant · décliné au chapitre Démarche", "engrenage",
          MODULE_FILL, MODULE_LINE, ENCRE),
-        ("AGENTIC CHEZ LE CLIENT", "en option, sous gate IA · déployé chapitre 08", "deploiement",
+        ("AGENTIC CHEZ LE CLIENT", "en option, sous gate IA · déployé au chapitre Outillage IAP", "deploiement",
          CLIENT_FILL, CLIENT_LINE, ENCRE),
     ]
 
@@ -1719,8 +1728,8 @@ def slide_demarche_avec_sans_agentic(prs):
 
     # --- Bandeau de renvoi (pied) : dimensionné à son texte, jamais étiré.
     renvoi = ("Une seule démarche, deux faces de l'agentic : le module outille le consultant "
-              "(décliné chapitre 07 · Démarche) ; déployer des agents chez le client est une "
-              "décision distincte, sous gate IA (déployé chapitre 08 · Outillage IAP).")
+              "(décliné au chapitre Démarche) ; déployer des agents chez le client est une "
+              "décision distincte, sous gate IA (déployé au chapitre Outillage IAP).")
     r_pad = 0.12
     renvoi_h = r_pad + (6.8 * 1.1 / 72.0) + 0.03 \
         + _lignes(renvoi, CONTENT_W - 0.44, 8) * (8 * 1.25 / 72.0) + r_pad
@@ -2153,6 +2162,211 @@ def slide_infra_as_product_exemple(prs):
         raise SystemExit(
             f"slide_infra_as_product_exemple : plus assez de place pour le bandeau de "
             f"cloture ({concl_h:.3f}in) — resserrer la slide avant de régénérer."
+        )
+    _quote_banner(s, MARGIN, concl_top, CONTENT_W, concl_h, concl_txt, size=12)
+    return s
+
+
+# --- Chapitre 03 · Spécificités de l'infra (v2.31, demande utilisateur du
+# 2026-09-10 : « un chapitre dédié au traitement des spécificités de l'INFRA
+# comme le RUN ou le fait que l'infra soit transverse »). Les deux slides
+# ci-dessus (slide_specificites_infra, slide_infra_as_product_exemple) y sont
+# DÉPLACÉES depuis le chapitre 01 · Exec summary : elles traitaient déjà le
+# sujet, l'exec summary les portait faute de chapitre d'accueil. Les deux
+# suivantes sont NEUVES et couvrent ce que la demande nommait explicitement et
+# que le deck ne disait nulle part : ce qui rend le RUN structurellement à part,
+# et ce que la transversalité fait au gaspillage.
+def slide_infra_run(prs):
+    """Ce qui rend le RUN d'infra structurellement différent d'un projet.
+
+    Flux numéroté (deck-design-library #4) plutôt que des cartes : les quatre
+    traits ne sont pas une liste d'inconvénients, ils s'enchaînent — il ne
+    s'arrête jamais, donc il n'est pas planifiable, donc il prend sur le BUILD,
+    et sa dette ne se voit pas le jour où on l'accumule.
+    """
+    s = content_slide(prs, "Spécificités de l'infra",
+                      "Le RUN n'est pas une phase du projet : c'est un régime permanent, "
+                      "et c'est ce qui le rend impossible à traiter comme du BUILD",
+                      color=couleur_chapitre("03"))
+
+    rows = [
+        ("Il ne s'arrête jamais",
+         "Un projet se termine, le RUN non. L'astreinte, la veille et le maintien en "
+         "condition sont un coût fixe qu'aucune fin de phase ne libère.",
+         "Aucune date de fin ne le fait retomber"),
+        ("Sa charge arrive de l'extérieur",
+         "Elle n'est pas planifiée : elle est déclenchée par les incidents, les demandes "
+         "et les obsolescences. On subit le rythme au lieu de le choisir.",
+         "Le carnet se remplit sans arbitrage"),
+        ("Il puise dans les MÊMES experts que le BUILD",
+         "Les seniors capables de tenir la production sont ceux qui construisent. À "
+         "chaque conflit, l'incident du jour gagne contre le chantier de fond.",
+         "Le BUILD paie, toujours dans le même sens"),
+        ("Sa dette ne se voit pas le jour où on la crée",
+         "Ne pas décommissionner, ne pas documenter, ne pas automatiser ne casse rien "
+         "aujourd'hui. Le coût se paie plus tard, et ailleurs.",
+         "Rien ne tombe le jour de l'arbitrage"),
+    ]
+
+    n = len(rows)
+    lane_gap = 0.16
+    lane_w = (CONTENT_W - (n - 1) * lane_gap) / n
+    pad = 0.06
+    body_w = lane_w - 2 * pad
+
+    lane_top = CONTENT_TOP + 0.30
+    badge_d = 0.5
+    connector_h = 0.16
+    titre_size, corps_size, chute_size = 8.5, 9, 8
+    titre_h = max(_lignes(r[0], body_w, titre_size) for r in rows) * (titre_size * 1.2 / 72.0) + 0.05
+    corps_h = max(_lignes(r[1], body_w, corps_size) for r in rows) * (corps_size * 1.25 / 72.0) + 0.04
+    chute_h = max(_lignes(r[2], body_w, chute_size) for r in rows) * (chute_size * 1.2 / 72.0) + 0.04
+
+    connector_top = lane_top + badge_d
+    titre_top = connector_top + connector_h
+    corps_top = titre_top + titre_h + 0.04
+    chute_label_top = corps_top + corps_h + 0.10
+    chute_top = chute_label_top + 0.16
+
+    # « Un sur N en accent » : le 3e trait est celui qui coûte le plus cher à la
+    # transformation — c'est lui qui explique pourquoi le BUILD n'avance pas.
+    i_accent = 2
+
+    for i, (titre, corps, chute) in enumerate(rows):
+        x = MARGIN + i * (lane_w + lane_gap)
+        cxm = x + lane_w / 2.0
+        couleur = ACCENT_PLEIN if i == i_accent else ENCRE
+        D.add_dot(s, cxm - badge_d / 2, lane_top, badge_d, couleur)
+        D.add_text(s, x, lane_top, lane_w, badge_d, [
+            (str(i + 1), dict(size=13, bold=True, color=WHITE, align=PP_ALIGN.CENTER)),
+        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+        D.add_rect(s, cxm - 0.011, connector_top, 0.022, connector_h, fill=couleur)
+        D.add_text(s, x, titre_top, lane_w, titre_h, [
+            (titre, dict(size=titre_size, bold=True, color=encre_de(couleur),
+                         align=PP_ALIGN.CENTER, line_spacing=1.2)),
+        ], anchor=MSO_ANCHOR.TOP, align=PP_ALIGN.CENTER)
+        D.add_text(s, x + pad, corps_top, body_w, corps_h, [
+            (corps, dict(size=corps_size, color=NAVY, line_spacing=1.25)),
+        ])
+        D.add_text(s, x + pad, chute_label_top, body_w, 0.14, [
+            ("CE QUI LE REND INVISIBLE", dict(size=6.5, bold=True, color=MUTED)),
+        ])
+        D.add_text(s, x + pad, chute_top, body_w, chute_h, [
+            (chute, dict(size=chute_size, color=MUTED, italic=True, line_spacing=1.2)),
+        ])
+
+    # Bandeau dimensionne par SON TEXTE, pose en bas — pas etire sur toute la
+    # place restante : au rendu du 2026-09-10 il faisait un pave navy de plus
+    # d'un pouce de haut pour une seule phrase. Le blanc qui reste respire.
+    concl_txt = "Traiter le RUN comme un projet, c'est le perdre à chaque arbitrage."
+    dispo_bas = chute_top + chute_h + 0.14
+    concl_h = _lignes(concl_txt, CONTENT_W - 0.60, 12) * (12 * 1.2 / 72.0) + 0.34
+    concl_top = CONTENT_BOTTOM - concl_h
+    if concl_top < dispo_bas:
+        raise SystemExit(
+            f"slide_infra_run : le bandeau de clôture chevauche le contenu "
+            f"({dispo_bas - concl_top:.3f}in de trop) — resserrer avant de régénérer."
+        )
+    _quote_banner(s, MARGIN, concl_top, CONTENT_W, concl_h, concl_txt, size=12)
+    return s
+
+
+def slide_infra_transverse(prs):
+    """L'infra sert toutes les équipes et n'appartient à aucune.
+
+    Composition « sandwich » (deck-design-library #5) : les équipes servies en
+    haut, la plateforme qui les porte en bandeau plein, et dessous la
+    conséquence qui n'est jamais dite — un gaspillage que personne ne porte en
+    propre n'est réduit par personne. C'est la charnière vers le chapitre
+    Besoins & douleurs, et le fondement de la démarche partagée.
+    """
+    s = content_slide(prs, "Spécificités de l'infra",
+                      "L'infra sert toutes les équipes et n'appartient à aucune — "
+                      "c'est ce qui rend son gaspillage orphelin",
+                      color=couleur_chapitre("03"))
+
+    servies = [
+        ("Équipes produit", "Livrent de la valeur métier — l'infra est un moyen, jamais leur sujet."),
+        ("Équipes applicatives", "Consomment la plateforme, ou la contournent si elle freine."),
+        ("Sécurité & conformité", "Posent des exigences transverses que personne ne budgète."),
+        ("Direction", "Voit une ligne de coût, pas les arbitrages qui la produisent."),
+    ]
+
+    n = len(servies)
+    gap = 0.16
+    card_w = (CONTENT_W - (n - 1) * gap) / n
+    pad = 0.12
+    tw = card_w - 2 * pad
+
+    titre_size, corps_size = 9, 8
+    t_h = max(_lignes(t, tw, titre_size) for t, _ in servies) * (titre_size * 1.2 / 72.0) + 0.04
+    c_h = max(_lignes(c, tw, corps_size) for _, c in servies) * (corps_size * 1.25 / 72.0) + 0.04
+    card_h = pad + t_h + 0.05 + c_h + pad
+
+    top = CONTENT_TOP + 0.24
+    D.add_text(s, MARGIN, CONTENT_TOP - 0.02, CONTENT_W, 0.18, [
+        ("CE QUE L'INFRA SERT", dict(size=8, bold=True, color=MUTED)),
+    ])
+    for i, (titre, corps) in enumerate(servies):
+        x = MARGIN + i * (card_w + gap)
+        D.add_rect(s, x, top, card_w, card_h, fill=WHITE, line=ENCRE, line_w=1.15,
+                   rounded=True, radius=0.09)
+        D.add_text(s, x + pad, top + pad, tw, t_h, [
+            (titre, dict(size=titre_size, bold=True, color=ENCRE, line_spacing=1.15)),
+        ])
+        D.add_text(s, x + pad, top + pad + t_h + 0.05, tw, c_h, [
+            (corps, dict(size=corps_size, color=MUTED, line_spacing=1.25)),
+        ])
+
+    # Le bandeau plein : la seule forme accentuée de la slide (« un sur N »).
+    # Elle porte l'infra, littéralement sous les équipes qu'elle sert.
+    bande_top = top + card_h + 0.16
+    bande_txt = "UNE SEULE INFRA, SOUS TOUTES CES ÉQUIPES"
+    bande_h = 0.42
+    D.add_rect(s, MARGIN, bande_top, CONTENT_W, bande_h, fill=ENCRE, rounded=True, radius=0.09)
+    D.add_text(s, MARGIN, bande_top, CONTENT_W, bande_h, [
+        (bande_txt, dict(size=10, bold=True, color=WHITE, align=PP_ALIGN.CENTER)),
+    ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+
+    consequences = [
+        ("PERSONNE NE PORTE LE COÛT",
+         "Le gaspillage d'infra est mutualisé : il ne pèse sur le budget d'aucune équipe "
+         "en particulier, donc aucune n'a de raison propre de le réduire."),
+        ("PERSONNE N'ARBITRE SEUL",
+         "Décommissionner, standardiser ou fermer un service touche tous les consommateurs "
+         "à la fois — la décision ne peut pas être prise dans un seul couloir."),
+    ]
+    cons_top = bande_top + bande_h + 0.16
+    cons_gap = 0.18
+    cons_w = (CONTENT_W - cons_gap) / 2
+    ctw = cons_w - 2 * pad
+    ct_h = 0.16
+    cc_h = max(_lignes(c, ctw, corps_size) for _, c in consequences) * (corps_size * 1.25 / 72.0) + 0.04
+    cons_h = pad * 0.8 + ct_h + 0.04 + cc_h + pad * 0.8
+
+    for i, (titre, corps) in enumerate(consequences):
+        x = MARGIN + i * (cons_w + cons_gap)
+        D.add_rect(s, x, cons_top, cons_w, cons_h, fill=SUPPORT, rounded=True, radius=0.09)
+        D.add_rect(s, x + 0.10, cons_top + pad * 0.5, 0.045, cons_h - pad,
+                   fill=ACCENT_PLEIN, rounded=True, radius=0.5)
+        D.add_text(s, x + 0.26, cons_top + pad * 0.8, ctw - 0.14, ct_h, [
+            (titre, dict(size=8, bold=True, color=ENCRE)),
+        ])
+        D.add_text(s, x + 0.26, cons_top + pad * 0.8 + ct_h + 0.04, ctw - 0.14, cc_h, [
+            (corps, dict(size=corps_size, color=NAVY, line_spacing=1.25)),
+        ])
+
+    # Bandeau dimensionne par SON TEXTE, pose en bas — pas etire sur toute la
+    # place restante : au rendu du 2026-09-10 il faisait un pave navy de plus
+    # d'un pouce de haut pour une seule phrase. Le blanc qui reste respire.
+    concl_txt = "Un gaspillage que personne ne porte, personne ne le réduit."
+    dispo_bas = cons_top + cons_h + 0.14
+    concl_h = _lignes(concl_txt, CONTENT_W - 0.60, 12) * (12 * 1.2 / 72.0) + 0.34
+    concl_top = CONTENT_BOTTOM - concl_h
+    if concl_top < dispo_bas:
+        raise SystemExit(
+            f"slide_infra_transverse : le bandeau de clôture chevauche le contenu "
+            f"({dispo_bas - concl_top:.3f}in de trop) — resserrer avant de régénérer."
         )
     _quote_banner(s, MARGIN, concl_top, CONTENT_W, concl_h, concl_txt, size=12)
     return s
@@ -4049,7 +4263,7 @@ def slide_iap_contexte_client(prs):
         chip(s, px, py, pill_w, pill_h, nom, color, size=6.5)
     caption_top = pills_top + 2 * pill_h + 0.08 + 0.10
     D.add_text(s, cons_x + pad, caption_top, cons_w - 2 * pad, 0.40, [
-        ("Mêmes étapes que le schéma de fonctionnement (chapitre 07 · Démarche) — "
+        ("Mêmes étapes que le schéma de fonctionnement (chapitre Démarche) — "
          "fonctionne aussi sans IA externe si le gate l'impose (mode M0).",
          dict(size=6.5, color=MUTED, italic=True, line_spacing=1.2)),
     ])
@@ -5019,9 +5233,7 @@ def build():
     # DÉPLACÉES ici depuis le chapitre 02 · Contexte au même moment (même
     # demande) — les 3 racontent ensemble le POURQUOI/COMMENT dès l'exec
     # summary, avant le pitch et la démarche avec/sans agentic.
-    slide_specificites_infra(prs)
     slide_synthese_pourquoi_quoi_comment(prs)
-    slide_infra_as_product_exemple(prs)
     slide_pitch_iap(prs)
     slide_demarche_avec_sans_agentic(prs)
 
@@ -5039,35 +5251,52 @@ def build():
     # (le déclencheur ① et l'écart 80/30 y sont repris comme réponse d'achat).
     slide_qui_achete(prs)
 
-    # === Chapitre 03 — PERSONAS : qui l'on transforme ===
-    slide_chapitre(prs, "03", "Personas",
+    # === Chapitre 03 — SPÉCIFICITÉS DE L'INFRA : pourquoi ce terrain n'est pas
+    # un terrain comme un autre (v2.31, demande utilisateur du 2026-09-10).
+    # Placé APRÈS le contexte et AVANT les personas : ce qu'on dit ici — le RUN
+    # comme régime permanent, l'infra transverse — conditionne la lecture des
+    # douleurs et de la démarche qui suivent. slide_specificites_infra et
+    # slide_infra_as_product_exemple REMONTENT ici depuis le chapitre 01, où
+    # elles vivaient faute de chapitre d'accueil (v2.32) ; les deux slides
+    # suivantes sont neuves.
+    slide_chapitre(prs, "03", "Spécificités de l'infra",
+                   "Le RUN comme régime permanent, une infra transverse que personne "
+                   "ne porte en propre — et ce que ça change à la façon de la traiter.",
+                   ENCRE, "riverdelta", seed=0)
+    slide_specificites_infra(prs)
+    slide_infra_run(prs)
+    slide_infra_transverse(prs)
+    slide_infra_as_product_exemple(prs)
+
+    # === Chapitre 04 — PERSONAS : qui l'on transforme ===
+    slide_chapitre(prs, "04", "Personas",
                    "Quatre parties prenantes interrogées séparément — leurs voix, leurs postures, les tensions.",
                    ENCRE, "forest", seed=0)
     slide_personas(prs)
     slide_personas_divergences(prs)
 
-    # === Chapitre 04 — BESOINS & DOULEURS : ce qui fait mal ===
-    slide_chapitre(prs, "04", "Besoins & douleurs",
+    # === Chapitre 05 — BESOINS & DOULEURS : ce qui fait mal ===
+    slide_chapitre(prs, "05", "Besoins & douleurs",
                    "Les douleurs approfondies et mesurables, et les 8 familles de gaspillage qui les rangent.",
                    ENCRE, "ocean", seed=0)
     slide_douleurs(prs)
     slide_familles(prs)
 
-    # === Chapitre 05 — PROPOSITION : le QUOI ===
+    # === Chapitre 06 — PROPOSITION : le QUOI ===
     # Fil rouge : la THÈSE (why_iap) ouvre, puis la MÉTHODE scorée (gaspillages),
     # puis la cible d'organisation. v2.5 (chantier ④) : schéma de fonctionnement
     # + livrables → Démarche ; ambition + lien SI → Outillage IAP. v2.6 : le
     # sous-chapitre « Exemples » (séparateur slide_sous_chapitre + 3 slides
     # illustratives) est supprimé à la demande — git garde l'historique (v2.5).
-    slide_chapitre(prs, "05", "Proposition",
+    slide_chapitre(prs, "06", "Proposition",
                    "Traiter l'infra comme un produit : la thèse, la méthode scorée et l'organisation cible.",
                    ENCRE, "dunes", seed=0)
     slide_why_iap(prs)
     slide_gaspillages(prs)
     slide_team_topologies(prs)
 
-    # === Chapitre 06 — IA : tirée APRÈS la proposition (l'IA amplifie, n'est jamais la réponse) ===
-    slide_chapitre(prs, "06", "IA",
+    # === Chapitre 07 — IA : tirée APRÈS la proposition (l'IA amplifie, n'est jamais la réponse) ===
+    slide_chapitre(prs, "07", "IA",
                    "L'IA au service de la réponse : le gate confidentialité, la prudence, les agents candidats, l'export.",
                    ENCRE, "nightsky", seed=0)
     slide_gate_ia(prs)
@@ -5108,9 +5337,9 @@ def build():
               "avant toute décision — des exemples illustratifs, pas une liste actée."))
     slide_export_markdown(prs)
 
-    # === Chapitre 07 — DÉMARCHE : le COMMENT (après l'IA, pour enchaîner sur
+    # === Chapitre 08 — DÉMARCHE : le COMMENT (après l'IA, pour enchaîner sur
     # l'outillage puis la preuve — cf. docstring v2.5) ===
-    slide_chapitre(prs, "07", "Démarche",
+    slide_chapitre(prs, "08", "Démarche",
                    "La trajectoire et ses livrables par phase, le fil humain, le schéma de "
                    "fonctionnement et l'inventaire des agents.",
                    ENCRE, "canyon", seed=0)
@@ -5138,8 +5367,8 @@ def build():
     slide_architecture_agents(prs)
     slide_livrables_ppt(prs)
 
-    # === Chapitre 08 — OUTILLAGE IAP : l'AVEC QUOI (nouveau, v2.5) ===
-    slide_chapitre(prs, "08", "Outillage IAP",
+    # === Chapitre 09 — OUTILLAGE IAP : l'AVEC QUOI (nouveau, v2.5) ===
+    slide_chapitre(prs, "09", "Outillage IAP",
                    "Ce que le module met dans les mains du consultant : l'architecture en "
                    "contexte client, trois niveaux d'ambition, le lien avec le SI.",
                    ENCRE, "tropical", seed=0)
@@ -5149,12 +5378,12 @@ def build():
     slide_ambition(prs)
     slide_architecture_si(prs)
 
-    # === Chapitre 09 — KPI : la preuve (clôture du deck) ===
+    # === Chapitre 10 — KPI : la preuve (clôture du deck) ===
     # Les 3 familles ouvrent, puis leur pourquoi/quoi et leur mise en place ; la
     # grille de maturité (slide_maturite, la 3e famille détaillée) vient ensuite
     # (déplacée après kpis_mise_en_place, point ①), et le cas nominal chiffré
     # ferme le deck.
-    slide_chapitre(prs, "09", "KPI",
+    slide_chapitre(prs, "10", "KPI",
                    "Trois familles de KPIs à ne jamais confondre, leur mise en place, la grille de maturité, et le cas chiffré.",
                    ENCRE, "meadow", seed=1)
     slide_kpis(prs)

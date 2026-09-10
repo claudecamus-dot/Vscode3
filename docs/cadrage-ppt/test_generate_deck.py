@@ -111,7 +111,11 @@ def main():
     prs = Presentation(out)
 
     print("Structure :")
-    check(len(prs.slides) == 49, f"49 slides — reçu {len(prs.slides)}")
+    # Chiffre volontairement EN DUR : c'est un fil-piege contre une slide
+    # ajoutee ou perdue sans intention. Il se met a jour quand on change le
+    # deck exprès — 49 -> 52 le 2026-09-10 avec le chapitre « Specificites
+    # de l'infra » (intercalaire + 2 slides neuves).
+    check(len(prs.slides) == 52, f"52 slides — reçu {len(prs.slides)}")
     check(bool(_vu), "build() consulte bien _controler (tous les filets), "
                      "et pas un sous-ensemble câblé en dur")
     check(not problemes,
@@ -119,6 +123,60 @@ def main():
           f" + anomalies de build : {len(problemes or [])} problème(s)")
     check(os.path.exists(out) and os.path.getsize(out) > 500_000,
           f"fichier .pptx écrit, taille plausible ({os.path.getsize(out) if os.path.exists(out) else 0} octets)")
+
+    # --- Renvois vers un autre chapitre : le couplage est SUPPRIMÉ, pas surveillé.
+    # Des slides citaient d'autres chapitres par leur NUMÉRO (« Détaillé aux
+    # chapitres 03 et 04 »). Insérer un chapitre décalait tous les suivants et
+    # rendait ces phrases fausses en silence — géométrie verte, rendu vert, et
+    # c'est le lecteur du deck qui tombe sur le mauvais chapitre.
+    #
+    # Une première version de ce test gardait le couplage : elle vérifiait que
+    # le numéro cité existe, et que le nom accolé corresponde. Le mutant l'a
+    # traversée (2026-09-10) — « chapitres 03 et 04 » laissé tel quel après
+    # renumérotation pointe deux chapitres qui EXISTENT, simplement plus les
+    # bons, et ne porte aucun nom à confronter. Un renvoi nu est indétectable
+    # par construction : rien dans le deck ne dit où il DEVRAIT pointer.
+    #
+    # D'où la règle, plus forte que le test qu'elle remplace : on cite un
+    # chapitre par son NOM, jamais par son numéro. Une renumérotation ne peut
+    # alors plus rien casser, et le lecteur n'a pas à compter les intercalaires.
+    print("Renvois de chapitre — par nom, jamais par numéro :")
+    chapitres = {}
+    for sl in prs.slides:
+        if sl.slide_layout.name.startswith("50 - Chapitre"):
+            phs = {ph.placeholder_format.idx: ph for ph in sl.placeholders}
+            chapitres[phs[1].text_frame.text.strip()] =                 phs[0].text_frame.paragraphs[0].text.strip()
+    check(bool(chapitres), f"intercalaires détectés — {len(chapitres)} chapitre(s)")
+
+    numerotes, nommes = [], []
+    for i, sl in enumerate(prs.slides, start=1):
+        for shp in sl.shapes:
+            if not shp.has_text_frame:
+                continue
+            texte = shp.text_frame.text
+            for m in re.finditer(r"chapitres?\s+(\d{2})", texte):
+                numerotes.append(f"slide {i} : « chapitre {m.group(1)} »")
+            for m in re.finditer(r"chapitres?\s+([^\n,;.)»]+)", texte):
+                frag = m.group(1).strip()
+                # Les renvois RELATIFS (« chapitre précédent », « chapitres qui
+                # suivent ») sont immunisés par nature à une renumérotation :
+                # rien à vérifier. Ils se distinguent des noms de chapitre par
+                # la casse — tous les titres portent une majuscule initiale.
+                if not frag or not frag[0].isupper():
+                    continue
+                nommes.append((i, frag))
+
+    check(not numerotes,
+          f"aucun renvoi par NUMÉRO — un décalage de chapitre les rendrait faux "
+          f"silencieusement : {numerotes or 'aucun'}")
+
+    titres = [t.lower() for t in chapitres.values()]
+    inconnus = sorted(
+        f"slide {i} : « {frag} »" for i, frag in nommes
+        if not any(t in frag.lower() or frag.lower().startswith(t) for t in titres)
+    )
+    check(not inconnus,
+          f"tout renvoi nommé désigne un chapitre existant — inconnus : {inconnus or 'aucun'}")
 
     print("Version affichée en couverture à jour (v2.8 y est restée gelée 4 bumps de suite) :")
     versions_docstring = [tuple(int(p) for p in v.split("."))
@@ -134,46 +192,14 @@ def main():
           f"placeholder version de la couverture == VERSION_DECK/DATE_VERSION_DECK (reçu {texte_version!r})")
 
     print("Cadres photo bien calés (chapitres — layout '50 - Chapitre', teardrop) :")
-    # 9 chapitres (v2.9) : Exec summary(3) · Contexte(7) · Personas(11) ·
-    # Besoins & douleurs(14) · Proposition(17) · IA(21) · Démarche(28) ·
-    # Outillage IAP(37) · KPI(41)
-    # (v2.6 : le sous-chapitre « Exemples » — séparateur + 3 slides — est
-    # supprimé, d'où IA/Démarche qui remontent de 4 ; la Démarche gagne les
-    # activités humaines avec/sans l'outil, et l'Outillage IAP ouvre sur le
-    # schéma d'architecture en contexte client — 3 slides de contenu.
-    # v2.7 : +1 dans le Contexte (« qui achète, contre quoi ») et +1 dans la
-    # Démarche (« conditions de réussite ») — tout ce qui suit décale d'autant.
-    # v2.8 : nouveau chapitre 01 « Exec summary » en OUVERTURE du deck (juste
-    # après le sommaire, avant slide_vision) — 3 slides de plus (2 de contenu +
-    # 1 intercalaire), tous les chapitres suivants glissent de +1.
-    # v2.9 : le chapitre 01 garde 2 slides de contenu (le pitch en 3 faces et la
-    # démarche avec/sans agentic remplacent l'offre et sa synthèse) mais le grand
-    # schéma du parcours de mission déménage dans la Démarche — +1 slide au total
-    # (45 -> 46), donc Outillage IAP et KPI glissent seuls de +1.
-    # v2.13 : slide_executive_summary déménage d'AVANT l'intercalaire à APRÈS
-    # (arbitrage utilisateur) — l'intercalaire du chapitre 01 recule de 3 à 2,
-    # tout le reste (positions 4+, inchangées) ne bouge pas.
-    # v2.14/v2.15 avaient câblé slide_synthese_pourquoi_quoi_comment ici (+1
-    # slide, 46 -> 47) ; v2.16 la retire de build() (2 tours rejetée) — 46
-    # slides à nouveau, indices ci-dessous redevenus ceux de v2.13.)
-    # v2.28 : slide_specificites_infra CÂBLÉE juste après l'intercalaire du
-    # chapitre 02 (qui reste en 7, l'ajout vient APRÈS lui) — 46 -> 47, tout
-    # ce qui suit le chapitre 02 glisse de +1 (Personas 11->12, Besoins &
-    # douleurs 14->15, Proposition 17->18, IA 21->22, Démarche 28->29,
-    # Outillage IAP 37->38, KPI 41->42).
-    # v2.29 : slide_infra_as_product_exemple CÂBLÉE juste après elle (l'exemple
-    # avant/après qui rend tangible sa conclusion) — 47 -> 48, encore +1 sur
-    # tout ce qui suit le chapitre 02 (Personas 12->13, Besoins & douleurs
-    # 15->16, Proposition 18->19, IA 22->23, Démarche 29->30, Outillage IAP
-    # 38->39, KPI 42->43).
-    # v2.30 : `slide_specificites_infra` et `slide_infra_as_product_exemple`
-    # DÉMÉNAGENT du chapitre 02 vers le chapitre 01 (juste après
-    # slide_executive_summary) ; `slide_synthese_pourquoi_quoi_comment` est
-    # AJOUTÉE entre les deux — net +1 slide au total (48 -> 49). Le chapitre 02
-    # commence directement par slide_mission après son intercalaire, qui
-    # glisse de +3 (7 -> 10), et tout ce qui suit avec lui (13->14, 16->17,
-    # 19->20, 23->24, 30->31, 39->40, 43->44).
-    chapitres = [2, 10, 14, 17, 20, 24, 31, 40, 44]
+    # Index DERIVES du deck, plus jamais ecrits a la main. Ce bloc portait
+    # 40 lignes d'historique de renumerotation (« Personas 11->12, Besoins &
+    # douleurs 14->15... ») recalculees a chaque insertion de slide : ajouter
+    # le chapitre 03 « Specificites de l'infra » (2026-09-10) a fait tomber 21
+    # verifications d'un coup, toutes pour cette seule raison. L'historique
+    # vit dans `git log docs/cadrage-ppt/`, sa place.
+    chapitres = [i for i, sl in enumerate(prs.slides, start=1)
+                 if sl.slide_layout.name.startswith('50 - Chapitre')]
     for idx in chapitres:
         slide = prs.slides[idx - 1]
         cadre = gen._find_frame_by_geom(slide.slide_layout.shapes, "teardrop")
@@ -191,10 +217,13 @@ def main():
                   f"slide {idx} : image clippée au bon preset (teardrop)")
 
     print("Cadre photo bien calé (slide vision — layout 'cadre blanc', round2DiagRect) :")
-    # v2.8 : slide_vision décale de 3 -> 6 (chapitre 01 Exec summary inséré avant elle).
-    # v2.30 : +3 slides insérées avant elle dans le chapitre 01 (specificites_infra,
-    # synthese_pourquoi_quoi_comment, infra_as_product_exemple) — 6 -> 9.
-    slide_vision = prs.slides[8]
+    # Index DERIVE, meme raison que pour les chapitres : c'est la SEULE slide du
+    # deck posee sur le layout « cadre blanc ». La chercher par son layout est
+    # plus vrai que compter les slides qui la precedent.
+    _sur_cadre_blanc = [sl for sl in prs.slides if "cadre blanc" in sl.slide_layout.name]
+    check(len(_sur_cadre_blanc) == 1,
+          f"une seule slide sur le layout « cadre blanc » — trouve {len(_sur_cadre_blanc)}")
+    slide_vision = _sur_cadre_blanc[0]
     cadre_vision = gen._find_frame_in_group(
         slide_vision.slide_layout.shapes, "Google Shape;212;p17", "Google Shape;213;p17")
     images_vision = _images(slide_vision)
