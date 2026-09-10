@@ -132,6 +132,25 @@ def prs_minimal(generate_deck):
     return generate_deck.new_prs()
 
 
+def _faux_capturant(marqueur):
+    """Un faux qui ENREGISTRE ses arguments, là où une lambda `*a, **k` les avale.
+
+    La distinction n'est pas théorique : `verifier_plancher_de_dessin` appelé
+    sans `bord_droit_in` rend un constat sur le deck réel (mesuré le
+    2026-09-10), donc chaque build écrirait `.INVALIDE.pptx` et le livrable ne
+    serait plus jamais mis à jour — pendant qu'une lambda tolérante laissait la
+    suite au vert.
+    """
+    appels = []
+
+    def faux(*a, **k):
+        appels.append((a, k))
+        return [marqueur]
+
+    faux.appels = appels
+    return faux
+
+
 @pytest.mark.parametrize("filet", [
     "verifier_geometrie",
     "verifier_chrome_gabarit",
@@ -146,11 +165,52 @@ def test_chaque_filet_branche_remonte_dans_le_self_check(
     voir puisqu'elle teste les filets isolément.
     """
     marqueur = f"CONSTAT INJECTE PAR LE TEST ({filet})"
-    monkeypatch.setattr(generate_deck.D, filet,
-                        lambda *a, **k: [marqueur])
+    faux = _faux_capturant(marqueur)
+    monkeypatch.setattr(generate_deck.D, filet, faux)
     assert marqueur in generate_deck._controler(prs_minimal), (
         f"{filet} n'est pas consulte par le self-check de build() : "
         "un filet non branche ne protege rien")
+    assert faux.appels, f"{filet} n'a pas ete appele du tout"
+
+
+def test_le_plancher_recoit_les_constantes_du_module(
+        generate_deck, prs_minimal, monkeypatch):
+    """Le filet doit recevoir les BONNES constantes, pas seulement etre appele.
+
+    `verifier_plancher_de_dessin(prs, 5.45)` sans `bord_droit_in` rend 1 constat
+    sur le deck reel la ou l'appel complet en rend 0 : perdre ce kwarg condamne
+    tous les builds a `.INVALIDE.pptx`. Verifier la reference du filet sans
+    verifier ses arguments ne voyait pas ce cas.
+    """
+    # On DEPLACE les constantes du module vers des valeurs sentinelles : c'est
+    # ce qui distingue « le filet recoit CONTENT_BOTTOM » de « le filet recoit
+    # 5.45 ». Comparer les valeurs laissait passer un litteral recopie, qui
+    # decroche silencieusement le jour ou la constante bouge.
+    monkeypatch.setattr(generate_deck, "CONTENT_BOTTOM", -111.0)
+    monkeypatch.setattr(generate_deck, "BORD_DROIT", -222.0)
+    faux = _faux_capturant("peu importe")
+    monkeypatch.setattr(generate_deck.D, "verifier_plancher_de_dessin", faux)
+    generate_deck._controler(prs_minimal)
+
+    (args, kwargs), = faux.appels
+    assert -111.0 in args, (
+        "le plancher doit venir de CONTENT_BOTTOM, pas d'un litteral recopie")
+    assert kwargs.get("bord_droit_in") == -222.0, (
+        "bord_droit_in manquant, faux, ou recopie en litteral : sans lui le "
+        "filet rend un constat sur le deck reel, donc chaque build ecrit "
+        ".INVALIDE.pptx")
+
+
+def test_sans_injection_le_controle_est_vert(generate_deck, prs_minimal):
+    """La ligne de base : le cote FAUX POSITIF, celui qui bloque la livraison.
+
+    Tous les autres tests asserent « marqueur present/absent » et resteraient
+    verts si un filet se mettait a rendre un constat constant — ce qui
+    condamnerait pourtant chaque build.
+    """
+    assert generate_deck._controler(prs_minimal) == [], (
+        "le controle doit etre vert sans injection : un constat constant "
+        "enverrait chaque deck en .INVALIDE.pptx")
 
 
 def test_les_anomalies_de_build_restent_dans_le_self_check(

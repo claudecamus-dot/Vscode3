@@ -88,13 +88,35 @@ def _verifier_rendu_reel(pptx_path, n_slides_attendu, tmp_dir):
 
 
 def main():
-    problemes = gen.build()
+    # `build()` consulte-t-il ENCORE _controler ? Les tests pytest appellent
+    # _controler en direct : aucun n'observe le site d'appel, donc le remettre à
+    # `verifier_geometrie(prs) + _ANOMALIES_BUILD` — l'état exact que le câblage
+    # des filets corrige — laissait la suite entièrement verte (mesuré le
+    # 2026-09-10 : 196 passed sur le mutant). Ce script est le seul exécutant
+    # réel de `build()` : la sentinelle se pose donc ici.
+    _controler_reel = gen._controler
+    _vu = []
+
+    def _controler_sentinelle(prs):
+        _vu.append(True)
+        return _controler_reel(prs)
+
+    gen._controler = _controler_sentinelle
+    try:
+        problemes = gen.build()
+    finally:
+        gen._controler = _controler_reel
+
     out = os.path.join(gen.HERE, "bmad-iap-cadrage-synthese.pptx")
     prs = Presentation(out)
 
     print("Structure :")
     check(len(prs.slides) == 49, f"49 slides — reçu {len(prs.slides)}")
-    check(not problemes, f"géométrie propre (verifier_geometrie) — {len(problemes or [])} problème(s)")
+    check(bool(_vu), "build() consulte bien _controler (tous les filets), "
+                     "et pas un sous-ensemble câblé en dur")
+    check(not problemes,
+          "contrôle propre — geometrie + chrome du gabarit + plancher de dessin"
+          f" + anomalies de build : {len(problemes or [])} problème(s)")
     check(os.path.exists(out) and os.path.getsize(out) > 500_000,
           f"fichier .pptx écrit, taille plausible ({os.path.getsize(out) if os.path.exists(out) else 0} octets)")
 

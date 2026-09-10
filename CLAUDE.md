@@ -10,9 +10,11 @@ Cadrage BMAD IAP : le livrable est un deck de synthèse (`docs/cadrage-ppt/`,
 - Après toute modif du générateur : `python test_generate_deck.py` **en plus** du
   rendu réel relu à l'œil — le test valide le cadrage géométrique, pas la qualité
   d'une photo.
-- Suite complète : `py -m pytest tests/` (90 tests — sur Windows, `--basetemp`
-  sur un dossier neuf : le nettoyage du symlink `pytest-current` plante en
-  teardown sinon, sans que ce soit un échec). **Pas** `tests/test_agent_*.py` :
+- Suite complète : `py -m pytest tests/` (sur Windows, `--basetemp` sur un
+  dossier neuf : le nettoyage du symlink `pytest-current` plante en teardown
+  sinon, sans que ce soit un échec). Le compte n'est **pas** figé ici — il
+  disait 90 pour 196 réels au 2026-09-10 : le rejouer plutôt que le citer,
+  même raison que pour la couverture ci-dessous. **Pas** `tests/test_agent_*.py` :
   ce glob exclut `tests/test_generate_deck_garde.py` — un renommage l'a cassé
   et poussé sur `main` sans que ce filtre ne le détecte (2026-09-03).
 - Un seul test : `py -m pytest tests/test_agent_supervision.py::test_scan_counts_and_generates_page_and_index`.

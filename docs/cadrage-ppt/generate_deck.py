@@ -4893,21 +4893,39 @@ def _controler(prs):
     pas seulement présent dans `pptx_deck.py` (finding du hub du 2026-09-09 :
     les trois filets étaient portés et testés, aucun n'était appelé).
 
-    `verifier_debordements_texte` reste volontairement DEHORS. Mesuré sur le
-    deck réel du 2026-09-10 : 58 constats pour 0 aux trois autres, dont une part
-    vient de l'estimateur qui ignore `line_spacing`. Or ce résultat gouverne le
-    NOM du fichier écrit (`.INVALIDE.pptx` si non vide) : le brancher avant
-    d'avoir réglé son seuil contre un rendu PowerPoint réel bloquerait la
-    livraison d'un deck correct.
+    `verifier_debordements_texte` reste volontairement DEHORS : il rend deux
+    ordres de grandeur de constats de plus que les trois autres sur un deck
+    correct, dont une part vient de l'estimateur qui ignore `line_spacing`. Or
+    ce résultat gouverne le NOM du fichier écrit (`.INVALIDE.pptx` si non
+    vide) : le brancher avant d'avoir réglé son seuil contre un rendu
+    PowerPoint réel bloquerait la livraison d'un deck correct. Pour re-mesurer
+    l'écart plutôt que croire un chiffre daté (58 contre 0 le 2026-09-10) :
+
+        py -c "import sys;sys.path.insert(0,'docs/cadrage-ppt');\
+    import pptx_deck as D;from pptx import Presentation;\
+    p=Presentation('docs/cadrage-ppt/bmad-iap-cadrage-synthese.pptx');\
+    print(len(D.verifier_debordements_texte(p)))"
+
+    Les trois zéros des filets branchés ne sont pas de même nature, et les lire
+    comme trois mesures équivalentes tromperait : `verifier_plancher_de_dessin`
+    rend une liste vide parce qu'il n'y a AUCUN recouvrement horizontal — le
+    bord droit du contenu passe à gauche du badge de numéro. Son zéro dit « rien
+    ne se chevauche ici », pas « le plancher a été mesuré propre » ; le cas qui
+    le ferait parler est verrouillé par les tests de `pptx_deck.py`, pas par ce
+    deck-ci.
     """
-    return (D.verifier_geometrie(prs)
-            + D.verifier_chrome_gabarit(prs)
-            + D.verifier_plancher_de_dessin(prs, CONTENT_BOTTOM,
-                                            bord_droit_in=BORD_DROIT)
-            + _ANOMALIES_BUILD)
+    return list(D.verifier_geometrie(prs)
+                + D.verifier_chrome_gabarit(prs)
+                + D.verifier_plancher_de_dessin(prs, CONTENT_BOTTOM,
+                                                bord_droit_in=BORD_DROIT)
+                + _ANOMALIES_BUILD)
 
 
 def build():
+    # Les anomalies sont accumulees dans une liste de MODULE : sans cette remise
+    # a zero, deux build() dans le meme processus additionnent leurs constats et
+    # le second ecrit un .INVALIDE.pptx pour des defauts deja corriges.
+    _ANOMALIES_BUILD[:] = []
     prs = new_prs()
     slide_cover(prs)
 
@@ -5081,13 +5099,18 @@ def build():
 
     _appliquer_police_deck(prs)
 
+    # « GEOMETRIE » annoncait UNE nature de controle quand il y en a desormais
+    # quatre : un recouvrement du numero de page ou une photo manquante
+    # s'affichait a l'operateur comme un defaut de geometrie, et le message de
+    # succes promettait moins que ce qui avait ete verifie.
     problemes = _controler(prs)
     if problemes:
-        print(f"GEOMETRIE: {len(problemes)} probleme(s)")
+        print(f"CONTROLE: {len(problemes)} probleme(s)")
         for p in problemes:
             print(" -", p)
     else:
-        print("GEOMETRIE: OK — aucune forme hors cadre")
+        print("CONTROLE: OK — geometrie, chrome du gabarit, plancher de dessin,"
+              " anomalies de build")
 
     # Un deck dont le controle signale un defaut n'ecrase PLUS le livrable.
     # `prs.save(out)` etait inconditionnel : seul le code de sortie signalait
