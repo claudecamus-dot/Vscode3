@@ -16,6 +16,28 @@
             "statusMessage": "Verif reelle avant commit (code applicatif)..."
           }
         ]
+      },
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_service.py\"",
+            "timeout": 10,
+            "statusMessage": "Sous-agent : aucun service lance, redemarre ou purge..."
+          }
+        ]
+      },
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_salle_skills.py\"",
+            "timeout": 10,
+            "statusMessage": "Convocation de salle : skills BMAD nommees ?"
+          }
+        ]
       }
     ],
     "SessionStart": [
@@ -42,6 +64,16 @@
             "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/remind_veille_agentic.py\"",
             "timeout": 10,
             "statusMessage": "Cadence veille agentic..."
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/point_du_jour.py\"",
+            "timeout": 15,
+            "statusMessage": "Ce qui attend votre decision..."
           }
         ]
       }
@@ -83,7 +115,8 @@
       "Bash(py -m pytest *)",
       "Bash(py -m py_compile *)",
       "Bash(node -c *)",
-      "Bash(npm test*)"
+      "Bash(npm test*)",
+      "Bash(npx bmad-method *)"
     ]
   }
 }
