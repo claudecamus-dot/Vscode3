@@ -3355,8 +3355,10 @@ def slide_gaspillage_partage(prs):
 # une ou plusieurs familles de gaspillage — le pont direct vers slide_familles.
 # La distinction par couleur d'accent persona d'origine (Infra/Utilisateur/
 # Management/Sponsor en teintes propres) a été retirée à la bascule de charte
-# du 2026-09-10 : les 4 lanes passent désormais ENCRE partout (comment corrigé
-# le 2026-09-11). Rangées dimensionnées à leur contenu.
+# du 2026-09-10 (couleur non porteuse de sens). Accent "un sur N" reposé le
+# 2026-09-11 sur la seule lane Infra & RUN (cohérence avec slide_personas, qui
+# accentue déjà ce persona) — les 3 autres lanes restent ENCRE. Rangées
+# dimensionnées à leur contenu.
 def slide_douleurs(prs):
     s = content_slide(prs, "Besoins & douleurs",
                        "Les douleurs des clients infra : mesurables, pas des plaintes",
@@ -3368,7 +3370,7 @@ def slide_douleurs(prs):
     ])
 
     rows = [
-        ("Infra & RUN", ENCRE,
+        ("Infra & RUN", ACCENT_PLEIN,
          "RUN subi : les mêmes incidents reviennent et mobilisent les experts seniors, le BUILD "
          "est sacrifié à l'astreinte.",
          "Tickets récurrents/mois, part du temps en RUN non maîtrisé.",
@@ -4687,7 +4689,9 @@ def slide_kpis_pourquoi_quoi(prs):
          "distinguer une méthode qui s'améliore d'une méthode qui stagne.",
          "Temps en heures consultant pour un cadrage flash ; part des livrables issus d'un template "
          "sans réécriture substantielle — pas juste « utilisé un template »."),
-        ("Grille de maturité", ENCRE,
+        # Accent "un sur N" (arbitrage 2026-09-11) : cohérence avec slide_kpis,
+        # qui accentue déjà cette même famille (accent_idx=2).
+        ("Grille de maturité", ACCENT_PLEIN,
          "Sans mesure répétée dans le temps, la maturité reste une opinion de consultant, pas un "
          "delta objectivable — ce qui rend la boucle ⟲ vérifiable plutôt que déclarative.",
          "Delta par pilier (pas un score agrégé qui masquerait un recul) ; même instrument (grille "
@@ -4762,7 +4766,9 @@ def slide_kpis_mise_en_place(prs):
         ("KPIs d'usage du module", ENCRE, "Le consultant, au fil des missions",
          "Journal de mission + bibliothèque de REX",
          "Par mission, consolidé à MVP5"),
-        ("Grille de maturité", ENCRE, "iap-strategy-lead",
+        # Accent "un sur N" (arbitrage 2026-09-11) : cohérence avec slide_kpis
+        # et slide_kpis_pourquoi_quoi, qui accentuent déjà cette même famille.
+        ("Grille de maturité", ACCENT_PLEIN, "iap-strategy-lead",
          "Grille V3.2 repassée en atelier ou en interview",
          "T0 (① Assessment flash) puis chaque boucle ⟲"),
     ]
@@ -5123,9 +5129,10 @@ def slide_architecture_si(prs):
     # niveau A/B/C devient une bande pleine largeur teintée (badge-lettre au
     # lieu d'une cellule de texte). La correspondance de couleur A/B/C avec
     # slide_ambition (bleu/or/rouge) a été retirée à la bascule de charte du
-    # 2026-09-10 : les 3 bandes passent ici ENCRE partout (comment corrigé le
-    # 2026-09-11 — slide_ambition, elle, accentue son niveau A en navy plein,
-    # ce que cette slide ne reproduit plus). Volontairement AUCUN connecteur/flèche entre
+    # 2026-09-10 (couleur non porteuse de sens). Accent "un sur N" repositionné
+    # le 2026-09-11 sur le seul niveau A (ACCENT_PLEIN), pour la même raison de
+    # cohérence que l'accent de slide_ambition sur ce même niveau — sans
+    # réintroduire un code couleur par niveau. Volontairement AUCUN connecteur/flèche entre
     # les bandes : slide_ambition affirme explicitement « pas un spectre
     # linéaire » et cette slide dit qu'un cabinet peut rester durablement au
     # niveau A/B — un fil descendant aurait suggéré une progression forcée que
@@ -5134,7 +5141,7 @@ def slide_architecture_si(prs):
                        "Le lien avec le SI du client change avec le niveau d'ambition, pas la méthode",
                        color=ENCRE)
     rows = [
-        ("A", ENCRE, "Aide au coach",
+        ("A", ACCENT_PLEIN, "Aide au coach",
          "Exports ponctuels (ServiceNow/Jira), interviews",
          "Aucune — tout est apporté par le consultant",
          "Markdown + deck, à la demande"),
