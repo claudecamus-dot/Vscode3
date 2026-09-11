@@ -2325,7 +2325,8 @@ def slide_infra_transverse(prs):
     servies = [
         ("Équipes produit", "Livrent de la valeur métier — l'infra est un moyen, jamais leur sujet."),
         ("Équipes applicatives", "Consomment la plateforme, ou la contournent si elle freine."),
-        ("Sécurité & conformité", "Posent des exigences transverses que personne ne budgète."),
+        ("Sécurité, conformité & résilience", "Exigences transverses que personne ne budgète — "
+         "l'offre s'y arrime, ne les remplace pas (cf. chapitre Démarche)."),
         ("Direction", "Voit une ligne de coût, pas les arbitrages qui la produisent."),
     ]
 
@@ -3827,6 +3828,114 @@ def slide_fil_humain(prs):
     return s
 
 
+# Nouveau (2026-09-11, comble un manque relevé en revue face à une demande
+# client réelle — CI/CD et plateformes standard n'existaient qu'en 4 lignes
+# "TECH :" éparpillées dans les cartes de slide_pitch_iap/slide_offre_iap, sans
+# jamais former un fil propre). Même trame ①②③⟲ que slide_fil_humain, même
+# gabarit (pattern 14 : une carte, colonnes séparées par un filet, badge à
+# cheval sur le bord haut) — le fil technique est le pendant de fil_humain,
+# placé juste après lui. Contenu ancré dans docs/bmad-iap-cadrage.md (rien
+# d'inventé) : les 4 étapes reprennent mot pour mot les notes "TECH :" déjà
+# écrites en slide_pitch_iap (dette/risques → décommissionnement/observabilité
+# → CI/CD/infra as code → dette technique et KPI infra) ; "Produit plateforme"
+# (cloud interne, orchestration, CI/CD, observabilité) reprend la table des
+# niveaux de granularité (§Définition produit infra) ; les owners reprennent
+# les agents réellement nommés (iap-platform-architect, iap-run-tma-specialist
+# — RUN/SLA/SLO/TMA —, iap-platform-product-pm, iap-metrics-sre-finops-lead).
+# La bande de clôture pose la LIMITE explicite plutôt que de laisser croire à
+# une compétence qui n'est pas dans le périmètre du cadrage : cybersécurité,
+# conformité et résilience opérationnelle restent la gouvernance DU CLIENT
+# (cf. la carte "Sécurité, conformité & résilience" de slide_infra_transverse,
+# corrigée le même jour) — l'offre s'y arrime, ne la remplace pas. Assumer une
+# compétence de sécurité non couverte par le cadrage aurait été pire que de ne
+# rien dire.
+def slide_fil_technique(prs):
+    s = content_slide(prs, "Démarche",
+                       "La trajectoire porte aussi un fil technique, de bout en bout",
+                       color=ENCRE)
+    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.4, [
+        ("Le fil technique suit la même trame ①②③⟲ que la trajectoire et le fil humain — un "
+         "fil dans les phases, pas un chantier d'architecture séparé à maintenir.",
+         dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
+    ])
+
+    phases = [
+        ("①", "ASSESSMENT FLASH", "Cartographier", ENCRE,
+         "Dette technique et risques — plateformes vieillissantes, dépendances non "
+         "maîtrisées, licences en tension — cartographiés avant toute décision d'engager : "
+         "une base factuelle, pas une checklist de conformité.",
+         "iap-platform-architect · iap-diagnostic-systemique"),
+        ("②", "PREMIER DÉPLOIEMENT", "Décommissionner & observer", ENCRE,
+         "Sur les équipes pilotes : ce qui peut être décommissionné l'est, l'observabilité "
+         "de ce qui reste est posée — la base sur laquelle la généralisation s'appuie.",
+         "iap-platform-architect · iap-run-tma-specialist"),
+        ("③", "IMPLÉMENTATION ITÉRATIVE", "Standardiser & outiller", ENCRE,
+         "Généralisation équipe par équipe : CI/CD et infra as code deviennent le mode par "
+         "défaut — la plateforme produit (cloud interne, orchestration, observabilité) "
+         "prend forme.",
+         "iap-platform-architect · iap-platform-product-pm"),
+        ("⟲", "BOUCLE DE RÉÉVALUATION", "Mesurer & réengager", ENCRE,
+         "Dette technique et KPI infra rejoués au même instrument qu'à T0 — le delta "
+         "technique se lit à côté du delta de maturité et du delta humain.",
+         "iap-metrics-sre-finops-lead · iap-run-tma-specialist"),
+    ]
+    n = len(phases)
+    badge_d = 0.45
+    pad = 0.16
+    _, col_w = col_x(0, n, gap=0)
+    usable = col_w - 2 * pad
+
+    body_lines = max(_lignes(p[4], usable, 7.5) for p in phases)
+    body_h = body_lines * (7.5 * 1.25 / 72.0) + 0.04
+    owner_lines = max(_lignes(p[5], usable, 6.5) for p in phases)
+    owner_h = owner_lines * (6.5 * 1.2 / 72.0) + 0.03
+    card_h = badge_d / 2 + 0.10 + 0.44 + body_h + 0.14 + owner_h + 0.14
+    band_h = 0.60
+    group_h = badge_d / 2 + card_h + 0.18 + band_h
+    region_top = CONTENT_TOP + 0.44
+    top1 = region_top + min(0.30, max(0.0, (CONTENT_BOTTOM - region_top - group_h) / 2))
+    card_top = top1 + badge_d / 2
+
+    D.add_rect(s, MARGIN, card_top, CONTENT_W, card_h, fill="#ffffff",
+               line=LINE, line_w=0.75, rounded=True, radius=0.06)
+    for i, (sym, phase, verbe, color, desc, owner) in enumerate(phases):
+        x, w = col_x(i, n, gap=0)
+        if i > 0:
+            D.add_rect(s, x, card_top + 0.14, 0.012, card_h - 0.28, fill=LINE)
+        cx = x + w / 2 - badge_d / 2
+        D.add_rect(s, cx, top1, badge_d, badge_d, fill=color, rounded=True, radius=0.5)
+        D.add_text(s, cx, top1, badge_d, badge_d, [
+            (sym, dict(size=13, bold=(sym != "⟲"), color="#ffffff", align=PP_ALIGN.CENTER)),
+        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+        head_y = top1 + badge_d + 0.10
+        D.add_text(s, x + pad, head_y, usable, 0.22, [
+            (verbe, dict(size=9, bold=True, color=encre_de(color), align=PP_ALIGN.CENTER)),
+        ], align=PP_ALIGN.CENTER)
+        D.add_text(s, x + pad, head_y + 0.22, usable, 0.16, [
+            (phase, dict(size=6, bold=True, color=MUTED, align=PP_ALIGN.CENTER)),
+        ], align=PP_ALIGN.CENTER)
+        body_y = head_y + 0.44
+        D.add_text(s, x + pad, body_y, usable, body_h, [
+            (desc, dict(size=7.5, color=NAVY, line_spacing=1.25)),
+        ])
+        sep_y = body_y + body_h + 0.06
+        D.add_rect(s, x + pad, sep_y, usable, 0.012, fill=LINE)
+        D.add_text(s, x + pad, sep_y + 0.06, usable, owner_h, [
+            (owner, dict(size=6.5, bold=True, color=encre_de(color), line_spacing=1.2)),
+        ])
+
+    band_top = card_top + card_h + 0.18
+    D.add_rect(s, MARGIN, band_top, CONTENT_W, band_h, fill=TRACK, rounded=True, radius=0.08)
+    D.add_text(s, MARGIN + 0.2, band_top, CONTENT_W - 0.4, band_h, [
+        ("Ce que ce fil n'est pas", dict(size=8, bold=True, color=NAVY)),
+        ("Pas une architecture technique détaillée (objet d'une mission dédiée si le "
+         "contexte l'exige) ; la gouvernance sécurité, conformité et résilience "
+         "opérationnelle reste celle du client — ce fil s'y arrime, il ne la remplace pas.",
+         dict(size=7, color=NAVY, space_before=3, line_spacing=1.25)),
+    ], anchor=MSO_ANCHOR.MIDDLE)
+    return s
+
+
 # --- Nouveau (v2.6, point ②) : les activités humaines de la démarche, en DEUX
 # registres — outillées par IAP vs purement humaines (sans l'outil). Contenu
 # ancré dans docs/Import/notes-extraction-scale.md (micro-lancement sponsor,
@@ -4611,7 +4720,7 @@ def slide_kpis(prs):
     familles = [
         ("KPIs de mission", ENCRE, "Côté client",
          ["Gaspillage traité (capacité RUN récupérée)", "Adoption produit (self-service)",
-          "Fiabilité & coût (MTTR : délai moyen de résolution, coût/capacité)", "Gouvernance IA (supervision, incidents)",
+          "Fiabilité & SLA (MTTR, respect des engagements de service, coût/capacité)", "Gouvernance IA (supervision, incidents)",
           "Maturité (delta par pilier, T0→réévaluation)"]),
         ("KPIs d'usage du module", ENCRE, "Côté cabinet",
          ["Accélération (temps pour un cadrage flash)", "Réutilisation (templates vs ad hoc)",
@@ -4682,8 +4791,9 @@ def slide_kpis_pourquoi_quoi(prs):
         ("KPIs de mission", ENCRE,
          "Sans eux, un deck peut être livré dans les règles sans jamais savoir si le client va "
          "réellement mieux — la « transformation cosmétique » appliquée cette fois au résultat.",
-         "Capacité RUN récupérée en heures/mois ; delta de MTTR en minutes ; taux de self-service "
-         "sur la capacité livrée — pas un pourcentage vague."),
+         "Capacité RUN récupérée en heures/mois ; delta de MTTR en minutes ; SLA/SLO tenus vs "
+         "promis (iap-product-definition) ; taux de self-service sur la capacité livrée — pas "
+         "un pourcentage vague."),
         ("KPIs d'usage du module", ENCRE,
          "Le module est réutilisé mission après mission — sans mesure d'usage, impossible de "
          "distinguer une méthode qui s'améliore d'une méthode qui stagne.",
@@ -5557,6 +5667,10 @@ def build():
     # v2.4 : le fil humain décline la trame ①②③⟲ de slide_trajectoire côté
     # personnes — placé juste après elle.
     slide_fil_humain(prs)
+    # 2026-09-11 : le fil technique décline la même trame côté tech — comble un
+    # manque relevé en revue (CI/CD/plateformes standard n'existaient qu'en 4
+    # notes "TECH :" éparpillées). Placé juste après le fil humain, son pendant.
+    slide_fil_technique(prs)
     # v2.6 (point ②) : les activités humaines de la démarche, avec/sans l'outil
     # — juste après le fil humain, qu'elle décline en registres d'activités.
     slide_activites_humaines(prs)
