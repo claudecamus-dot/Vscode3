@@ -1,23 +1,25 @@
 # Playbook `revue-design-parallele` — N angles de revue en fan-out
 
-Pattern porté depuis VSCode2 (précédent réel là-bas : 4 agents de revue design en parallèle
-sur des angles distincts, consolidés en backlog de correctifs). Pas encore joué sur ce
-dépôt — statut `jamais-joue` assumé jusqu'à une première exécution réelle.
+Pattern générique de revue par fan-out : plusieurs agents de revue lancés en parallèle sur
+des angles distincts (ex. parcours utilisateur, cohérence visuelle, contenu, accessibilité),
+consolidés ensuite en une liste de correctifs concrets.
 
-Règles du mode parallèle (conception §5 de `docs/reflexions/agent-orchestrateur.md`) :
-angles réellement indépendants, lecture seule pendant le fan-out, ≤ 4 sous-agents,
-consolidation obligatoire — chaque sous-agent repart d'un contexte froid facturé, exiger
-des rapports courts et structurés.
+Importé depuis le projet VSCode2, où ce pattern était éprouvé sur des revues UX/design.
+Ici, **statut `jamais-joue`** (FORMAT.md n'a que deux valeurs : `eprouve` | `jamais-joue` —
+`importe` n'en fait pas partie, corrigé le 2026-09-11 après avoir trouvé la correction
+locale déjà faite chez VSCode3 sans avoir été remontée) — à confirmer sur les premiers
+runs de ce projet.
+
+Règles du mode parallèle (cf. `agent-orchestrator`) : angles réellement indépendants,
+lecture seule pendant le fan-out, ≤ 4 sous-agents, consolidation obligatoire — chaque
+sous-agent repart d'un contexte froid, exiger des rapports courts et structurés.
 
 **Garde exhaustivité** : un fan-out d'`Explore` lit des *extraits*, pas des fichiers
-entiers — il ne garantit jamais l'exhaustivité. Quand le fan-out sert à recenser toutes les
-références à des identifiants **avant une suppression/renommage**, la consolidation DOIT se
-terminer par une garde déterministe : un `grep -r` (ou l'outil Grep) de chaque identifiant
-retiré sur tout le dépôt, dont le résultat **prime** sur les rapports des sous-agents.
-Règle issue d'un échec constaté sur le projet frère (VSCode2, tri BMAD 2026-07-18) : un
-fan-out de 3 `Explore` y avait raté une référence juste avant un `git rm`, rattrapée
-seulement par un grep final non prévu — donc traitée ici comme garde-fou obligatoire, pas
-optionnel.
+entiers — il ne garantit jamais l'exhaustivité. Quand le fan-out sert à recenser toutes
+les références à des identifiants **avant une suppression/renommage**, la consolidation
+DOIT se terminer par une garde déterministe : un `grep -r` (ou l'outil Grep) de chaque
+identifiant retiré sur tout le dépôt, dont le résultat **prime** sur les rapports des
+sous-agents.
 
 ```json
 {
@@ -69,3 +71,22 @@ optionnel.
   "regle_reprise": "une relance ciblée par étape en échec de contrat (sous-agent muet ou hors format : une seule relance du sous-agent concerné), puis escalade utilisateur avec l'état réel"
 }
 ```
+
+<!-- SOCLE-PROVENANCE: socle : 49c73d5 du 2026-09-11 -->
+> **Socle généré** — tout ce qui PRÉCÈDE ce bandeau vient du hub de supervision (`49c73d5`, 2026-09-11) et sera **réécrit** à la prochaine propagation.
+> Le chapitre « Portée sur ce projet » placé après ce bandeau, lui, n'est jamais réécrit : c'est le travail local.
+
+## Portée sur ce projet
+
+- **Précédent concret** : le pattern importé de VSCode2 y avait tourné avec 4 agents de
+  revue design en parallèle sur des angles distincts, consolidés en backlog de correctifs
+  — c'est cette exécution réelle qui fonde le statut `jamais-joue` (importé mais pas
+  encore rejoué ici), pas une simple prudence par défaut.
+- **Règles du mode parallèle** : `docs/reflexions/agent-orchestrateur.md` §5 de ce
+  dépôt (document natif, incrément O-A, 2026-07-17 — voir le chapitre équivalent de
+  `FORMAT.md`) les détaille.
+- **Pourquoi la garde exhaustivité est obligatoire ici et pas optionnelle** : échec
+  constaté sur le projet frère VSCode2 (tri BMAD, 2026-07-18) — un fan-out de 3 `Explore`
+  y avait raté une référence juste avant un `git rm`, rattrapée seulement par un grep
+  final non prévu.
+
