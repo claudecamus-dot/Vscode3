@@ -21,6 +21,7 @@ Reutilisable hors de ce projet : aucune dependance au domaine metier ici.
 Les coordonnees des helpers sont exprimees en POUCES (float) pour la lisibilite.
 """
 from pptx.dml.color import RGBColor
+from pptx.enum.dml import MSO_LINE_DASH_STYLE
 from pptx.enum.shapes import MSO_SHAPE, MSO_SHAPE_TYPE
 from pptx.enum.text import MSO_ANCHOR, MSO_AUTO_SIZE, PP_ALIGN
 from pptx.oxml.ns import qn
@@ -187,6 +188,67 @@ def add_range_bar(slide, l, t, w, h, mn, mx, scale_max, fill, marker=None,
         mx_x = l + w * fm - 0.015
         add_rect(slide, mx_x, t - 0.05, 0.03, h + 0.10, fill=INK, rounded=True,
                  radius=0.5)
+
+
+def add_chip(slide, x, y, w, h, label, color, text_color="#ffffff", size=TYPE["tiny"]):
+    """Pastille rectangulaire pleine avec libelle centre (etiquette de code,
+    de duree, de famille...). Portee ici depuis generate_deck.py le 2026-09-11
+    (finding audit VScode5 : reste utilisee telle quelle par 8+ types de slide,
+    donc genuinement reutilisable, contrairement aux helpers de schema
+    a usage unique qui restent locaux au generateur)."""
+    add_rect(slide, x, y, w, h, fill=color, rounded=True, radius=0.5)
+    add_text(slide, x, y, w, h, [(label, dict(size=size, bold=True, color=text_color,
+              align=PP_ALIGN.CENTER))], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+
+
+def add_badge(slide, cx, cy, d, color, symbol, filled=True, dashed=False, fill=None,
+              text_color=None, size=12, bold=True):
+    """Pastille ronde centree en (cx, cy) — `filled` pour une etape « en dur »
+    (fond plein), sinon contour seul (etape optionnelle, `dashed=True`). Portee
+    ici depuis generate_deck.py le 2026-09-11 (meme finding que `add_chip`).
+
+    Repli de couleur de texte volontairement en litteral ('#ffffff'), pas via
+    une constante de theme : ce module reste sans dependance au domaine metier
+    (docstring du fichier) — c'est a l'appelant de passer `text_color` si son
+    theme n'est pas blanc sur fond plein."""
+    x, y = cx - d / 2, cy - d / 2
+    if filled:
+        add_rect(slide, x, y, d, d, fill=color, rounded=True, radius=0.5)
+        tc = text_color or "#ffffff"
+    else:
+        shp = add_rect(slide, x, y, d, d, fill=(fill or "#ffffff"), line=color,
+                        line_w=1.2, rounded=True, radius=0.5)
+        if dashed:
+            shp.line.dash_style = MSO_LINE_DASH_STYLE.DASH
+        tc = text_color or color
+    add_text(slide, x, y, d, d, [
+        (symbol, dict(size=size, bold=bold, color=tc, align=PP_ALIGN.CENTER)),
+    ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+
+
+def appliquer_police(prs, police, secours, glyphes_hors_police=frozenset()):
+    """Applique `police` a tous les runs de texte du document, sauf les glyphes
+    de `glyphes_hors_police` qui restent en `secours` (couverture Unicode absente
+    de la police de marque). Portee ici depuis generate_deck.py le 2026-09-11 —
+    seule la logique est generique ; le CHOIX de police reste au projet appelant
+    (aucun defaut ici : imposer une police de marque par defaut couplerait ce
+    module reutilisable a l'identite visuelle d'un seul projet)."""
+    n_police, n_secours = 0, 0
+    for slide in prs.slides:
+        for shape in slide.shapes:
+            if not shape.has_text_frame:
+                continue
+            for p in shape.text_frame.paragraphs:
+                for r in p.runs:
+                    if r.text.strip() in glyphes_hors_police:
+                        r.font.name = secours
+                        n_secours += 1
+                    else:
+                        r.font.name = police
+                        n_police += 1
+    print(f"Police {police} appliquee sur {n_police} runs "
+          f"({n_secours} run(s) laisse(s) en {secours} — glyphe hors couverture).")
+    return n_police, n_secours
 
 
 def _compte_lignes(texte, cpl):

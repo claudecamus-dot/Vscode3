@@ -850,10 +850,9 @@ def col_x(i, n, w=CONTENT_W, x0=MARGIN, gap=GAP):
     return x0 + i * (col_w + gap), col_w
 
 
-def chip(slide, x, y, w, h, label, color, text_color="#ffffff", size=D.TYPE["tiny"]):
-    D.add_rect(slide, x, y, w, h, fill=color, rounded=True, radius=0.5)
-    D.add_text(slide, x, y, w, h, [(label, dict(size=size, bold=True, color=text_color,
-                align=PP_ALIGN.CENTER))], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+chip = D.add_chip  # extrait vers pptx_deck.py le 2026-09-11 (finding audit VScode5) ;
+# alias garde ici pour ne pas toucher les 12 sites d'appel du generateur
+# (grep \bchip\( generate_deck.py, hors ce commentaire, le 2026-09-11).
 
 
 # --- Helpers du schéma « parcours de mission » (slide_offre_iap, v2.8) : pas de
@@ -981,23 +980,10 @@ def _chevron_arrow(slide, x, y, w, h, color=MUTED, frac_w=0.72, frac_h=0.5):
                    fill=WHITE, line=color, line_w=1.4)
 
 
-def _badge(slide, cx, cy, d, color, symbol, filled=True, dashed=False, fill=None,
-           text_color=None, size=12, bold=True):
-    """Pastille ronde centrée en (cx, cy) — `filled` pour une étape « en dur »
-    (fond plein), sinon contour seul (étape optionnelle, `dashed=True`)."""
-    x, y = cx - d / 2, cy - d / 2
-    if filled:
-        D.add_rect(slide, x, y, d, d, fill=color, rounded=True, radius=0.5)
-        tc = text_color or WHITE
-    else:
-        shp = D.add_rect(slide, x, y, d, d, fill=(fill or WHITE), line=color,
-                          line_w=1.2, rounded=True, radius=0.5)
-        if dashed:
-            shp.line.dash_style = MSO_LINE_DASH_STYLE.DASH
-        tc = text_color or color
-    D.add_text(slide, x, y, d, d, [
-        (symbol, dict(size=size, bold=bold, color=tc, align=PP_ALIGN.CENTER)),
-    ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+_badge = D.add_badge  # extrait vers pptx_deck.py le 2026-09-11 (finding audit VScode5) ;
+# alias garde ici pour ne pas toucher les 6 sites d'appel du generateur. WHITE
+# (theme lt1 de CE gabarit) mesure a #FFFFFF, identique au litteral '#ffffff'
+# dont add_badge se sert par defaut — repli confirme, pas suppose.
 
 
 def _bandeau_cloture(slide, texte, bas_contenu, nom_slide, size=12):
@@ -2122,7 +2108,7 @@ def slide_specificites_infra(prs):
 # chapitre. Corps redessiné selon le même système
 # de design "contour" (contenu inchangé, seule la forme change).
 def slide_infra_as_product_exemple(prs):
-    s = content_slide(prs, "Contexte",
+    s = content_slide(prs, "Spécificités de l'infra",
                        "Ce que change l'infra as a product, concrètement — un exemple avant/après.",
                        color=ACCENT)
 
@@ -2610,8 +2596,8 @@ def slide_qui_achete(prs):
         ("Platform engineering pur",
          "La cible produit/plateforme, un modèle devenu standard.",
          "La cible sans le financement",
-         "Reproduit l'écart 80/30 : 80 % de platform teams en 2026, moins de 30 % de gains "
-         "mesurables (Gartner)."),
+         "Reproduit l'écart 80/30 déjà posé au déclencheur ② : 80 % de platform teams en 2026, "
+         "moins de 30 % de gains mesurables (Gartner)."),
         ("AIOps / agentic outillé",
          "Time-to-value court (ServiceNow, Datadog).",
          "Automatise le RUN sans transformer",
@@ -3343,8 +3329,8 @@ def slide_gaspillage_partage(prs):
 
     _bandeau_cloture(
         s,
-        ("Ce qui change : le gaspillage cesse d'être orphelin — il a un "
-         "porteur nommé et un objectif partagé."),
+        ("Ce qui change depuis le chapitre Spécificités de l'infra : le gaspillage "
+         "cesse d'être orphelin — il a un porteur nommé et un objectif partagé."),
         carte_top + carte_h + 0.12, "slide_gaspillage_partage")
     return s
 
@@ -4947,7 +4933,8 @@ def slide_kpis_mise_en_place(prs):
 def slide_kpis_exemple(prs):
     s = content_slide(prs, "KPI", "KPIs en pratique : le cas nominal RUN massif, avant/après", color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.28, [
-        ("Même fixture illustrative que le cas nominal de l'export markdown (chapitre IA) — pas un client réel.",
+        ("Même fixture illustrative que l'agent de triage de tickets et le cas nominal de "
+         "l'export markdown (chapitre IA) — pas un client réel.",
          dict(size=8, color=MUTED, italic=True)),
     ])
     col_widths = [2.85, 1.75, 1.85, 1.725]
@@ -5461,21 +5448,10 @@ GLYPHES_HORS_POLICE_DECK = {"①", "②", "③", "⟲"}
 
 
 def _appliquer_police_deck(prs, police=POLICE_DECK, secours=POLICE_SECOURS):
-    n_police, n_secours = 0, 0
-    for slide in prs.slides:
-        for shape in slide.shapes:
-            if not shape.has_text_frame:
-                continue
-            for p in shape.text_frame.paragraphs:
-                for r in p.runs:
-                    if r.text.strip() in GLYPHES_HORS_POLICE_DECK:
-                        r.font.name = secours
-                        n_secours += 1
-                    else:
-                        r.font.name = police
-                        n_police += 1
-    print(f"Police {police} appliquée sur {n_police} runs "
-          f"({n_secours} run(s) laissé(s) en {secours} — glyphe hors couverture).")
+    """Alias — logique extraite vers `pptx_deck.appliquer_police` le 2026-09-11
+    (finding audit VScode5) ; le choix de police (Outfit) reste ici, propre a
+    ce projet, jamais un défaut du module réutilisable."""
+    return D.appliquer_police(prs, police, secours, GLYPHES_HORS_POLICE_DECK)
 
 
 def _controler(prs):
