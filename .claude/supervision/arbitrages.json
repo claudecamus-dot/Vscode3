@@ -311,6 +311,15 @@
    ],
    "source": "arbitrage utilisateur 2026-09-11 (« applique », traitement des findings affiches au tableau de bord)",
    "decision": "APPLIQUE — CLOS POUR CE DEPOT, OUVERT AU HUB. Finding confirme exact : py .claude/hooks/point_du_jour.py rend toujours 'kit installe : mesure impossible (No module named kit_installe)', module qui n'existe que chez le hub (VScode5). Meme schema que flotte:point-du-jour-absent-des-5-cibles : la correction (piste (a) garder le bloc hub-only hors propagation, ou (b) le rendre silencieux si .claude/dispositif/ est absent) n'a pas sa place ici (lecon P1 — le canon se corrige au hub, jamais localement, les copies locales divergent). Deja signale a la session hub le 2026-09-10 (vscode3-7e -> vscode5-supervision-projets-84) ; aucun geste local supplementaire. RESTE OUVERT, ET CE N'EST PAS A CE DEPOT DE LE FERMER : le correctif au hub (kit_installe.py) et sa repropagation aux 5 cibles."
+  },
+  {
+   "cible": "flotte:point-du-jour-importe-kit-installe-hub-only",
+   "date": "2026-09-11",
+   "categories": [
+    "pratique-dev"
+   ],
+   "source": "arbitrage utilisateur 2026-09-11 (« signale sur le canal fichier », faute de session hub live)",
+   "decision": "COMPLEMENT, PAS UNE NOUVELLE DECISION. ListAgents interroge le 2026-09-11 : aucune session vscode5 (hub) parmi les pairs actifs — seules vscode4-51 et vscode2-a8 sont interactives a ce moment. Le SendMessage direct du 2026-09-10 (vscode3-7e -> vscode5-supervision-projets-84) n'est donc pas reproductible aujourd'hui. Choix utilisateur explicite : pas de relance live, le canal fichier (cette entree + le finding source dans diagnostic.json) suffit — la prochaine session hub qui scanne ce depot le voit sans geste supplementaire de ce depot."
   }
  ]
 }
