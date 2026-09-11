@@ -72,8 +72,8 @@ sous-agents.
 }
 ```
 
-<!-- SOCLE-PROVENANCE: socle : 49c73d5 du 2026-09-11 -->
-> **Socle généré** — tout ce qui PRÉCÈDE ce bandeau vient du hub de supervision (`49c73d5`, 2026-09-11) et sera **réécrit** à la prochaine propagation.
+<!-- SOCLE-PROVENANCE: socle : 0ad0fed du 2026-09-11 -->
+> **Socle généré** — tout ce qui PRÉCÈDE ce bandeau vient du hub de supervision (`0ad0fed`, 2026-09-11) et sera **réécrit** à la prochaine propagation.
 > Le chapitre « Portée sur ce projet » placé après ce bandeau, lui, n'est jamais réécrit : c'est le travail local.
 
 ## Portée sur ce projet
@@ -89,4 +89,3 @@ sous-agents.
   constaté sur le projet frère VSCode2 (tri BMAD, 2026-07-18) — un fan-out de 3 `Explore`
   y avait raté une référence juste avant un `git rm`, rattrapée seulement par un grep
   final non prévu.
-
