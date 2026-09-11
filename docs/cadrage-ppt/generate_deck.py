@@ -683,8 +683,23 @@ _REQUETES_PHOTO = {
     # etait deja pris par la Demarche : deux chapitres a la meme photo se lisent
     # comme une erreur de montage. Nom NEUF -> repli obligatoire ci-dessous.
     # Photo A VERIFIER AU RENDU comme toutes les autres : une requete mot-cle
-    # n'a aucun jugement (cf. « desert dune » -> fossile de musee).
-    "riverdelta": "river delta aerial",
+    # n'a aucun jugement (cf. « desert dune » -> fossile de musee, trouve puis
+    # ecarte le 2026-09-01, jamais expose car hors des scenes REELLEMENT
+    # appelees par le deck — seul « river delta aerial » l'etait).
+    # « river delta aerial » (seed=0, requete d'origine) rendait le resultat
+    # Openverse #0 : une image satellite en fausses couleurs arc-en-ciel
+    # PORTANT UN FILIGRANE « rawpixel » tuile visible sur toute la photo —
+    # trouve au rendu reel zoome du 2026-09-11, jamais vu au rendu non-zoome
+    # (la vignette de slide le masque). Reciblee sur la requete plus large
+    # « river delta » (7 resultats CC0) : l'index 5 (NASA, credit Openverse,
+    # delta du Gange/Brahmapoutre) est SANS filigrane sur toute sa surface
+    # (verifie par crop plein-cadre des 3 coins) et sa palette (chenaux
+    # sombres/creme) est plus proche de la charte navy+cyan que l'original.
+    # Ordre Openverse reverifie stable entre deux appels le 2026-09-11 (meme
+    # URL) — meme fragilite structurelle que le reste de ce mapping mot-cle
+    # (aucun jugement de contenu cote API), a re-verifier si jamais le
+    # resultat change de nature au rendu.
+    "riverdelta": "river delta",
 }
 
 
@@ -737,7 +752,12 @@ def _remplir_cadre(slide, cadre, scene, seed=0):
     aspect = Emu(width).inches / Emu(height).inches
     px_w = 960
     px_h = int(round(px_w / aspect))
-    path = os.path.join(IMG_DIR, f"{scene}_{seed}_{px_w}x{px_h}.png")
+    # Cache en .jpg, pas .png : le contenu est une PHOTO (network ou repli
+    # procedural), et cover_crop_to_aspect()/generate_to() infèrent l'encodage
+    # du seul suffixe du chemin passé. Une photo cachée en PNG (lossless) sur
+    # ~1000px pèse 5 à 10× plus qu'un JPEG visuellement identique — c'était
+    # la quasi-totalité des 26 Mo mesurés dans le .pptx exporté (2026-09-11).
+    path = os.path.join(IMG_DIR, f"{scene}_{seed}_{px_w}x{px_h}.jpg")
     if not os.path.exists(path):
         requete = _REQUETES_PHOTO.get(scene, scene)
         aspect_ratio = "wide" if aspect > 1.15 else "tall" if aspect < 0.85 else "square"
@@ -747,6 +767,12 @@ def _remplir_cadre(slide, cadre, scene, seed=0):
                                    manifest_path=IMG_MANIFEST)
             from framed_image import cover_crop_to_aspect
             cover_crop_to_aspect(brut, path, aspect)
+            # cover_crop_to_aspect() sauve avec les défauts PIL (JPEG qualité
+            # 75) : ré-encodage local à qualité 90 pour un rendu plein cadre
+            # sur un deck client — le gain de poids vient de PNG->JPEG, pas
+            # d'une compression agressive en plus.
+            from PIL import Image as _Image
+            _Image.open(path).convert("RGB").save(path, quality=90, optimize=True)
             print(f"  photo réelle posée pour '{scene}' ({requete!r}, via Openverse CC0)")
         except Exception as e:
             repli = _SCENE_REPLI.get(scene, scene)
@@ -1435,12 +1461,17 @@ def slide_offre_iap(prs):
 # _GLYPHES_SANS_GRAS). Trois formes distinctes, réutilisées à l'identique par
 # slide_pitch_iap et slide_demarche_avec_sans_agentic pour que les deux faces de
 # l'agentic se reconnaissent d'une slide à l'autre :
-#   "alerte"  (ovale + « ! », rouge)   = la douleur du client ;
-#   "engrenage" (GEAR_6, teal)         = le module qui outille LE CONSULTANT ;
-#   "deploiement" (PENTAGON, violet)   = l'agentic DÉPLOYÉ CHEZ LE CLIENT.
-# Deux teintes et deux silhouettes : la confusion « accélérateur agentic » lu
-# deux fois de suite (l'outil du consultant vs l'option sous gate IA) rendrait
-# la slide FAUSSE — c'est la condition posée en table ronde.
+#   "alerte"  (ovale + « ! »)   = la douleur du client ;
+#   "engrenage" (GEAR_6)        = le module qui outille LE CONSULTANT ;
+#   "deploiement" (PENTAGON)    = l'agentic DÉPLOYÉ CHEZ LE CLIENT.
+# La distinction de rouge/teal/violet d'origine (avant la bascule de charte du
+# 2026-09-10) a été retirée des appelants : les 3 cartes passent désormais ENCRE
+# partout (comment corrigé le 2026-09-11, aucune couleur réelle à jour ici pour
+# ne pas la re-décrire faussement). Les TROIS SILHOUETTES restent le vecteur
+# de distinction — c'est elles, pas la couleur, que la confusion « accélérateur
+# agentic » lu deux fois de suite (l'outil du consultant vs l'option sous gate
+# IA) rendrait la slide FAUSSE si on les fusionnait — c'est la condition posée
+# en table ronde.
 def _picto(slide, kind, x, y, d, color):
     if kind == "alerte":
         _oval(slide, x, y, d, d, fill=color)
@@ -2823,15 +2854,23 @@ def slide_maturite(prs):
         ("Agilité à l'Échelle", "Cœur du périmètre", True),
         ("IA, Agentic et Organisation Augmentée", "Où se lit l'axe IA (M0–M4)", True),
     ]
+    # BUG DE CHARTE corrigé le 2026-09-11 : `D.couleur_pilier(i)` posait une
+    # couleur DIFFÉRENTE par pilier (palette arc-en-ciel héritée d'avant la
+    # bascule du 2026-09-10) — texte vert/rouge/or/violet selon l'index, alors
+    # que la charte interdit explicitement la couleur porteuse de sens. Trouvé
+    # par relecture du code (aucun test ne le voyait : ce n'est pas un accès
+    # littéral `D.PALETTE[i]`, le balayage regex de la bascule ne pouvait pas
+    # le voir). Remplacé par la distinction déjà réelle dans la donnée
+    # (`coeur`, 3 piliers sur 5) exprimée avec les seules couleurs de charte :
+    # ACCENT_PLEIN (cyan) en aplat sur le point, jamais sur le texte.
     for i, (nom, badge, coeur) in enumerate(piliers):
         y = row_top + i * (row_h + row_gap)
-        color = D.couleur_pilier(i)
-        D.add_dot(s, x1, y + row_h / 2 - 0.07, 0.14, color)
+        D.add_dot(s, x1, y + row_h / 2 - 0.07, 0.14, ACCENT_PLEIN if coeur else ENCRE)
         tx = x1 + 0.28
         tw = w1 - 0.28
         D.add_text(s, tx, y, tw, row_h, [
             (nom, dict(size=D.TYPE["tiny"], bold=coeur, color=NAVY, line_spacing=1.1)),
-            (badge, dict(size=8, color=(color if coeur else MUTED), space_before=1)),
+            (badge, dict(size=8, color=(ENCRE if coeur else MUTED), space_before=1)),
         ], anchor=MSO_ANCHOR.MIDDLE)
     return s
 
@@ -2923,9 +2962,11 @@ def slide_personas(prs):
 # --- Nouveau (arbitrage cadrage validé) : corollaire direct de slide_personas.
 # Interviewer chaque partie prenante SÉPARÉMENT (§Synthesis) n'a de sens que si
 # l'on garde les divergences au lieu de les lisser en consensus — cette slide
-# les rend explicites. Réutilise les couleurs d'accent persona de
-# slide_personas (Infra=bleu, Utilisateur=teal, Management=or, Sponsor=violet)
-# et introduit le RSSI (porteur du gate) en rouge = criticité/blocage. Le
+# les rend explicites. La distinction par couleur d'accent persona d'origine
+# (Infra/Utilisateur/Management en teintes propres, RSSI en rouge) a été
+# retirée à la bascule de charte du 2026-09-10 (couleur non porteuse de sens) ;
+# seule la rangée « ANGLE MORT » (Sponsor⟂RSSI) garde un accent, via `tag`
+# (comment corrigé le 2026-09-11). Le
 # symbole de tension « ⟂ » du cadrage est rendu par le connecteur texte « en
 # tension avec » plutôt que par le glyphe (non garanti dans la fonte du
 # template, cf. _GLYPHES_SANS_GRAS) — même prudence que pour « ⟲ ». Rangées
@@ -3312,8 +3353,10 @@ def slide_gaspillage_partage(prs):
 # un irritant + une attente d'une ligne par persona). Ici chaque douleur est
 # approfondie, dotée d'un signal/mesure qui la rend objectivable, et rattachée à
 # une ou plusieurs familles de gaspillage — le pont direct vers slide_familles.
-# Réutilise les couleurs d'accent persona (Infra=bleu, Utilisateur=teal,
-# Management=or, Sponsor=violet). Rangées dimensionnées à leur contenu.
+# La distinction par couleur d'accent persona d'origine (Infra/Utilisateur/
+# Management/Sponsor en teintes propres) a été retirée à la bascule de charte
+# du 2026-09-10 : les 4 lanes passent désormais ENCRE partout (comment corrigé
+# le 2026-09-11). Rangées dimensionnées à leur contenu.
 def slide_douleurs(prs):
     s = content_slide(prs, "Besoins & douleurs",
                        "Les douleurs des clients infra : mesurables, pas des plaintes",
@@ -4183,8 +4226,11 @@ def slide_vision(prs):
     ph_body = phs[1]._element
     ph_body.getparent().remove(ph_body)
 
-    # Couleurs = sémantique déjà en place : bleu Contexte (constat), rouge
-    # ASSAINIR/gaspillage (coût), navy accent (l'exigence — la thèse).
+    # Les 3 blocs passent tous ENCRE — la distinction bleu/rouge/navy d'origine
+    # a été retirée à la bascule de charte du 2026-09-10 (comment corrigé le
+    # 2026-09-11). Le 3e bloc (l'exigence — la thèse) reste seul en fill navy
+    # plein (`accent = i == len(blocs)-1`, un sur N) : c'est LUI qui porte la
+    # mise en avant désormais, pas une couleur sémantique par bloc.
     blocs = [
         ("LE CONSTAT", ENCRE,
          "Une infrastructure guichet ou centre de coûts subit la demande au lieu "
@@ -4848,10 +4894,12 @@ def slide_kpis_exemple(prs):
 # --- Nouveau (brainstorm) : rendre tangible, dans le chapitre IA (chapitre 05
 # en v2.5, APRÈS la proposition), ce que "piste agentique" veut dire concrètement — 3
 # candidats illustratifs ancrés sur des familles de gaspillage déjà cadrées
-# (§Traitement des gaspillages), pas des exemples inventés hors cadre. Chaque
-# carte reprend la couleur de sa famille de gaspillage (RUN=rouge, Financier=or,
-# Cognitif=violet) via l'argument `color` — cohérence intentionnelle avec
-# slide_familles, pas un hasard de palette.
+# (§Traitement des gaspillages), pas des exemples inventés hors cadre. Les 3
+# appels passent désormais tous ENCRE via l'argument `color` — la distinction
+# par couleur de famille de gaspillage (RUN=rouge, Financier=or, Cognitif=
+# violet) a été retirée à la bascule de charte du 2026-09-10 (comment corrigé
+# le 2026-09-11) ; le lien à slide_familles reste porté par le LIBELLÉ de la
+# famille citée dans chaque carte, pas par une couleur partagée.
 #
 # Refonte graphique lot 3/4 (audit design, ch.06) : les 3 appels de cette
 # fonction template rendaient des slides visuellement IDENTIQUES (mêmes 3
@@ -5073,9 +5121,11 @@ def slide_architecture_si(prs):
     # situation de deck-design-library mappe justement « Architecture / vision
     # en couches » sur le pattern #8 (blueprint en bandes teintées). Chaque
     # niveau A/B/C devient une bande pleine largeur teintée (badge-lettre au
-    # lieu d'une cellule de texte), MÊME code couleur que slide_ambition (la
-    # slide précédente : A=bleu, B=or, C=rouge) pour que les deux slides
-    # parlent le même langage. Volontairement AUCUN connecteur/flèche entre
+    # lieu d'une cellule de texte). La correspondance de couleur A/B/C avec
+    # slide_ambition (bleu/or/rouge) a été retirée à la bascule de charte du
+    # 2026-09-10 : les 3 bandes passent ici ENCRE partout (comment corrigé le
+    # 2026-09-11 — slide_ambition, elle, accentue son niveau A en navy plein,
+    # ce que cette slide ne reproduit plus). Volontairement AUCUN connecteur/flèche entre
     # les bandes : slide_ambition affirme explicitement « pas un spectre
     # linéaire » et cette slide dit qu'un cabinet peut rester durablement au
     # niveau A/B — un fil descendant aurait suggéré une progression forcée que
@@ -5408,7 +5458,9 @@ def build():
     slide_chapitre(prs, "03", "Spécificités de l'infra",
                    "Le RUN comme régime permanent, une infra transverse que personne "
                    "ne porte en propre — et ce que ça change à la façon de la traiter.",
-                   ENCRE, "riverdelta", seed=0)
+                   # seed=5 (pas 0) : c'est l'index Openverse VÉRIFIÉ sans filigrane
+                   # pour la requête "river delta" — cf. commentaire _REQUETES_PHOTO.
+                   ENCRE, "riverdelta", seed=5)
     slide_specificites_infra(prs)
     slide_infra_run(prs)
     slide_infra_transverse(prs)
