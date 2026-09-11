@@ -1,5 +1,5 @@
 ---
-updated: 2026-09-10
+updated: 2026-09-11
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -8,37 +8,32 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-09-10T17:07:56+02:00 · **24 sessions** (transcripts) · **48** invocations de skills · **83** lancements de sous-agents.
+Dernier scan : 2026-09-11T16:43:54+02:00 · **12 sessions** (transcripts) · **38** invocations de skills · **65** lancements de sous-agents.
 
 ## Skills — usage réel
 
 | Skill | Famille | Invocations | Première | Dernière |
 | --- | --- | --- | --- | --- |
-| `agent-orchestrator` | projet | 21 | 2026-07-21 | 2026-09-10 |
-| `agent-supervisor` | projet | 6 | 2026-07-21 | 2026-09-03 |
-| `revue-increment` | projet | 4 | 2026-07-21 | 2026-09-10 |
-| `artifact-design` | (builtin/session) | 2 | 2026-07-06 | 2026-07-07 |
+| `agent-orchestrator` | projet | 20 | 2026-07-21 | 2026-09-11 |
+| `agent-supervisor` | projet | 3 | 2026-07-21 | 2026-09-03 |
+| `bmad-review` | BMAD | 3 | 2026-09-07 | 2026-09-10 |
+| `revue-increment` | projet | 3 | 2026-07-21 | 2026-09-10 |
 | `bmad-code-review` | BMAD | 2 | 2026-09-10 | 2026-09-10 |
 | `deck-design-library` | projet | 2 | 2026-09-03 | 2026-09-10 |
-| `pptx-deck` | projet | 2 | 2026-07-08 | 2026-07-09 |
 | `audit-technique` | projet | 1 | 2026-09-03 | 2026-09-03 |
 | `bmad-agent-pm` | BMAD | 1 | 2026-07-22 | 2026-07-22 |
 | `bmad-party-mode` | BMAD | 1 | 2026-09-02 | 2026-09-02 |
-| `bmad-review` | BMAD | 1 | 2026-09-07 | 2026-09-07 |
 | `deck-design-review` | projet | 1 | 2026-09-07 | 2026-09-07 |
-| `pptx-verify` | projet | 1 | 2026-07-08 | 2026-07-08 |
-| `restitution-deck-design` | projet | 1 | 2026-07-08 | 2026-07-08 |
-| `roadmap-keeper` | global | 1 | 2026-07-07 | 2026-07-07 |
 | `update-config` | (builtin/session) | 1 | 2026-09-07 | 2026-09-07 |
 
 ## Sous-agents
 
 | Sous-agent | Lancements | Premier | Dernier |
 | --- | --- | --- | --- |
-| `general-purpose` | 47 | 2026-07-06 | 2026-09-10 |
-| `ppt-designer` | 22 | 2026-07-21 | 2026-09-07 |
-| `Explore` | 7 | 2026-07-21 | 2026-09-03 |
-| `bmad-revue` | 3 | 2026-09-07 | 2026-09-10 |
+| `general-purpose` | 29 | 2026-07-21 | 2026-09-10 |
+| `ppt-designer` | 18 | 2026-07-21 | 2026-09-07 |
+| `Explore` | 9 | 2026-07-21 | 2026-09-11 |
+| `bmad-revue` | 5 | 2026-09-07 | 2026-09-10 |
 | `agent-supervisor` | 2 | 2026-09-03 | 2026-09-03 |
 | `Plan` | 1 | 2026-07-21 | 2026-07-21 |
 | `claude-code-guide` | 1 | 2026-07-21 | 2026-07-21 |
@@ -65,15 +60,13 @@ Dernier scan : 2026-09-10T17:07:56+02:00 · **24 sessions** (transcripts) · **4
 
 _Consommés en lisant/exécutant leurs `scripts/`, ou via un sous-agent qui les suit (ex. `ppt-designer`, qui n'a pas l'outil Skill) — le compteur d'invocations ne peut structurellement pas les voir. `n=0` n'y vaut donc PAS « mort » : ne pas désinstaller sur ce seul signal (constat superviseur #2)._
 
-`pdf-quality`, `pptx-framed-image`, `slide-text-polish`
+`pdf-quality`, `pptx-deck`, `pptx-framed-image`, `pptx-verify`, `restitution-deck-design`, `roadmap-keeper`, `slide-text-polish`
 
 ## TODO agents (constats automatiques)
 
-⚠️ **Mesure incomplète** — 14 transcript(s) sur 24 absent(s) du disque. Un `n=0` ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.
-
 1. **Désinstaller les shims BMAD dépréciés** (17) : `bmad-checkpoint-preview`, `bmad-create-architecture`, `bmad-create-prd`, `bmad-create-story`, `bmad-dev-story`, `bmad-document-project`, `bmad-edit-prd`, `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-generate-project-context`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-review-verification-gap`, `bmad-sprint-status`, `bmad-technical-research`, `bmad-validate-prd` — dépréciés par BMAD dans leur propre `description`, chacun avec son remplaçant ; le seul élagage qui ne repose pas sur notre mesure d'usage.
 2. **Skills projet sans usage** : `veille-agentic` — vérifier pertinence et déclencheurs.
-3. **Skills en sommeil (>30 j sans usage)** : `bmad-agent-pm`, `pptx-deck`, `pptx-verify`, `restitution-deck-design`, `roadmap-keeper`.
+3. **Skills en sommeil (>30 j sans usage)** : `bmad-agent-pm`.
 
 ## Arbitrages enregistrés
 
@@ -127,7 +120,9 @@ Ce que 'traiter' ces 3 points pourrait vouloir dire (a instruire au hub, pas tra
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 
-_Diagnostic à jour — rien à signaler, tous les constats précédents ont été arbitrés._
+_Diagnostic à jour._
+
+1. **Le point_du_jour.py propage aux 5 cibles importe kit_installe, module qui n'existe qu'au hub : ligne de bruit permanente a chaque session** — La mesure compare le kit installe CHEZ LES CIBLES au kit publie : elle n a de sens qu au hub, qui voit les 5 cibles. La deployer chez chaque cible ne la ferait pas marcher (une cible mesuree contre elle-meme). Le bloc n a pas sa place dans la version propagee. · **Proposition** : Signale a la session hub le 2026-09-10 (vscode3-7e -> vscode5-supervision-projets-84). Deux pistes proposees : (a) garder le bloc hub-only dans la source et l exclure a la propagation ; (b) le rendre silencieux quand .claude/dispositif/kit_installe.py est absent (absence de repertoire = fait de configuration, pas mesure impossible ; ne dire 'mesure impossible' que si le module est present et echoue). (b) est la moins couteuse, source unique. A trancher et corriger AU HUB puis repropager -- jamais localement (lecon P1).
 
 _5 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir un, demander au superviseur un `re_challenge` avec des données nouvelles :_
 
@@ -139,7 +134,7 @@ _5 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir 
 
 ## Seuil de qualification — la mesure
 
-Depuis le 2026-09-10 : **10** demande(s) vue(s) hors commande slash (+ 1 slash), **2** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **20 %** des demandes orchestrées.
+Depuis le 2026-09-10 : **18** demande(s) vue(s) hors commande slash (+ 5 slash), **2** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **11 %** des demandes orchestrées.
 _Ce chiffre ne dit pas ce qui AURAIT dû être orchestré : le hook compte, il ne juge pas. Il donne le dénominateur qui manquait pour arbitrer le seuil sur données plutôt que sur habitude._
 
 ---

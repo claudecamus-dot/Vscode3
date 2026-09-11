@@ -293,6 +293,24 @@
    ],
    "source": "arbitrage utilisateur 2026-09-10 (traitement des sujets transmis par le hub VScode5)",
    "decision": "ACCEPTE + APPLIQUE — commit e7ce21f. Le finding disait « ces points se ferment au commit de ce chantier, pas avant » : le chantier est commite, ils sont fermes. ITEM_SIZE_DEFAUT n'etait pas une variable morte a supprimer mais une constante DEBRANCHEE : l'echelle de recherche de taille recopiait ses deux bornes en litteral (7 et 6.25) a cote des deux constantes qui les portent. Les brancher retire le F841 ET une divergence latente — changer ITEM_SIZE_PLANCHER laissait l'echelle finir a 6.25. Supprimer la constante, geste que le finding autorisait, aurait laisse la duplication en place. Trois blocs d'imports non tries corriges par un ruff --fix RESTREINT a I001, diff relu ligne a ligne (lecon VSCode2 : jamais --fix en aveugle) — diff reel : uniquement des deplacements. Les quatre zip() portaient deja strict=True et sont partis avec le commit. Les trois gen_check_slide_synthese*.py sont VERSIONNES plutot que gitignores, la branche que le finding laissait ouverte : ils portent le systeme de design extrait des deux decks OCTO de reference, pas du jetable. VERIFIE : py -m ruff check . rend « All checks passed! » sur le depot entier. SIGNALE, NON COMMITE : CLAUDE.md.propose, pose par l'installation du kit du 2026-09-10, est le squelette vide a placeholders — l'appliquer detruirait le CLAUDE.md reel de ce depot."
+  },
+  {
+   "cible": "VSCode3:audit-risque_technique-niveau-moyen",
+   "date": "2026-09-11",
+   "categories": [
+    "pratique-dev"
+   ],
+   "source": "arbitrage utilisateur 2026-09-11 (traitement des findings affiches au tableau de bord)",
+   "decision": "DIFFERE A NOUVEAU, meme motif que le 2026-09-10 — LA DIMENSION RESTE AU NIVEAU MOYEN. La condition de reouverture posee le 2026-09-10 (« chantier deck committe ») etait techniquement remplie, mais au moment de traiter la reouverture, git status montre generate_deck.py, test_generate_deck.py et bmad-iap-cadrage-synthese.pptx de nouveau modifies et non commites (nouveau chantier en vol) — exactement le risque de collision (seul consommateur de pptx_deck.py en mouvement) qui avait motive le report initial. Porter les helpers manquants (police de marque, add_chip/add_badge/add_encart) maintenant reexposerait au meme risque. CONDITION DE REOUVERTURE INCHANGEE : reprendre des que CE nouveau chantier est commite, en commencant par l'inventaire reel de l'ecart avec VSCode2/VSCode4 (pas un ecart en lignes). CE QUI A ETE VERIFIE DANS LE MEME PASSAGE ET QUI EST BIEN CORRIGE : la partie « 3 erreurs ruff » citee par le finding est perimee — py -m ruff check . sur docs/cadrage-ppt/ rend 0 erreur. Une erreur ruff DIFFERENTE (I001, import non trie) a ete trouvee ailleurs — .claude/hooks/warn_verif_before_commit.py, introduite par le commit f50f111 posterieur a l'audit — et corrigee dans ce meme run (diff d'une ligne, ordre alphabetique des deux noms importes, import reverifie apres coup) : py -m ruff check . rend a nouveau « All checks passed! » sur le depot entier."
+  },
+  {
+   "cible": "flotte:point-du-jour-importe-kit-installe-hub-only",
+   "date": "2026-09-11",
+   "categories": [
+    "pratique-dev"
+   ],
+   "source": "arbitrage utilisateur 2026-09-11 (« applique », traitement des findings affiches au tableau de bord)",
+   "decision": "APPLIQUE — CLOS POUR CE DEPOT, OUVERT AU HUB. Finding confirme exact : py .claude/hooks/point_du_jour.py rend toujours 'kit installe : mesure impossible (No module named kit_installe)', module qui n'existe que chez le hub (VScode5). Meme schema que flotte:point-du-jour-absent-des-5-cibles : la correction (piste (a) garder le bloc hub-only hors propagation, ou (b) le rendre silencieux si .claude/dispositif/ est absent) n'a pas sa place ici (lecon P1 — le canon se corrige au hub, jamais localement, les copies locales divergent). Deja signale a la session hub le 2026-09-10 (vscode3-7e -> vscode5-supervision-projets-84) ; aucun geste local supplementaire. RESTE OUVERT, ET CE N'EST PAS A CE DEPOT DE LE FERMER : le correctif au hub (kit_installe.py) et sa repropagation aux 5 cibles."
   }
  ]
 }

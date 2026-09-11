@@ -541,12 +541,12 @@
     <section class="doc" id="agents-supervision">
       <p class="eyebrow">Projet</p>
       <h2>Supervision des agents — tableau de bord d'usage</h2>
-      <p class="file-meta"><span>docs/wiki/technical/agents-supervision.md</span><span>généré : 2026-09-10T17:07:56+02:00</span></p>
+      <p class="file-meta"><span>docs/wiki/technical/agents-supervision.md</span><span>généré : 2026-09-11T16:43:54+02:00</span></p>
 
       <div class="fact">
-        <p><strong>Bloc généré automatiquement</strong> à chaque session (hook SessionStart → <code>.claude/supervision/scan_transcripts.py</code>, scan incrémental des transcripts, 0 token LLM) — ne pas éditer à la main. <strong>24 sessions</strong> couvertes · <strong>48</strong> invocations de skills · <strong>83</strong> lancements de sous-agents. Diagnostic qualitatif : skill <code>agent-supervisor</code> (étage 2, section diagnostic ci-dessous).</p>
+        <p><strong>Bloc généré automatiquement</strong> à chaque session (hook SessionStart → <code>.claude/supervision/scan_transcripts.py</code>, scan incrémental des transcripts, 0 token LLM) — ne pas éditer à la main. <strong>12 sessions</strong> couvertes · <strong>38</strong> invocations de skills · <strong>65</strong> lancements de sous-agents. Diagnostic qualitatif : skill <code>agent-supervisor</code> (étage 2, section diagnostic ci-dessous).</p>
         <span class="tag tag-confirme">CONFIRMÉ</span>
-        <div class="tag-source">scan_transcripts.py · 2026-09-10 · ~/.claude/projects/&lt;slug&gt;/*.jsonl</div>
+        <div class="tag-source">scan_transcripts.py · 2026-09-11 · ~/.claude/projects/&lt;slug&gt;/*.jsonl</div>
       </div>
 
       <h3>Skills — usage réel</h3>
@@ -554,21 +554,16 @@
         <table>
           <thead><tr><th>Skill</th><th>Famille</th><th>Invocations</th><th>Première</th><th>Dernière</th></tr></thead>
           <tbody>
-            <tr><td><code>agent-orchestrator</code></td><td>projet</td><td>21</td><td>2026-07-21</td><td>2026-09-10</td></tr>
-            <tr><td><code>agent-supervisor</code></td><td>projet</td><td>6</td><td>2026-07-21</td><td>2026-09-03</td></tr>
-            <tr><td><code>revue-increment</code></td><td>projet</td><td>4</td><td>2026-07-21</td><td>2026-09-10</td></tr>
-            <tr><td><code>artifact-design</code></td><td>(builtin/session)</td><td>2</td><td>2026-07-06</td><td>2026-07-07</td></tr>
+            <tr><td><code>agent-orchestrator</code></td><td>projet</td><td>20</td><td>2026-07-21</td><td>2026-09-11</td></tr>
+            <tr><td><code>agent-supervisor</code></td><td>projet</td><td>3</td><td>2026-07-21</td><td>2026-09-03</td></tr>
+            <tr><td><code>bmad-review</code></td><td>BMAD</td><td>3</td><td>2026-09-07</td><td>2026-09-10</td></tr>
+            <tr><td><code>revue-increment</code></td><td>projet</td><td>3</td><td>2026-07-21</td><td>2026-09-10</td></tr>
             <tr><td><code>bmad-code-review</code></td><td>BMAD</td><td>2</td><td>2026-09-10</td><td>2026-09-10</td></tr>
             <tr><td><code>deck-design-library</code></td><td>projet</td><td>2</td><td>2026-09-03</td><td>2026-09-10</td></tr>
-            <tr><td><code>pptx-deck</code></td><td>projet</td><td>2</td><td>2026-07-08</td><td>2026-07-09</td></tr>
             <tr><td><code>audit-technique</code></td><td>projet</td><td>1</td><td>2026-09-03</td><td>2026-09-03</td></tr>
             <tr><td><code>bmad-agent-pm</code></td><td>BMAD</td><td>1</td><td>2026-07-22</td><td>2026-07-22</td></tr>
             <tr><td><code>bmad-party-mode</code></td><td>BMAD</td><td>1</td><td>2026-09-02</td><td>2026-09-02</td></tr>
-            <tr><td><code>bmad-review</code></td><td>BMAD</td><td>1</td><td>2026-09-07</td><td>2026-09-07</td></tr>
             <tr><td><code>deck-design-review</code></td><td>projet</td><td>1</td><td>2026-09-07</td><td>2026-09-07</td></tr>
-            <tr><td><code>pptx-verify</code></td><td>projet</td><td>1</td><td>2026-07-08</td><td>2026-07-08</td></tr>
-            <tr><td><code>restitution-deck-design</code></td><td>projet</td><td>1</td><td>2026-07-08</td><td>2026-07-08</td></tr>
-            <tr><td><code>roadmap-keeper</code></td><td>global</td><td>1</td><td>2026-07-07</td><td>2026-07-07</td></tr>
             <tr><td><code>update-config</code></td><td>(builtin/session)</td><td>1</td><td>2026-09-07</td><td>2026-09-07</td></tr>
           </tbody>
         </table>
@@ -579,10 +574,10 @@
         <table>
           <thead><tr><th>Sous-agent</th><th>Lancements</th><th>Premier</th><th>Dernier</th></tr></thead>
           <tbody>
-            <tr><td><code>general-purpose</code></td><td>47</td><td>2026-07-06</td><td>2026-09-10</td></tr>
-            <tr><td><code>ppt-designer</code></td><td>22</td><td>2026-07-21</td><td>2026-09-07</td></tr>
-            <tr><td><code>Explore</code></td><td>7</td><td>2026-07-21</td><td>2026-09-03</td></tr>
-            <tr><td><code>bmad-revue</code></td><td>3</td><td>2026-09-07</td><td>2026-09-10</td></tr>
+            <tr><td><code>general-purpose</code></td><td>29</td><td>2026-07-21</td><td>2026-09-10</td></tr>
+            <tr><td><code>ppt-designer</code></td><td>18</td><td>2026-07-21</td><td>2026-09-07</td></tr>
+            <tr><td><code>Explore</code></td><td>9</td><td>2026-07-21</td><td>2026-09-11</td></tr>
+            <tr><td><code>bmad-revue</code></td><td>5</td><td>2026-09-07</td><td>2026-09-10</td></tr>
             <tr><td><code>agent-supervisor</code></td><td>2</td><td>2026-09-03</td><td>2026-09-03</td></tr>
             <tr><td><code>Plan</code></td><td>1</td><td>2026-07-21</td><td>2026-07-21</td></tr>
             <tr><td><code>claude-code-guide</code></td><td>1</td><td>2026-07-21</td><td>2026-07-21</td></tr>
@@ -594,24 +589,23 @@
       <p><strong>projet</strong> — 1/13 jamais invoqués : <code>veille-agentic</code></p>
       <p><strong>BMAD</strong> — 46/50 jamais invoqués : <details><summary>Voir la liste (46)</summary><p><code>bmad-advanced-elicitation</code>, <code>bmad-agent-analyst</code>, <code>bmad-agent-architect</code>, <code>bmad-agent-dev</code>, <code>bmad-agent-ux-designer</code>, <code>bmad-architecture</code>, <code>bmad-brainstorming</code>, <code>bmad-build</code>, <code>bmad-build-auto</code>, <code>bmad-checkpoint-preview</code>, <code>bmad-correct-course</code>, <code>bmad-create-architecture</code>, <code>bmad-create-epics-and-stories</code>, <code>bmad-create-prd</code>, <code>bmad-create-story</code>, <code>bmad-customize</code>, <code>bmad-deep-recon</code>, <code>bmad-dev-auto</code>, <code>bmad-dev-story</code>, <code>bmad-document-project</code>, <code>bmad-domain-research</code>, <code>bmad-edit-prd</code>, <code>bmad-editorial-review</code>, <code>bmad-editorial-review-prose</code>, <code>bmad-editorial-review-structure</code>, <code>bmad-forge-idea</code>, <code>bmad-generate-project-context</code>, <code>bmad-help</code>, <code>bmad-market-research</code>, <code>bmad-prd</code>, <code>bmad-prfaq</code>, <code>bmad-product-brief</code>, <code>bmad-project-context</code>, <code>bmad-qa-generate-e2e-tests</code>, <code>bmad-quick-dev</code>, <code>bmad-retrospective</code>, <code>bmad-review-adversarial-general</code>, <code>bmad-review-edge-case-hunter</code>, <code>bmad-review-verification-gap</code>, <code>bmad-spec</code>, <code>bmad-sprint-planning</code>, <code>bmad-sprint-status</code>, <code>bmad-technical-research</code>, <code>bmad-ux</code>, <code>bmad-validate-prd</code>, <code>bmad-walkthrough</code></p></details></p>
       <p><strong>global</strong> — 1/2 jamais invoqués : <code>skill-creator</code></p>
-      <p><strong>bibliothèque / référence</strong> — usage via scripts/sous-agent, non capté par le compteur (n=0 ≠ mort, constat #2) : <code>pdf-quality</code>, <code>pptx-framed-image</code>, <code>slide-text-polish</code></p>
+      <p><strong>bibliothèque / référence</strong> — usage via scripts/sous-agent, non capté par le compteur (n=0 ≠ mort, constat #2) : <code>pdf-quality</code>, <code>pptx-deck</code>, <code>pptx-framed-image</code>, <code>pptx-verify</code>, <code>restitution-deck-design</code>, <code>roadmap-keeper</code>, <code>slide-text-polish</code></p>
 
       <h3>TODO agents — chantiers à lancer (constats automatiques)</h3>
-      <p class="avertissement"><em>⚠️ <strong>Mesure incomplète</strong> — 14 transcript(s) sur 24 absent(s) du disque. Un <code>n=0</code> ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.</em></p>
       <div class="critical">
         <p><strong>Désinstaller les shims BMAD dépréciés</strong> (17) : <code>bmad-checkpoint-preview</code>, <code>bmad-create-architecture</code>, <code>bmad-create-prd</code>, <code>bmad-create-story</code>, <code>bmad-dev-story</code>, <code>bmad-document-project</code>, <code>bmad-edit-prd</code>, <code>bmad-editorial-review</code>, <code>bmad-editorial-review-prose</code>, <code>bmad-editorial-review-structure</code>, <code>bmad-generate-project-context</code>, <code>bmad-review-adversarial-general</code>, <code>bmad-review-edge-case-hunter</code>, <code>bmad-review-verification-gap</code>, <code>bmad-sprint-status</code>, <code>bmad-technical-research</code>, <code>bmad-validate-prd</code> — dépréciés par BMAD dans leur propre <code>description</code>, chacun avec son remplaçant ; le seul élagage qui ne repose pas sur notre mesure d'usage.</p>
         <span class="tag tag-confirme">CONFIRMÉ</span>
-        <div class="tag-source">scan_transcripts.py · 2026-09-10 · transcripts de session</div>
+        <div class="tag-source">scan_transcripts.py · 2026-09-11 · transcripts de session</div>
       </div>
       <div class="critical">
         <p><strong>Skills projet sans usage</strong> : <code>veille-agentic</code> — vérifier pertinence et déclencheurs.</p>
         <span class="tag tag-confirme">CONFIRMÉ</span>
-        <div class="tag-source">scan_transcripts.py · 2026-09-10 · transcripts de session</div>
+        <div class="tag-source">scan_transcripts.py · 2026-09-11 · transcripts de session</div>
       </div>
       <div class="critical">
-        <p><strong>Skills en sommeil (&gt;30 j sans usage)</strong> : <code>bmad-agent-pm</code>, <code>pptx-deck</code>, <code>pptx-verify</code>, <code>restitution-deck-design</code>, <code>roadmap-keeper</code>.</p>
+        <p><strong>Skills en sommeil (&gt;30 j sans usage)</strong> : <code>bmad-agent-pm</code>.</p>
         <span class="tag tag-confirme">CONFIRMÉ</span>
-        <div class="tag-source">scan_transcripts.py · 2026-09-10 · transcripts de session</div>
+        <div class="tag-source">scan_transcripts.py · 2026-09-11 · transcripts de session</div>
       </div>
 
       <h3>Arbitrages enregistrés</h3>
@@ -664,7 +658,12 @@ Ce que 'traiter' ces 3 points pourrait vouloir dire (a instruire au hub, pas tra
         <li><strong><code>VSCode3:reliquats-de-lint-du-chantier-deck</code></strong> (2026-09-10) : ACCEPTE + APPLIQUE — commit e7ce21f. Le finding disait « ces points se ferment au commit de ce chantier, pas avant » : le chantier est commite, ils sont fermes. ITEM_SIZE_DEFAUT n'etait pas une variable morte a supprimer mais une constante DEBRANCHEE : l'echelle de recherche de taille recopiait ses deux bornes en litteral (7 et 6.25) a cote des deux constantes qui les portent. Les brancher retire le F841 ET une divergence latente — changer ITEM_SIZE_PLANCHER laissait l'echelle finir a 6.25. Supprimer la constante, geste que le finding autorisait, aurait laisse la duplication en place. Trois blocs d'imports non tries corriges par un ruff --fix RESTREINT a I001, diff relu ligne a ligne (lecon VSCode2 : jamais --fix en aveugle) — diff reel : uniquement des deplacements. Les quatre zip() portaient deja strict=True et sont partis avec le commit. Les trois gen_check_slide_synthese*.py sont VERSIONNES plutot que gitignores, la branche que le finding laissait ouverte : ils portent le systeme de design extrait des deux decks OCTO de reference, pas du jetable. VERIFIE : py -m ruff check . rend « All checks passed! » sur le depot entier. SIGNALE, NON COMMITE : CLAUDE.md.propose, pose par l'installation du kit du 2026-09-10, est le squelette vide a placeholders — l'appliquer detruirait le CLAUDE.md reel de ce depot.</li>
       </ul>
       <h3>Diagnostic qualitatif (étage 2 — agent-supervisor)</h3>
-      <p><em>Diagnostic à jour — rien à signaler, tous les constats précédents ont été arbitrés.</em></p>
+      <p><em>Diagnostic à jour.</em></p>
+      <div class="critical">
+        <p><strong>Le point_du_jour.py propage aux 5 cibles importe kit_installe, module qui n'existe qu'au hub : ligne de bruit permanente a chaque session</strong> — La mesure compare le kit installe CHEZ LES CIBLES au kit publie : elle n a de sens qu au hub, qui voit les 5 cibles. La deployer chez chaque cible ne la ferait pas marcher (une cible mesuree contre elle-meme). Le bloc n a pas sa place dans la version propagee. · <strong>Proposition</strong> : Signale a la session hub le 2026-09-10 (vscode3-7e -&gt; vscode5-supervision-projets-84). Deux pistes proposees : (a) garder le bloc hub-only dans la source et l exclure a la propagation ; (b) le rendre silencieux quand .claude/dispositif/kit_installe.py est absent (absence de repertoire = fait de configuration, pas mesure impossible ; ne dire 'mesure impossible' que si le module est present et echoue). (b) est la moins couteuse, source unique. A trancher et corriger AU HUB puis repropager -- jamais localement (lecon P1).</p>
+        <span class="tag tag-confirme">CONFIRMÉ</span>
+        <div class="tag-source">agent-supervisor · étage 2</div>
+      </div>
       <p><em>5 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir un, demander au superviseur un <code>re_challenge</code> avec des données nouvelles :</em></p>
       <ul><li><s>+762 lignes en 24 h : le generateur a plus que double en un jour la croissance de ses 33 jours precedents, et le re-cotage renvoye « au prochain diagnostic etage 2 » n'a plus d'excuse</s> (<code>docs/cadrage-ppt/generate_deck.py</code>)</li><li><s>Les trois filets de controle sont portes et testes dans pptx_deck.py mais AUCUN n'est branche : le point d'appel appartient au chantier deck en cours</s> (<code>VSCode3:brancher-les-trois-filets-dans-generate-deck</code>)</li><li><s>Trois points de lint et deux zip() sans strict=True restent sur le chantier deck : corriges dans le working tree pour les zip, jamais commites</s> (<code>VSCode3:reliquats-de-lint-du-chantier-deck</code>)</li><li><s>Le hook qui liste ce qui attend une decision n'existe QUE au hub : les 5 cibles ne l'ont pas, et le kit ne le distribue pas</s> (<code>flotte:point-du-jour-absent-des-5-cibles</code>)</li><li><s>Onglet Pratiques &amp; risques : la dimension RISQUE TECHNIQUE est au niveau moyen — 1 constat(s) ouvert(s) a corriger dans ce depot</s> (<code>VSCode3:audit-risque_technique-niveau-moyen</code>)</li></ul>
     </section>
