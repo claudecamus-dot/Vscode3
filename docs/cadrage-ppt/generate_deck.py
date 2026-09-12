@@ -351,6 +351,30 @@ avec repli en Arial sur les seuls glyphes hors couverture de la police
 (①②③⟲ — vérifié par cmap sur les deux moteurs de rendu, LibreOffice ET
 PowerPoint COM).
 
+v2.34 (2026-09-11, demande utilisateur) : le chapitre 01 « Exec summary »
+passe de 5 slides de contenu à 3 (« trop lourd, max 3 slides, plus
+synthétique ») et gagne ce qui lui manquait (« une démarche centrée sur les
+spécificités de l'infra sans forcément avec IA — que propose-t-on sans IA ? »).
+`slide_pitch_iap` et `slide_demarche_avec_sans_agentic` sont SUPPRIMÉES
+(54 -> 52 slides) : la première ouvrait le chapitre sur trois cartes dont deux
+parlaient d'agentic, la seconde étalait « sans outillage / avec le module /
+agentic chez le client » sur trois lignes d'égal poids visuel — un lecteur y
+voyait un choix à faire, et l'IA comme sujet de l'exec summary. Restent
+`slide_executive_summary` (le sommaire, inchangé hors son bloc OFFRE, qui
+citait mot pour mot les deux slides supprimées), `slide_synthese_pourquoi_quoi_
+comment` REFONDUE et `slide_vision` (intacte). Ce qui est sacrifié, pour
+mémoire : la bande « MATÉRIAU DE CADRAGE » (trois contextes sectoriels), le
+détail des 4 personas et des 11 agents du module, et la grille 3 temps ×
+3 registres — tous encore portés par les chapitres Personas, Besoins &
+douleurs, Outillage IAP et Démarche. Ce qui SURVIT, parce que l'utilisateur
+l'avait défendu en table ronde : la distinction outillage-du-consultant vs
+agentic-déployé-chez-le-client, réduite à une bande basse de deux encarts en
+contour gris avec ses deux silhouettes `_picto`. La refonte inverse la
+hiérarchie : la démarche infra (ORGANISATION / INFRA par temps, verbes repris
+de `slide_fil_technique`) est le corps de la slide, l'agentic n'est plus qu'une
+annotation, et la clôture affirme noir sur blanc qu'aucun des quatre temps ne
+requiert l'IA.
+
 Séparateurs : chapitres = intercalaire teardrop (photo + numéro, layout dédié) ;
 sous-chapitres = `slide_sous_chapitre` (bloc-titre léger, sans photo ni numéro —
 sans appelant depuis la v2.6, machinerie conservée).
@@ -391,8 +415,8 @@ from pptx.util import Emu, Inches, Pt
 # 4 bumps de version consecutifs (v2.9 a v2.11 ont toutes laisse "v2.8 · date
 # perimee" sur la SLIDE LA PLUS VISIBLE du deck). Un seul endroit a changer
 # desormais.
-VERSION_DECK = "v2.33"
-DATE_VERSION_DECK = "2026-09-10"
+VERSION_DECK = "v2.34"
+DATE_VERSION_DECK = "2026-09-11"
 
 HERE = os.path.dirname(__file__)
 TEMPLATE = os.path.join(HERE, "template-octo.pptx")
@@ -730,7 +754,8 @@ _SCENE_REPLI = {
 # ne sortait qu'en print : le build annoncait « GEOMETRIE: OK » avec des
 # photos manquantes (cadre introuvable/repli impossible) OU, depuis v2.11,
 # avec un contenu qui deborde silencieusement sous un element de pied de
-# carte (cf. slide_pitch_iap : le self-check geometrique de pptx_deck.py ne
+# carte (cf. slide_pitch_iap, supprimee en v2.34 -- voir archives/ : le
+# self-check geometrique de pptx_deck.py ne
 # mesure QUE les formes que NOUS dessinons hors-cadre — pas un debordement de
 # texte dans son propre panneau).
 _ANOMALIES_BUILD = []
@@ -1173,8 +1198,10 @@ def slide_executive_summary(prs):
     # v2.12 : seul appel content_slide() de tout le deck SANS color= explicite
     # (les ~30 autres en passent tous un) -> kicker retombait sur ACCENT (cyan
     # generique) au lieu du NAVY du chapitre 01 Exec summary, dont cette slide
-    # ouvre le fil (slide_pitch_iap et slide_demarche_avec_sans_agentic, juste
-    # apres, portent deja color=NAVY) -- visible dans les DEUX rendus (LibreOffice
+    # ouvre le fil (a l'epoque slide_pitch_iap et slide_demarche_avec_sans_agentic,
+    # juste apres, portaient deja color=NAVY ; toutes deux supprimees en v2.34 --
+    # c'est desormais slide_synthese_pourquoi_quoi_comment qui suit, en NAVY elle
+    # aussi, donc la correction tient) -- visible dans les DEUX rendus (LibreOffice
     # ET PowerPoint), manquee lors d'une premiere relecture concentree sur le
     # contenu (bloc OFFRE) plutot que sur la couleur du kicker.
     s = content_slide(prs, "Executive summary",
@@ -1190,14 +1217,16 @@ def slide_executive_summary(prs):
     ])
 
     # v2.10 : bloc OFFRE ajouté en tête de rangée (arbitrage utilisateur) — le
-    # sommaire ne référençait aucun chapitre avant le bloc POURQUOI alors que
-    # le chapitre 01 · Exec summary (slide_pitch_iap + slide_demarche_avec_sans_agentic,
-    # juste après CETTE slide) restait invisible ici. Accent (fond plein) comme
+    # sommaire ne référençait aucun chapitre avant le bloc POURQUOI alors que le
+    # chapitre 01 · Exec summary restait invisible ici. Accent (fond plein) comme
     # RÉSULTAT : les deux bornent la rangée (l'offre ouvre, la preuve ferme).
+    # v2.34 : le bloc reprenait au mot près les sous-titres des deux slides
+    # supprimées — il annonçait donc un contenu qui n'existe plus. Réaligné sur
+    # la slide qui reste (la démarche infra en quatre temps).
     items = [
-        ("OFFRE", NAVY, "Trois faces à ne pas confondre, une démarche avec ou sans IA.",
-         "Leurs douleurs, notre outillage de consultant, l'agentic chez eux en option — "
-         "déclinés sur les trois mêmes temps, outillés ou non.",
+        ("OFFRE", NAVY, "Une démarche infra en quatre temps, sans prérequis d'IA.",
+         "Ce qu'on fait dans l'organisation et sur la plateforme à chaque temps ; "
+         "l'agentic accélère le consultant, en option chez le client.",
          "Exec summary"),
         ("POURQUOI", ENCRE, "L'infra subie coûte de plus en plus cher.",
          "Trois déclencheurs, quatre personas interrogés séparément, des douleurs "
@@ -1444,27 +1473,18 @@ def slide_offre_iap(prs):
 
 # --- Pictogrammes de la v2.9 : vocabulaire de SILHOUETTES (pas de glyphes
 # exotiques, qui rendent en tofu dans la police du template — cf.
-# _GLYPHES_SANS_GRAS). Trois formes distinctes, réutilisées à l'identique par
-# slide_pitch_iap et slide_demarche_avec_sans_agentic pour que les deux faces de
-# l'agentic se reconnaissent d'une slide à l'autre :
-#   "alerte"  (ovale + « ! »)   = la douleur du client ;
+# _GLYPHES_SANS_GRAS). Deux formes, une par FACE de l'agentic :
 #   "engrenage" (GEAR_6)        = le module qui outille LE CONSULTANT ;
 #   "deploiement" (PENTAGON)    = l'agentic DÉPLOYÉ CHEZ LE CLIENT.
-# La distinction de rouge/teal/violet d'origine (avant la bascule de charte du
-# 2026-09-10) a été retirée des appelants : les 3 cartes passent désormais ENCRE
-# partout (comment corrigé le 2026-09-11, aucune couleur réelle à jour ici pour
-# ne pas la re-décrire faussement). Les TROIS SILHOUETTES restent le vecteur
-# de distinction — c'est elles, pas la couleur, que la confusion « accélérateur
-# agentic » lu deux fois de suite (l'outil du consultant vs l'option sous gate
-# IA) rendrait la slide FAUSSE si on les fusionnait — c'est la condition posée
-# en table ronde.
+# C'est la SILHOUETTE, jamais la couleur, qui les distingue (la charte du
+# 2026-09-10 interdit à la couleur de porter le sens) : un sponsor qui lit deux
+# fois « agentic » sans les distinguer croit qu'on lui vend la même chose deux
+# fois, ce qui rendrait la slide fausse — condition posée en table ronde.
+# v2.34 (2026-09-11) : la 3e forme, "alerte" (ovale + « ! » = la douleur du
+# client), est retirée avec son seul appelant (slide_pitch_iap, supprimée) —
+# une branche sans appelant n'est pas une réserve, c'est du code mort.
+# Seul appelant restant : slide_synthese_pourquoi_quoi_comment.
 def _picto(slide, kind, x, y, d, color):
-    if kind == "alerte":
-        _oval(slide, x, y, d, d, fill=color)
-        D.add_text(slide, x, y, d, d, [
-            ("!", dict(size=11, bold=True, color="#ffffff", align=PP_ALIGN.CENTER)),
-        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-        return
     forme = {"engrenage": MSO_SHAPE.GEAR_6, "deploiement": MSO_SHAPE.PENTAGON}[kind]
     shp = slide.shapes.add_shape(forme, Inches(x), Inches(y), Inches(d), Inches(d))
     try:
@@ -1477,348 +1497,39 @@ def _picto(slide, kind, x, y, d, color):
     shp.text_frame.paragraphs[0].text = ""
 
 
-# ---------------------------------------------------------------- chapitre 01 (v2.9)
-# Nouveau (v2.9, 2026-09-02) : ouvre le chapitre Exec summary à la place de
-# slide_offre_iap (partie au chapitre Démarche). Trois cartes ÉGALES en
-# rangée — le client, le consultant, l'option chez le client — puis, HORS de la
-# rangée, une bande pleine largeur collée sous les cartes (fond gris, texte plus
-# petit) : un poids visuel moindre sans casser l'alignement d'une rangée censée
-# être régulière.
-# CONTRAINTE FACTUELLE (garde-fou, vérifiée en source) : aucun REX n'existe dans
-# les sources. docs/bmad-iap-cadrage.md:115 dit que la source brute CONTENAIT des
-# noms de clients réels (secteurs télécom/plateformes numériques, banque de
-# détail, GIE informatique bancaire) — c'est une note de rédaction, pas un acte
-# de mission ; `rex-library.md` est planifié, non peuplé. La bande parle donc du
-# MATÉRIAU de cadrage, jamais d'une intervention : pas de « missions menées », pas
-# de verbe d'action au passé, pas de chiffre de résultat, pas de durée, pas
-# d'avant/après, pas de nom de client. Elle n'exhibe pas non plus l'incertitude
-# interne (le manque de REX vit ailleurs dans le deck) — écrire notre propre
-# objection à la place du prospect serait un contresens de slide d'ouverture.
-def slide_pitch_iap(prs):
-    s = content_slide(prs, "Exec summary",
-                       "Trois faces à ne pas confondre : leurs douleurs, notre outillage, l'agentic chez eux",
-                       color=NAVY)
-
-    chapo = ("L'offre part des douleurs de ces organisations ; un module agentic accélère le "
-             "consultant qui les traite ; déployer de l'agentic chez le client reste une option, "
-             "sous gate IA.")
-    chapo_h = _lignes(chapo, CONTENT_W, 8.5) * (8.5 * 1.25 / 72.0) + 0.06
-    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, chapo_h, [
-        (chapo, dict(size=8.5, color=NAVY, italic=True, line_spacing=1.25)),
-    ])
-
-    cartes = [
-        ("CE QU'ILS VIVENT", ENCRE, "alerte",
-         "Douleurs & besoins de ces organisations",
-         "Quatre personas interrogés séparément, huit familles de gaspillage.",
-         ["Infra & RUN — incidents subis en boucle, BUILD sacrifié à l'astreinte",
-          "Utilisateur applicatif — sans self-service : guichet, contournements",
-          "Management — expert devenu manager malgré lui, reporting miroir",
-          "Sponsor — pression à « mettre de l'IA » sans cas d'usage démontré"],
-         "Détaillé aux chapitres Personas et Besoins & douleurs"),
-        ("NOTRE OUTILLAGE · CÔTÉ CONSULTANT", ENCRE, "engrenage",
-         "Notre démarche, outillée par un module agentic",
-         "Le module BMAD IAP tourne sur le poste du consultant.",
-         ["11 agents spécialisés : stratégie, produit, RUN, gaspillages, métriques, IA, changement",
-          "Workflows, templates et checklists outillent la démarche — ils ne la remplacent pas",
-          "Rien ne s'installe chez le client par défaut : les livrables sortent, c'est tout"],
-         "L'outil du consultant — chapitres Démarche et Outillage IAP"),
-        ("EN OPTION · CÔTÉ CLIENT", ENCRE, "deploiement",
-         "Déployer de l'agentic chez le client",
-         "Ouverte seulement si le contexte du client s'y prête.",
-         ["Gate IA d'abord : la donnée est classée (D0–D4) avant tout usage d'IA",
-          "Agentic Readiness [0]–[1] oriente vers documentation-first ; [2]–[3] ouvre agentic-implementation",
-          "Le processus doit être explicite avant l'agent, jamais l'inverse"],
-         "Une décision de mission — chapitre IA"),
-    ]
-
-    band_h = 0.56
-    band_top = CONTENT_BOTTOM - band_h
-    cards_top = CONTENT_TOP + chapo_h + 0.14
-    card_h = band_top - cards_top          # la bande est COLLÉE sous les cartes
-    n = len(cartes)
-    pad = 0.15
-    _, cw = col_x(0, n)
-    usable = cw - 2 * pad
-    picto_d = 0.30
-    chip_h = 0.34
-    ITEM_SIZE_DEFAUT = 7
-    ITEM_SIZE_PLANCHER = 6.25   # jamais en dessous : déjà la taille du kicker/chip de cette slide
-
-    # Étages communs aux 3 cartes (hauteurs dérivées du contenu le plus long) —
-    # les titres, accroches et pieds s'alignent d'une carte à l'autre, sinon la
-    # rangée « égale » ne l'est qu'en boîte, pas à la lecture.
-    titre_h = max(_lignes(c[3], usable, 9.5) for c in cartes) * (9.5 * 1.2 / 72.0) + 0.04
-    accr_h = max(_lignes(c[4], usable, 7.5) for c in cartes) * (7.5 * 1.2 / 72.0) + 0.04
-
-    for i, (label, color, picto, titre, accroche, items, pied) in enumerate(cartes):
-        x, _ = col_x(i, n)
-        D.add_rect(s, x, cards_top, cw, card_h, fill="#ffffff", line=LINE, line_w=0.75,
-                   rounded=True, radius=0.08)
-        D.add_rect(s, x, cards_top, cw, 0.075, fill=color, rounded=True, radius=0.5)
-
-        y = cards_top + 0.16
-        _picto(s, picto, x + pad, y, picto_d, color)
-        D.add_text(s, x + pad + picto_d + 0.10, y, usable - picto_d - 0.10, picto_d, [
-            (label, dict(size=6.5, bold=True, color=encre_de(color), line_spacing=1.1)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
-
-        y += picto_d + 0.10
-        D.add_text(s, x + pad, y, usable, titre_h, [
-            (titre, dict(size=9.5, bold=True, color=NAVY, line_spacing=1.2)),
-        ])
-        y += titre_h + 0.04
-        D.add_text(s, x + pad, y, usable, accr_h, [
-            (accroche, dict(size=7.5, color=MUTED, italic=True, line_spacing=1.2)),
-        ])
-        y += accr_h + 0.10
-        D.add_rect(s, x + pad, y, usable, 0.012, fill=LINE)
-        y += 0.12
-
-        # Le mou restant se répartit ENTRE les puces (jamais en vide sous le
-        # pied de carte) : les 3 cartes n'ont pas le même nombre de puces, leurs
-        # pieds doivent malgré tout s'aligner. Défaut « panneau flottant » évité
-        # par construction, pas par relecture.
-        pied_top = cards_top + card_h - 0.14 - chip_h
-        dispo = pied_top - 0.12 - y
-        # v2.11 : la taille de puce n'était pas adaptée au NOMBRE de puces —
-        # une carte à 4 items (ex. "CE QU'ILS VIVENT", 4 personas) débordait
-        # silencieusement sous le chip du pied, dont le fond plein masquait le
-        # dernier item entier (seule sa puce ronde dépassait, visible comme un
-        # petit disque coloré au-dessus du chip — repéré au rendu réel, pas au
-        # self-check géométrique qui ne mesurait pas ce débordement). On
-        # réduit taille puis interligne, PALIER PAR PALIER, jusqu'à tenir dans
-        # `dispo` avec une marge de sécurité — jamais en dessous du plancher.
-        marge = 0.03
-        item_size = item_ls = items_h = None
-        for size in (ITEM_SIZE_DEFAUT, 6.75, 6.5, ITEM_SIZE_PLANCHER):
-            for ls in (1.2, 1.1, 1.0):
-                lh = size * ls / 72.0
-                h = [_lignes(t, usable - 0.14, size) * lh + 0.02 for t in items]
-                total = sum(h) + max(0, len(items) - 1) * 0.06
-                if total <= dispo - marge:
-                    item_size, item_ls, items_h = size, ls, h
-                    break
-            if item_size:
-                break
-        if item_size is None:
-            # Rien ne tient même au plancher : dégrader plutôt que planter,
-            # et le signaler comme une vraie anomalie de build (pas un print
-            # perdu) — c'est la clause que "faire évoluer le check graphique"
-            # demandait : un débordement de ce type n'est plus silencieux.
-            item_size, item_ls = ITEM_SIZE_PLANCHER, 1.0
-            lh = item_size * item_ls / 72.0
-            items_h = [_lignes(t, usable - 0.14, item_size) * lh + 0.02 for t in items]
-            _ANOMALIES_BUILD.append(
-                f"slide_pitch_iap carte {i} ('{label}') : {len(items)} puces ne tiennent pas "
-                f"dans la hauteur disponible ({dispo:.2f}in) même à la taille plancher "
-                f"({ITEM_SIZE_PLANCHER}pt) — raccourcir le texte ou réduire le nombre d'items."
-            )
-        gap = max(0.06, (dispo - sum(items_h)) / max(1, len(items) - 1))
-        for t, ih in zip(items, items_h, strict=True):
-            D.add_rect(s, x + pad + 0.01, y + 0.045, 0.06, 0.06, fill=color, rounded=True, radius=0.5)
-            D.add_text(s, x + pad + 0.14, y, usable - 0.14, ih, [
-                (t, dict(size=item_size, color=NAVY, line_spacing=item_ls)),
-            ])
-            y += ih + gap
-
-        chip(s, x + pad, pied_top, usable, chip_h, pied, color, size=6.5)
-
-    # --- Bande « matériau de cadrage » : PAS une 4e carte — pleine largeur,
-    # collée sous la rangée, fond gris et texte plus petit (poids visuel moindre).
-    D.add_rect(s, MARGIN, band_top, CONTENT_W, band_h, fill=TRACK, rounded=True, radius=0.06)
-    D.add_text(s, MARGIN + 0.20, band_top, CONTENT_W - 0.40, band_h, [
-        ("MATÉRIAU DE CADRAGE", dict(size=6.5, bold=True, color=MUTED)),
-        ("Les personas, les douleurs et les familles de gaspillage de ce cadrage sont nourris "
-         "de trois contextes sectoriels réels : télécom et plateformes numériques, banque de "
-         "détail, GIE informatique bancaire.",
-         dict(size=7.5, color=NAVY, space_before=2, line_spacing=1.2)),
-    ], anchor=MSO_ANCHOR.MIDDLE)
-    return s
-
-
-# ---------------------------------------------------------------- chapitre 01 (v2.9)
-# Nouveau (v2.9, 2026-09-02) : le niveau ZOOMÉ-ARRIÈRE de l'« avec ou sans
-# agentic ». Trois slides du deck traitent déjà le sujet à des altitudes plus
-# basses — slide_activites_humaines (phase par phase, chapitre 07),
-# slide_iap_contexte_client (topologie poste consultant / poste client, chapitre
-# 08), slide_export_markdown (bifurcation documentation-first ou
-# agentic-implementation, chapitre 06). Celle-ci n'en redessine aucune : une
-# LIGNE HORIZONTALE d'étapes, et sous chaque étape des pastilles empilées — la
-# forme dit que c'est la MÊME démarche qui absorbe l'outillage, pas une démarche
-# dédoublée. Deux colonnes en vis-à-vis ont été écartées : elles reprendraient
-# l'axe poste-consultant / poste-client de slide_iap_contexte_client et
-# grilleraient la surprise du chapitre 08, deux slides après le sommaire.
-# Langage de couleur : gris-navy = socle (aucun octogone or, qui pillerait le
-# vocabulaire des variantes conditionnées du parcours de mission) ; teal =
-# module qui outille le consultant ; violet = agentic déployé chez le client
-# (même violet que slide_iap_contexte_client et que les badges du chapitre IA).
-# v2.15 (2026-09-03) avait remplacé les 4 temps de slide_trajectoire par un
-# cadre à 3 badges POURQUOI/QUOI/COMMENT abstrait — REJETÉ : la consigne
-# était de CONSERVER la démarche de slide_trajectoire (ses 4 étapes, chacune
-# avec sa durée et son livrable), pas de la remplacer par une autre grille de
-# lecture. v2.17 (2026-09-03, REFONDUE) : la démarche à 4 temps de
-# slide_trajectoire est reprise fidèlement comme corps de la slide, un chapô
-# resserré au-dessus indique D'OÙ ON PART et CE QU'ON VISE.
-# v2.19 (2026-09-03, demande utilisateur — arbitrage « slide unique, très
-# compacte » via AskUserQuestion) : ajout du GATE IA clarifié, de la liste des
-# agents possibles CÔTÉ CONSULTANT (accélérateur) et CÔTÉ CLIENT en option
-# (chacun avec l'objectif/résultat visé — repris tel quel de slide_pitch_iap
-# et des 3 slide_agent_ia du chapitre IA, sans renvoi de chapitre), et des 3
-# familles de KPIs (résumées, source : slide_kpis). Volume important pour une
-# seule slide : tout compacté (polices 5.5-7pt).
-# v2.20 (2026-09-03) : retour utilisateur — texte trop petit, objectifs et
-# livrables pas assez détaillés, pas de résultat TANGIBLE/OBSERVABLE. Police
-# remontée d'un cran partout. Chaque agent (consultant comme client) distingue
-# désormais OBJECTIF et RÉSULTAT — le triage de tickets porte le chiffre EXACT
-# du cas nominal RUN de slide_kpis_exemple (25 min → 12 min, ≈15 tickets/mois),
-# pas une reformulation qualitative. La bande KPI ajoute ce même cas chiffré.
-# v2.21 (2026-09-03) : (1) étape OPTIONNELLE « Constitution du TOM » ajoutée
-# entre ① et ②, en encadré pointillé (`_note_mecanisme`, même grammaire visuelle
-# que les « EXTENSION POSSIBLE » de slide_offre_iap) — livrables : le TOM, la
-# roadmap de déploiement. (2) Livrable de ② corrigé : « Premier déploiement »
-# produit une ÉVALUATION du pilote, pas un plan (le plan viendrait avant, pas
-# après avoir déployé). (3) Chaque phase porte désormais un RÉSULTAT VISÉ en
-# plus de son livrable — ce qu'on cherche à obtenir, pas seulement ce qu'on
-# produit. (4) Espace récupéré côté agents (le déséquilibre consultant/client
-# de v2.20) réinjecté dans un interligne plus généreux partout.
-def slide_demarche_avec_sans_agentic(prs):
-    s = content_slide(prs, "Exec summary",
-                       "La même démarche absorbe l'outillage : elle n'est jamais dédoublée",
-                       color=NAVY)
-
-    chapo = ("Trois temps identiques avec ou sans outillage — ce qui change, c'est ce que le "
-             "consultant a dans les mains, et ce qui peut être déployé chez le client.")
-    chapo_h = _lignes(chapo, CONTENT_W, 8.5) * (8.5 * 1.25 / 72.0) + 0.06
-    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, chapo_h, [
-        (chapo, dict(size=8.5, color=NAVY, italic=True, line_spacing=1.25)),
-    ])
-
-    SOCLE_FILL, SOCLE_LINE = "#dce6f5", MUTED           # gris-navy neutre
-    MODULE_FILL, MODULE_LINE = "#E1FDFA", ENCRE  # cyan tres pale, fond de support
-    CLIENT_FILL, CLIENT_LINE = "#E7E9EE", ENCRE  # agentic chez le client
-
-    etapes = [
-        ("①", "COMPRENDRE",
-         "Le matériau est structuré par le module — les questions posées, elles, ne changent pas.",
-         ["Interviews et terrain", "Trames et synthèse outillées", "Rien de déployé à ce stade"]),
-        ("②", "DÉFINIR",
-         "Le scoring devient explicite et rejouable ; la décision, elle, reste humaine.",
-         ["Ateliers de conception", "Fiche produit et scoring", "Candidats qualifiés, gate IA"]),
-        ("③", "FAIRE ADOPTER & PROUVER",
-         "Les livrables sont générés ; l'adoption, elle, reste de la présence de consultant.",
-         ["Coaching, présence dégressive", "Decks et export markdown", "Supervisé, puis délégué"]),
-    ]
-    registres = [
-        ("SANS OUTILLAGE", "présence du consultant", None, SOCLE_FILL, SOCLE_LINE, NAVY),
-        ("AVEC LE MODULE", "côté consultant · décliné au chapitre Démarche", "engrenage",
-         MODULE_FILL, MODULE_LINE, ENCRE),
-        ("AGENTIC CHEZ LE CLIENT", "en option, sous gate IA · déployé au chapitre Outillage IAP", "deploiement",
-         CLIENT_FILL, CLIENT_LINE, ENCRE),
-    ]
-
-    label_w = 1.30
-    grid_x0 = MARGIN + label_w + 0.14
-    grid_w = BORD_DROIT - grid_x0
-    n = len(etapes)
-    col_gap = 0.16
-    col_w = (grid_w - (n - 1) * col_gap) / n
-
-    def _col_px(i):
-        return grid_x0 + i * (col_w + col_gap)
-
-    # --- En-tête : les 3 temps sur UN fil continu (la démarche est une, l'outillage
-    # ne la coupe pas) — badges navy, pas de couleur de registre ici.
-    head_top = CONTENT_TOP + chapo_h + 0.18
-    badge_d = 0.42
-    change_h = max(_lignes(e[2], col_w, 6.8) for e in etapes) * (6.8 * 1.25 / 72.0) + 0.04
-    cx_first = _col_px(0) + col_w / 2
-    cx_last = _col_px(n - 1) + col_w / 2
-    D.add_rect(s, cx_first, head_top + badge_d / 2 - 0.011, cx_last - cx_first, 0.022, fill=LINE)
-    D.add_text(s, MARGIN, head_top, label_w, badge_d, [
-        ("LA MÊME DÉMARCHE", dict(size=8, bold=True, color=NAVY, line_spacing=1.1)),
-        ("quel que soit l'outillage", dict(size=6.2, color=MUTED, italic=True, space_before=1)),
-    ], anchor=MSO_ANCHOR.MIDDLE)
-    for i, (sym, nom, change, _pastilles) in enumerate(etapes):
-        x = _col_px(i)
-        bx = x + col_w / 2 - badge_d / 2
-        D.add_rect(s, bx, head_top, badge_d, badge_d, fill=NAVY, rounded=True, radius=0.5)
-        D.add_text(s, bx, head_top, badge_d, badge_d, [
-            (sym, dict(size=14, bold=True, color="#ffffff", align=PP_ALIGN.CENTER)),
-        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-        nom_y = head_top + badge_d + 0.08
-        D.add_text(s, x, nom_y, col_w, 0.22, [
-            (nom, dict(size=9, bold=True, color=NAVY, align=PP_ALIGN.CENTER)),
-        ], align=PP_ALIGN.CENTER)
-        D.add_text(s, x, nom_y + 0.24, col_w, change_h, [
-            (change, dict(size=6.8, color=MUTED, italic=True, align=PP_ALIGN.CENTER,
-                          line_spacing=1.25)),
-        ], align=PP_ALIGN.CENTER)
-        if i < n - 1:
-            _fleche_h(s, x + col_w, head_top, col_gap, badge_d, color=MUTED, size=12)
-    D.add_text(s, MARGIN, head_top + badge_d + 0.30, label_w, change_h, [
-        ("CE QUE ÇA CHANGE", dict(size=6.5, bold=True, color=MUTED, line_spacing=1.1)),
-    ])
-    head_bottom = head_top + badge_d + 0.08 + 0.24 + change_h
-
-    # --- Bandeau de renvoi (pied) : dimensionné à son texte, jamais étiré.
-    renvoi = ("Une seule démarche, deux faces de l'agentic : le module outille le consultant "
-              "(décliné au chapitre Démarche) ; déployer des agents chez le client est une "
-              "décision distincte, sous gate IA (déployé au chapitre Outillage IAP).")
-    r_pad = 0.12
-    renvoi_h = r_pad + (6.8 * 1.1 / 72.0) + 0.03 \
-        + _lignes(renvoi, CONTENT_W - 0.44, 8) * (8 * 1.25 / 72.0) + r_pad
-    renvoi_top = CONTENT_BOTTOM - renvoi_h
-
-    # --- Trois rangées de pastilles : la hauteur disponible est CONSOMMÉE (le
-    # piège de cette slide est un schéma d'1,5 in laissant 3 in de vide dessous).
-    rows_top = head_bottom + 0.16
-    row_gap = 0.12
-    pill_h = (renvoi_top - 0.16 - rows_top - (len(registres) - 1) * row_gap) / len(registres)
-    for r, (label, sous, picto, fill, line, txt_color) in enumerate(registres):
-        y = rows_top + r * (pill_h + row_gap)
-        px = MARGIN
-        if picto:
-            _picto(s, picto, px, y + pill_h / 2 - 0.11, 0.22, line)
-            px += 0.30
-        D.add_text(s, px, y, MARGIN + label_w - px, pill_h, [
-            (label, dict(size=7, bold=True, color=NAVY, line_spacing=1.1)),
-            (sous, dict(size=6, color=MUTED, italic=True, space_before=2, line_spacing=1.15)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
-        for i, _e in enumerate(etapes):
-            x = _col_px(i)
-            texte = etapes[i][3][r]
-            D.add_rect(s, x, y, col_w, pill_h, fill=fill, line=line, line_w=1.0,
-                       rounded=True, radius=0.22)
-            D.add_text(s, x + 0.10, y, col_w - 0.20, pill_h, [
-                (texte, dict(size=8, bold=True, color=txt_color, align=PP_ALIGN.CENTER,
-                             line_spacing=1.15)),
-            ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-
-    D.add_rect(s, MARGIN, renvoi_top, CONTENT_W, renvoi_h, fill=NAVY, rounded=True, radius=0.08)
-    D.add_rect(s, MARGIN, renvoi_top, 0.07, renvoi_h, fill=ACCENT, rounded=True, radius=0.5)
-    D.add_text(s, MARGIN + 0.24, renvoi_top + r_pad * 0.5, CONTENT_W - 0.44, renvoi_h - r_pad, [
-        ("CE QUE LE DECK DÉCLINE ENSUITE", dict(size=6.8, bold=True, color="#8fd6db")),
-        (renvoi, dict(size=8, color="#ffffff", space_before=3, line_spacing=1.25)),
-    ])
-    return s
-
-
 # v2.32 (2026-09-04, refonte graphique — 3e passage sur cette slide, cf.
 # historique ci-dessus des 2 rejets précédents) : corps entièrement redessiné
 # selon le système de design "contour" (cf. les helpers _rich/_chevron_shape/
 # _badge/_quote_banner ci-dessus) après étude de 3 decks OCTO réels fournis en
-# référence par l'utilisateur. RÉINTÉGRÉE dans build() au chapitre 01 · Exec
-# summary (sa position d'origine avant le retrait v2.16) — plus les 2 slides
-# ci-dessous, déplacées ici depuis le chapitre 02 · Contexte au même moment
-# (demande utilisateur explicite). Chaque étape porte désormais aussi son
-# ACTIVITÉ TECHNIQUE en miroir (champ `tech`) : la punchline affirme que « le
-# volet organisationnel fait réussir le volet tech », ce lien doit se voir
-# étape par étape, pas seulement une fois à la fin.
+# référence par l'utilisateur.
+#
+# v2.34 (2026-09-11, demande utilisateur) : REFONDUE une 4e fois, et c'est
+# désormais la seule slide « démarche » du chapitre 01. Deux demandes dans le
+# même retour : « exec summary trop lourd, max 3 slides, plus synthétique » et
+# « manque une démarche centrée sur les spécificités de l'infra sans forcément
+# avec IA — que propose-t-on sans IA ». Conséquences ici :
+#   - le CORPS de la slide est la démarche infra, en deux registres par temps
+#     (ORGANISATION / INFRA). Le volet INFRA n'est plus une note « TECH : » en
+#     6 mots sous la description : il porte les verbes de `slide_fil_technique`
+#     (cartographier, décommissionner & observer, standardiser & outiller,
+#     mesurer & réengager), à même poids de lecture que l'organisationnel ;
+#   - l'AGENTIC descend d'un cran : plus de rangée à poids égal qui laisserait
+#     croire qu'on choisit entre « avec » et « sans », mais une bande basse en
+#     contour gris, 7pt, sous la frise — les deux faces (module du consultant /
+#     agents déployés chez le client) restent distinguées par leurs deux
+#     SILHOUETTES `_picto`, condition posée en table ronde ;
+#   - la clôture AFFIRME que rien de tout ça ne requiert l'IA. C'était implicite
+#     dans les 5 slides précédentes, donc invisible pour un client qui dit
+#     « pas d'IA chez moi ».
+# Le terrain (RUN permanent, infra transverse, guichet sursollicité) est rappelé
+# en tête pour que la slide reste AUTOPORTANTE — consigne utilisateur du
+# 2026-09-03 : « si je ne lis QUE cette slide, je comprends sans les autres ».
+# Le NOM de la fonction est conservé malgré la refonte : les trois scripts
+# autonomes du dossier (gen_check_slide_synthese*.py) l'importent.
 def slide_synthese_pourquoi_quoi_comment(prs):
     s = content_slide(prs, "Exec summary",
-                       "Comment aller vers l'infra as a product — le volet organisationnel "
-                       "d'une mission tech.",
+                       "Reprendre la main sur l'infra en quatre temps — organisation "
+                       "et plateforme, sans prérequis d'IA",
                        color=NAVY)
 
     marge_g = 0.38
@@ -1831,41 +1542,58 @@ def slide_synthese_pourquoi_quoi_comment(prs):
 
     debut = 0.85
 
-    phases = [
-        ("①", "Assessment flash", "1–2 sem.", NAVY, False,
-         "Schéma déjà cadré : Collecte → Diagnostic → Conception → Restitution.",
-         "Collecte → Diagnostic → Conception → Restitution.",
-         "TECH : dette et risques cartographiés",
-         "Partager un diagnostic et argumenter la décision d'engager ou non.",
-         "Livrer un deck exécutif de restitution."),
-        ("+", "OPTIONNEL — Constitution du TOM", "3–4 sem.", ACCENT2, True,
-         "Formalise le Target Operating Model : rôles, gouvernance, adapté à l'organisation "
-         "et aux contraintes du client INFRA.",
-         "Target Operating Model",
-         "TECH : référentiel standards/outillage",
-         "Adapter le cadre de référence à l'organisation et aux contraintes du client.",
-         "Livrer le TOM et la roadmap de déploiement."),
-        ("②", "Premier déploiement", "4–5 sem.", DK2, False,
-         "Des équipes pilotes volontaires ; agent IA si retenu : qualifier, cadrer, "
-         "mandater.",
-         "équipes pilotes volontaires",
-         "TECH : décommissionnement, observabilité",
-         "Prouver la valeur sur le pilote et identifier les ajustements avant généralisation.",
-         "Livrer l'évaluation du déploiement pilote (deck)."),
-        ("③", "Implémentation itérative", "→ T+6-12 mois", DK2, False,
-         "Généralisation équipe par équipe, bascule Coach → Délégué ; agent IA supervisé "
-         "puis délégué.",
-         "Coach → Délégué",
-         "TECH : CI/CD, infra as code",
-         "Généraliser l'adoption et déléguer l'agent IA si la piste est retenue.",
-         "Livrer un deck de comité de pilotage (périodique)."),
-        ("⟲", "Boucle de réévaluation", "T+6-12 mois", ACCENT, False,
-         "iap-re-assessment reboucle vers la Collecte — alimente la bibliothèque de REX.",
-         "bibliothèque de REX",
-         "TECH : dette technique et KPI infra",
-         "Mesurer le delta T0 → réévaluation et capitaliser le REX pour la mission suivante.",
-         "Livrer un deck de bilan / ré-évaluation."),
+    # --- Le terrain, d'abord : ce que la démarche a en face d'elle. Repris mot
+    # pour mot des trois slides du chapitre Spécificités de l'infra (RUN comme
+    # régime permanent, transversalité sans propriétaire, guichet sursollicité)
+    # — pas une généralité réécrite ici, sinon les deux chapitres divergent.
+    contraintes = [
+        "Un RUN qui ne s'arrête jamais et puise dans les experts du BUILD.",
+        "Une infra transverse que personne ne porte en propre.",
+        "Un guichet sursollicité, sans self-service.",
     ]
+
+    # (symbole, titre, durée, optionnel, (verbe orga, suite), (verbe infra, suite), livrable)
+    # Les verbes INFRA sont ceux de `slide_fil_technique` (chapitre Démarche) :
+    # deux slides du même deck qui nommeraient différemment le même geste se
+    # liraient comme deux démarches.
+    phases = [
+        ("①", "Assessment flash", "1–2 sem.", False,
+         ("Diagnostiquer", " et restituer avec les parties prenantes."),
+         ("Cartographier", " la dette, les risques et les licences en tension."),
+         "Deck exécutif de restitution."),
+        ("+", "Constitution du TOM — optionnel", "3–4 sem.", True,
+         ("Formaliser", " le Target Operating Model : rôles et gouvernance."),
+         ("Poser", " le référentiel de standards et d'outillage à tenir."),
+         "TOM et roadmap de déploiement."),
+        ("②", "Premier déploiement", "4–5 sem.", False,
+         ("Embarquer", " des équipes pilotes volontaires et prouver la valeur."),
+         ("Décommissionner", " ce qui peut l'être, observer ce qui reste."),
+         "Évaluation du déploiement pilote."),
+        ("③", "Implémentation itérative", "→ T+6-12 mois", False,
+         ("Généraliser", " équipe par équipe, en passant de coach à délégué."),
+         ("Standardiser", " et outiller : CI/CD et infra as code par défaut."),
+         "Deck de comité de pilotage."),
+        ("⟲", "Boucle de réévaluation", "T+6-12 mois", False,
+         ("Rejouer", " le diagnostic au même instrument qu'à T0."),
+         ("Mesurer", " la dette technique et les KPI d'infra."),
+         "Deck de bilan et de ré-évaluation."),
+    ]
+
+    # --- L'agentic, au second plan : contour gris, 7pt, sous la frise. Les deux
+    # faces gardent leurs SILHOUETTES (`_picto`) — un sponsor qui lit deux fois
+    # « agentic » sans les distinguer croit qu'on lui vend la même chose deux
+    # fois, ce qui rendrait la slide fausse (condition posée en table ronde).
+    agentic = [
+        ("engrenage", "CÔTÉ CONSULTANT — LE MODULE BMAD IAP",
+         "Il outille chaque temps sur notre poste et sort les livrables plus vite — "
+         "rien ne s'installe chez le client."),
+        ("deploiement", "CHEZ LE CLIENT — UNE OPTION, PAS UN PRÉREQUIS",
+         "Déployer des agents (triage, FinOps, documentaire) reste une décision "
+         "distincte, sous gate IA."),
+    ]
+    punch_txt = ("Aucun de ces temps ne requiert l'IA : l'agentic accélère, il ne remplace "
+                 "ni la démarche ni le consultant.")
+
     n = len(phases)
     badge_d = 0.40
     overlap = 0.05
@@ -1873,119 +1601,157 @@ def slide_synthese_pourquoi_quoi_comment(prs):
     chev_pad = 0.045
     chip_h = 0.20
     chip_sz = 7.5
-    titre_sz = 7.5
-    rl_sz = 7
+    titre_sz = 8
+    lbl_sz = 6.5
+    corps_sz = 8
+    livr_sz = 7.5
+    lbl_h = 0.13
 
-    top0 = debut
+    # ---- 1) Hauteurs, toutes dérivées du CONTENU (jamais d'un budget deviné :
+    # le piège récurrent de ce deck est le panneau étiré au reste de la page).
+    ent_h = 0.14
+    _, wpill = col_x(0, len(contraintes), w=largeur_haut, x0=marge_g, gap=0.14)
+    pill_pad = 0.07
+    pills_h = max(_lignes(c, wpill - 2 * 0.14, corps_sz)
+                  for c in contraintes) * (corps_sz * 1.25 / 72.0) + 2 * pill_pad
+
     _, wcol = col_x(0, n, w=largeur_haut, x0=marge_g, gap=ecart)
+    tw = wcol - 0.10
     chev_tw = wcol * chev_w_frac - 2 * chev_pad
-    titre_h = max(_lignes(p[1], chev_tw, titre_sz) for p in phases) * (titre_sz * 1.1 / 72.0) + 2 * chev_pad
-    desc_h = max(_lignes(p[5], wcol - 0.06, 8) for p in phases) * (8 * 1.2 / 72.0) + 0.03
-    tech_sz = 7
-    tech_h = max(_lignes(p[7], wcol - 0.06, tech_sz) for p in phases) * (tech_sz * 1.15 / 72.0) + 0.02
-    resultat_h = max(_lignes(p[8], wcol - 0.06, rl_sz) for p in phases) * (rl_sz * 1.2 / 72.0) + 0.03
-    livr_h = max(_lignes(p[9], wcol - 0.06, rl_sz) for p in phases) * (rl_sz * 1.2 / 72.0) + 0.03
+    titre_h = max(_lignes(p[1], chev_tw, titre_sz)
+                  for p in phases) * (titre_sz * 1.1 / 72.0) + 2 * chev_pad
+    orga_h = max(_lignes(p[4][0] + p[4][1], tw, corps_sz)
+                 for p in phases) * (corps_sz * 1.2 / 72.0) + 0.03
+    infra_h = max(_lignes(p[5][0] + p[5][1], tw, corps_sz)
+                  for p in phases) * (corps_sz * 1.2 / 72.0) + 0.03
+    livr_h = max(_lignes("Livrable : " + p[6], tw, livr_sz)
+                 for p in phases) * (livr_sz * 1.2 / 72.0) + 0.03
+    card_h = (0.02 + badge_d - overlap + titre_h + 0.06 + chip_h + 0.10 + lbl_h
+              + orga_h + 0.08 + lbl_h + infra_h + 0.07 + 0.06 + livr_h + 0.09)
 
+    # Les deux encarts agentiques s'alignent sur la frise (bord droit commun à
+    # 9.62in), pas sur `largeur` : seul le bandeau de clôture doit rentrer à
+    # 9.2in, parce que LUI descend au niveau du badge de pagination du gabarit
+    # (9.25-9.80 x 5.08-5.34). Aligner les trois sur le plus contraint laissait
+    # un décrochage de 0,42in visible au rendu entre la frise et ce qui suit.
+    ag_gap = 0.18
+    ag_w = (largeur_haut - ag_gap) / 2
+    picto_d = 0.20
+    ag_pad = 0.09
+    ag_txt_off = 0.12 + picto_d + 0.10
+    ag_tw = ag_w - ag_txt_off - 0.12
+    ag_sz = 7
+    ag_label_h = max(_lignes(lb, ag_tw, ag_sz) for _, lb, _ in agentic) * (ag_sz * 1.15 / 72.0)
+    ag_texte_h = max(_lignes(t, ag_tw, ag_sz) for _, _, t in agentic) * (ag_sz * 1.25 / 72.0)
+    agents_h = ag_pad + ag_label_h + 3 / 72.0 + ag_texte_h + ag_pad
+
+    punch_h = _lignes(punch_txt, largeur - 0.40, 12) * (12 * 1.2 / 72.0) + 0.1
+
+    # ---- 2) Respiration : le mou restant est reversé dans les 3 inter-blocs,
+    # plafonné — jamais dans la hauteur d'un panneau (qui se mettrait à flotter
+    # autour d'un texte court).
+    blocs_h = ent_h + pills_h + card_h + agents_h + punch_h
+    gaps_min = (0.14, 0.10, 0.06)
+    reste = bas_max - debut - blocs_h - sum(gaps_min)
+    resp = max(0.0, min(0.10, reste / 3.0))
+    g1, g2, g3 = (g + resp for g in gaps_min)
+
+    # ---- 3) Ordonnées absolues, calculées UNE FOIS (une formule dupliquée dans
+    # la boucle a déjà divergé en silence sur cette slide, cf. v2.27).
+    pills_top = debut + ent_h
+    top0 = pills_top + pills_h + g1
     badge_cy = top0 + badge_d / 2
     chev_top = top0 + badge_d - overlap
-    chev_h = titre_h
-    chip_y = chev_top + chev_h + 0.06
-    desc_y = chip_y + chip_h + 0.08
-    tech_y = desc_y + desc_h + 0.05
-    sep_y = tech_y + tech_h + 0.06
-    resultat_y = sep_y + 0.05
-    livr_y = resultat_y + resultat_h + 0.04
-
+    chip_y = chev_top + titre_h + 0.06
+    lbl_orga_y = chip_y + chip_h + 0.10
+    orga_y = lbl_orga_y + lbl_h
+    lbl_infra_y = orga_y + orga_h + 0.08
+    infra_y = lbl_infra_y + lbl_h
+    sep_y = infra_y + infra_h + 0.07
+    livr_y = sep_y + 0.06
     card_top = top0 - 0.02
-    card_bottom = livr_y + livr_h + 0.03
-    card_h = card_bottom - card_top
+    agents_top = card_top + card_h + g2
+    punch_top = agents_top + agents_h + g3
 
-    # Passe 1 : conteneurs en CONTOUR — plus d'aplat pastel.
-    for i, color in enumerate(p[3] for p in phases):
-        x, w = col_x(i, n, w=largeur_haut, x0=marge_g, gap=ecart)
-        D.add_rect(s, x, card_top, w, card_h, fill=WHITE, line=color, line_w=1.1, rounded=True, radius=0.08)
+    # ---- 4) Le terrain (bande haute).
+    D.add_text(s, marge_g, debut, largeur_haut, ent_h, [
+        ("CE QUE CE TERRAIN IMPOSE", dict(size=lbl_sz, bold=True, color=MUTED)),
+    ])
+    for i, texte in enumerate(contraintes):
+        x, w = col_x(i, len(contraintes), w=largeur_haut, x0=marge_g, gap=0.14)
+        D.add_rect(s, x, pills_top, w, pills_h, fill=SUPPORT, rounded=True, radius=0.08)
+        D.add_text(s, x + 0.14, pills_top, w - 0.28, pills_h, [
+            (texte, dict(size=corps_sz, color=NAVY, line_spacing=1.25)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
 
-    # Passe 2 : chevrons de titre + badges à cheval sur leur bord haut.
-    for i, (sym, titre, duree, color, optionnel, desc, emph, tech, resultat, livrable) in enumerate(phases):
+    # ---- 5) La frise : conteneurs en CONTOUR, l'étape optionnelle en pointillé
+    # (sa différence est portée par la FORME et le gris, jamais par une teinte
+    # qui signifierait « optionnel »), et « un sur N en accent » — la boucle,
+    # qui est ce qui transforme la mission en delta mesuré.
+    for i, (sym, titre, duree, optionnel, orga, infra, livrable) in enumerate(phases):
         x, w = col_x(i, n, w=largeur_haut, x0=marge_g, gap=ecart)
         cx = x + w / 2
-        sur_cyan = (color == ACCENT)
-        sur_clair = optionnel and color == ACCENT2
-        texte_color = MUTED if sur_clair else color
+        accent = (sym == "⟲")
+        color = MUTED if optionnel else (ACCENT_PLEIN if accent else ENCRE)
+        texte_color = MUTED if optionnel else NAVY
+
+        if optionnel:
+            _dashed_rect(s, x, card_top, w, card_h, WHITE, color, line_w=1.1, radius=0.08)
+        else:
+            D.add_rect(s, x, card_top, w, card_h, fill=WHITE, line=color, line_w=1.1,
+                       rounded=True, radius=0.08)
 
         chev_x = cx - chev_w_frac * w / 2
-        _chevron_shape(s, chev_x, chev_top, chev_w_frac * w, chev_h, fill=WHITE, line=color, line_w=1.1)
-        D.add_text(s, chev_x + chev_pad, chev_top, chev_w_frac * w - 2 * chev_pad, chev_h, [
-            (titre, dict(size=titre_sz, bold=True, color=texte_color if optionnel else NAVY,
+        _chevron_shape(s, chev_x, chev_top, chev_w_frac * w, titre_h, fill=WHITE,
+                       line=color, line_w=1.1)
+        D.add_text(s, chev_x + chev_pad, chev_top, chev_w_frac * w - 2 * chev_pad, titre_h, [
+            (titre, dict(size=titre_sz, bold=True, color=texte_color,
                          align=PP_ALIGN.CENTER, line_spacing=1.05)),
         ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
 
         _badge(s, cx, badge_cy, badge_d, color, sym,
                filled=not optionnel, dashed=optionnel, fill=(TRACK if optionnel else None),
-               text_color=(NAVY if sur_cyan else None),
+               # Le chiffre est DANS l'aplat : sur le badge cyan, le blanc
+               # tomberait à 1,86:1 — `encre_de` ne protège pas ce cas-là.
+               text_color=(NAVY if accent else None),
                bold=(sym not in ("⟲", "+")), size=12)
 
-        chip(s, x + w / 2 - 0.48, chip_y, 0.96, chip_h, duree, color,
-             text_color=(NAVY if (sur_cyan or sur_clair) else WHITE), size=chip_sz)
+        chip(s, cx - 0.48, chip_y, 0.96, chip_h, duree, color,
+             text_color=(NAVY if accent else WHITE), size=chip_sz)
 
-        av_e, em_e, ap_e = _split_emph(desc, emph)
-        _rich(s, x + 0.03, desc_y, w - 0.06, desc_h, [
-            ([(av_e, dict(size=8, color=MUTED)),
-              (em_e, dict(size=8, bold=True, color=NAVY)),
-              (ap_e, dict(size=8, color=MUTED))],
-             dict(align=PP_ALIGN.CENTER, line_spacing=1.2)),
-        ])
-        tech_lbl, tech_reste = tech.split(" : ", 1)
-        _rich(s, x + 0.03, tech_y, w - 0.06, tech_h, [
-            ([(tech_lbl + " : ", dict(size=tech_sz, bold=True, color=MUTED)),
-              (tech_reste, dict(size=tech_sz, italic=True, color=MUTED))],
-             dict(align=PP_ALIGN.CENTER, line_spacing=1.15)),
-        ])
-        D.add_rect(s, x + 0.16, sep_y, w - 0.32, 0.012, fill=LINE)
-        D.add_text(s, x + 0.02, resultat_y, w - 0.04, resultat_h, [
-            (resultat, dict(size=rl_sz, bold=True, color=NAVY, align=PP_ALIGN.CENTER, line_spacing=1.2)),
-        ], align=PP_ALIGN.CENTER)
-        D.add_text(s, x + 0.02, livr_y, w - 0.04, livr_h, [
-            (livrable, dict(size=rl_sz, bold=True, italic=True,
-                             color=(NAVY if sur_cyan else texte_color),
-                             align=PP_ALIGN.CENTER, line_spacing=1.2)),
-        ], align=PP_ALIGN.CENTER)
+        for lbl, lbl_y, (verbe, suite), corps_y in (
+                ("ORGANISATION", lbl_orga_y, orga, orga_y),
+                ("INFRA", lbl_infra_y, infra, infra_y)):
+            D.add_text(s, x + 0.05, lbl_y, tw, lbl_h, [
+                (lbl, dict(size=lbl_sz, bold=True, color=MUTED)),
+            ])
+            _rich(s, x + 0.05, corps_y, tw, (orga_h if lbl == "ORGANISATION" else infra_h), [
+                ([(verbe, dict(size=corps_sz, bold=True, color=texte_color)),
+                  (suite, dict(size=corps_sz, color=texte_color))],
+                 dict(line_spacing=1.2)),
+            ])
 
-    # --- Outillage agentique : conteneurs en contour + barre d'accent.
-    agents_top = livr_y + livr_h + 0.06
-    col_gap = 0.18
-    col_w = (largeur - col_gap) / 2
-    largeur_extra_p2 = 0.42
-    phases_agentic = [
-        ("AGENTIQUE — POUR LA PRODUCTIVITÉ DU CONSULTANT", MUTED, col_w,
-         "Un fait acquis : des agents outillent déjà chaque étape de la démarche, sans "
-         "remplacer le consultant."),
-        ("AGENTIQUE — UN DÉPLOIEMENT CHEZ LE CLIENT POUR ACCOMPAGNER LA TRANSFO", ACCENT,
-         col_w + largeur_extra_p2,
-         "Une piste à l'étude : accompagner la transformation du volet orga et tech en "
-         "aidant le client à déployer ses propres agents."),
-    ]
-    bar_w2 = 0.045
-    txt_x_off = 0.12 + bar_w2 + 0.08
-    pad_v = 0.09
-    label_h = max(_lignes(l, w_i - txt_x_off - 0.10, 7.5) for l, _, w_i, _ in phases_agentic) * (7.5 * 1.15 / 72.0)
-    texte_h = max(_lignes(t, w_i - txt_x_off - 0.10, 7.5) for _, _, w_i, t in phases_agentic) * (7.5 * 1.25 / 72.0)
-    agents_h = pad_v + label_h + 3 / 72.0 + texte_h + pad_v
-    for i, (label, color, w_i, texte) in enumerate(phases_agentic):
-        x = marge_g + i * (col_w + col_gap)
-        aw = w_i - txt_x_off - 0.10
-        D.add_rect(s, x, agents_top, w_i, agents_h, fill=WHITE, line=color, line_w=1.15, rounded=True, radius=0.07)
-        D.add_rect(s, x + 0.12, agents_top + pad_v * 0.6, bar_w2, agents_h - pad_v * 1.2,
-                   fill=color, rounded=True, radius=0.5)
-        D.add_text(s, x + txt_x_off, agents_top + pad_v / 2, aw, agents_h - pad_v, [
-            (label, dict(size=7.5, bold=True, color=encre_de(color), line_spacing=1.1)),
-            (texte, dict(size=7.5, color=NAVY, space_before=3, line_spacing=1.2)),
+        D.add_rect(s, x + 0.05, sep_y, tw, 0.012, fill=LINE)
+        _rich(s, x + 0.05, livr_y, tw, livr_h, [
+            ([("Livrable : ", dict(size=livr_sz, color=MUTED)),
+              (livrable, dict(size=livr_sz, bold=True, color=texte_color))],
+             dict(line_spacing=1.2)),
+        ])
+
+    # ---- 6) L'agentic, au second plan (contour gris, pas de barre d'accent :
+    # elle mettrait ces deux encarts au même poids que la frise).
+    for i, (picto, label, texte) in enumerate(agentic):
+        x = marge_g + i * (ag_w + ag_gap)
+        D.add_rect(s, x, agents_top, ag_w, agents_h, fill=WHITE, line=SUPPORT_LIGNE,
+                   line_w=1.0, rounded=True, radius=0.07)
+        _picto(s, picto, x + 0.12, agents_top + agents_h / 2 - picto_d / 2, picto_d, MUTED)
+        D.add_text(s, x + ag_txt_off, agents_top + ag_pad / 2, ag_tw, agents_h - ag_pad, [
+            (label, dict(size=ag_sz, bold=True, color=MUTED, line_spacing=1.1)),
+            (texte, dict(size=ag_sz, color=MUTED, space_before=3, line_spacing=1.25)),
         ], anchor=MSO_ANCHOR.MIDDLE)
 
-    # --- Clôture.
-    punch_top = agents_top + agents_h + 0.035
-    punch_txt = "Le volet organisationnel fait réussir le volet tech — pas l'inverse."
-    punch_h = _lignes(punch_txt, largeur - 0.40, 12) * (12 * 1.2 / 72.0) + 0.1
+    # ---- 7) Clôture : la seule affirmation que le client doit emporter s'il ne
+    # veut pas d'IA du tout.
     _quote_banner(s, marge_g, punch_top, largeur, punch_h, punch_txt, size=12)
 
     bas_reel = punch_top + punch_h
@@ -3822,8 +3588,10 @@ def slide_fil_humain(prs):
 # cheval sur le bord haut) — le fil technique est le pendant de fil_humain,
 # placé juste après lui. Contenu ancré dans docs/bmad-iap-cadrage.md (rien
 # d'inventé) : les 4 étapes reprennent mot pour mot les notes "TECH :" déjà
-# écrites en slide_pitch_iap (dette/risques → décommissionnement/observabilité
-# → CI/CD/infra as code → dette technique et KPI infra) ; "Produit plateforme"
+# écrites en slide_pitch_iap (supprimée en v2.34 ; sa matière "TECH :" ne
+# survit QUE par cette slide et par archives/ — provenance non relisable dans
+# ce fichier) : dette/risques → décommissionnement/observabilité
+# → CI/CD/infra as code → dette technique et KPI infra ; "Produit plateforme"
 # (cloud interne, orchestration, CI/CD, observabilité) reprend la table des
 # niveaux de granularité (§Définition produit infra) ; les owners reprennent
 # les agents réellement nommés (iap-platform-architect, iap-run-tma-specialist
@@ -5499,32 +5267,24 @@ def build():
     slide_cover(prs)
 
     # === Chapitre 01 — EXEC SUMMARY : le pitch de l'offre (v2.8, refondu v2.9) ===
-    # v2.9 (arbitrage utilisateur) : le grand schéma du parcours de mission
-    # (slide_offre_iap) part au chapitre Démarche et la synthèse en une page
-    # (slide_offre_synthese) est supprimée — slide_executive_summary reste LE
-    # sommaire du deck. À la place, deux slides qui parlent au prospect : les
-    # trois faces de l'offre, puis la même démarche avec ou sans agentic.
     # v2.13 (2026-09-03, arbitrage utilisateur) : slide_executive_summary
     # DÉMÉNAGE d'avant l'intercalaire à juste après — modifié manuellement par
     # l'utilisateur sur l'export, reporté ici pour que toute régénération le
     # conserve (sinon un rebuild écraserait l'édition manuelle sans bruit).
+    # v2.34 (2026-09-11, demande utilisateur) : le chapitre retombe à 3 slides de
+    # contenu (« trop lourd, max 3 slides, plus synthétique ») — le sommaire, la
+    # démarche infra en quatre temps, la thèse. slide_pitch_iap et
+    # slide_demarche_avec_sans_agentic sont SUPPRIMÉES : la première ouvrait le
+    # chapitre sur trois cartes dont deux parlaient d'agentic, la seconde
+    # remettait « sans outillage / avec le module / agentic chez le client » sur
+    # trois lignes d'égal poids — ensemble, elles faisaient de l'IA le sujet de
+    # l'exec summary, exactement l'inverse de la demande.
     slide_chapitre(prs, "01", "Exec summary",
-                   "Les trois faces de l'offre — leurs douleurs, notre outillage de "
-                   "consultant, l'agentic déployé chez eux en option — et la démarche qui les "
-                   "absorbe.",
+                   "La démarche infra en quatre temps — ce qu'on fait dans l'organisation "
+                   "et sur la plateforme, sans prérequis d'IA — et ce qui la rend nécessaire.",
                    NAVY, "wheatfield", seed=0)
     slide_executive_summary(prs)
-    # v2.32 (2026-09-04, demande utilisateur explicite) : slide_synthese_pourquoi_
-    # quoi_comment RÉINTÉGRÉE ici — 2 tours rejetée en v2.14/v2.15 (cf. v2.16
-    # ci-dessus), retravaillée en check isolé (refonte graphique v3, cf.
-    # gen_check_slide_synthese_v3_refonte.py) et validée par l'utilisateur avant
-    # ce retour. slide_specificites_infra et slide_infra_as_product_exemple
-    # DÉPLACÉES ici depuis le chapitre 02 · Contexte au même moment (même
-    # demande) — les 3 racontent ensemble le POURQUOI/COMMENT dès l'exec
-    # summary, avant le pitch et la démarche avec/sans agentic.
     slide_synthese_pourquoi_quoi_comment(prs)
-    slide_pitch_iap(prs)
-    slide_demarche_avec_sans_agentic(prs)
 
     slide_vision(prs)
 

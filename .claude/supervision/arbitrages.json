@@ -320,6 +320,24 @@
    ],
    "source": "arbitrage utilisateur 2026-09-11 (« signale sur le canal fichier », faute de session hub live)",
    "decision": "COMPLEMENT, PAS UNE NOUVELLE DECISION. ListAgents interroge le 2026-09-11 : aucune session vscode5 (hub) parmi les pairs actifs — seules vscode4-51 et vscode2-a8 sont interactives a ce moment. Le SendMessage direct du 2026-09-10 (vscode3-7e -> vscode5-supervision-projets-84) n'est donc pas reproductible aujourd'hui. Choix utilisateur explicite : pas de relance live, le canal fichier (cette entree + le finding source dans diagnostic.json) suffit — la prochaine session hub qui scanne ce depot le voit sans geste supplementaire de ce depot."
+  },
+  {
+   "cible": "VSCode3:brancher-les-trois-filets-dans-generate-deck",
+   "date": "2026-09-11",
+   "categories": [
+    "pratique-dev"
+   ],
+   "decision": "CLOS, deja resolu avant ce tour : les trois filets (verifier_geometrie, verifier_chrome_gabarit, verifier_plancher_de_dessin) sont branches dans generate_deck.py::_controler depuis les commits 4f61470 et 20039af (2026-09-10, tous deux anterieurs a la generation de ce diagnostic a 18:48 le meme jour). Verifie par lecture directe du code (generate_deck.py:5510-5514) le 2026-09-11 : les trois filets sont bien appeles. Le diagnostic n'avait pas rattrape le fix. verifier_debordements_texte reste volontairement hors du controle par defaut (seuil non regle contre un rendu reel), decision deja documentee dans le code.",
+   "source": "traitement /orchestre du 2026-09-11 (findings dashboard : Audit - Robustesse)"
+  },
+  {
+   "cible": "VSCode3:audit-risque_technique-niveau-moyen",
+   "date": "2026-09-11",
+   "categories": [
+    "pratique-dev"
+   ],
+   "decision": "ACCEPTE + APPLIQUE. Le constat ouvert (pptx_deck.py en-deca en helpers reutilisables face a VSCode2/VSCode4) est resolu par le commit a5c469f : add_chip, add_badge et appliquer_police extraits de generate_deck.py vers pptx_deck.py, testes (tests/test_pptx_deck_helpers.py, 8 tests), le module reutilisable restant sans dependance au domaine metier (les constantes de marque POLICE_DECK/GLYPHES_HORS_POLICE_DECK restent locales au projet). Le volet ruff (3 erreurs sur chantier non commite, mentionne dans la preuve du finding) etait deja resolu avant ce tour (chantier committe, ruff propre, verifie). Verifie : py -m pytest tests/ (206 passed), py -m ruff check . (propre), deck regenere + test_generate_deck.py (54/54 pages), rendu reel inspecte a l'oeil.",
+   "source": "traitement /orchestre du 2026-09-11 (findings dashboard : Audit - Risque tech.), commit a5c469f"
   }
  ]
 }

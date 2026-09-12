@@ -118,8 +118,12 @@ def main():
     # traitement partage du gaspillage, au chapitre Proposition). Le
     # 2026-09-11 : 53 -> 54 (slide_fil_technique, chapitre Démarche — comble
     # un manque relevé en revue face à une demande client réelle : CI/CD et
-    # plateformes standard n'existaient qu'en notes "TECH :" éparpillées).
-    check(len(prs.slides) == 54, f"54 slides — reçu {len(prs.slides)}")
+    # plateformes standard n'existaient qu'en notes "TECH :" éparpillées),
+    # puis 54 -> 52 (chapitre 01 « Exec summary » jugé trop lourd : ramené à
+    # 3 slides de contenu, slide_pitch_iap et slide_demarche_avec_sans_agentic
+    # supprimées, leur matière utile absorbée par
+    # slide_synthese_pourquoi_quoi_comment refondue).
+    check(len(prs.slides) == 52, f"52 slides — reçu {len(prs.slides)}")
     check(bool(_vu), "build() consulte bien _controler (tous les filets), "
                      "et pas un sous-ensemble câblé en dur")
     check(not problemes,

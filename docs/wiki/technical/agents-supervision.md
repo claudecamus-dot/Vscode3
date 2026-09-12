@@ -1,5 +1,5 @@
 ---
-updated: 2026-09-11
+updated: 2026-09-12
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -8,21 +8,25 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-09-11T16:43:54+02:00 · **12 sessions** (transcripts) · **38** invocations de skills · **65** lancements de sous-agents.
+Dernier scan : 2026-09-12T00:46:06+02:00 · **15 sessions** (transcripts) · **49** invocations de skills · **76** lancements de sous-agents.
 
 ## Skills — usage réel
 
 | Skill | Famille | Invocations | Première | Dernière |
 | --- | --- | --- | --- | --- |
-| `agent-orchestrator` | projet | 20 | 2026-07-21 | 2026-09-11 |
+| `agent-orchestrator` | projet | 23 | 2026-07-21 | 2026-09-11 |
+| `bmad-review` | BMAD | 4 | 2026-09-07 | 2026-09-11 |
+| `revue-increment` | projet | 4 | 2026-07-21 | 2026-09-11 |
 | `agent-supervisor` | projet | 3 | 2026-07-21 | 2026-09-03 |
-| `bmad-review` | BMAD | 3 | 2026-09-07 | 2026-09-10 |
-| `revue-increment` | projet | 3 | 2026-07-21 | 2026-09-10 |
+| `bmad-party-mode` | BMAD | 3 | 2026-09-02 | 2026-09-11 |
 | `bmad-code-review` | BMAD | 2 | 2026-09-10 | 2026-09-10 |
 | `deck-design-library` | projet | 2 | 2026-09-03 | 2026-09-10 |
+| `artifact-design` | (builtin/session) | 1 | 2026-09-11 | 2026-09-11 |
 | `audit-technique` | projet | 1 | 2026-09-03 | 2026-09-03 |
+| `bmad-advanced-elicitation` | BMAD | 1 | 2026-09-11 | 2026-09-11 |
 | `bmad-agent-pm` | BMAD | 1 | 2026-07-22 | 2026-07-22 |
-| `bmad-party-mode` | BMAD | 1 | 2026-09-02 | 2026-09-02 |
+| `bmad-brainstorming` | BMAD | 1 | 2026-09-11 | 2026-09-11 |
+| `code-review` | (builtin/session) | 1 | 2026-09-11 | 2026-09-11 |
 | `deck-design-review` | projet | 1 | 2026-09-07 | 2026-09-07 |
 | `update-config` | (builtin/session) | 1 | 2026-09-07 | 2026-09-07 |
 
@@ -30,8 +34,8 @@ Dernier scan : 2026-09-11T16:43:54+02:00 · **12 sessions** (transcripts) · **3
 
 | Sous-agent | Lancements | Premier | Dernier |
 | --- | --- | --- | --- |
-| `general-purpose` | 29 | 2026-07-21 | 2026-09-10 |
-| `ppt-designer` | 18 | 2026-07-21 | 2026-09-07 |
+| `general-purpose` | 39 | 2026-07-21 | 2026-09-11 |
+| `ppt-designer` | 19 | 2026-07-21 | 2026-09-11 |
 | `Explore` | 9 | 2026-07-21 | 2026-09-11 |
 | `bmad-revue` | 5 | 2026-09-07 | 2026-09-10 |
 | `agent-supervisor` | 2 | 2026-09-03 | 2026-09-03 |
@@ -44,11 +48,11 @@ Dernier scan : 2026-09-11T16:43:54+02:00 · **12 sessions** (transcripts) · **3
 
 `veille-agentic`
 
-**BMAD** — 46/50 jamais invoqués :
+**BMAD** — 44/50 jamais invoqués :
 
 <details><summary>Voir la liste</summary>
 
-`bmad-advanced-elicitation`, `bmad-agent-analyst`, `bmad-agent-architect`, `bmad-agent-dev`, `bmad-agent-ux-designer`, `bmad-architecture`, `bmad-brainstorming`, `bmad-build`, `bmad-build-auto`, `bmad-checkpoint-preview`, `bmad-correct-course`, `bmad-create-architecture`, `bmad-create-epics-and-stories`, `bmad-create-prd`, `bmad-create-story`, `bmad-customize`, `bmad-deep-recon`, `bmad-dev-auto`, `bmad-dev-story`, `bmad-document-project`, `bmad-domain-research`, `bmad-edit-prd`, `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-forge-idea`, `bmad-generate-project-context`, `bmad-help`, `bmad-market-research`, `bmad-prd`, `bmad-prfaq`, `bmad-product-brief`, `bmad-project-context`, `bmad-qa-generate-e2e-tests`, `bmad-quick-dev`, `bmad-retrospective`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-review-verification-gap`, `bmad-spec`, `bmad-sprint-planning`, `bmad-sprint-status`, `bmad-technical-research`, `bmad-ux`, `bmad-validate-prd`, `bmad-walkthrough`
+`bmad-agent-analyst`, `bmad-agent-architect`, `bmad-agent-dev`, `bmad-agent-ux-designer`, `bmad-architecture`, `bmad-build`, `bmad-build-auto`, `bmad-checkpoint-preview`, `bmad-correct-course`, `bmad-create-architecture`, `bmad-create-epics-and-stories`, `bmad-create-prd`, `bmad-create-story`, `bmad-customize`, `bmad-deep-recon`, `bmad-dev-auto`, `bmad-dev-story`, `bmad-document-project`, `bmad-domain-research`, `bmad-edit-prd`, `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-forge-idea`, `bmad-generate-project-context`, `bmad-help`, `bmad-market-research`, `bmad-prd`, `bmad-prfaq`, `bmad-product-brief`, `bmad-project-context`, `bmad-qa-generate-e2e-tests`, `bmad-quick-dev`, `bmad-retrospective`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-review-verification-gap`, `bmad-spec`, `bmad-sprint-planning`, `bmad-sprint-status`, `bmad-technical-research`, `bmad-ux`, `bmad-validate-prd`, `bmad-walkthrough`
 
 </details>
 
@@ -117,24 +121,28 @@ Ce que 'traiter' ces 3 points pourrait vouloir dire (a instruire au hub, pas tra
 - **`VSCode3:audit-risque_technique-niveau-moyen`** (2026-09-10) : DIFFERE, avec sa condition de reouverture ECRITE — decision explicite, pas un silence. Le constat ouvert est que pptx_deck.py (640 l.) reste en deca de ses homologues en helpers reutilisables (police de marque, add_chip/add_badge/add_encart) presents chez VSCode2 (988 l.) et VSCode4 (1154 l.). MOTIF DU REPORT, mesure : le chantier deck etait en vol au moment de la transmission (839 lignes de diff non commitees sur generate_deck.py, seul consommateur de pptx_deck.py dans ce depot). Porter des helpers sous un appelant en mouvement, c'est le motif exact qui a fait differer le decoupage modulaire — « decouper maintenant = conflits garantis ». CONDITION DE REOUVERTURE : le chantier est commite depuis (e7ce21f puis 4f61470) ; le sujet se reprend des la prochaine demande qui touche pptx_deck.py, en commencant par un inventaire de l'ecart REEL avec VSCode2 et VSCode4 plutot que par un ecart en nombre de lignes — 348 lignes de moins ne prouvent pas 348 lignes de manque. LA DIMENSION RESTE DONC AU NIVEAU MOYEN et le compteur du hub ne doit PAS bouger : le constat n'est pas corrige, il est date et motive. Ce qui a ete traite dans le meme run et que le hub peut remesurer : les 3 erreurs ruff sont a zero et les trois filets de controle sont branches.
 - **`VSCode3:brancher-les-trois-filets-dans-generate-deck`** (2026-09-10) : ACCEPTE + APPLIQUE — commit 4f61470. Le blocage cite par le finding (« generate_deck.py etait modifie par une autre session, donc non touche, R2 ») a ete leve par constat et non par hypothese : depot verifie au repos avant d'ecrire (deux releves git status --porcelain identiques, aucun processus tiers citant le depot), puis chantier de la seance precedente commite a part (e7ce21f). MESURE REFAITE AVANT DE BRANCHER, sur le deck du 2026-09-10 et non sur celui du 2026-09-09 — 839 lignes de chantier avaient atterri entre les deux : verifier_geometrie 0, verifier_chrome_gabarit 0, verifier_plancher_de_dessin 0, verifier_debordements_texte 58. Les trois premiers sont branches, exactement comme le proposait le finding. verifier_debordements_texte reste DEHORS par decision tracee, non par oubli : ce resultat gouverne le nom du fichier ecrit (.INVALIDE.pptx si non vide), donc le brancher a 58 constats sur un deck correct bloquerait la livraison. Son seuil se regle contre un rendu PowerPoint reel — sujet distinct, non ouvert ici. AJOUT AU-DELA DE LA PROPOSITION, et c'est le fond du travail : le self-check est sorti de build() dans _controler(prs). Sans cette couture, « ce filet est-il appele ? » n'avait pas de reponse automatique — c'est precisement pourquoi trois filets ont pu vivre debranches avec 16 tests verts, qui les testaient ISOLEMENT. 5 tests de cablage ajoutes, passe adversariale reelle : mutant « filets redebranches » -> 2 tests tombent ; mutant « debordements branche par inadvertance » -> le test dedie tombe. VERIFIE : ruff a zero, suite 191 -> 196 passed, test_generate_deck.py au vert (49 pages rendues via LibreOffice), deck regenere s'ecrivant sous son NOM LIVRABLE.
 - **`VSCode3:reliquats-de-lint-du-chantier-deck`** (2026-09-10) : ACCEPTE + APPLIQUE — commit e7ce21f. Le finding disait « ces points se ferment au commit de ce chantier, pas avant » : le chantier est commite, ils sont fermes. ITEM_SIZE_DEFAUT n'etait pas une variable morte a supprimer mais une constante DEBRANCHEE : l'echelle de recherche de taille recopiait ses deux bornes en litteral (7 et 6.25) a cote des deux constantes qui les portent. Les brancher retire le F841 ET une divergence latente — changer ITEM_SIZE_PLANCHER laissait l'echelle finir a 6.25. Supprimer la constante, geste que le finding autorisait, aurait laisse la duplication en place. Trois blocs d'imports non tries corriges par un ruff --fix RESTREINT a I001, diff relu ligne a ligne (lecon VSCode2 : jamais --fix en aveugle) — diff reel : uniquement des deplacements. Les quatre zip() portaient deja strict=True et sont partis avec le commit. Les trois gen_check_slide_synthese*.py sont VERSIONNES plutot que gitignores, la branche que le finding laissait ouverte : ils portent le systeme de design extrait des deux decks OCTO de reference, pas du jetable. VERIFIE : py -m ruff check . rend « All checks passed! » sur le depot entier. SIGNALE, NON COMMITE : CLAUDE.md.propose, pose par l'installation du kit du 2026-09-10, est le squelette vide a placeholders — l'appliquer detruirait le CLAUDE.md reel de ce depot.
+- **`VSCode3:audit-risque_technique-niveau-moyen`** (2026-09-11) : DIFFERE A NOUVEAU, meme motif que le 2026-09-10 — LA DIMENSION RESTE AU NIVEAU MOYEN. La condition de reouverture posee le 2026-09-10 (« chantier deck committe ») etait techniquement remplie, mais au moment de traiter la reouverture, git status montre generate_deck.py, test_generate_deck.py et bmad-iap-cadrage-synthese.pptx de nouveau modifies et non commites (nouveau chantier en vol) — exactement le risque de collision (seul consommateur de pptx_deck.py en mouvement) qui avait motive le report initial. Porter les helpers manquants (police de marque, add_chip/add_badge/add_encart) maintenant reexposerait au meme risque. CONDITION DE REOUVERTURE INCHANGEE : reprendre des que CE nouveau chantier est commite, en commencant par l'inventaire reel de l'ecart avec VSCode2/VSCode4 (pas un ecart en lignes). CE QUI A ETE VERIFIE DANS LE MEME PASSAGE ET QUI EST BIEN CORRIGE : la partie « 3 erreurs ruff » citee par le finding est perimee — py -m ruff check . sur docs/cadrage-ppt/ rend 0 erreur. Une erreur ruff DIFFERENTE (I001, import non trie) a ete trouvee ailleurs — .claude/hooks/warn_verif_before_commit.py, introduite par le commit f50f111 posterieur a l'audit — et corrigee dans ce meme run (diff d'une ligne, ordre alphabetique des deux noms importes, import reverifie apres coup) : py -m ruff check . rend a nouveau « All checks passed! » sur le depot entier.
+- **`flotte:point-du-jour-importe-kit-installe-hub-only`** (2026-09-11) : APPLIQUE — CLOS POUR CE DEPOT, OUVERT AU HUB. Finding confirme exact : py .claude/hooks/point_du_jour.py rend toujours 'kit installe : mesure impossible (No module named kit_installe)', module qui n'existe que chez le hub (VScode5). Meme schema que flotte:point-du-jour-absent-des-5-cibles : la correction (piste (a) garder le bloc hub-only hors propagation, ou (b) le rendre silencieux si .claude/dispositif/ est absent) n'a pas sa place ici (lecon P1 — le canon se corrige au hub, jamais localement, les copies locales divergent). Deja signale a la session hub le 2026-09-10 (vscode3-7e -> vscode5-supervision-projets-84) ; aucun geste local supplementaire. RESTE OUVERT, ET CE N'EST PAS A CE DEPOT DE LE FERMER : le correctif au hub (kit_installe.py) et sa repropagation aux 5 cibles.
+- **`flotte:point-du-jour-importe-kit-installe-hub-only`** (2026-09-11) : COMPLEMENT, PAS UNE NOUVELLE DECISION. ListAgents interroge le 2026-09-11 : aucune session vscode5 (hub) parmi les pairs actifs — seules vscode4-51 et vscode2-a8 sont interactives a ce moment. Le SendMessage direct du 2026-09-10 (vscode3-7e -> vscode5-supervision-projets-84) n'est donc pas reproductible aujourd'hui. Choix utilisateur explicite : pas de relance live, le canal fichier (cette entree + le finding source dans diagnostic.json) suffit — la prochaine session hub qui scanne ce depot le voit sans geste supplementaire de ce depot.
+- **`VSCode3:brancher-les-trois-filets-dans-generate-deck`** (2026-09-11) : CLOS, deja resolu avant ce tour : les trois filets (verifier_geometrie, verifier_chrome_gabarit, verifier_plancher_de_dessin) sont branches dans generate_deck.py::_controler depuis les commits 4f61470 et 20039af (2026-09-10, tous deux anterieurs a la generation de ce diagnostic a 18:48 le meme jour). Verifie par lecture directe du code (generate_deck.py:5510-5514) le 2026-09-11 : les trois filets sont bien appeles. Le diagnostic n'avait pas rattrape le fix. verifier_debordements_texte reste volontairement hors du controle par defaut (seuil non regle contre un rendu reel), decision deja documentee dans le code.
+- **`VSCode3:audit-risque_technique-niveau-moyen`** (2026-09-11) : ACCEPTE + APPLIQUE. Le constat ouvert (pptx_deck.py en-deca en helpers reutilisables face a VSCode2/VSCode4) est resolu par le commit a5c469f : add_chip, add_badge et appliquer_police extraits de generate_deck.py vers pptx_deck.py, testes (tests/test_pptx_deck_helpers.py, 8 tests), le module reutilisable restant sans dependance au domaine metier (les constantes de marque POLICE_DECK/GLYPHES_HORS_POLICE_DECK restent locales au projet). Le volet ruff (3 erreurs sur chantier non commite, mentionne dans la preuve du finding) etait deja resolu avant ce tour (chantier committe, ruff propre, verifie). Verifie : py -m pytest tests/ (206 passed), py -m ruff check . (propre), deck regenere + test_generate_deck.py (54/54 pages), rendu reel inspecte a l'oeil.
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 
-_Diagnostic à jour._
+_Diagnostic à jour — rien à signaler, tous les constats précédents ont été arbitrés._
 
-1. **Le point_du_jour.py propage aux 5 cibles importe kit_installe, module qui n'existe qu'au hub : ligne de bruit permanente a chaque session** — La mesure compare le kit installe CHEZ LES CIBLES au kit publie : elle n a de sens qu au hub, qui voit les 5 cibles. La deployer chez chaque cible ne la ferait pas marcher (une cible mesuree contre elle-meme). Le bloc n a pas sa place dans la version propagee. · **Proposition** : Signale a la session hub le 2026-09-10 (vscode3-7e -> vscode5-supervision-projets-84). Deux pistes proposees : (a) garder le bloc hub-only dans la source et l exclure a la propagation ; (b) le rendre silencieux quand .claude/dispositif/kit_installe.py est absent (absence de repertoire = fait de configuration, pas mesure impossible ; ne dire 'mesure impossible' que si le module est present et echoue). (b) est la moins couteuse, source unique. A trancher et corriger AU HUB puis repropager -- jamais localement (lecon P1).
-
-_5 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir un, demander au superviseur un `re_challenge` avec des données nouvelles :_
+_6 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir un, demander au superviseur un `re_challenge` avec des données nouvelles :_
 
 - ~~+762 lignes en 24 h : le generateur a plus que double en un jour la croissance de ses 33 jours precedents, et le re-cotage renvoye « au prochain diagnostic etage 2 » n'a plus d'excuse~~ (`docs/cadrage-ppt/generate_deck.py`)
 - ~~Les trois filets de controle sont portes et testes dans pptx_deck.py mais AUCUN n'est branche : le point d'appel appartient au chantier deck en cours~~ (`VSCode3:brancher-les-trois-filets-dans-generate-deck`)
 - ~~Trois points de lint et deux zip() sans strict=True restent sur le chantier deck : corriges dans le working tree pour les zip, jamais commites~~ (`VSCode3:reliquats-de-lint-du-chantier-deck`)
 - ~~Le hook qui liste ce qui attend une decision n'existe QUE au hub : les 5 cibles ne l'ont pas, et le kit ne le distribue pas~~ (`flotte:point-du-jour-absent-des-5-cibles`)
 - ~~Onglet Pratiques & risques : la dimension RISQUE TECHNIQUE est au niveau moyen — 1 constat(s) ouvert(s) a corriger dans ce depot~~ (`VSCode3:audit-risque_technique-niveau-moyen`)
+- ~~Le point_du_jour.py propage aux 5 cibles importe kit_installe, module qui n'existe qu'au hub : ligne de bruit permanente a chaque session~~ (`flotte:point-du-jour-importe-kit-installe-hub-only`)
 
 ## Seuil de qualification — la mesure
 
-Depuis le 2026-09-10 : **18** demande(s) vue(s) hors commande slash (+ 5 slash), **2** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **11 %** des demandes orchestrées.
+Depuis le 2026-09-10 : **33** demande(s) vue(s) hors commande slash (+ 9 slash), **4** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **12 %** des demandes orchestrées.
 _Ce chiffre ne dit pas ce qui AURAIT dû être orchestré : le hook compte, il ne juge pas. Il donne le dénominateur qui manquait pour arbitrer le seuil sur données plutôt que sur habitude._
 
 ---

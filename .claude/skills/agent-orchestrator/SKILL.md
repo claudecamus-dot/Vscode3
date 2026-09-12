@@ -52,13 +52,15 @@ joué** et reste sur demande explicite uniquement.
 | `cycle-produit-bmad` | Jamais joué — sur demande explicite uniquement |
 
 **Ce que le socle décrit et qui N'EXISTE PAS ici** (mesuré le 2026-09-01, revue
-fonctionnelle et technique). Le socle vient du hub ; ces actifs n'ont jamais été
-propagés. Ne pas suivre ces chemins depuis ce dépôt :
+fonctionnelle et technique ; **les 6 lignes re-vérifiées une par une le 2026-09-11 — une
+seule avait bougé, celle des salles**). Le socle vient du hub ; ces actifs n'avaient pas
+été propagés à la date de mesure, mais une ligne périmée ici coûte plus cher qu'une ligne
+absente : re-vérifier avant de renoncer à un chemin.
 
 | Le socle dit | État réel ici | Conséquence |
 | --- | --- | --- |
 | `scripts/scan_projets.py` (§ 2 quater, § 2 sexies) | **Absent** — le scanner de ce dépôt est `.claude/supervision/scan_transcripts.py` | Corrigé dans les fichiers locaux ; **2 occurrences restent dans le socle** (SKILL.md l. 248 et 443) et 1 dans `log_run.py` l. 94 — à corriger DANS LE HUB |
-| Les **12 salles** de table ronde (§ 2 septies) et `_bmad/custom/bmad-party-mode.toml` | **Absents** | Aucune salle n'est convocable ici ; `bmad-party-mode` reste utilisable en mode générique |
+| Les **12 salles** de table ronde (§ 2 septies) et `_bmad/custom/bmad-party-mode.toml` | ~~Absents~~ → **ARRIVÉES depuis** (mesuré le 2026-09-11) : le TOML porte bien les 12 salles, propagé par `a800845` (2026-09-01) puis `a83aa9c` (2026-09-09) | Les salles SONT convocables ici. Vérifié en séance le 2026-09-11 : `atelier-idees` et `atelier-deck` ont réellement siégé, personas résolus par `resolve_party.py --party <id>`. Cette ligne disait le contraire pendant 10 jours — elle a failli faire sauter une convocation demandée par l'utilisateur |
 | Le bouton « En débattre » du wiki (§ 2 septies) | **Absent** de `docs/wiki.html` | La commande terminal est la seule voie |
 | `tests/test_salles_routage.py` et `tests/test_orchestration_bmad.py` (« tables verrouillées par ») | **Absents** | Les deux tables de routage ne sont verrouillées par rien — les lire comme de la documentation, pas comme une garantie |
 | `.claude/dispositif/sync_dispositif.py` (bandeau « ne pas éditer localement ») | **Absent** | Le canon n'est pas atteignable d'ici : une correction du socle se fait depuis le hub (VScode5), jamais dans ce dépôt |
