@@ -226,6 +226,45 @@ def add_badge(slide, cx, cy, d, color, symbol, filled=True, dashed=False, fill=N
     ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
 
 
+def add_encart(slide, l, t, w, h, texte, accent=None, label=None, size=None,
+               align=PP_ALIGN.CENTER):
+    """Encart « a retenir / so-what » — boite fond TRACK (gris clair), coins
+    arrondis, sans ombre, texte INK. Un encart est QUIET (gris neutre), pas une
+    bande de couleur criarde : `accent`, si fourni, pose un fin lisere gauche
+    colore (repere sans crier) ; `label` un prefixe en gras au-dessus de
+    `texte`. Le tout est centre verticalement dans la boite.
+
+    Porte ici depuis les homologues de la flotte (VSCode2 app/services/
+    pptx_deck.py, VSCode4 scripts/pptx_deck.py) le 2026-09-12, sur le meme
+    finding reutilisabilite de l'audit VScode5 qui avait deja fait porter
+    `add_chip`/`add_badge`/`appliquer_police` le 2026-09-11 : ces trois-la
+    existaient donc deja dans ce fichier au moment du constat, seul
+    `add_encart` manquait reellement. Motif deja present a la main dans
+    `generate_deck.py` (ex. le bloc « TRANCHE ENSEMBLE » : rectangle TRACK +
+    lisere colore + libelle + texte, pptx_deck.py n'etant pas cense connaitre
+    ce nom de variable) — cette fonction generalise ce couple rect+texte pour
+    eviter la resaisie a chaque nouvel encart, sans forcer les 3 sites
+    existants a migrer.
+
+    Fond en TRACK, la piste neutre DEJA definie dans ce module (pas une
+    nouvelle constante ENCART_BG comme chez les homologues) : ce fichier n'a
+    qu'un seul gris de fond, les deux homologues en avaient une variante
+    quasi identique (#eceef2 contre #eef1f7 ici) qui aurait fait deux
+    constantes pour la meme intention."""
+    size = TYPE["h3"] if size is None else size
+    add_rect(slide, l, t, w, h, fill=TRACK, rounded=True, radius=0.12)
+    pad = 0.24
+    if accent:
+        add_rect(slide, l, t, 0.06, h, fill=accent, rounded=True, radius=0.5)
+        pad = 0.28
+    lignes = []
+    if label:
+        lignes.append((label, dict(size=size, bold=True, color=INK, align=align)))
+    lignes.append((texte, dict(size=size, bold=(label is None), color=INK, align=align)))
+    add_text(slide, l + pad, t, w - 2 * pad, h, lignes, anchor=MSO_ANCHOR.MIDDLE,
+             align=align)
+
+
 def appliquer_police(prs, police, secours, glyphes_hors_police=frozenset()):
     """Applique `police` a tous les runs de texte du document, sauf les glyphes
     de `glyphes_hors_police` qui restent en `secours` (couverture Unicode absente
