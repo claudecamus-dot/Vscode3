@@ -1,0 +1,8 @@
+# Dependances d'EXECUTION du generateur de deck (docs/cadrage-ppt/).
+# Versions epinglees sur celles reellement en place le 2026-09-13
+# (`py -m pip show python-pptx pillow`), sous Python 3.14.5 : avant ce fichier,
+# aucun clone neuf ne pouvait reconstruire l'environnement et une montee de
+# version de python-pptx aurait casse la generation sans qu'aucun fichier du
+# depot ne l'ait annoncee (finding risque_technique de l'audit du 2026-09-13).
+python-pptx==1.0.2
+Pillow==12.2.0

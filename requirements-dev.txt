@@ -1,2 +1,6 @@
+# Les dependances d'execution sont dans requirements.txt : la suite de tests
+# importe reellement python-pptx (tests/test_pptx_deck_*.py), installer ce seul
+# fichier ne suffirait donc pas a la faire tourner.
+-r requirements.txt
 pytest==9.1.1
 pytest-cov==7.1.0
