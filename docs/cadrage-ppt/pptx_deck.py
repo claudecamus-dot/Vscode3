@@ -178,6 +178,11 @@ def add_range_bar(slide, l, t, w, h, mn, mx, scale_max, fill, marker=None,
     """Barre d'amplitude min..max sur une echelle 0..scale_max (piste complete +
     segment colore couvrant la plage). `marker` (ex. moyenne) pose un repere
     vertical. Sert a montrer une dispersion sur l'echelle reelle, pas en relatif."""
+    if scale_max <= 0:
+        # Trois divisions par `scale_max` suivent (mn, mx, marker) : a 0 c'est
+        # une ZeroDivisionError apres avoir DEJA dessine la piste, donc une
+        # slide laissee a moitie construite (audit du 2026-09-13).
+        raise ValueError(f"scale_max doit etre > 0 (recu {scale_max!r})")
     add_rect(slide, l, t, w, h, fill=track, rounded=True, radius=0.5)
     fa = max(0.0, min(1.0, mn / scale_max))
     fb = max(0.0, min(1.0, mx / scale_max))
@@ -314,6 +319,12 @@ def estimer_lignes(texte, largeur_in, taille_pt, cpi_ref=11.0, taille_ref=10.5):
     sur `largeur_in` pouces a la taille de police `taille_pt`. Les caracteres par
     pouce sont derives de `cpi_ref` (calibre a `taille_ref` pt) par une regle de
     trois : une police 2x plus petite loge environ 2x plus de caracteres/pouce."""
+    if taille_pt <= 0:
+        # Sans cette garde : ZeroDivisionError a 0 (trace qui pointe une ligne
+        # d'arithmetique, pas l'appelant fautif), et a taille negative un `cpi`
+        # negatif qui retombe SILENCIEUSEMENT sur le plancher `max(6, ...)` —
+        # une estimation fausse vaut pire qu'une erreur (audit du 2026-09-13).
+        raise ValueError(f"taille_pt doit etre > 0 (recu {taille_pt!r})")
     if not texte:
         return 1
     cpi = cpi_ref * (taille_ref / taille_pt)
@@ -336,6 +347,12 @@ def ajuster_police(textes, largeur_in, taille_max, taille_min, budget_ok, pas=0.
     `taille_min` (texte tres dense) plutot que de laisser un texte coupe.
 
     Renvoie (taille, lignes_max)."""
+    if pas <= 0:
+        # La seule progression de la boucle ci-dessous est `taille - pas` : a
+        # pas nul ou negatif, un appelant qui ne satisfait jamais `budget_ok`
+        # fige le build sans message ni trace. Une erreur immediate vaut mieux
+        # qu'une generation qui ne rend jamais la main (audit du 2026-09-13).
+        raise ValueError(f"pas doit etre > 0 (recu {pas!r})")
     taille = taille_max
     while True:
         lignes_max = max((estimer_lignes(t, largeur_in, taille, cpi_ref, taille_ref)

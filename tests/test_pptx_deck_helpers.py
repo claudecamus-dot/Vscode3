@@ -210,3 +210,71 @@ def test_add_encart_reste_dans_les_bornes_de_la_boite_declaree(D):
         assert shp.left >= Inches(l) and shp.top >= Inches(t)
         assert shp.left + shp.width <= droite
         assert shp.top + shp.height <= bas
+
+
+# --- Parametres degeneres des helpers de calcul ------------------------------
+#
+# Trois fonctions divisaient par un parametre d'appelant sans le valider et une
+# quatrieme bouclait sur un pas jamais verifie (finding robustesse de l'audit du
+# 2026-09-13, verifie par execution : `estimer_lignes('abc', 3.0, 0)` levait une
+# ZeroDivisionError). Elles rendent maintenant une ValueError nommant le
+# parametre fautif. Chaque test verifie d'abord le cas NOMINAL, pour qu'une
+# garde trop large soit vue tout de suite.
+
+def test_estimer_lignes_refuse_une_taille_de_police_nulle(D):
+    """Avant : ZeroDivisionError sur une ligne d'arithmetique interne, qui ne
+    disait pas quel appelant avait passe 0."""
+    assert D.estimer_lignes("un texte de longueur ordinaire", 3.0, 10.5) >= 1
+
+    with pytest.raises(ValueError, match="taille_pt"):
+        D.estimer_lignes("abc", 3.0, 0)
+
+
+def test_estimer_lignes_refuse_une_taille_negative_au_lieu_de_mentir(D):
+    """Le cas le plus insidieux : a taille negative, `cpi` devenait negatif et
+    retombait sur le plancher `max(6, ...)` — la fonction rendait un nombre de
+    lignes plausible et FAUX, sans rien signaler."""
+    with pytest.raises(ValueError, match="taille_pt"):
+        D.estimer_lignes("abc", 3.0, -10.5)
+
+
+def test_tronquer_a_lignes_herite_de_la_meme_garde(D):
+    """La garde est posee une fois, dans `estimer_lignes` : `tronquer_a_lignes`
+    l'appelle avant sa propre division, donc elle est couverte sans duplication."""
+    assert D.tronquer_a_lignes("texte court", 3.0, 10.5, 3) == "texte court"
+
+    with pytest.raises(ValueError, match="taille_pt"):
+        D.tronquer_a_lignes("abc", 3.0, 0, 3)
+
+
+def test_ajuster_police_refuse_un_pas_nul_au_lieu_de_boucler(D):
+    """Le pire mode de defaillance du generateur : `while True` dont la seule
+    progression est `taille - pas`. A pas nul, avec un budget jamais satisfait,
+    le build se figeait sans message. Ce test rend la main immediatement."""
+    taille, lignes = D.ajuster_police(["un texte"], 3.0, 17, 12,
+                                      lambda t, n: n <= 2)
+    assert 12 <= taille <= 17 and lignes >= 1
+
+    with pytest.raises(ValueError, match="pas"):
+        D.ajuster_police(["un texte"], 3.0, 17, 12, lambda t, n: False, pas=0)
+
+
+def test_ajuster_police_degrade_sur_la_taille_plancher(D):
+    """Le contrat documente : si aucune taille ne satisfait `budget_ok`, on rend
+    `taille_min` — jamais un texte tronque, et jamais une boucle infinie."""
+    taille, _ = D.ajuster_police(["un texte"], 3.0, 17, 12, lambda t, n: False)
+
+    assert taille == 12
+
+
+def test_add_range_bar_refuse_une_echelle_nulle_avant_de_dessiner(D):
+    """A `scale_max=0`, la ZeroDivisionError survenait APRES le dessin de la
+    piste : la slide gardait une forme orpheline. La garde passe avant."""
+    prs = _prs_vide()
+    D.add_range_bar(prs.slides[0], 1.0, 1.0, 4.0, 0.2, 2, 8, 10, D.PALETTE[1])
+    assert len(prs.slides[0].shapes) == 2, "piste + segment"
+
+    prs2 = _prs_vide()
+    with pytest.raises(ValueError, match="scale_max"):
+        D.add_range_bar(prs2.slides[0], 1.0, 1.0, 4.0, 0.2, 2, 8, 0, D.PALETTE[1])
+    assert len(prs2.slides[0].shapes) == 0, "aucune forme laissee derriere"
