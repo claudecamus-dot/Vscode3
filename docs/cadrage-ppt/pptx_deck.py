@@ -490,7 +490,20 @@ def verifier_debordements_texte(prs, cpi_pessimiste=10.7, tolerance_in=0.15,
 
 def verifier_geometrie(prs, marge_in=0.02):
     """Retourne la liste des problemes : toute forme dont les bords depassent la
-    slide (au-dela d'une petite marge de tolerance). Liste vide = OK."""
+    slide (au-dela d'une petite marge de tolerance), et toute forme dont la
+    largeur ou la hauteur n'est pas strictement positive. Liste vide = OK.
+
+    Les deux defauts sont distincts et le second echappait entierement au test
+    de bords : une boite INVERSEE (h < 0) a son bord bas `t + h` AU-DESSUS de
+    son bord haut, donc elle ne depasse rien et passait a zero constat — le
+    deck s'ecrivait alors sous son nom livrable avec « CONTROLE: OK »
+    (finding robustesse de l'audit du 2026-09-13, verifie par sonde :
+    `add_rect(s, 1, 1, 3, -0.4)` -> `verifier_geometrie` rendait `[]`).
+    Le cas n'est pas theorique : cinq hauteurs du generateur sont calculees par
+    soustraction depuis CONTENT_BOTTOM et une seule est gardee a l'appel — un
+    contenu plus long qu'attendu suffit a inverser la boite. La garde est posee
+    ICI, dans le filet central qui decide de la livraison, plutot que sur
+    chaque site d'appel."""
     W, H = prs.slide_width, prs.slide_height
     tol = Inches(marge_in)
     problemes = []
@@ -503,6 +516,15 @@ def verifier_geometrie(prs, marge_in=0.02):
             if None in (l, t, w, h):
                 continue
             nom = shp.name or "shape"
+            if w <= 0 or h <= 0:
+                # Pas de tolerance ici, contrairement aux bords : une dimension
+                # nulle ou negative n'est jamais un arrondi acceptable, c'est
+                # un calcul de layout qui a decroche.
+                problemes.append(
+                    f"slide {si}: '{nom}' dimension non positive "
+                    f"(w={Emu(w).inches:.2f} h={Emu(h).inches:.2f} ; boite "
+                    f"inversee ou nulle, la forme est invisible au rendu)")
+                continue
             if l < -tol or t < -tol or (l + w) > W + tol or (t + h) > H + tol:
                 problemes.append(
                     f"slide {si}: '{nom}' hors cadre "

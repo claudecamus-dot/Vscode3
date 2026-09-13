@@ -284,3 +284,94 @@ def test_plancher_au_dessus_du_badge_est_vert_dans_tous_les_cas(D):
 
     assert D.verifier_plancher_de_dessin(prs, 5.00) == []
     assert D.verifier_plancher_de_dessin(prs, 5.00, bord_droit_in=10.0) == []
+
+
+# --- Le filet central : `verifier_geometrie` --------------------------------
+#
+# C'est LUI qui decide, via `_controler` puis `build`, si le deck s'ecrit sous
+# son nom livrable ou sous `.INVALIDE.pptx`. Il n'avait pourtant aucun test de
+# detection POSITIVE : ses deux seules occurrences dans tests/ etaient un
+# `== []` en premisse d'un test portant sur un autre filet et une chaine de
+# parametrage du cablage — il aurait pu rendre `[]` en dur sans qu'un seul test
+# ne rougisse (finding risque_technique de l'audit du 2026-09-13).
+
+def test_forme_hors_cadre_est_signalee(D):
+    """La detection qui n'avait jamais ete exigee : une forme posee au-dela du
+    bord droit d'une slide de 10in doit rendre exactement un constat."""
+    prs = _prs_vide()
+    D.add_rect(prs.slides[0], 12.0, 1.0, 3.0, 0.4, fill="#ffffff")
+
+    problemes = D.verifier_geometrie(prs)
+
+    assert len(problemes) == 1, problemes
+    assert "hors cadre" in problemes[0]
+    assert "slide 1" in problemes[0]
+
+
+def test_hauteur_negative_est_signalee(D):
+    """L'angle mort ferme le 2026-09-13, reproduit tel quel depuis la sonde de
+    l'audit : `add_rect(s, 1, 1, 3, -0.4)` fabrique une boite INVERSEE. Elle ne
+    depasse aucun bord (son bas `t + h` est au-DESSUS de son haut), donc le
+    controle de bords la laissait passer et le deck sortait « CONTROLE: OK »."""
+    prs = _prs_vide()
+    shp = D.add_rect(prs.slides[0], 1.0, 1.0, 3.0, -0.4, fill="#ffffff")
+    assert shp.height < 0, "le cas de test doit vraiment poser une boite inversee"
+    l, t, w, h = shp.left, shp.top, shp.width, shp.height
+    assert 0 <= l and 0 <= t and (l + w) <= prs.slide_width \
+        and (t + h) <= prs.slide_height, \
+        "cette boite ne depasse aucun bord : seul un controle de dimension la voit"
+
+    problemes = D.verifier_geometrie(prs)
+
+    assert len(problemes) == 1, problemes
+    assert "dimension non positive" in problemes[0]
+    assert "h=-0.40" in problemes[0]
+
+
+def test_hauteur_nulle_est_signalee(D):
+    """Le pendant degenere : une soustraction qui tombe pile a zero rend une
+    forme invisible au rendu, pas une forme correcte."""
+    prs = _prs_vide()
+    D.add_rect(prs.slides[0], 1.0, 1.0, 3.0, 0.0, fill="#ffffff")
+
+    problemes = D.verifier_geometrie(prs)
+
+    assert len(problemes) == 1, problemes
+    assert "dimension non positive" in problemes[0]
+
+
+def test_largeur_negative_est_signalee(D):
+    """Meme filet, autre axe : la garde ne doit pas ne regarder que la hauteur
+    parce que c'est par la que le defaut est arrive."""
+    prs = _prs_vide()
+    D.add_rect(prs.slides[0], 4.0, 1.0, -2.0, 0.5, fill="#ffffff")
+
+    problemes = D.verifier_geometrie(prs)
+
+    assert len(problemes) == 1, problemes
+    assert "dimension non positive" in problemes[0]
+    assert "w=-2.00" in problemes[0]
+
+
+def test_hauteur_calculee_par_soustraction_qui_decroche_est_signalee(D):
+    """Le scenario REEL du generateur, pas un cas de laboratoire : une hauteur
+    de carte calculee `CONTENT_BOTTOM - top` quand un contenu plus long a
+    repousse `top` sous le plancher. Un seul des cinq sites de ce calcul porte
+    une garde a l'appel ; le filet, lui, les couvre tous."""
+    prs = _prs_vide()
+    top = CONTENT_BOTTOM + 0.3          # le contenu a debordé sous le plancher
+    card_h = CONTENT_BOTTOM - top       # -> -0.30in
+    D.add_rect(prs.slides[0], 0.615, top, 3.0, card_h, fill="#ffffff")
+
+    assert [p for p in D.verifier_geometrie(prs) if "dimension non positive" in p]
+
+
+def test_formes_correctes_ne_declenchent_rien(D):
+    """Le pendant obligatoire : un filet qui crie sur une slide correcte est
+    debranche au premier build. Trois formes nominales, zero constat."""
+    prs = _prs_vide()
+    D.add_rect(prs.slides[0], 0.615, 0.5, 3.0, 1.2, fill="#ffffff")
+    D.add_rect(prs.slides[0], 0.615, 2.0, 8.0, 0.02, fill="#ffffff")  # filet fin
+    D.add_text(prs.slides[0], 0.615, 3.0, 3.0, 0.6, [("court", {})])
+
+    assert D.verifier_geometrie(prs) == []
