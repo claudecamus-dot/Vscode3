@@ -767,7 +767,19 @@ def _remplir_cadre(slide, cadre, scene, seed=0):
     réseau/l'API n'est pas disponible — cf. pptx-framed-image, greffé depuis
     VSCode1. Une photo réelle lit mieux qu'un aplat vectoriel généré, constat
     fait en comparant au REX "⛱️ L'Été de l'IA" (VSCode1) qui utilise de
-    vraies photos sur ces mêmes cadres."""
+    vraies photos sur ces mêmes cadres.
+
+    Contrat du cache disque (``_img/``) : le nom de fichier ``path`` ci-dessous
+    ne doit exister QUE pour une vraie photo Openverse — jamais pour un repli
+    procédural. Avant ce correctif, le repli s'écrivait SOUS LE MÊME NOM que la
+    photo réelle ; `os.path.exists(path)` passait alors à True pour de bon, et
+    plus aucun build suivant ne retentait Openverse pour cette scène — même
+    après le retour du réseau, un incident réseau transitoire dégradait le
+    deck en PERMANENCE (repro : appel avec `fetch_to` en échec puis en succès,
+    le 2e appel ne rappelait jamais `fetch_to`). Le repli est donc désormais
+    écrit sous un nom distinct (`_repli`) : il ne bloque plus la case
+    `os.path.exists(path)` qui protège la vraie photo, et chaque build retente
+    Openverse tant qu'aucune vraie photo n'a été mise en cache."""
     if cadre is None:
         msg = f"cadre introuvable pour la scène '{scene}' — image non posée"
         print(f"  {msg}")
@@ -783,6 +795,11 @@ def _remplir_cadre(slide, cadre, scene, seed=0):
     # ~1000px pèse 5 à 10× plus qu'un JPEG visuellement identique — c'était
     # la quasi-totalité des 26 Mo mesurés dans le .pptx exporté (2026-09-11).
     path = os.path.join(IMG_DIR, f"{scene}_{seed}_{px_w}x{px_h}.jpg")
+    # Nom DISTINCT pour le repli procedural : il ne doit jamais faire passer
+    # `os.path.exists(path)` (ci-dessus) a True a la place d'une vraie photo —
+    # cf. docstring de la fonction pour le defaut que ce nom distinct ferme.
+    path_repli = os.path.join(IMG_DIR, f"{scene}_{seed}_{px_w}x{px_h}_repli.jpg")
+    path_a_poser = path
     if not os.path.exists(path):
         requete = _REQUETES_PHOTO.get(scene, scene)
         aspect_ratio = "wide" if aspect > 1.15 else "tall" if aspect < 0.85 else "square"
@@ -799,12 +816,14 @@ def _remplir_cadre(slide, cadre, scene, seed=0):
             from PIL import Image as _Image
             _Image.open(path).convert("RGB").save(path, quality=90, optimize=True)
             print(f"  photo réelle posée pour '{scene}' ({requete!r}, via Openverse CC0)")
+            path_a_poser = path
         except Exception as e:
             repli = _SCENE_REPLI.get(scene, scene)
             note = f" (scène '{scene}' inconnue du repli -> '{repli}')" if repli != scene else ""
             print(f"  Openverse indisponible pour '{scene}' ({e}) — repli sur nature_images{note}")
             try:
-                nature_images.generate_to(path, repli, px_w, px_h, seed=seed)
+                nature_images.generate_to(path_repli, repli, px_w, px_h, seed=seed)
+                path_a_poser = path_repli
             except Exception as e2:
                 # Degrader, jamais planter : la slide sort sans photo et le
                 # defaut remonte dans `problemes`, il ne disparait pas.
@@ -812,7 +831,7 @@ def _remplir_cadre(slide, cadre, scene, seed=0):
                 print(f"  {msg}")
                 _ANOMALIES_BUILD.append(msg)
                 return
-    place_image_in_frame(slide, path, left, top, width, height, geom=geom)
+    place_image_in_frame(slide, path_a_poser, left, top, width, height, geom=geom)
 
 
 def slide_chapitre(prs, numero, titre, couverture, color, scene, seed=0):

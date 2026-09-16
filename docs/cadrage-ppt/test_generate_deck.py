@@ -87,7 +87,58 @@ def _verifier_rendu_reel(pptx_path, n_slides_attendu, tmp_dir):
     return True, f"{page_count} page(s) rendues, conforme aux {n_slides_attendu} slides"
 
 
+def _verifier_contrat_cache_image():
+    """Contrat du cache disque `_img/` de `_remplir_cadre` : le nom de fichier
+    réservé à une vraie photo Openverse ne doit jamais être occupé par un repli
+    procédural (`nature_images`), sinon un incident réseau TRANSITOIRE dégrade
+    le deck en PERMANENCE — plus aucun build suivant ne retente Openverse pour
+    cette scène, même après le retour du réseau (défaut trouvé lors de la
+    lecture du contrat de cache, salle atelier-dev, corrigé le 2026-09-16).
+
+    Isolé dans un dossier `_img` temporaire (jamais celui du dépôt) et sans
+    accès réseau réel : `stock_images.fetch_to` est simulé en échec puis en
+    succès, sans passer par un vrai appel HTTP."""
+    import tempfile
+    from unittest import mock
+    from pptx.util import Emu
+
+    tmp_img = tempfile.mkdtemp(prefix="test-imgcache-")
+    img_dir_reel, manifest_reel = gen.IMG_DIR, gen.IMG_MANIFEST
+    gen.IMG_DIR = tmp_img
+    gen.IMG_MANIFEST = os.path.join(tmp_img, "manifest.json")
+    try:
+        prs = Presentation(gen.TEMPLATE)
+        slide = prs.slides.add_slide(prs.slide_layouts[6])
+        cadre = (Emu(0), Emu(0), Emu(1_000_000), Emu(1_000_000), None)
+
+        with mock.patch.object(gen.stock_images, "fetch_to",
+                                side_effect=RuntimeError("panne réseau simulée")):
+            gen._remplir_cadre(slide, cadre, "forest", seed=0)
+
+        appelee = {"n": 0}
+
+        def _fetch_to_retabli(path, query, seed=0, aspect_ratio=None, manifest_path=None):
+            appelee["n"] += 1
+            from PIL import Image as _Image
+            _Image.new("RGB", (200, 200), color=(10, 80, 30)).save(path, "JPEG")
+            return path
+
+        with mock.patch.object(gen.stock_images, "fetch_to", side_effect=_fetch_to_retabli):
+            gen._remplir_cadre(slide, cadre, "forest", seed=0)
+
+        check(appelee["n"] > 0,
+              "réseau revenu après une panne : Openverse est retenté "
+              "(le repli ne squatte plus le nom de cache de la vraie photo)")
+    finally:
+        gen.IMG_DIR, gen.IMG_MANIFEST = img_dir_reel, manifest_reel
+        import shutil
+        shutil.rmtree(tmp_img, ignore_errors=True)
+
+
 def main():
+    print("Contrat du cache image (_remplir_cadre) :")
+    _verifier_contrat_cache_image()
+
     # `build()` consulte-t-il ENCORE _controler ? Les tests pytest appellent
     # _controler en direct : aucun n'observe le site d'appel, donc le remettre à
     # `verifier_geometrie(prs) + _ANOMALIES_BUILD` — l'état exact que le câblage
