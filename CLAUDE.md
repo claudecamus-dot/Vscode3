@@ -66,6 +66,8 @@ l'export**, jamais localement — les copies locales divergent (leçon P1).
 - Lire des portions ciblées (Grep/Glob puis Read offset/limit), pas des fichiers entiers.
 - Sous-agent pour toute sortie volumineuse ; sinon pas de sous-agent par défaut.
 - Documenter une décision actée plutôt que la rejouer.
+- `/clear` (pas une 3e rustine) après deux corrections ratées consécutives sur le
+  même problème — repartir à froid avec un meilleur prompt bat l'insistance.
 
 ## Règles de travail
 
