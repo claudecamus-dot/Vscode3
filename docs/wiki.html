@@ -541,10 +541,10 @@
     <section class="doc" id="agents-supervision">
       <p class="eyebrow">Projet</p>
       <h2>Supervision des agents — tableau de bord d'usage</h2>
-      <p class="file-meta"><span>docs/wiki/technical/agents-supervision.md</span><span>généré : 2026-09-18T09:36:37+02:00</span></p>
+      <p class="file-meta"><span>docs/wiki/technical/agents-supervision.md</span><span>généré : 2026-09-18T10:40:43+02:00</span></p>
 
       <div class="fact">
-        <p><strong>Bloc généré automatiquement</strong> à chaque session (hook SessionStart → <code>.claude/supervision/scan_transcripts.py</code>, scan incrémental des transcripts, 0 token LLM) — ne pas éditer à la main. <strong>16 sessions</strong> couvertes · <strong>59</strong> invocations de skills · <strong>87</strong> lancements de sous-agents. Diagnostic qualitatif : skill <code>agent-supervisor</code> (étage 2, section diagnostic ci-dessous).</p>
+        <p><strong>Bloc généré automatiquement</strong> à chaque session (hook SessionStart → <code>.claude/supervision/scan_transcripts.py</code>, scan incrémental des transcripts, 0 token LLM) — ne pas éditer à la main. <strong>17 sessions</strong> couvertes · <strong>63</strong> invocations de skills · <strong>95</strong> lancements de sous-agents. Diagnostic qualitatif : skill <code>agent-supervisor</code> (étage 2, section diagnostic ci-dessous).</p>
         <span class="tag tag-confirme">CONFIRMÉ</span>
         <div class="tag-source">scan_transcripts.py · 2026-09-18 · ~/.claude/projects/&lt;slug&gt;/*.jsonl</div>
       </div>
@@ -554,13 +554,13 @@
         <table>
           <thead><tr><th>Skill</th><th>Famille</th><th>Invocations</th><th>Première</th><th>Dernière</th></tr></thead>
           <tbody>
-            <tr><td><code>agent-orchestrator</code></td><td>projet</td><td>24</td><td>2026-07-21</td><td>2026-09-17</td></tr>
-            <tr><td><code>bmad-party-mode</code></td><td>BMAD</td><td>5</td><td>2026-09-02</td><td>2026-09-17</td></tr>
+            <tr><td><code>agent-orchestrator</code></td><td>projet</td><td>25</td><td>2026-07-21</td><td>2026-09-18</td></tr>
+            <tr><td><code>bmad-party-mode</code></td><td>BMAD</td><td>6</td><td>2026-09-02</td><td>2026-09-18</td></tr>
+            <tr><td><code>bmad-brainstorming</code></td><td>BMAD</td><td>5</td><td>2026-09-11</td><td>2026-09-18</td></tr>
             <tr><td><code>bmad-review</code></td><td>BMAD</td><td>5</td><td>2026-09-07</td><td>2026-09-17</td></tr>
-            <tr><td><code>bmad-brainstorming</code></td><td>BMAD</td><td>4</td><td>2026-09-11</td><td>2026-09-17</td></tr>
+            <tr><td><code>bmad-advanced-elicitation</code></td><td>BMAD</td><td>4</td><td>2026-09-11</td><td>2026-09-18</td></tr>
             <tr><td><code>revue-increment</code></td><td>projet</td><td>4</td><td>2026-07-21</td><td>2026-09-11</td></tr>
             <tr><td><code>agent-supervisor</code></td><td>projet</td><td>3</td><td>2026-07-21</td><td>2026-09-03</td></tr>
-            <tr><td><code>bmad-advanced-elicitation</code></td><td>BMAD</td><td>3</td><td>2026-09-11</td><td>2026-09-17</td></tr>
             <tr><td><code>deck-design-library</code></td><td>projet</td><td>3</td><td>2026-09-03</td><td>2026-09-17</td></tr>
             <tr><td><code>bmad-code-review</code></td><td>BMAD</td><td>2</td><td>2026-09-10</td><td>2026-09-10</td></tr>
             <tr><td><code>artifact-design</code></td><td>(builtin/session)</td><td>1</td><td>2026-09-11</td><td>2026-09-11</td></tr>
@@ -578,7 +578,7 @@
         <table>
           <thead><tr><th>Sous-agent</th><th>Lancements</th><th>Premier</th><th>Dernier</th></tr></thead>
           <tbody>
-            <tr><td><code>general-purpose</code></td><td>50</td><td>2026-07-21</td><td>2026-09-17</td></tr>
+            <tr><td><code>general-purpose</code></td><td>58</td><td>2026-07-21</td><td>2026-09-18</td></tr>
             <tr><td><code>ppt-designer</code></td><td>19</td><td>2026-07-21</td><td>2026-09-11</td></tr>
             <tr><td><code>Explore</code></td><td>9</td><td>2026-07-21</td><td>2026-09-11</td></tr>
             <tr><td><code>bmad-revue</code></td><td>5</td><td>2026-09-07</td><td>2026-09-10</td></tr>
@@ -665,16 +665,12 @@ Ce que 'traiter' ces 3 points pourrait vouloir dire (a instruire au hub, pas tra
         <li><strong><code>flotte:point-du-jour-importe-kit-installe-hub-only</code></strong> (2026-09-11) : COMPLEMENT, PAS UNE NOUVELLE DECISION. ListAgents interroge le 2026-09-11 : aucune session vscode5 (hub) parmi les pairs actifs — seules vscode4-51 et vscode2-a8 sont interactives a ce moment. Le SendMessage direct du 2026-09-10 (vscode3-7e -&gt; vscode5-supervision-projets-84) n'est donc pas reproductible aujourd'hui. Choix utilisateur explicite : pas de relance live, le canal fichier (cette entree + le finding source dans diagnostic.json) suffit — la prochaine session hub qui scanne ce depot le voit sans geste supplementaire de ce depot.</li>
         <li><strong><code>VSCode3:brancher-les-trois-filets-dans-generate-deck</code></strong> (2026-09-11) : CLOS, deja resolu avant ce tour : les trois filets (verifier_geometrie, verifier_chrome_gabarit, verifier_plancher_de_dessin) sont branches dans generate_deck.py::_controler depuis les commits 4f61470 et 20039af (2026-09-10, tous deux anterieurs a la generation de ce diagnostic a 18:48 le meme jour). Verifie par lecture directe du code (generate_deck.py:5510-5514) le 2026-09-11 : les trois filets sont bien appeles. Le diagnostic n'avait pas rattrape le fix. verifier_debordements_texte reste volontairement hors du controle par defaut (seuil non regle contre un rendu reel), decision deja documentee dans le code.</li>
         <li><strong><code>VSCode3:audit-risque_technique-niveau-moyen</code></strong> (2026-09-11) : ACCEPTE + APPLIQUE. Le constat ouvert (pptx_deck.py en-deca en helpers reutilisables face a VSCode2/VSCode4) est resolu par le commit a5c469f : add_chip, add_badge et appliquer_police extraits de generate_deck.py vers pptx_deck.py, testes (tests/test_pptx_deck_helpers.py, 8 tests), le module reutilisable restant sans dependance au domaine metier (les constantes de marque POLICE_DECK/GLYPHES_HORS_POLICE_DECK restent locales au projet). Le volet ruff (3 erreurs sur chantier non commite, mentionne dans la preuve du finding) etait deja resolu avant ce tour (chantier committe, ruff propre, verifie). Verifie : py -m pytest tests/ (206 passed), py -m ruff check . (propre), deck regenere + test_generate_deck.py (54/54 pages), rendu reel inspecte a l'oeil.</li>
+        <li><strong><code>VSCode3:chantier-A-lecture-humaine-cadrage</code></strong> (2026-09-18) : REFUSE (pour l'instant) : l'utilisateur choisit de committer le reliquat v2.4 deja ecrit et de poursuivre le cadrage sans attendre la lecture prealable par l'agent utilisateur-produit. Le chantier A (lecture humaine non-auteur) reste a faire mais ne bloque plus les relances de version.</li>
       </ul>
       <h3>Diagnostic qualitatif (étage 2 — agent-supervisor)</h3>
-      <p><em>Diagnostic à jour.</em></p>
-      <div class="critical">
-        <p><strong>Chantier A (lecture humaine du cadrage BMAD IAP par un non-auteur) bloque sur un prealable non implemente</strong> — Ne pas relancer de nouvelle version du cadrage tant que ce point reste ouvert ; reprendre des que l agent utilisateur VScode5 est disponible. · <strong>Proposition</strong> : A l implementation de l agent utilisateur VScode5 : le faire lire le cadrage bmad-iap-cadrage.md tel quel, sans le retoucher avant, et ne noter que ce qu il ne comprend pas ou conteste.</p>
-        <span class="tag tag-confirme">CONFIRMÉ</span>
-        <div class="tag-source">agent-supervisor · étage 2</div>
-      </div>
-      <p><em>6 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir un, demander au superviseur un <code>re_challenge</code> avec des données nouvelles :</em></p>
-      <ul><li><s>+762 lignes en 24 h : le generateur a plus que double en un jour la croissance de ses 33 jours precedents, et le re-cotage renvoye « au prochain diagnostic etage 2 » n'a plus d'excuse</s> (<code>docs/cadrage-ppt/generate_deck.py</code>)</li><li><s>Les trois filets de controle sont portes et testes dans pptx_deck.py mais AUCUN n'est branche : le point d'appel appartient au chantier deck en cours</s> (<code>VSCode3:brancher-les-trois-filets-dans-generate-deck</code>)</li><li><s>Trois points de lint et deux zip() sans strict=True restent sur le chantier deck : corriges dans le working tree pour les zip, jamais commites</s> (<code>VSCode3:reliquats-de-lint-du-chantier-deck</code>)</li><li><s>Le hook qui liste ce qui attend une decision n'existe QUE au hub : les 5 cibles ne l'ont pas, et le kit ne le distribue pas</s> (<code>flotte:point-du-jour-absent-des-5-cibles</code>)</li><li><s>Onglet Pratiques &amp; risques : la dimension RISQUE TECHNIQUE est au niveau moyen — 1 constat(s) ouvert(s) a corriger dans ce depot</s> (<code>VSCode3:audit-risque_technique-niveau-moyen</code>)</li><li><s>Le point_du_jour.py propage aux 5 cibles importe kit_installe, module qui n'existe qu'au hub : ligne de bruit permanente a chaque session</s> (<code>flotte:point-du-jour-importe-kit-installe-hub-only</code>)</li></ul>
+      <p><em>Diagnostic à jour — rien à signaler, tous les constats précédents ont été arbitrés.</em></p>
+      <p><em>7 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir un, demander au superviseur un <code>re_challenge</code> avec des données nouvelles :</em></p>
+      <ul><li><s>+762 lignes en 24 h : le generateur a plus que double en un jour la croissance de ses 33 jours precedents, et le re-cotage renvoye « au prochain diagnostic etage 2 » n'a plus d'excuse</s> (<code>docs/cadrage-ppt/generate_deck.py</code>)</li><li><s>Les trois filets de controle sont portes et testes dans pptx_deck.py mais AUCUN n'est branche : le point d'appel appartient au chantier deck en cours</s> (<code>VSCode3:brancher-les-trois-filets-dans-generate-deck</code>)</li><li><s>Trois points de lint et deux zip() sans strict=True restent sur le chantier deck : corriges dans le working tree pour les zip, jamais commites</s> (<code>VSCode3:reliquats-de-lint-du-chantier-deck</code>)</li><li><s>Le hook qui liste ce qui attend une decision n'existe QUE au hub : les 5 cibles ne l'ont pas, et le kit ne le distribue pas</s> (<code>flotte:point-du-jour-absent-des-5-cibles</code>)</li><li><s>Onglet Pratiques &amp; risques : la dimension RISQUE TECHNIQUE est au niveau moyen — 1 constat(s) ouvert(s) a corriger dans ce depot</s> (<code>VSCode3:audit-risque_technique-niveau-moyen</code>)</li><li><s>Le point_du_jour.py propage aux 5 cibles importe kit_installe, module qui n'existe qu'au hub : ligne de bruit permanente a chaque session</s> (<code>flotte:point-du-jour-importe-kit-installe-hub-only</code>)</li><li><s>Chantier A (lecture humaine du cadrage BMAD IAP par un non-auteur) bloque sur un prealable non implemente</s> (<code>VSCode3:chantier-A-lecture-humaine-cadrage</code>)</li></ul>
     </section>
 <!-- TODO-AGENTS-HTML:END -->
 
