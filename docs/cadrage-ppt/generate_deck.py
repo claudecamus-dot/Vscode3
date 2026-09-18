@@ -37,9 +37,11 @@ registres (mouvements du socle toujours présents, variantes conditionnées au
 contexte, mécanismes additifs) — puis une synthèse en une page de l'offre qui
 résume aussi le reste du deck (COMPRENDRE/DÉFINIR/FAIRE ADOPTER & PROUVER,
 avec renvoi aux chapitres). Le nœud « Discovery gaspillages » du schéma garde
-« 6 catégories » tel quel dans le document source, alors que le chapitre
-Besoins & douleurs du deck compte 8 familles de gaspillage — divergence DU
-DOCUMENT SOURCE (marqué WIP), remontée pour arbitrage, non corrigée ici.
+« 6 catégories » du document source pitch (verbatim jusqu'ici) — divergence
+avec les 8 familles de gaspillage du chapitre Besoins & douleurs, arbitrée le
+2026-09-18 (salle atelier-idees, storytelling) : cohérence interne du deck
+préférée à la fidélité verbatim sur ce point précis. Nœud renommé « 8
+familles » ; le reste de la slide (schéma, citation-thèse) reste verbatim.
 
 v2.9 (2026-09-02) : le chapitre 01 « Exec summary » est REFONDU pour parler au
 prospect plutôt que de résumer le deck deux fois (45 -> 46 slides ; 9 chapitres
@@ -1351,10 +1353,10 @@ def slide_offre_iap(prs):
     mission, redessiné EN NATIF (pas une insertion de l'image source) sur ses 3
     registres : mouvements du socle (toujours présents, bleu-gris), variantes
     conditionnées au contexte (sable/or), mécanismes additifs (encadrés pointillés
-    pâles). Garde « 6 catégories » au nœud Discovery gaspillages tel quel — même si
-    le chapitre Besoins & douleurs du deck compte 8 familles de gaspillage, c'est une
-    divergence DU DOCUMENT SOURCE (marqué WIP), remontée pour arbitrage, pas
-    corrigée ici (cf. docstring de module)."""
+    pâles). Nœud Discovery gaspillages renommé « 8 familles » (2026-09-18, cf.
+    docstring de module) — seul écart volontaire à la fidélité verbatim du
+    schéma, pour ne plus afficher deux chiffres différents de la même notion
+    dans le même deck."""
     s = content_slide(prs, "Démarche",
                        "Accompagnement Infra as a Product : transformer une fonction infra en produit interne",
                        color=ENCRE)
@@ -1363,7 +1365,9 @@ def slide_offre_iap(prs):
              "fonction infra ou une plateforme interne » en un véritable produit interne : un "
              "service pensé pour ses utilisateurs, avec un parcours, une proposition de valeur "
              "et des indicateurs de pilotage, plutôt qu'un centre de coûts ou un guichet de "
-             "tickets.")
+             "tickets. Le détail de chaque étape ci-dessous se retrouve dans la trajectoire en "
+             "temps et boucle, et dans le schéma de fonctionnement qui suit — trois lectures "
+             "du même parcours, pas trois parcours différents.")
     chapo_h = _lignes(chapo, CONTENT_W, 8.5) * (8.5 * 1.2 / 72.0) + 0.05
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, chapo_h, [
         (chapo, dict(size=8.5, color=NAVY, italic=True, line_spacing=1.2)),
@@ -1428,7 +1432,7 @@ def slide_offre_iap(prs):
         ("Premier contact", None, True),
         ("Cadrage", "note de cadrage", False),
         ("Diagnostic", "base factuelle partagée", False),
-        ("Discovery gaspillages", "6 catégories", False),
+        ("Discovery gaspillages", "8 familles", False),
         ("Segmentation / Product Discovery", None, False),
     ]
     for i, (titre, sous, oval) in enumerate(socle_row1):
@@ -1609,7 +1613,7 @@ def slide_synthese_pourquoi_quoi_comment(prs):
         ("+", "Constitution du TOM — optionnel", "3–4 sem.", True,
          ("Formaliser", " le Target Operating Model : rôles et gouvernance."),
          ("Poser", " le référentiel de standards et d'outillage à tenir."),
-         "TOM et roadmap de déploiement."),
+         "TOM et roadmap (hors ①②③⟲)."),
         ("②", "Premier déploiement", "4–5 sem.", False,
          ("Embarquer", " des équipes pilotes volontaires et prouver la valeur."),
          ("Décommissionner", " ce qui peut l'être, observer ce qui reste."),
@@ -2801,7 +2805,8 @@ def slide_personas_divergences(prs):
          "Self-service adopté par choix face à l'opérabilité sans sacrifier le delivery : "
          "qui absorbe le coût du self-service ?"),
         (("Sponsor", c_spon), ("RSSI", c_rssi), "ANGLE MORT",
-         "Vitesse de démonstration face au gate confidentialité, bloquant sur donnée client."),
+         "Vitesse de démonstration face au gate confidentialité, bloquant sur donnée client — "
+         "tension anticipée, le RSSI n'a pas été interrogé (voir note ci-dessous)."),
     ]
     top0 = CONTENT_TOP + 0.1
     n = len(rows)
@@ -3505,7 +3510,9 @@ def slide_trajectoire(prs):
         ("Le tronc commun ①→②→③→⟲ ne change pas de structure — la piste agent IA (si retenue) "
          "se greffe sur ②/③ via la démarche d'accompagnement en 5 phases déjà cadrée, plutôt "
          "que d'être un chemin séparé à maintenir. Owner proposé (non tranché) : "
-         "iap-operating-model-architect + iap-change-coach sur le volet humain.",
+         "iap-operating-model-architect + iap-change-coach sur le volet humain. Les 4 "
+         "livrables-clés ci-dessus sont 4 profils d'un même générateur modulaire "
+         "(`iap-deck-builder`), pas 4 outils distincts — détail à la slide Livrables.",
          dict(size=7, color=NAVY, space_before=3, line_spacing=1.25)),
     ], anchor=MSO_ANCHOR.MIDDLE)
     return s
@@ -5009,8 +5016,10 @@ def slide_prudence_ia(prs):
     ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
 
     note_top = pill_y + pill_h + 0.14
-    note_texte = ("Le score est SOUSTRAIT de impact × faisabilité — un candidat facile et à fort "
-                  "impact peut quand même être écarté si sa prudence IA est trop "
+    note_texte = ("Le score est SOUSTRAIT de impact × faisabilité — les trois scores sont "
+                  "ordinaux (un rang, pas une mesure absolue, même statut que le score "
+                  "d'impact) : un candidat facile et à fort impact peut quand même être "
+                  "écarté si sa prudence IA est trop "
                   "haute. Le score ne remplace pas l'arbitrage humain : il le rend "
                   "explicite. Avancer malgré un score élevé reste possible, mais se documente comme une "
                   "décision à part entière (même discipline que la dérogation du gate DevOps).")

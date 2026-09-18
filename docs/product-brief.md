@@ -1,7 +1,7 @@
 # Product-brief — BMAD IAP (« Infra as a Product »)
 
 > **Porte d'entrée produit (1 page).** Synthèse stable du cadrage de fond
-> `docs/bmad-iap-cadrage.md` (v2.4, ~1140 lignes) et de la revue produit/marché
+> `docs/bmad-iap-cadrage.md` (v2.5, ~1145 lignes) et de la revue produit/marché
 > `docs/reflexions/revue-produit-marche.md` — ces deux fichiers restent la **source de
 > vérité** ; ce brief n'en est que le résumé d'accroche. **Honnêteté épistémique
 > préservée** (finding critique C1 de la revue) : le *financement croisé* (« la capacité
@@ -102,10 +102,12 @@ produit, Big4 sur la gouvernance seule, AIOps sans transformation).
 
 ## Statut & points ouverts
 
-Cadrage v2.4, **draft consolidé** — le « comment faire la mission » est au-dessus du
+Cadrage v2.5, **draft consolidé** — le « comment faire la mission » est au-dessus du
 standard du marché ; les chantiers propriétaires restants (nom public de l'offre, KPI de
 réinvestissement, plan de preuve hypothèse × mission, scoping de la mission flash) sont
-tracés au §Points ouverts du cadrage de fond. Nouveau point ouvert (v2.4) : **cohabitation
-avec l'offre « Agentic Product Run »** de VScode6-learning-sprintIA, sur un champ
-sémantique voisin (RUN, TMA) — détail et sources dans le cadrage complet, §Points ouverts.
-Ce brief est révisé quand l'un d'eux est tranché.
+tracés au §Points ouverts du cadrage de fond. Point ouvert non tranché depuis v2.4 :
+**cohabitation avec l'offre « Agentic Product Run »** de VScode6-learning-sprintIA, sur un
+champ sémantique voisin (RUN, TMA) — détail et sources dans le cadrage complet, §Points
+ouverts. v2.5 n'ajoute que des recoupements `ILLUSTRATIF` corroborant des arguments déjà
+tenus par IAP (déclencheur ③, doctrine de preuve, ciblage sponsor) ; le deck PPT n'a pas
+changé de contenu. Ce brief est révisé quand l'un des points ouverts est tranché.
