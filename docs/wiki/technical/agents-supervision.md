@@ -1,5 +1,5 @@
 ---
-updated: 2026-09-12
+updated: 2026-09-18
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -8,24 +8,24 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-09-12T00:46:06+02:00 · **15 sessions** (transcripts) · **49** invocations de skills · **76** lancements de sous-agents.
+Dernier scan : 2026-09-18T09:36:37+02:00 · **16 sessions** (transcripts) · **59** invocations de skills · **87** lancements de sous-agents.
 
 ## Skills — usage réel
 
 | Skill | Famille | Invocations | Première | Dernière |
 | --- | --- | --- | --- | --- |
-| `agent-orchestrator` | projet | 23 | 2026-07-21 | 2026-09-11 |
-| `bmad-review` | BMAD | 4 | 2026-09-07 | 2026-09-11 |
+| `agent-orchestrator` | projet | 24 | 2026-07-21 | 2026-09-17 |
+| `bmad-party-mode` | BMAD | 5 | 2026-09-02 | 2026-09-17 |
+| `bmad-review` | BMAD | 5 | 2026-09-07 | 2026-09-17 |
+| `bmad-brainstorming` | BMAD | 4 | 2026-09-11 | 2026-09-17 |
 | `revue-increment` | projet | 4 | 2026-07-21 | 2026-09-11 |
 | `agent-supervisor` | projet | 3 | 2026-07-21 | 2026-09-03 |
-| `bmad-party-mode` | BMAD | 3 | 2026-09-02 | 2026-09-11 |
+| `bmad-advanced-elicitation` | BMAD | 3 | 2026-09-11 | 2026-09-17 |
+| `deck-design-library` | projet | 3 | 2026-09-03 | 2026-09-17 |
 | `bmad-code-review` | BMAD | 2 | 2026-09-10 | 2026-09-10 |
-| `deck-design-library` | projet | 2 | 2026-09-03 | 2026-09-10 |
 | `artifact-design` | (builtin/session) | 1 | 2026-09-11 | 2026-09-11 |
 | `audit-technique` | projet | 1 | 2026-09-03 | 2026-09-03 |
-| `bmad-advanced-elicitation` | BMAD | 1 | 2026-09-11 | 2026-09-11 |
 | `bmad-agent-pm` | BMAD | 1 | 2026-07-22 | 2026-07-22 |
-| `bmad-brainstorming` | BMAD | 1 | 2026-09-11 | 2026-09-11 |
 | `code-review` | (builtin/session) | 1 | 2026-09-11 | 2026-09-11 |
 | `deck-design-review` | projet | 1 | 2026-09-07 | 2026-09-07 |
 | `update-config` | (builtin/session) | 1 | 2026-09-07 | 2026-09-07 |
@@ -34,7 +34,7 @@ Dernier scan : 2026-09-12T00:46:06+02:00 · **15 sessions** (transcripts) · **4
 
 | Sous-agent | Lancements | Premier | Dernier |
 | --- | --- | --- | --- |
-| `general-purpose` | 39 | 2026-07-21 | 2026-09-11 |
+| `general-purpose` | 50 | 2026-07-21 | 2026-09-17 |
 | `ppt-designer` | 19 | 2026-07-21 | 2026-09-11 |
 | `Explore` | 9 | 2026-07-21 | 2026-09-11 |
 | `bmad-revue` | 5 | 2026-09-07 | 2026-09-10 |
@@ -44,9 +44,9 @@ Dernier scan : 2026-09-12T00:46:06+02:00 · **15 sessions** (transcripts) · **4
 
 ## Jamais utilisés
 
-**projet** — 1/13 jamais invoqués :
+**projet** — 2/14 jamais invoqués :
 
-`veille-agentic`
+`agent-securite`, `veille-agentic`
 
 **BMAD** — 44/50 jamais invoqués :
 
@@ -56,9 +56,9 @@ Dernier scan : 2026-09-12T00:46:06+02:00 · **15 sessions** (transcripts) · **4
 
 </details>
 
-**global** — 1/2 jamais invoqués :
+**global** — 2/3 jamais invoqués :
 
-`skill-creator`
+`skill-creator`, `synced`
 
 ## Skills bibliothèque / référence
 
@@ -69,7 +69,7 @@ _Consommés en lisant/exécutant leurs `scripts/`, ou via un sous-agent qui les 
 ## TODO agents (constats automatiques)
 
 1. **Désinstaller les shims BMAD dépréciés** (17) : `bmad-checkpoint-preview`, `bmad-create-architecture`, `bmad-create-prd`, `bmad-create-story`, `bmad-dev-story`, `bmad-document-project`, `bmad-edit-prd`, `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-generate-project-context`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-review-verification-gap`, `bmad-sprint-status`, `bmad-technical-research`, `bmad-validate-prd` — dépréciés par BMAD dans leur propre `description`, chacun avec son remplaçant ; le seul élagage qui ne repose pas sur notre mesure d'usage.
-2. **Skills projet sans usage** : `veille-agentic` — vérifier pertinence et déclencheurs.
+2. **Skills projet sans usage** : `agent-securite`, `veille-agentic` — vérifier pertinence et déclencheurs.
 3. **Skills en sommeil (>30 j sans usage)** : `bmad-agent-pm`.
 
 ## Arbitrages enregistrés
@@ -129,7 +129,9 @@ Ce que 'traiter' ces 3 points pourrait vouloir dire (a instruire au hub, pas tra
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 
-_Diagnostic à jour — rien à signaler, tous les constats précédents ont été arbitrés._
+_Diagnostic à jour._
+
+1. **Chantier A (lecture humaine du cadrage BMAD IAP par un non-auteur) bloque sur un prealable non implemente** — Ne pas relancer de nouvelle version du cadrage tant que ce point reste ouvert ; reprendre des que l agent utilisateur VScode5 est disponible. · **Proposition** : A l implementation de l agent utilisateur VScode5 : le faire lire le cadrage bmad-iap-cadrage.md tel quel, sans le retoucher avant, et ne noter que ce qu il ne comprend pas ou conteste.
 
 _6 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir un, demander au superviseur un `re_challenge` avec des données nouvelles :_
 
@@ -142,7 +144,7 @@ _6 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir 
 
 ## Seuil de qualification — la mesure
 
-Depuis le 2026-09-10 : **33** demande(s) vue(s) hors commande slash (+ 9 slash), **4** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **12 %** des demandes orchestrées.
+Depuis le 2026-09-10 : **57** demande(s) vue(s) hors commande slash (+ 11 slash), **7** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **12 %** des demandes orchestrées.
 _Ce chiffre ne dit pas ce qui AURAIT dû être orchestré : le hook compte, il ne juge pas. Il donne le dénominateur qui manquait pour arbitrer le seuil sur données plutôt que sur habitude._
 
 ---

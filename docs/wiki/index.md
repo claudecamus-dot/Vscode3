@@ -61,7 +61,7 @@ Retour utilisateur le même jour (2026-07-15) : (1) le schéma de fonctionnement
 Constats automatiques du superviseur d'agents (usage mesuré dans les transcripts de session) :
 
 - **Désinstaller les shims BMAD dépréciés** (17) : `bmad-checkpoint-preview`, `bmad-create-architecture`, `bmad-create-prd`, `bmad-create-story`, `bmad-dev-story`, `bmad-document-project`, `bmad-edit-prd`, `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-generate-project-context`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-review-verification-gap`, `bmad-sprint-status`, `bmad-technical-research`, `bmad-validate-prd` — dépréciés par BMAD dans leur propre `description`, chacun avec son remplaçant ; le seul élagage qui ne repose pas sur notre mesure d'usage.
-- **Skills projet sans usage** : `veille-agentic` — vérifier pertinence et déclencheurs.
+- **Skills projet sans usage** : `agent-securite`, `veille-agentic` — vérifier pertinence et déclencheurs.
 - **Skills en sommeil (>30 j sans usage)** : `bmad-agent-pm`.
 
 Tableau de bord complet : [technical/agents-supervision.md](technical/agents-supervision.md) — régénéré à chaque session.

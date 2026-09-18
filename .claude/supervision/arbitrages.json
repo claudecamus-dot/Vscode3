@@ -1,343 +1,352 @@
 {
- "arbitrages": [
-  {
-   "cible": "tri-BMAD-retraits-D",
-   "decision": "Constat agent-mort 2026-07-23 CLOS par décision utilisateur (« oublie les 4 retraits bmad ») : les 4 skills restantes arbitrées retrait (bmad-dev-auto, bmad-quick-dev, bmad-qa-generate-e2e-tests, bmad-prfaq) RESTENT sur disque — le retrait demeure documenté (pas de réactivation), la suppression physique est abandonnée comme geste. L'écart décision/terrain est assumé et ne doit plus remonter en constat. Rappel : bmad-market-research et bmad-domain-research requalifiées sur-demande le même jour (entrées dédiées).",
-   "categories": [
-    "agent-mort"
-   ],
-   "date": "2026-07-23",
-   "source": "arbitrage utilisateur « oublie les 4 retraits bmad » 2026-07-23 (clôture du constat 3 du diagnostic agent-supervisor 2026-07-23)"
-  },
-  {
-   "cible": "ppt-designer",
-   "decision": "Constat verification-manquante 2026-07-23 CLOS : fix shell 82db57a confirmé en conditions réelles le 2026-07-23 (spawn préflight-only : PowerShell ET Bash opérationnels, Python 3.14.5, python-pptx 1.0.2, verdict SHELL OK, zéro édition). La voie unique deck arbitrée le 2026-07-21 est donc effective : l'étape generation d'export-ppt-verifie s'instancie via le sous-agent ppt-designer. Le précédent inline des runs du 2026-07-22 (motivé par le shell non vérifié) ne fait plus jurisprudence pour la génération structurelle ; une passe de contenu ciblée reste possible inline avec rendu réel, en le notant au run.",
-   "categories": [
-    "verification-manquante"
-   ],
-   "date": "2026-07-23",
-   "source": "arbitrage utilisateur « traite 1 » post-diagnostic agent-supervisor 2026-07-23 ; préflight sous-agent réel exécuté en séance"
-  },
-  {
-   "cible": "agent-orchestrator",
-   "decision": "Constat interaction 2026-07-23 CLOS : règle de journalisation codifiée au catalogue (section routage par défaut) — tout travail inline multi-étapes sur un livrable suivi (deck) journalise un run minimal via log_run.py (étapes inline), même sans sous-agent. Pas de rétro-journalisation des sessions du 2026-07-22 matin.",
-   "categories": [
-    "interaction"
-   ],
-   "date": "2026-07-23",
-   "source": "arbitrage utilisateur « traite 2 » post-diagnostic agent-supervisor 2026-07-23"
-  },
-  {
-   "cible": "ppt-designer",
-   "decision": "Conservé et ACTIVÉ comme voie unique de conception/génération du deck. L'étape 'generation' de export-ppt-verifie l'instancie désormais comme sous-agent (modèle hérité du thread principal, pas de bascule — jugement visuel). bmad-agent-ux-designer n'est PAS la voie deck : préférer une seule voie par tâche (CLAUDE.md).",
-   "categories": [
-    "agent-mort",
-    "inefficacite",
-    "ko-repete"
-   ],
-   "date": "2026-07-21",
-   "source": "arbitrage utilisateur post-diagnostic agent-supervisor 2026-07-21 (constat agent-mort : jamais routé, tout le sous-agentage passait par general-purpose)",
-   "note": "categories = arbitrage de ROUTAGE : ne ferme que les constats routage/vie-de-l'agent ; un constat verification-manquante/interaction sur ppt-designer remonte quand même (fix cible-suppression 2026-07-21)."
-  },
-  {
-   "cible": "pptx-framed-image",
-   "decision": "used-as-library — conservée. Portée par le pipeline deck comme code vendored (cadres teardrop du template OCTO via generate_deck.py), pas invoquée via l'outil Skill : elle restera dans jamais_utilises par construction. Ne PAS la retirer au tri des skills mortes.",
-   "date": "2026-07-21",
-   "source": "arbitrage utilisateur post-diagnostic agent-supervisor 2026-07-21 (constat agent-mort : faux positif de skill morte)"
-  },
-  {
-   "cible": "deck-design-library",
-   "decision": "used-as-reference — greffée depuis VSCode2 le 2026-07-23 (SKILL.md adapté + catalogue-restitution.md verbatim, 22 patterns de decks de soutenance OCTO). Consultée comme documentation de référence par la session et le sous-agent ppt-designer (lecture de fichiers, pas invocation Skill) : elle peut rester dans jamais_utilises par construction, même en usage actif. Ne PAS la retirer au tri des skills mortes. Copie de référence dans VSCode2 — resynchroniser manuellement si le catalogue y évolue (même règle que docs/vscode1-export/).",
-   "categories": [
-    "agent-mort"
-   ],
-   "date": "2026-07-23",
-   "source": "greffe + première utilisation le jour même (passe design deck guidée par la bibliothèque, demande utilisateur « réintègre la bibliothèque de design de VSCode2 pour maj du ppt »)"
-  },
-  {
-   "cible": "slide-text-polish",
-   "decision": "used-as-library — conservée. Lint de copie (slide_lint) intégré au pipeline deck, invoquée comme code et non via l'outil Skill : elle restera dans jamais_utilises par construction. Ne PAS la retirer au tri des skills mortes.",
-   "date": "2026-07-21",
-   "source": "arbitrage utilisateur post-diagnostic agent-supervisor 2026-07-21 (constat agent-mort : faux positif de skill morte)"
-  },
-  {
-   "cible": "famille:BMAD",
-   "decision": "Tri des 46 skills BMAD EXÉCUTÉ (choix A). Classement en 5 catégories via inventaire de câblage (Explore) + stratégie (Plan) : A câblées=13 (5 délégations de revue-increment : bmad-code-review/retrospective/correct-course/checkpoint-preview/help ; 8 étapes du playbook généré cycle-produit-bmad : product-brief/prd/architecture/create-epics-and-stories/check-implementation-readiness/sprint-planning/create-story/dev-story) — reliées à l'orchestrateur comme voie de première intention (catalogue) ; B sous-skill/angle mort=5 (review-adversarial-general, review-edge-case-hunter, advanced-elicitation, party-mode, spec — invoquées en langage naturel par une skill câblée, ne pas qualifier agent-mort) ; C sur-demande=16 (6 personas bmad-agent-* + réserve produit/édition, via bmad-help) ; D candidat-retrait=8 (dev-auto, quick-dev, qa-generate-e2e-tests, market-research, domain-research, prfaq, index-docs, shard-doc — arbitrage retrait individuel à trancher, NON décidé ici) ; E deprecated-v7=4 (create-architecture, create-prd, edit-prd, validate-prd — purge par l'updater BMAD, jamais à la main). Effet : ferme le TODO d'élagage déterministe (jeton famille:BMAD, seul reconnu par build_todos) ; les 46 restent mesurées dans jamais_utilises ; l'étage-2 garde la main par cible exacte. Ne PAS rm _bmad/ ni éditer cycle-produit-bmad.md à la main (généré).",
-   "date": "2026-07-21",
-   "source": "arbitrage utilisateur « choix A et relié à agent-orchestrator » (stratégie Plan/opus sur inventaire Explore/haiku, 2026-07-21)"
-  },
-  {
-   "cible": "bmad-dev-auto",
-   "decision": "retrait (catégorie D) — redondant avec bmad-dev-story (câblée, cat. A) + les builtins code-review/simplify ; boucle de dev non attendue sur ce dépôt (livrable = deck + outillage superviseur). Arbitrage documenté : suppression physique = geste humain séparé, aucun rm unilatéral, aucune édition de _bmad/.",
-   "date": "2026-07-21",
-   "source": "arbitrage utilisateur catégorie D 2026-07-21 (choix « retrait 6, dormantes 2 »)"
-  },
-  {
-   "cible": "bmad-quick-dev",
-   "decision": "retrait (catégorie D) — redondant avec bmad-dev-story (câblée) + builtins ; pas de flux d'implémentation code récurrent ici. Arbitrage documenté, pas de suppression physique unilatérale.",
-   "date": "2026-07-21",
-   "source": "arbitrage utilisateur catégorie D 2026-07-21 (choix « retrait 6, dormantes 2 »)"
-  },
-  {
-   "cible": "bmad-qa-generate-e2e-tests",
-   "decision": "retrait (catégorie D) — pas d'application ni de harnais e2e sur ce dépôt (cf. catalogue : pas d'app web/dev server). Sans objet. Arbitrage documenté, pas de suppression physique unilatérale.",
-   "date": "2026-07-21",
-   "source": "arbitrage utilisateur catégorie D 2026-07-21 (choix « retrait 6, dormantes 2 »)"
-  },
-  {
-   "cible": "bmad-market-research",
-   "decision": "REQUALIFIÉE sur-demande (2026-07-23, annule le retrait du 21/07) — le retrait était motivé par « veille marché hors mission » ; la demande utilisateur du 23/07 (revue produit + research + market-research du projet global, cf. docs/reflexions/revue-produit-marche.md) est le contre-exemple exact. Substance exécutée via sous-agent general-purpose + web (les workflows BMAD interactifs restent une voie possible sur demande). Rejoint la catégorie C (sur-demande, via bmad-help).",
-   "date": "2026-07-23",
-   "source": "arbitrage utilisateur « lance les 3 points » 2026-07-23 (proposition de requalification post-revue produit/marché) ; retrait initial : catégorie D 2026-07-21"
-  },
-  {
-   "cible": "bmad-domain-research",
-   "decision": "REQUALIFIÉE sur-demande (2026-07-23, annule le retrait du 21/07) — même motif que bmad-market-research : la revue research domaine/technique du 23/07 (état de l'art vs paris IAP, cf. docs/reflexions/revue-produit-marche.md) est exactement une recherche domaine/industrie sur la mission de ce dépôt. Rejoint la catégorie C (sur-demande, via bmad-help).",
-   "date": "2026-07-23",
-   "source": "arbitrage utilisateur « lance les 3 points » 2026-07-23 (proposition de requalification post-revue produit/marché) ; retrait initial : catégorie D 2026-07-21"
-  },
-  {
-   "cible": "bmad-prfaq",
-   "decision": "retrait (catégorie D) — challenge PRFAQ/Working-Backwards produit, hors mission cadrage/deck. Arbitrage documenté, pas de suppression physique unilatérale.",
-   "date": "2026-07-21",
-   "source": "arbitrage utilisateur catégorie D 2026-07-21 (choix « retrait 6, dormantes 2 »)"
-  },
-  {
-   "cible": "bmad-index-docs",
-   "decision": "conserver dormante (catégorie D) — utilitaire d'indexation de docs, inoffensif et bon marché ; gardé malgré 0 usage (bruit faible, option conservée). Pas retiré.",
-   "date": "2026-07-21",
-   "source": "arbitrage utilisateur catégorie D 2026-07-21 (choix « retrait 6, dormantes 2 »)"
-  },
-  {
-   "cible": "bmad-shard-doc",
-   "decision": "conserver dormante (catégorie D) — utilitaire de découpe de gros markdown, inoffensif ; gardé malgré 0 usage (bruit faible). Pas retiré.",
-   "date": "2026-07-21",
-   "source": "arbitrage utilisateur catégorie D 2026-07-21 (choix « retrait 6, dormantes 2 »)"
-  },
-  {
-   "cible": "export-ppt-verifie",
-   "decision": "Proposition superviseur (diagnostic 2026-07-21, constat prio 3) ACCEPTÉE et APPLIQUÉE : la vérification par rendu réel nomme désormais le défaut « panneau flottant/étiré » comme contrôle explicite par NOUVEAU type de slide (contenu centré par slot laissant un vide sous l'en-tête, ou panneau sur-étiré). Amendés : brief .claude/agents/ppt-designer.md (étape 4 real render) + contrat de l'étape verification-rendu du playbook export-ppt-verifie. Constat clos.",
-   "date": "2026-07-21",
-   "source": "arbitrage utilisateur « lance les 2 actions et commit » 2026-07-21 (application des propositions du diagnostic agent-supervisor)"
-  },
-  {
-   "cible": "docs/wiki.html",
-   "decision": "Proposition superviseur (diagnostic 2026-07-21, constat prio 1) ACCEPTÉE et APPLIQUÉE : marqueurs TODO-AGENTS-HTML posés dans docs/wiki.html (+ entrée TOC #agents-supervision), option « compléter le câblage » retenue plutôt que retirer le chemin HTML du scan. Le scan peuple désormais le dashboard HTML (plus d'avertissement « sans marqueurs »). Constat clos.",
-   "date": "2026-07-21",
-   "source": "arbitrage utilisateur « lance les 2 actions et commit » 2026-07-21 (application des propositions du diagnostic agent-supervisor)"
-  },
-  {
-   "cible": "docs/vscode1-export/ppt-toolkit.md",
-   "date": "2026-09-02",
-   "decision": "ACCEPTÉ + APPLIQUÉ, LES DEUX GESTES (arbitrage utilisateur du 2026-09-02). Le finding disait : un correctif de sécurité ne vit que dans la copie locale, et la resynchronisation documentée le supprimerait — 1 copie sur 7 portait la garde, et c'était celle-ci. GESTE 1, le code : la garde a été remontée au hub puis propagée, et elle est arrivée PLUS LARGE qu'elle n'était ici. Au filtre de schéma et au plafond de 25 Mo s'ajoutent la résolution de l'hôte (refus des adresses de bouclage, privées, link-local, réservées, multicast, IPv4 mappée en IPv6 comprise, fail-closed sur un hôte non résolvable) et la re-validation de CHAQUE saut de redirection 3xx — `urlopen` les suivait seul, donc une URL publique répondant `302 Location: http://127.0.0.1/` traversait la garde intacte. Mesuré : les 6 dépôts plus le hub portent le même fichier, mêmes marqueurs, mtime 2026-09-02 09:41-09:44. GESTE 2, la trace : l'annotation de `docs/vscode1-export/ppt-toolkit.md` avait écrit elle-même sa condition de levée — « lever cette exception quand la garde aura été remontée au hub et redescendue dans VSCode1 ». La condition est remplie et vérifiée (`diff` VSCode1/VSCode3 ne rend rien, 204 lignes de part et d'autre), l'exception est donc levée et le motif de sa levée consigné. LA RÈGLE GÉNÉRALE NE SE LÈVE PAS : `diff` avant toute resynchro depuis VSCode1 reste la consigne — c'est cette exception-ci qui s'éteint, pas la prudence qui l'avait fait naître."
-  },
-  {
-   "cible": "CLAUDE.md",
-   "date": "2026-09-03",
-   "categories": [],
-   "decision": "ARBITRE ET APPLIQUE (option C retenue par l'utilisateur le 2026-09-03, la moins couteuse des 3 qui repare reellement quelque chose). CLAUDE.md : ajout d'une section 'Optimisation tokens' courte (4 puces, alignee sur docs/vscode1-export/optimisation-tokens.md) juste avant 'Regles de travail' ; chiffre de slides corrige 42 -> 46 (perime depuis v2.8-v2.11). README.md : le lien mort vers CLAUDE.md pour les gotchas deck (cadre teardrop carre, glyphe sans variante grasse) redirige desormais vers .claude/skills/deck-design-review/SKILL.md et les commentaires de generate_deck.py -- ou ce savoir vit reellement, au lieu de dupliquer dans CLAUDE.md (risque de divergence identifie a l'etape de mesure). Options A (restauration verbatim) et B (ne rien restaurer) explicitement ecartees par ce choix.",
-   "source": "traitement findings diagnostic 2026-09-01, arbitrage utilisateur 2026-09-03 (AskUserQuestion)"
-  },
-  {
-   "cible": "deck-design-review",
-   "date": "2026-09-03",
-   "categories": [],
-   "decision": "ARBITRE ET APPLIQUE (ratifier le cablage existant, retenu par l'utilisateur le 2026-09-03). Le cablage de l'etape design-review sur deck-design-review (commit 418286c, 2026-09-01) est CONFIRME, pas defait. Documentation corrigee pour arreter de decrire l'ancien etat : catalogue.md distingue maintenant deck-design-review (l'etape cablee et obligatoire, cible sur CE deck) de restitution-deck-design (reference de design system generale, jamais l'etape du playbook) ; export-ppt-verifie.md ligne 14 ne cite plus restitution-deck-design comme conditionnelle a la place de deck-design-review. CONSTAT NON RESOLU, remonte au hub (2026-09-03) : deck-design-review reste a 0 execution mesuree malgre son statut OBLIGATOIRE depuis 2 jours et malgre un chantier de revue graphique reel mene dans cette session (verifie manuellement, pas via la skill) -- le cablage seul ne suffit pas a faire partir la skill, meme methode que le constat 'le brief nomme la skill' deja pose pour BMAD. Coordination VSCode4 (meme sujet en parallele) : NON VERIFIEE depuis ce projet -- signale a l'utilisateur, pas de blocage pose ici puisque l'utilisateur a explicitement choisi de ratifier malgre cette reserve.",
-   "source": "traitement findings diagnostic 2026-09-01, arbitrage utilisateur 2026-09-03 (AskUserQuestion)"
-  },
-  {
-   "cible": "arbitrages.json",
-   "date": "2026-09-02",
-   "categories": [],
-   "decision": "REMIS A L'ARBITRAGE (cause investiguee et distinguee du defaut du hub, correctif propose hors de mon perimetre d'ecriture -- touche log_run.py, explicitement interdit dans ce mandat). Rejoue : les 3 arbitrages ppt-designer / agent-orchestrator / tri-BMAD-retraits-D existent bien dans arbitrages.json, dates du 2026-07-23, categories couvrant exactement les constats vises (verification-manquante, interaction, agent-mort) -- confirme par lecture directe du fichier. diagnostic.json ET state.json sont gitignores (git check-ignore -v confirme les deux chemins) : impossible de relire la version exacte de diagnostic.json au 2026-09-01 avant sa reecriture a 15:11:51, write_diagnostic.py reecrivant le fichier EN ENTIER a chaque diagnostic (docstring lignes 22-23). PREUVE INDIRECTE PAR GIT (docs/wiki/technical/agents-supervision.md, fichier versionne celui-la, recreusee) : au commit 0724f91 (2026-07-23 20:25, juste apres l'arbitrage), le tableau de bord affichait deja correctement \"(aucun constat -- rien a signaler)\" -- le masquage a fonctionne le jour meme de l'arbitrage. Le fichier wiki n'a plus ete regenere/commite pendant 39 jours (aucun commit entre 0724f91 et 68001a5 du 2026-09-01 10:16 ne le touche) ; a 68001a5, le diagnostic regenere affiche les 3 constats correctement BARRES avec la mention \"3 constat(s) de ce diagnostic ecarte(s) par un arbitrage\" (mecanisme finding_arbitre/diagnostic_masques de scan_transcripts.py, date du 2026-07-28 -- deja plus abouti que le defaut du scan de flotte du hub corrige ce matin, verifie en lisant scan_transcripts.py lignes 607-649 : cible+categorie+date+re_challenge, alors que le defaut hub ignorait juste date/re_challenge). CONCLUSION mesuree : le mecanisme d'affichage cote wiki de CE depot fonctionne et n'a PAS presente ces 3 constats comme ouverts pendant 40 jours -- il est reste correctement fige sur \"aucun constat\" faute de regeneration, ce n'est pas la meme cause que le defaut du hub. La cause reelle, plus etroite que ce que dit le finding : le fichier BRUT diagnostic.json, lui, reste semantiquement faux entre deux diagnostics tant que write_diagnostic.py reecrit tout sans reconcilier avec arbitrages.json -- tout consommateur qui lit diagnostic.json SANS passer par finding_arbitre (candidat plausible : le scan de flotte du hub, qui lit les diagnostic.json de chaque projet) verrait ces 3 constats comme ouverts pendant l'intervalle. Etat aujourd'hui : NON REPRODUCTIBLE -- le diagnostic.json courant (genere 2026-09-01T15:11:51) ne contient plus aucun des 3 constats. RESTE OUVERT : la proposition du diagnostic (coupler l'ecriture de l'arbitrage a log_run.py --solde, purger diagnostic.json au moment de l'arbitrage plutot qu'au diagnostic suivant) touche log_run.py -- explicitement sur la liste des fichiers interdits de cette mission. REMONTE pour arbitrage et implementation par qui a la main sur log_run.py.",
-   "source": "traitement findings diagnostic 2026-09-01, mandat utilisateur 2026-09-02 (onglet Arbitrer)"
-  },
-  {
-   "cible": "hub:plan-amelioration-2026-09-03",
-   "date": "2026-09-03",
-   "categories": [],
-   "decision": "REMONTE AU HUB (demande utilisateur explicite : 'remonter au hub qu'un plan d'amelioration est necessaire'). Pas une decision appliquee ici -- un signalement, a traiter et planifier LA-BAS (CLAUDE.md : 'corriger la-bas puis regenerer l'export, jamais localement'). Trois faits mesures dans cette seule session (2026-09-02/03) qui, ensemble, dessinent un pattern plutot que des incidents isoles :\n1) GAP COMMIT/PUSH SILENCIEUX : 2 commits deck (v2.10, v2.11) sont restes locaux 1 jour+ pendant que l'utilisateur validait sur un artefact non a jour (GitHub/autre vue synchronisee sur le push), provoquant une confusion 'toujours pas realise' sur des defauts deja corriges. Le playbook export-ppt-verifie ne dit nulle part QUAND pousser un livrable utilisateur -- 'commit et push' redemande a chaque fois plutot que trace comme une regle du playbook.\n2) FAUX POSITIFS DU RENDU DE VERIFICATION : le pipeline de verif de ce projet s'appuie sur LibreOffice (playbook + test_generate_deck.py) qui a produit un defaut visuel N'EXISTANT PAS dans le fichier reel (artefact de composition d'un groupe pivote a 180 du template, confirme absent d'un rendu PowerPoint COM reel). L'existence de ce risque n'est documentee nulle part dans le playbook -- un futur run pourrait 'corriger' un defaut qui n'existe pas en modifiant le template partage.\n3) SKILL OBLIGATOIRE JAMAIS EXECUTEE MEME QUAND SON TRAVAIL EST FAIT : deck-design-review est l'etape design-review OBLIGATOIRE du playbook depuis le 2026-09-01, et cette session a fait EXACTEMENT ce travail (revue slide-par-slide, defauts trouves et corriges) SANS jamais invoquer la skill elle-meme -- toujours 0 execution mesuree. Meme cause deja identifiee pour les skills BMAD ('le brief nomme la skill, sinon d'office n'est une consigne pour personne') mais pas encore traitee pour les etapes 'reel' (rendu/revue) des playbooks projet.\nCe que 'traiter' ces 3 points pourrait vouloir dire (a instruire au hub, pas tranche ici) : regle explicite de push en fin de playbook livrable-utilisateur ; case 'verification croisee reel (COM/autre moteur)' avant de toucher un template partage sur la seule foi d'un rendu ; contrat de sortie qui EXIGE le nom de la skill invoquee meme pour les etapes de revue/verification des playbooks (pas seulement le routage BMAD).",
-   "source": "demande utilisateur explicite 2026-09-03 : 'remonter au hub qu'un plan d'amelioration est necessaire'"
-  },
-  {
-   "cible": "tests/test_generate_deck_garde.py",
-   "date": "2026-09-03",
-   "categories": [],
-   "decision": "ACCEPTE + APPLIQUE (regression introduite par moi-meme, corrigee dans la foulee). Le diagnostic etage 2 rafraichi du 2026-09-03 a mesure `py -m pytest tests/` = 2 failed / 88 passed sur du code DEJA POUSSE : mon commit 023ad83 (v2.11) avait renomme _ANOMALIES_IMAGE -> _ANOMALIES_BUILD dans generate_deck.py sans toucher aux 5 references du fichier de test. Corrige (sed sur les 5 references) ; `py -m pytest tests/` = 90 passed. CAUSE RACINE, plus interessante que le bug : les 3 garde-fous du projet ignoraient tous ce fichier -- CLAUDE.md prescrivait `pytest tests/test_agent_*.py` (glob qui l'exclut), l'autre commande documentee est le script autonome test_generate_deck.py, et le hook de pre-commit accepte le jeton `test_generate_deck` comme preuve suffisante. CLAUDE.md corrige en consequence : la suite complete `py -m pytest tests/` remplace le glob, avec la raison ecrite en clair pour que le raccourci ne revienne pas.",
-   "source": "diagnostic etage 2 du 2026-09-03 (agent-supervisor), finding 1"
-  },
-  {
-   "cible": "generate_deck.py::content_slide",
-   "date": "2026-09-03",
-   "categories": [],
-   "decision": "ACCEPTE + APPLIQUE. Le diagnostic a mesure que `color=None` + repli `color or ACCENT` ne protegeait plus aucun appel : 34 vrais appels sur 34 passent deja `color=` explicitement (comptage a parentheses equilibrees, 37 occurrences moins 3 en commentaire). Sa seule fonction residuelle etait de laisser un futur oubli retomber en cyan silencieux -- exactement le defaut corrige le matin meme sur slide_executive_summary (v2.12), trouve a l'oeil 2 versions apres son introduction. `color` devient obligatoire : un oubli echoue desormais au build en TypeError au lieu de produire une slide fausse. Zero regression (34/34 conformes) ; deck regenere, 46 pages, geometrie OK, 90 tests pytest verts.",
-   "source": "diagnostic etage 2 du 2026-09-03 (agent-supervisor), finding 5"
-  },
-  {
-   "cible": "CLAUDE.md:couverture",
-   "date": "2026-09-03",
-   "categories": [],
-   "decision": "ACCEPTE + APPLIQUE, avec une correction du chiffre propose. Le diagnostic signalait que la commande de couverture documentee (`pytest tests/ --cov=docs/cadrage-ppt`) annonce 7 % sur generate_deck.py alors que le vrai harnais du deck (test_generate_deck.py, script autonome hors pytest) en couvre l'essentiel -- la suite pytest n'appelle jamais build(). VERIFIE MOI-MEME plutot que repris tel quel : `py -m coverage run docs/cadrage-ppt/test_generate_deck.py` + `report` donne 95 %, pas les 96 % du rapport (le fichier avait deja change entre-temps). CLAUDE.md corrige pour documenter les DEUX mesures et ce qu'elles couvrent chacune, et deliberement SANS figer le pourcentage : citer un nombre qui se perime est precisement le defaut repare le matin meme sur la couverture du deck (version v2.8 gelee 4 versions). La consigne ecrite est de rejouer la commande, pas de citer la ligne.",
-   "source": "diagnostic etage 2 du 2026-09-03 (agent-supervisor), finding 4"
-  },
-  {
-   "cible": ".claude/supervision/write_diagnostic.py",
-   "date": "2026-09-03",
-   "categories": [],
-   "decision": "REMIS A L'ARBITRAGE — correctif hub, pas local (regle durable CLAUDE.md : 'le dispositif vient du hub, corriger la-bas puis regenerer l'export, jamais localement, lecon P1'). Mesure du diagnostic : l'ecrivain local refuse les 6 categories pratique-* que son propre consommateur (scan_transcripts.py l.574-575) accepte deja depuis le 2026-07-28 -- correctif applique au consommateur, jamais au producteur. Consequence concrete et non theorique : le volet 'pratiques d'ingenierie' est INEXPRIMABLE depuis ce depot, les 4 findings de pratique du diagnostic de ce jour ont du etre replies sur verification-manquante/autre. Canon hub : 141 lignes contre 84 ici, diff de 225 lignes. RIEN MODIFIE LOCALEMENT. A faire au hub : regenerer write_diagnostic.py depuis le canon, puis balayer la flotte -- le correctif de juillet n'a peut-etre atteint aucun write_diagnostic.py des projets cibles.",
-   "source": "diagnostic etage 2 du 2026-09-03 (agent-supervisor), finding 2"
-  },
-  {
-   "cible": "docs/cadrage-ppt/generate_deck.py:taille",
-   "date": "2026-09-03",
-   "categories": [],
-   "decision": "REMIS A L'ARBITRAGE (mesure faite, geste non pose — il coute et il engage). Mesure du diagnostic : 2781 l (audit 2026-07-30) -> 3149 l (2026-09-02) -> 3911 l aujourd'hui, soit +40,6 % au total et une croissance d'un seul jour (+762 l) superieure au cumul des 33 jours precedents. Fichier unique, 66 def dont 37 slide_*. La pastille 'risque technique moyen' du hub repose donc sur un chiffre faux de plus de 1100 lignes. NUANCE CONSERVEE, elle compte : le filet fonctionnel tient (95 % de couverture, 46 pages rendues, geometrie verte, 90 tests) -- c'est un risque de LISIBILITE, pas de casse. Deux gestes proposes, aucun pose : (1) lancer audit-technique (skill jamais utilisee, audit facture qui LIT le code) pour re-coter le risque, verdict a ecrire cote hub ; (2) decouper par chapitre SEULEMENT si l'audit le confirme. Geste immediat independant et non bloquant, lui aussi non fait : les 2 vraies erreurs pyflakes (F841, F541) parmi les 14 ruff -- jamais par `ruff --fix` aveugle (lecon VSCode2).",
-   "source": "diagnostic etage 2 du 2026-09-03 (agent-supervisor), finding 3"
-  },
-  {
-   "cible": "write_diagnostic.py:sync-2026-09-04",
-   "date": "2026-09-04",
-   "categories": [],
-   "decision": "ACCEPTE + APPLIQUE : suite a l'arbitrage du 2026-09-03 (cible .claude/supervision/write_diagnostic.py, decision « correctif hub, pas local »), le fichier est resynchronise depuis le canon du hub (diff verifie propre au prealable : aucune divergence locale a preserver). CATEGORIES passe de 7 a 13 valeurs (ajout des 6 categories pratique-*), plus trois ameliorations de securite deja presentes cote hub et absentes ici : validation du champ cible (requis), avertissement sur les findings qui disparaissent silencieusement d'une reecriture, ecriture atomique (tmp + os.replace) pour eviter un diagnostic.json tronque. Verifie : py_compile propre, ecriture reelle testee via AGENT_SUPERVISION_DIAGNOSTIC sur un fichier scratch (jamais sur le diagnostic reel) avec une categorie pratique-test -> acceptee. diagnostic.json corrige dans la foulee : 4 findings deja ACCEPTE+APPLIQUE le 2026-09-03 (tests/test_generate_deck_garde.py, write_diagnostic.py lui-meme, CLAUDE.md couverture, generate_deck.py::content_slide) mais jamais retires du fichier apres leur arbitrage sont pruned ; ne reste que le finding docs/cadrage-ppt/generate_deck.py:taille, toujours REMIS A L'ARBITRAGE depuis le 2026-09-03."
-  },
-  {
-   "cible": "docs/cadrage-ppt/generate_deck.py:taille",
-   "date": "2026-09-07",
-   "categories": [],
-   "decision": "ACCEPTE : arbitrage utilisateur explicite (2026-09-07) — la croissance mesuree (+40,6% cumule, +762 lignes en 24h le 2026-09-03) est due a la refonte graphique en cours (check_slide_synthese v2.13->v3-refonte, integree au deck de prod en v2.30 le 2026-09-04, deck aujourd'hui a v2.32), pas une derive non maitrisee. Confirme la NUANCE deja posee par le diagnostic du 2026-09-03 : filet fonctionnel intact (couverture mesuree, geometrie verte, tests generateur au vert y compris apres ce run). Ne cloture PAS le decoupage modulaire (cf. arbitrage separe flotte:23-items-cadres) : la refonte assumee dit seulement que le rythme actuel n'est pas un signal d'alarme a lui seul.",
-   "source": "diagnostic etage 2 du 2026-09-03 (agent-supervisor), finding 3 -- arbitre sur /orchestre du 2026-09-07"
-  },
-  {
-   "cible": "flotte:23-items-cadres",
-   "date": "2026-09-07",
-   "categories": [
-    "pratique-dev"
-   ],
-   "decision": "REMIS A L'ARBITRAGE, confirme (pas d'action) : le decoupage modulaire de generate_deck.py (4738+ lignes, 66+ fonctions) reste differe jusqu'a stabilisation du WIP -- la proposition du diagnostic le disait deja (\"decouper maintenant = conflits garantis\"), et l'etat reel au 2026-09-07 le confirme : 17 fichiers non commites sur ce meme chantier de refonte graphique, dont generate_deck.py (+868/-354 lignes de diff). Decision explicite plutot que silence : revisiter une fois le chantier refonte graphique (check_slide_synthese v3, integration deck v2.30+) commite.",
-   "source": "diagnostic etage 2 du 2026-09-04 (agent-supervisor), finding pratique-dev \"jamais decoupe\" -- arbitre sur /orchestre du 2026-09-07"
-  },
-  {
-   "cible": "flotte:23-items-cadres",
-   "date": "2026-09-07",
-   "categories": [
-    "pratique-dev"
-   ],
-   "decision": "ACCEPTE + APPLIQUE : dette de lint traitee (5 blocs d'imports ruff I001 : generate_deck.py:373,375,396 ; pptx_deck.py:10 ; test_generate_deck.py:39), retriee a la main bloc par bloc (jamais `ruff --fix` en aveugle, regle du projet) en suivant exactement la sortie `ruff check --select I001` comme guide. Verifie : `ruff check --select I001` propre sur les 3 fichiers, py_compile propre, ET `python test_generate_deck.py` rejoue en entier apres coup (49/49 pages rendues, TOUS LES TESTS PASSENT) -- aucune regression fonctionnelle malgre le WIP actif sur ces memes fichiers.",
-   "source": "diagnostic etage 2 du 2026-09-04 (agent-supervisor), finding pratique-dev \"dette de lint\" -- applique sur /orchestre du 2026-09-07"
-  },
-  {
-   "cible": "docs/cadrage-ppt/generate_deck.py:slide_executive_summary",
-   "date": "2026-09-07",
-   "categories": [],
-   "decision": "ACCEPTE + APPLIQUE : le contrat de deck-design-review passe de 4 a 5 blocs (OFFRE + POURQUOI/QUOI/COMMENT/RESULTAT) sur arbitrage utilisateur explicite -- le bloc OFFRE fait sens depuis l'ajout du chapitre 01 Exec Summary (le contrat a 4 blocs datait d'avant cet ajout). SKILL.md mis a jour, aucune modification du code du deck (la slide reste telle quelle).",
-   "source": "audit design deck-design-review du 2026-09-07 -- arbitre sur /orchestre du meme jour"
-  },
-  {
-   "cible": "VSCode3:audit-2026-09-02",
-   "date": "2026-09-09",
-   "decision": "TRAITE PARTIELLEMENT (mandat utilisateur du 2026-09-09, << traite les projets par ordre de risque >> ; VSCode3 traite en dernier comme le moins risque). Cadrage R1 constat par constat : deux etaient DEJA FERMES (les zip() sans strict=True par 17993b0, le hook qui ne reconnaissait pas -am par 986e0b7 -- les deux derniers zip() le sont dans le working tree de la session qui travaille sur le deck, ils partiront a son commit). UN SEUL etait libre de collision et il a ete corrige (commit d541f09) : la mesure de lint etait devenue illisible -- ruff remontait 16 erreurs dont 10 venaient d'un unique instantane fige de 271 Ko dans archives/, y compris 5 points deja corriges en amont. archives/ sort du perimetre mesure (pyproject.toml) et un test verifie les DEUX sens : l'archive est ignoree ET le code vivant reste lu, pour qu'une exclusion trop large ne puisse pas eteindre le linter en silence. Mesure : 16 erreurs -> 7, toutes sur du code vivant ; suite 173 -> 175 passed. NON APPLIQUE, decrit pour la session proprietaire du chantier deck : ITEM_SIZE_DEFAUT assigne jamais lu, deux blocs d'imports non tries dans des scripts non encore versionnes, archives/ non gitignore en entier (un snapshot de 4700 lignes est committable), et quatre .pptx de 2,2 Mo non suivis qu'un git add -A embarquerait. RESTENT A ARBITRER par l'utilisateur : la taille de generate_deck.py (3793 lignes au 2026-09-02, 4740 au dernier commit, 5091 en working tree, soit +34 % en 7 jours -- c'est le finding ouvert du diagnostic local depuis le 2026-09-03, a trancher entre rythme attendu d'une refonte et derive a ralentir), la purge d'historique (.git a 106 Mo pour 28 commits sur un binaire de 22,6 Mo), et la remontee des helpers de pptx_deck.py (305 lignes ici contre 988 chez VSCode2 et 1124 chez VSCode4)."
-  },
-  {
-   "cible": "VSCode3:audit-2026-09-09",
-   "date": "2026-09-09",
-   "decision": "ACCEPTE + APPLIQUE (meme mandat). Deux commits pousses. c20d1da : les TROIS filets de controle des homologues portes dans docs/cadrage-ppt/pptx_deck.py (305 -> 648 lignes) — verifier_debordements_texte, verifier_chrome_gabarit, verifier_plancher_de_dessin — avec 16 tests sur presentations construites en memoire, plus le .gitignore ferme sur archives/ entier et les .pptx lourds, avec DEUX exclusions explicites (le deck livre et template-octo.pptx, tous deux suivis et sources). 95a0ff5 : canon (scan_transcripts.py, log_run.py) resynchronise et guard_destructive_git.py rattrape depuis l'export — retard pur verifie ligne a ligne avant ecriture, 3 erreurs ruff (2 UP031 + 1 I001) ramenees a zero, suites du dispositif rejouees comme l'exige la regle du canon (31 passed). DEUX ADAPTATIONS DE GABARIT que la copie brute aurait cassees, et c'est le fond du travail : sur 10 des 34 layouts de template-octo.pptx, le champ de numero de page est porte par un ENFANT d'un groupe couvrant presque toute la slide (layout 63 : 0,30/0,32 -> 9,80/5,34) — sans la descente dans les groupes non transformes, la zone « protegee » ferait 9,5 x 5,0 pouces et le filet crierait sur tout le contenu ; et le plancher exige en plus un recouvrement HORIZONTAL, parce que le bord droit de ce projet passe a gauche du badge, la ou VSCode4 dessine pleine largeur. PASSE ADVERSARIALE reelle : huit mutants du code sous test rejoues dans un bac a sable, huit attrapes ; frontieres fixees DANS LES DEUX SENS (le filet se tait a -0,10 pouce et crie des 0,05 ; un recouvrement de 1 pt = 0,0139 pouce passe sous la tolerance de 0,02, mesure et non suppose). Elle a trouve un vrai trou dans le travail lui-meme : avec le bord droit a 9,15 le filet de plancher etait vert QUEL QUE SOIT le plancher, meme a 99 — un test « == [] » ne distinguait pas « rien ne se recouvre » de « filet inerte ». Corrige par un test qui pose une derive reelle. SUITE : 175 -> 191 passed. RESTE : 5 constats au chantier deck en cours (zip strict sur HEAD, ITEM_SIZE_DEFAUT, imports non tries des gen_check_slide_synthese*), et le depot a 109 Mo — decision utilisateur, irreversible. Effet de bord a signaler a la session deck : ses 4 .pptx de check n'apparaissent plus dans git status, ils sont desormais ignores. REMONTE AU HUB comme finding VScode5:kit-pptx-deck-en-retard-sur-ses-propres-cibles : la skill pptx-deck que le hub PUBLIE ne porte qu'un filet sur trois, alors que VSCode4 et desormais VSCode3 en ont trois — le hub distribue la version la plus pauvre des trois."
-  },
-  {
-   "cible": "docs/cadrage-ppt/generate_deck.py",
-   "date": "2026-09-02",
-   "categories": [],
-   "decision": "TRAITE (mesure re-verifiee par execution, action corrective restante hors perimetre). Rejoue : wc -l docs/cadrage-ppt/generate_deck.py = 3149 lignes -- identique au chiffre cite par le finding, confirme non perime. git show 29bc2c4:docs/cadrage-ppt/generate_deck.py | wc -l = 2781 au commit-repere de l'audit du hub (l'audit citait 2767, ecart de 14 lignes deja signale par le finding lui-meme, non recreuse ici). Croissance reelle confirmee : +368 lignes soit +13,2% depuis l'audit du 2026-07-30, toujours un fichier unique sans decoupage par chapitre. NON FAIT ICI, hors perimetre : relancer audit-technique pour re-coter risque_technique -- le fichier verdict (.claude/audits/VSCode3.json) vit dans le hub (C:\\Users\\claude.camus\\Documents\\VScode5 - Supervision projets\\.claude\\audits\\), pas dans ce depot ; le mandat de cette session interdit d'ecrire ailleurs que dans VSCode3 et precise que le hub s'en charge. A relancer depuis le hub ou au prochain diagnostic etage 2. Aucun decoupage engage : le finding l'interdit tant que l'audit ne l'a pas confirme, et le fichier est en evolution active (v2.7 du 2026-09-01).",
-   "source": "traitement findings diagnostic 2026-09-01, mandat utilisateur 2026-09-02 (onglet Arbitrer)"
-  },
-  {
-   "cible": "docs/cadrage-ppt/generate_deck.py",
-   "date": "2026-09-10",
-   "categories": [
-    "autre"
-   ],
-   "source": "arbitrage utilisateur 2026-09-10 (traitement des sujets transmis par le hub VScode5)",
-   "decision": "ACCEPTE — reconduction a la CIBLE EXACTE de l'arbitrage deja pris le 2026-09-07. Le fond n'a pas bouge : la croissance de generate_deck.py est due a la refonte graphique assumee (check_slide_synthese v2.13 -> v3-refonte, integree en v2.30), pas a une derive. CE QUI A BOUGE, et c'est la seule raison de cette entree : l'arbitrage du 2026-09-07 avait ete enregistre a la cible « docs/cadrage-ppt/generate_deck.py:taille », alors que le finding du hub porte la cible nue « docs/cadrage-ppt/generate_deck.py ». La fermeture se faisant par correspondance EXACTE de nom, le finding ressortait a chaque scan comme s'il n'avait jamais ete tranche — l'utilisateur a donc redecide une chose deja decidee. PORTEE VOLONTAIREMENT RESTREINTE a la categorie « autre » : sans ce champ, cette entree masquerait tout futur finding sur generate_deck.py, y compris un defaut de qualite reel. NE CLOT PAS le decoupage modulaire (cf. flotte:23-items-cadres, toujours differe)."
-  },
-  {
-   "cible": "flotte:point-du-jour-absent-des-5-cibles",
-   "date": "2026-09-10",
-   "categories": [
-    "pratique-dev"
-   ],
-   "source": "arbitrage utilisateur 2026-09-10 (traitement des sujets transmis par le hub VScode5)",
-   "decision": "CLOS POUR CE DEPOT, OUVERT AILLEURS — option (A) du finding, deja executee ici avant sa transmission. Mesure du 2026-09-10 : .claude/hooks/point_du_jour.py est present et cable en SessionStart dans .claude/settings.json (commits f5d8697 puis abb8fad, ce dernier alignant le hook sur le lint) ; il s'execute reellement a l'ouverture de cette session et y affiche les 5 findings sans arbitrage. La degradation propre exigee par le finding est verifiee sur le cas reel : .claude/audits/ ne contient ici qu'un README, et ligne_decisions_audit() n'a produit aucune erreur. RESTE OUVERT, ET CE N'EST PAS A CE DEPOT DE LE FERMER : les 4 autres cibles (VSCode, VSCode1, VSCode2, VSCode4) et l'ajout au kit exporte — le finding porte la cible « flotte: », son geste appartient au hub."
-  },
-  {
-   "cible": "VSCode3:audit-risque_technique-niveau-moyen",
-   "date": "2026-09-10",
-   "categories": [
-    "pratique-dev"
-   ],
-   "source": "arbitrage utilisateur 2026-09-10 (traitement des sujets transmis par le hub VScode5)",
-   "decision": "DIFFERE, avec sa condition de reouverture ECRITE — decision explicite, pas un silence. Le constat ouvert est que pptx_deck.py (640 l.) reste en deca de ses homologues en helpers reutilisables (police de marque, add_chip/add_badge/add_encart) presents chez VSCode2 (988 l.) et VSCode4 (1154 l.). MOTIF DU REPORT, mesure : le chantier deck etait en vol au moment de la transmission (839 lignes de diff non commitees sur generate_deck.py, seul consommateur de pptx_deck.py dans ce depot). Porter des helpers sous un appelant en mouvement, c'est le motif exact qui a fait differer le decoupage modulaire — « decouper maintenant = conflits garantis ». CONDITION DE REOUVERTURE : le chantier est commite depuis (e7ce21f puis 4f61470) ; le sujet se reprend des la prochaine demande qui touche pptx_deck.py, en commencant par un inventaire de l'ecart REEL avec VSCode2 et VSCode4 plutot que par un ecart en nombre de lignes — 348 lignes de moins ne prouvent pas 348 lignes de manque. LA DIMENSION RESTE DONC AU NIVEAU MOYEN et le compteur du hub ne doit PAS bouger : le constat n'est pas corrige, il est date et motive. Ce qui a ete traite dans le meme run et que le hub peut remesurer : les 3 erreurs ruff sont a zero et les trois filets de controle sont branches."
-  },
-  {
-   "cible": "VSCode3:brancher-les-trois-filets-dans-generate-deck",
-   "date": "2026-09-10",
-   "categories": [
-    "pratique-dev"
-   ],
-   "source": "arbitrage utilisateur 2026-09-10 (traitement des sujets transmis par le hub VScode5)",
-   "decision": "ACCEPTE + APPLIQUE — commit 4f61470. Le blocage cite par le finding (« generate_deck.py etait modifie par une autre session, donc non touche, R2 ») a ete leve par constat et non par hypothese : depot verifie au repos avant d'ecrire (deux releves git status --porcelain identiques, aucun processus tiers citant le depot), puis chantier de la seance precedente commite a part (e7ce21f). MESURE REFAITE AVANT DE BRANCHER, sur le deck du 2026-09-10 et non sur celui du 2026-09-09 — 839 lignes de chantier avaient atterri entre les deux : verifier_geometrie 0, verifier_chrome_gabarit 0, verifier_plancher_de_dessin 0, verifier_debordements_texte 58. Les trois premiers sont branches, exactement comme le proposait le finding. verifier_debordements_texte reste DEHORS par decision tracee, non par oubli : ce resultat gouverne le nom du fichier ecrit (.INVALIDE.pptx si non vide), donc le brancher a 58 constats sur un deck correct bloquerait la livraison. Son seuil se regle contre un rendu PowerPoint reel — sujet distinct, non ouvert ici. AJOUT AU-DELA DE LA PROPOSITION, et c'est le fond du travail : le self-check est sorti de build() dans _controler(prs). Sans cette couture, « ce filet est-il appele ? » n'avait pas de reponse automatique — c'est precisement pourquoi trois filets ont pu vivre debranches avec 16 tests verts, qui les testaient ISOLEMENT. 5 tests de cablage ajoutes, passe adversariale reelle : mutant « filets redebranches » -> 2 tests tombent ; mutant « debordements branche par inadvertance » -> le test dedie tombe. VERIFIE : ruff a zero, suite 191 -> 196 passed, test_generate_deck.py au vert (49 pages rendues via LibreOffice), deck regenere s'ecrivant sous son NOM LIVRABLE."
-  },
-  {
-   "cible": "VSCode3:reliquats-de-lint-du-chantier-deck",
-   "date": "2026-09-10",
-   "categories": [
-    "pratique-dev"
-   ],
-   "source": "arbitrage utilisateur 2026-09-10 (traitement des sujets transmis par le hub VScode5)",
-   "decision": "ACCEPTE + APPLIQUE — commit e7ce21f. Le finding disait « ces points se ferment au commit de ce chantier, pas avant » : le chantier est commite, ils sont fermes. ITEM_SIZE_DEFAUT n'etait pas une variable morte a supprimer mais une constante DEBRANCHEE : l'echelle de recherche de taille recopiait ses deux bornes en litteral (7 et 6.25) a cote des deux constantes qui les portent. Les brancher retire le F841 ET une divergence latente — changer ITEM_SIZE_PLANCHER laissait l'echelle finir a 6.25. Supprimer la constante, geste que le finding autorisait, aurait laisse la duplication en place. Trois blocs d'imports non tries corriges par un ruff --fix RESTREINT a I001, diff relu ligne a ligne (lecon VSCode2 : jamais --fix en aveugle) — diff reel : uniquement des deplacements. Les quatre zip() portaient deja strict=True et sont partis avec le commit. Les trois gen_check_slide_synthese*.py sont VERSIONNES plutot que gitignores, la branche que le finding laissait ouverte : ils portent le systeme de design extrait des deux decks OCTO de reference, pas du jetable. VERIFIE : py -m ruff check . rend « All checks passed! » sur le depot entier. SIGNALE, NON COMMITE : CLAUDE.md.propose, pose par l'installation du kit du 2026-09-10, est le squelette vide a placeholders — l'appliquer detruirait le CLAUDE.md reel de ce depot."
-  },
-  {
-   "cible": "VSCode3:audit-risque_technique-niveau-moyen",
-   "date": "2026-09-11",
-   "categories": [
-    "pratique-dev"
-   ],
-   "source": "arbitrage utilisateur 2026-09-11 (traitement des findings affiches au tableau de bord)",
-   "decision": "DIFFERE A NOUVEAU, meme motif que le 2026-09-10 — LA DIMENSION RESTE AU NIVEAU MOYEN. La condition de reouverture posee le 2026-09-10 (« chantier deck committe ») etait techniquement remplie, mais au moment de traiter la reouverture, git status montre generate_deck.py, test_generate_deck.py et bmad-iap-cadrage-synthese.pptx de nouveau modifies et non commites (nouveau chantier en vol) — exactement le risque de collision (seul consommateur de pptx_deck.py en mouvement) qui avait motive le report initial. Porter les helpers manquants (police de marque, add_chip/add_badge/add_encart) maintenant reexposerait au meme risque. CONDITION DE REOUVERTURE INCHANGEE : reprendre des que CE nouveau chantier est commite, en commencant par l'inventaire reel de l'ecart avec VSCode2/VSCode4 (pas un ecart en lignes). CE QUI A ETE VERIFIE DANS LE MEME PASSAGE ET QUI EST BIEN CORRIGE : la partie « 3 erreurs ruff » citee par le finding est perimee — py -m ruff check . sur docs/cadrage-ppt/ rend 0 erreur. Une erreur ruff DIFFERENTE (I001, import non trie) a ete trouvee ailleurs — .claude/hooks/warn_verif_before_commit.py, introduite par le commit f50f111 posterieur a l'audit — et corrigee dans ce meme run (diff d'une ligne, ordre alphabetique des deux noms importes, import reverifie apres coup) : py -m ruff check . rend a nouveau « All checks passed! » sur le depot entier."
-  },
-  {
-   "cible": "flotte:point-du-jour-importe-kit-installe-hub-only",
-   "date": "2026-09-11",
-   "categories": [
-    "pratique-dev"
-   ],
-   "source": "arbitrage utilisateur 2026-09-11 (« applique », traitement des findings affiches au tableau de bord)",
-   "decision": "APPLIQUE — CLOS POUR CE DEPOT, OUVERT AU HUB. Finding confirme exact : py .claude/hooks/point_du_jour.py rend toujours 'kit installe : mesure impossible (No module named kit_installe)', module qui n'existe que chez le hub (VScode5). Meme schema que flotte:point-du-jour-absent-des-5-cibles : la correction (piste (a) garder le bloc hub-only hors propagation, ou (b) le rendre silencieux si .claude/dispositif/ est absent) n'a pas sa place ici (lecon P1 — le canon se corrige au hub, jamais localement, les copies locales divergent). Deja signale a la session hub le 2026-09-10 (vscode3-7e -> vscode5-supervision-projets-84) ; aucun geste local supplementaire. RESTE OUVERT, ET CE N'EST PAS A CE DEPOT DE LE FERMER : le correctif au hub (kit_installe.py) et sa repropagation aux 5 cibles."
-  },
-  {
-   "cible": "flotte:point-du-jour-importe-kit-installe-hub-only",
-   "date": "2026-09-11",
-   "categories": [
-    "pratique-dev"
-   ],
-   "source": "arbitrage utilisateur 2026-09-11 (« signale sur le canal fichier », faute de session hub live)",
-   "decision": "COMPLEMENT, PAS UNE NOUVELLE DECISION. ListAgents interroge le 2026-09-11 : aucune session vscode5 (hub) parmi les pairs actifs — seules vscode4-51 et vscode2-a8 sont interactives a ce moment. Le SendMessage direct du 2026-09-10 (vscode3-7e -> vscode5-supervision-projets-84) n'est donc pas reproductible aujourd'hui. Choix utilisateur explicite : pas de relance live, le canal fichier (cette entree + le finding source dans diagnostic.json) suffit — la prochaine session hub qui scanne ce depot le voit sans geste supplementaire de ce depot."
-  },
-  {
-   "cible": "VSCode3:brancher-les-trois-filets-dans-generate-deck",
-   "date": "2026-09-11",
-   "categories": [
-    "pratique-dev"
-   ],
-   "decision": "CLOS, deja resolu avant ce tour : les trois filets (verifier_geometrie, verifier_chrome_gabarit, verifier_plancher_de_dessin) sont branches dans generate_deck.py::_controler depuis les commits 4f61470 et 20039af (2026-09-10, tous deux anterieurs a la generation de ce diagnostic a 18:48 le meme jour). Verifie par lecture directe du code (generate_deck.py:5510-5514) le 2026-09-11 : les trois filets sont bien appeles. Le diagnostic n'avait pas rattrape le fix. verifier_debordements_texte reste volontairement hors du controle par defaut (seuil non regle contre un rendu reel), decision deja documentee dans le code.",
-   "source": "traitement /orchestre du 2026-09-11 (findings dashboard : Audit - Robustesse)"
-  },
-  {
-   "cible": "VSCode3:audit-risque_technique-niveau-moyen",
-   "date": "2026-09-11",
-   "categories": [
-    "pratique-dev"
-   ],
-   "decision": "ACCEPTE + APPLIQUE. Le constat ouvert (pptx_deck.py en-deca en helpers reutilisables face a VSCode2/VSCode4) est resolu par le commit a5c469f : add_chip, add_badge et appliquer_police extraits de generate_deck.py vers pptx_deck.py, testes (tests/test_pptx_deck_helpers.py, 8 tests), le module reutilisable restant sans dependance au domaine metier (les constantes de marque POLICE_DECK/GLYPHES_HORS_POLICE_DECK restent locales au projet). Le volet ruff (3 erreurs sur chantier non commite, mentionne dans la preuve du finding) etait deja resolu avant ce tour (chantier committe, ruff propre, verifie). Verifie : py -m pytest tests/ (206 passed), py -m ruff check . (propre), deck regenere + test_generate_deck.py (54/54 pages), rendu reel inspecte a l'oeil.",
-   "source": "traitement /orchestre du 2026-09-11 (findings dashboard : Audit - Risque tech.), commit a5c469f"
-  }
- ]
+  "arbitrages": [
+    {
+      "cible": "tri-BMAD-retraits-D",
+      "decision": "Constat agent-mort 2026-07-23 CLOS par décision utilisateur (« oublie les 4 retraits bmad ») : les 4 skills restantes arbitrées retrait (bmad-dev-auto, bmad-quick-dev, bmad-qa-generate-e2e-tests, bmad-prfaq) RESTENT sur disque — le retrait demeure documenté (pas de réactivation), la suppression physique est abandonnée comme geste. L'écart décision/terrain est assumé et ne doit plus remonter en constat. Rappel : bmad-market-research et bmad-domain-research requalifiées sur-demande le même jour (entrées dédiées).",
+      "categories": [
+        "agent-mort"
+      ],
+      "date": "2026-07-23",
+      "source": "arbitrage utilisateur « oublie les 4 retraits bmad » 2026-07-23 (clôture du constat 3 du diagnostic agent-supervisor 2026-07-23)"
+    },
+    {
+      "cible": "ppt-designer",
+      "decision": "Constat verification-manquante 2026-07-23 CLOS : fix shell 82db57a confirmé en conditions réelles le 2026-07-23 (spawn préflight-only : PowerShell ET Bash opérationnels, Python 3.14.5, python-pptx 1.0.2, verdict SHELL OK, zéro édition). La voie unique deck arbitrée le 2026-07-21 est donc effective : l'étape generation d'export-ppt-verifie s'instancie via le sous-agent ppt-designer. Le précédent inline des runs du 2026-07-22 (motivé par le shell non vérifié) ne fait plus jurisprudence pour la génération structurelle ; une passe de contenu ciblée reste possible inline avec rendu réel, en le notant au run.",
+      "categories": [
+        "verification-manquante"
+      ],
+      "date": "2026-07-23",
+      "source": "arbitrage utilisateur « traite 1 » post-diagnostic agent-supervisor 2026-07-23 ; préflight sous-agent réel exécuté en séance"
+    },
+    {
+      "cible": "agent-orchestrator",
+      "decision": "Constat interaction 2026-07-23 CLOS : règle de journalisation codifiée au catalogue (section routage par défaut) — tout travail inline multi-étapes sur un livrable suivi (deck) journalise un run minimal via log_run.py (étapes inline), même sans sous-agent. Pas de rétro-journalisation des sessions du 2026-07-22 matin.",
+      "categories": [
+        "interaction"
+      ],
+      "date": "2026-07-23",
+      "source": "arbitrage utilisateur « traite 2 » post-diagnostic agent-supervisor 2026-07-23"
+    },
+    {
+      "cible": "ppt-designer",
+      "decision": "Conservé et ACTIVÉ comme voie unique de conception/génération du deck. L'étape 'generation' de export-ppt-verifie l'instancie désormais comme sous-agent (modèle hérité du thread principal, pas de bascule — jugement visuel). bmad-agent-ux-designer n'est PAS la voie deck : préférer une seule voie par tâche (CLAUDE.md).",
+      "categories": [
+        "agent-mort",
+        "inefficacite",
+        "ko-repete"
+      ],
+      "date": "2026-07-21",
+      "source": "arbitrage utilisateur post-diagnostic agent-supervisor 2026-07-21 (constat agent-mort : jamais routé, tout le sous-agentage passait par general-purpose)",
+      "note": "categories = arbitrage de ROUTAGE : ne ferme que les constats routage/vie-de-l'agent ; un constat verification-manquante/interaction sur ppt-designer remonte quand même (fix cible-suppression 2026-07-21)."
+    },
+    {
+      "cible": "pptx-framed-image",
+      "decision": "used-as-library — conservée. Portée par le pipeline deck comme code vendored (cadres teardrop du template OCTO via generate_deck.py), pas invoquée via l'outil Skill : elle restera dans jamais_utilises par construction. Ne PAS la retirer au tri des skills mortes.",
+      "date": "2026-07-21",
+      "source": "arbitrage utilisateur post-diagnostic agent-supervisor 2026-07-21 (constat agent-mort : faux positif de skill morte)"
+    },
+    {
+      "cible": "deck-design-library",
+      "decision": "used-as-reference — greffée depuis VSCode2 le 2026-07-23 (SKILL.md adapté + catalogue-restitution.md verbatim, 22 patterns de decks de soutenance OCTO). Consultée comme documentation de référence par la session et le sous-agent ppt-designer (lecture de fichiers, pas invocation Skill) : elle peut rester dans jamais_utilises par construction, même en usage actif. Ne PAS la retirer au tri des skills mortes. Copie de référence dans VSCode2 — resynchroniser manuellement si le catalogue y évolue (même règle que docs/vscode1-export/).",
+      "categories": [
+        "agent-mort"
+      ],
+      "date": "2026-07-23",
+      "source": "greffe + première utilisation le jour même (passe design deck guidée par la bibliothèque, demande utilisateur « réintègre la bibliothèque de design de VSCode2 pour maj du ppt »)"
+    },
+    {
+      "cible": "slide-text-polish",
+      "decision": "used-as-library — conservée. Lint de copie (slide_lint) intégré au pipeline deck, invoquée comme code et non via l'outil Skill : elle restera dans jamais_utilises par construction. Ne PAS la retirer au tri des skills mortes.",
+      "date": "2026-07-21",
+      "source": "arbitrage utilisateur post-diagnostic agent-supervisor 2026-07-21 (constat agent-mort : faux positif de skill morte)"
+    },
+    {
+      "cible": "famille:BMAD",
+      "decision": "Tri des 46 skills BMAD EXÉCUTÉ (choix A). Classement en 5 catégories via inventaire de câblage (Explore) + stratégie (Plan) : A câblées=13 (5 délégations de revue-increment : bmad-code-review/retrospective/correct-course/checkpoint-preview/help ; 8 étapes du playbook généré cycle-produit-bmad : product-brief/prd/architecture/create-epics-and-stories/check-implementation-readiness/sprint-planning/create-story/dev-story) — reliées à l'orchestrateur comme voie de première intention (catalogue) ; B sous-skill/angle mort=5 (review-adversarial-general, review-edge-case-hunter, advanced-elicitation, party-mode, spec — invoquées en langage naturel par une skill câblée, ne pas qualifier agent-mort) ; C sur-demande=16 (6 personas bmad-agent-* + réserve produit/édition, via bmad-help) ; D candidat-retrait=8 (dev-auto, quick-dev, qa-generate-e2e-tests, market-research, domain-research, prfaq, index-docs, shard-doc — arbitrage retrait individuel à trancher, NON décidé ici) ; E deprecated-v7=4 (create-architecture, create-prd, edit-prd, validate-prd — purge par l'updater BMAD, jamais à la main). Effet : ferme le TODO d'élagage déterministe (jeton famille:BMAD, seul reconnu par build_todos) ; les 46 restent mesurées dans jamais_utilises ; l'étage-2 garde la main par cible exacte. Ne PAS rm _bmad/ ni éditer cycle-produit-bmad.md à la main (généré).",
+      "date": "2026-07-21",
+      "source": "arbitrage utilisateur « choix A et relié à agent-orchestrator » (stratégie Plan/opus sur inventaire Explore/haiku, 2026-07-21)"
+    },
+    {
+      "cible": "bmad-dev-auto",
+      "decision": "retrait (catégorie D) — redondant avec bmad-dev-story (câblée, cat. A) + les builtins code-review/simplify ; boucle de dev non attendue sur ce dépôt (livrable = deck + outillage superviseur). Arbitrage documenté : suppression physique = geste humain séparé, aucun rm unilatéral, aucune édition de _bmad/.",
+      "date": "2026-07-21",
+      "source": "arbitrage utilisateur catégorie D 2026-07-21 (choix « retrait 6, dormantes 2 »)"
+    },
+    {
+      "cible": "bmad-quick-dev",
+      "decision": "retrait (catégorie D) — redondant avec bmad-dev-story (câblée) + builtins ; pas de flux d'implémentation code récurrent ici. Arbitrage documenté, pas de suppression physique unilatérale.",
+      "date": "2026-07-21",
+      "source": "arbitrage utilisateur catégorie D 2026-07-21 (choix « retrait 6, dormantes 2 »)"
+    },
+    {
+      "cible": "bmad-qa-generate-e2e-tests",
+      "decision": "retrait (catégorie D) — pas d'application ni de harnais e2e sur ce dépôt (cf. catalogue : pas d'app web/dev server). Sans objet. Arbitrage documenté, pas de suppression physique unilatérale.",
+      "date": "2026-07-21",
+      "source": "arbitrage utilisateur catégorie D 2026-07-21 (choix « retrait 6, dormantes 2 »)"
+    },
+    {
+      "cible": "bmad-market-research",
+      "decision": "REQUALIFIÉE sur-demande (2026-07-23, annule le retrait du 21/07) — le retrait était motivé par « veille marché hors mission » ; la demande utilisateur du 23/07 (revue produit + research + market-research du projet global, cf. docs/reflexions/revue-produit-marche.md) est le contre-exemple exact. Substance exécutée via sous-agent general-purpose + web (les workflows BMAD interactifs restent une voie possible sur demande). Rejoint la catégorie C (sur-demande, via bmad-help).",
+      "date": "2026-07-23",
+      "source": "arbitrage utilisateur « lance les 3 points » 2026-07-23 (proposition de requalification post-revue produit/marché) ; retrait initial : catégorie D 2026-07-21"
+    },
+    {
+      "cible": "bmad-domain-research",
+      "decision": "REQUALIFIÉE sur-demande (2026-07-23, annule le retrait du 21/07) — même motif que bmad-market-research : la revue research domaine/technique du 23/07 (état de l'art vs paris IAP, cf. docs/reflexions/revue-produit-marche.md) est exactement une recherche domaine/industrie sur la mission de ce dépôt. Rejoint la catégorie C (sur-demande, via bmad-help).",
+      "date": "2026-07-23",
+      "source": "arbitrage utilisateur « lance les 3 points » 2026-07-23 (proposition de requalification post-revue produit/marché) ; retrait initial : catégorie D 2026-07-21"
+    },
+    {
+      "cible": "bmad-prfaq",
+      "decision": "retrait (catégorie D) — challenge PRFAQ/Working-Backwards produit, hors mission cadrage/deck. Arbitrage documenté, pas de suppression physique unilatérale.",
+      "date": "2026-07-21",
+      "source": "arbitrage utilisateur catégorie D 2026-07-21 (choix « retrait 6, dormantes 2 »)"
+    },
+    {
+      "cible": "bmad-index-docs",
+      "decision": "conserver dormante (catégorie D) — utilitaire d'indexation de docs, inoffensif et bon marché ; gardé malgré 0 usage (bruit faible, option conservée). Pas retiré.",
+      "date": "2026-07-21",
+      "source": "arbitrage utilisateur catégorie D 2026-07-21 (choix « retrait 6, dormantes 2 »)"
+    },
+    {
+      "cible": "bmad-shard-doc",
+      "decision": "conserver dormante (catégorie D) — utilitaire de découpe de gros markdown, inoffensif ; gardé malgré 0 usage (bruit faible). Pas retiré.",
+      "date": "2026-07-21",
+      "source": "arbitrage utilisateur catégorie D 2026-07-21 (choix « retrait 6, dormantes 2 »)"
+    },
+    {
+      "cible": "export-ppt-verifie",
+      "decision": "Proposition superviseur (diagnostic 2026-07-21, constat prio 3) ACCEPTÉE et APPLIQUÉE : la vérification par rendu réel nomme désormais le défaut « panneau flottant/étiré » comme contrôle explicite par NOUVEAU type de slide (contenu centré par slot laissant un vide sous l'en-tête, ou panneau sur-étiré). Amendés : brief .claude/agents/ppt-designer.md (étape 4 real render) + contrat de l'étape verification-rendu du playbook export-ppt-verifie. Constat clos.",
+      "date": "2026-07-21",
+      "source": "arbitrage utilisateur « lance les 2 actions et commit » 2026-07-21 (application des propositions du diagnostic agent-supervisor)"
+    },
+    {
+      "cible": "docs/wiki.html",
+      "decision": "Proposition superviseur (diagnostic 2026-07-21, constat prio 1) ACCEPTÉE et APPLIQUÉE : marqueurs TODO-AGENTS-HTML posés dans docs/wiki.html (+ entrée TOC #agents-supervision), option « compléter le câblage » retenue plutôt que retirer le chemin HTML du scan. Le scan peuple désormais le dashboard HTML (plus d'avertissement « sans marqueurs »). Constat clos.",
+      "date": "2026-07-21",
+      "source": "arbitrage utilisateur « lance les 2 actions et commit » 2026-07-21 (application des propositions du diagnostic agent-supervisor)"
+    },
+    {
+      "cible": "docs/vscode1-export/ppt-toolkit.md",
+      "date": "2026-09-02",
+      "decision": "ACCEPTÉ + APPLIQUÉ, LES DEUX GESTES (arbitrage utilisateur du 2026-09-02). Le finding disait : un correctif de sécurité ne vit que dans la copie locale, et la resynchronisation documentée le supprimerait — 1 copie sur 7 portait la garde, et c'était celle-ci. GESTE 1, le code : la garde a été remontée au hub puis propagée, et elle est arrivée PLUS LARGE qu'elle n'était ici. Au filtre de schéma et au plafond de 25 Mo s'ajoutent la résolution de l'hôte (refus des adresses de bouclage, privées, link-local, réservées, multicast, IPv4 mappée en IPv6 comprise, fail-closed sur un hôte non résolvable) et la re-validation de CHAQUE saut de redirection 3xx — `urlopen` les suivait seul, donc une URL publique répondant `302 Location: http://127.0.0.1/` traversait la garde intacte. Mesuré : les 6 dépôts plus le hub portent le même fichier, mêmes marqueurs, mtime 2026-09-02 09:41-09:44. GESTE 2, la trace : l'annotation de `docs/vscode1-export/ppt-toolkit.md` avait écrit elle-même sa condition de levée — « lever cette exception quand la garde aura été remontée au hub et redescendue dans VSCode1 ». La condition est remplie et vérifiée (`diff` VSCode1/VSCode3 ne rend rien, 204 lignes de part et d'autre), l'exception est donc levée et le motif de sa levée consigné. LA RÈGLE GÉNÉRALE NE SE LÈVE PAS : `diff` avant toute resynchro depuis VSCode1 reste la consigne — c'est cette exception-ci qui s'éteint, pas la prudence qui l'avait fait naître."
+    },
+    {
+      "cible": "CLAUDE.md",
+      "date": "2026-09-03",
+      "categories": [],
+      "decision": "ARBITRE ET APPLIQUE (option C retenue par l'utilisateur le 2026-09-03, la moins couteuse des 3 qui repare reellement quelque chose). CLAUDE.md : ajout d'une section 'Optimisation tokens' courte (4 puces, alignee sur docs/vscode1-export/optimisation-tokens.md) juste avant 'Regles de travail' ; chiffre de slides corrige 42 -> 46 (perime depuis v2.8-v2.11). README.md : le lien mort vers CLAUDE.md pour les gotchas deck (cadre teardrop carre, glyphe sans variante grasse) redirige desormais vers .claude/skills/deck-design-review/SKILL.md et les commentaires de generate_deck.py -- ou ce savoir vit reellement, au lieu de dupliquer dans CLAUDE.md (risque de divergence identifie a l'etape de mesure). Options A (restauration verbatim) et B (ne rien restaurer) explicitement ecartees par ce choix.",
+      "source": "traitement findings diagnostic 2026-09-01, arbitrage utilisateur 2026-09-03 (AskUserQuestion)"
+    },
+    {
+      "cible": "deck-design-review",
+      "date": "2026-09-03",
+      "categories": [],
+      "decision": "ARBITRE ET APPLIQUE (ratifier le cablage existant, retenu par l'utilisateur le 2026-09-03). Le cablage de l'etape design-review sur deck-design-review (commit 418286c, 2026-09-01) est CONFIRME, pas defait. Documentation corrigee pour arreter de decrire l'ancien etat : catalogue.md distingue maintenant deck-design-review (l'etape cablee et obligatoire, cible sur CE deck) de restitution-deck-design (reference de design system generale, jamais l'etape du playbook) ; export-ppt-verifie.md ligne 14 ne cite plus restitution-deck-design comme conditionnelle a la place de deck-design-review. CONSTAT NON RESOLU, remonte au hub (2026-09-03) : deck-design-review reste a 0 execution mesuree malgre son statut OBLIGATOIRE depuis 2 jours et malgre un chantier de revue graphique reel mene dans cette session (verifie manuellement, pas via la skill) -- le cablage seul ne suffit pas a faire partir la skill, meme methode que le constat 'le brief nomme la skill' deja pose pour BMAD. Coordination VSCode4 (meme sujet en parallele) : NON VERIFIEE depuis ce projet -- signale a l'utilisateur, pas de blocage pose ici puisque l'utilisateur a explicitement choisi de ratifier malgre cette reserve.",
+      "source": "traitement findings diagnostic 2026-09-01, arbitrage utilisateur 2026-09-03 (AskUserQuestion)"
+    },
+    {
+      "cible": "arbitrages.json",
+      "date": "2026-09-02",
+      "categories": [],
+      "decision": "REMIS A L'ARBITRAGE (cause investiguee et distinguee du defaut du hub, correctif propose hors de mon perimetre d'ecriture -- touche log_run.py, explicitement interdit dans ce mandat). Rejoue : les 3 arbitrages ppt-designer / agent-orchestrator / tri-BMAD-retraits-D existent bien dans arbitrages.json, dates du 2026-07-23, categories couvrant exactement les constats vises (verification-manquante, interaction, agent-mort) -- confirme par lecture directe du fichier. diagnostic.json ET state.json sont gitignores (git check-ignore -v confirme les deux chemins) : impossible de relire la version exacte de diagnostic.json au 2026-09-01 avant sa reecriture a 15:11:51, write_diagnostic.py reecrivant le fichier EN ENTIER a chaque diagnostic (docstring lignes 22-23). PREUVE INDIRECTE PAR GIT (docs/wiki/technical/agents-supervision.md, fichier versionne celui-la, recreusee) : au commit 0724f91 (2026-07-23 20:25, juste apres l'arbitrage), le tableau de bord affichait deja correctement \"(aucun constat -- rien a signaler)\" -- le masquage a fonctionne le jour meme de l'arbitrage. Le fichier wiki n'a plus ete regenere/commite pendant 39 jours (aucun commit entre 0724f91 et 68001a5 du 2026-09-01 10:16 ne le touche) ; a 68001a5, le diagnostic regenere affiche les 3 constats correctement BARRES avec la mention \"3 constat(s) de ce diagnostic ecarte(s) par un arbitrage\" (mecanisme finding_arbitre/diagnostic_masques de scan_transcripts.py, date du 2026-07-28 -- deja plus abouti que le defaut du scan de flotte du hub corrige ce matin, verifie en lisant scan_transcripts.py lignes 607-649 : cible+categorie+date+re_challenge, alors que le defaut hub ignorait juste date/re_challenge). CONCLUSION mesuree : le mecanisme d'affichage cote wiki de CE depot fonctionne et n'a PAS presente ces 3 constats comme ouverts pendant 40 jours -- il est reste correctement fige sur \"aucun constat\" faute de regeneration, ce n'est pas la meme cause que le defaut du hub. La cause reelle, plus etroite que ce que dit le finding : le fichier BRUT diagnostic.json, lui, reste semantiquement faux entre deux diagnostics tant que write_diagnostic.py reecrit tout sans reconcilier avec arbitrages.json -- tout consommateur qui lit diagnostic.json SANS passer par finding_arbitre (candidat plausible : le scan de flotte du hub, qui lit les diagnostic.json de chaque projet) verrait ces 3 constats comme ouverts pendant l'intervalle. Etat aujourd'hui : NON REPRODUCTIBLE -- le diagnostic.json courant (genere 2026-09-01T15:11:51) ne contient plus aucun des 3 constats. RESTE OUVERT : la proposition du diagnostic (coupler l'ecriture de l'arbitrage a log_run.py --solde, purger diagnostic.json au moment de l'arbitrage plutot qu'au diagnostic suivant) touche log_run.py -- explicitement sur la liste des fichiers interdits de cette mission. REMONTE pour arbitrage et implementation par qui a la main sur log_run.py.",
+      "source": "traitement findings diagnostic 2026-09-01, mandat utilisateur 2026-09-02 (onglet Arbitrer)"
+    },
+    {
+      "cible": "hub:plan-amelioration-2026-09-03",
+      "date": "2026-09-03",
+      "categories": [],
+      "decision": "REMONTE AU HUB (demande utilisateur explicite : 'remonter au hub qu'un plan d'amelioration est necessaire'). Pas une decision appliquee ici -- un signalement, a traiter et planifier LA-BAS (CLAUDE.md : 'corriger la-bas puis regenerer l'export, jamais localement'). Trois faits mesures dans cette seule session (2026-09-02/03) qui, ensemble, dessinent un pattern plutot que des incidents isoles :\n1) GAP COMMIT/PUSH SILENCIEUX : 2 commits deck (v2.10, v2.11) sont restes locaux 1 jour+ pendant que l'utilisateur validait sur un artefact non a jour (GitHub/autre vue synchronisee sur le push), provoquant une confusion 'toujours pas realise' sur des defauts deja corriges. Le playbook export-ppt-verifie ne dit nulle part QUAND pousser un livrable utilisateur -- 'commit et push' redemande a chaque fois plutot que trace comme une regle du playbook.\n2) FAUX POSITIFS DU RENDU DE VERIFICATION : le pipeline de verif de ce projet s'appuie sur LibreOffice (playbook + test_generate_deck.py) qui a produit un defaut visuel N'EXISTANT PAS dans le fichier reel (artefact de composition d'un groupe pivote a 180 du template, confirme absent d'un rendu PowerPoint COM reel). L'existence de ce risque n'est documentee nulle part dans le playbook -- un futur run pourrait 'corriger' un defaut qui n'existe pas en modifiant le template partage.\n3) SKILL OBLIGATOIRE JAMAIS EXECUTEE MEME QUAND SON TRAVAIL EST FAIT : deck-design-review est l'etape design-review OBLIGATOIRE du playbook depuis le 2026-09-01, et cette session a fait EXACTEMENT ce travail (revue slide-par-slide, defauts trouves et corriges) SANS jamais invoquer la skill elle-meme -- toujours 0 execution mesuree. Meme cause deja identifiee pour les skills BMAD ('le brief nomme la skill, sinon d'office n'est une consigne pour personne') mais pas encore traitee pour les etapes 'reel' (rendu/revue) des playbooks projet.\nCe que 'traiter' ces 3 points pourrait vouloir dire (a instruire au hub, pas tranche ici) : regle explicite de push en fin de playbook livrable-utilisateur ; case 'verification croisee reel (COM/autre moteur)' avant de toucher un template partage sur la seule foi d'un rendu ; contrat de sortie qui EXIGE le nom de la skill invoquee meme pour les etapes de revue/verification des playbooks (pas seulement le routage BMAD).",
+      "source": "demande utilisateur explicite 2026-09-03 : 'remonter au hub qu'un plan d'amelioration est necessaire'"
+    },
+    {
+      "cible": "tests/test_generate_deck_garde.py",
+      "date": "2026-09-03",
+      "categories": [],
+      "decision": "ACCEPTE + APPLIQUE (regression introduite par moi-meme, corrigee dans la foulee). Le diagnostic etage 2 rafraichi du 2026-09-03 a mesure `py -m pytest tests/` = 2 failed / 88 passed sur du code DEJA POUSSE : mon commit 023ad83 (v2.11) avait renomme _ANOMALIES_IMAGE -> _ANOMALIES_BUILD dans generate_deck.py sans toucher aux 5 references du fichier de test. Corrige (sed sur les 5 references) ; `py -m pytest tests/` = 90 passed. CAUSE RACINE, plus interessante que le bug : les 3 garde-fous du projet ignoraient tous ce fichier -- CLAUDE.md prescrivait `pytest tests/test_agent_*.py` (glob qui l'exclut), l'autre commande documentee est le script autonome test_generate_deck.py, et le hook de pre-commit accepte le jeton `test_generate_deck` comme preuve suffisante. CLAUDE.md corrige en consequence : la suite complete `py -m pytest tests/` remplace le glob, avec la raison ecrite en clair pour que le raccourci ne revienne pas.",
+      "source": "diagnostic etage 2 du 2026-09-03 (agent-supervisor), finding 1"
+    },
+    {
+      "cible": "generate_deck.py::content_slide",
+      "date": "2026-09-03",
+      "categories": [],
+      "decision": "ACCEPTE + APPLIQUE. Le diagnostic a mesure que `color=None` + repli `color or ACCENT` ne protegeait plus aucun appel : 34 vrais appels sur 34 passent deja `color=` explicitement (comptage a parentheses equilibrees, 37 occurrences moins 3 en commentaire). Sa seule fonction residuelle etait de laisser un futur oubli retomber en cyan silencieux -- exactement le defaut corrige le matin meme sur slide_executive_summary (v2.12), trouve a l'oeil 2 versions apres son introduction. `color` devient obligatoire : un oubli echoue desormais au build en TypeError au lieu de produire une slide fausse. Zero regression (34/34 conformes) ; deck regenere, 46 pages, geometrie OK, 90 tests pytest verts.",
+      "source": "diagnostic etage 2 du 2026-09-03 (agent-supervisor), finding 5"
+    },
+    {
+      "cible": "CLAUDE.md:couverture",
+      "date": "2026-09-03",
+      "categories": [],
+      "decision": "ACCEPTE + APPLIQUE, avec une correction du chiffre propose. Le diagnostic signalait que la commande de couverture documentee (`pytest tests/ --cov=docs/cadrage-ppt`) annonce 7 % sur generate_deck.py alors que le vrai harnais du deck (test_generate_deck.py, script autonome hors pytest) en couvre l'essentiel -- la suite pytest n'appelle jamais build(). VERIFIE MOI-MEME plutot que repris tel quel : `py -m coverage run docs/cadrage-ppt/test_generate_deck.py` + `report` donne 95 %, pas les 96 % du rapport (le fichier avait deja change entre-temps). CLAUDE.md corrige pour documenter les DEUX mesures et ce qu'elles couvrent chacune, et deliberement SANS figer le pourcentage : citer un nombre qui se perime est precisement le defaut repare le matin meme sur la couverture du deck (version v2.8 gelee 4 versions). La consigne ecrite est de rejouer la commande, pas de citer la ligne.",
+      "source": "diagnostic etage 2 du 2026-09-03 (agent-supervisor), finding 4"
+    },
+    {
+      "cible": ".claude/supervision/write_diagnostic.py",
+      "date": "2026-09-03",
+      "categories": [],
+      "decision": "REMIS A L'ARBITRAGE — correctif hub, pas local (regle durable CLAUDE.md : 'le dispositif vient du hub, corriger la-bas puis regenerer l'export, jamais localement, lecon P1'). Mesure du diagnostic : l'ecrivain local refuse les 6 categories pratique-* que son propre consommateur (scan_transcripts.py l.574-575) accepte deja depuis le 2026-07-28 -- correctif applique au consommateur, jamais au producteur. Consequence concrete et non theorique : le volet 'pratiques d'ingenierie' est INEXPRIMABLE depuis ce depot, les 4 findings de pratique du diagnostic de ce jour ont du etre replies sur verification-manquante/autre. Canon hub : 141 lignes contre 84 ici, diff de 225 lignes. RIEN MODIFIE LOCALEMENT. A faire au hub : regenerer write_diagnostic.py depuis le canon, puis balayer la flotte -- le correctif de juillet n'a peut-etre atteint aucun write_diagnostic.py des projets cibles.",
+      "source": "diagnostic etage 2 du 2026-09-03 (agent-supervisor), finding 2"
+    },
+    {
+      "cible": "docs/cadrage-ppt/generate_deck.py:taille",
+      "date": "2026-09-03",
+      "categories": [],
+      "decision": "REMIS A L'ARBITRAGE (mesure faite, geste non pose — il coute et il engage). Mesure du diagnostic : 2781 l (audit 2026-07-30) -> 3149 l (2026-09-02) -> 3911 l aujourd'hui, soit +40,6 % au total et une croissance d'un seul jour (+762 l) superieure au cumul des 33 jours precedents. Fichier unique, 66 def dont 37 slide_*. La pastille 'risque technique moyen' du hub repose donc sur un chiffre faux de plus de 1100 lignes. NUANCE CONSERVEE, elle compte : le filet fonctionnel tient (95 % de couverture, 46 pages rendues, geometrie verte, 90 tests) -- c'est un risque de LISIBILITE, pas de casse. Deux gestes proposes, aucun pose : (1) lancer audit-technique (skill jamais utilisee, audit facture qui LIT le code) pour re-coter le risque, verdict a ecrire cote hub ; (2) decouper par chapitre SEULEMENT si l'audit le confirme. Geste immediat independant et non bloquant, lui aussi non fait : les 2 vraies erreurs pyflakes (F841, F541) parmi les 14 ruff -- jamais par `ruff --fix` aveugle (lecon VSCode2).",
+      "source": "diagnostic etage 2 du 2026-09-03 (agent-supervisor), finding 3"
+    },
+    {
+      "cible": "write_diagnostic.py:sync-2026-09-04",
+      "date": "2026-09-04",
+      "categories": [],
+      "decision": "ACCEPTE + APPLIQUE : suite a l'arbitrage du 2026-09-03 (cible .claude/supervision/write_diagnostic.py, decision « correctif hub, pas local »), le fichier est resynchronise depuis le canon du hub (diff verifie propre au prealable : aucune divergence locale a preserver). CATEGORIES passe de 7 a 13 valeurs (ajout des 6 categories pratique-*), plus trois ameliorations de securite deja presentes cote hub et absentes ici : validation du champ cible (requis), avertissement sur les findings qui disparaissent silencieusement d'une reecriture, ecriture atomique (tmp + os.replace) pour eviter un diagnostic.json tronque. Verifie : py_compile propre, ecriture reelle testee via AGENT_SUPERVISION_DIAGNOSTIC sur un fichier scratch (jamais sur le diagnostic reel) avec une categorie pratique-test -> acceptee. diagnostic.json corrige dans la foulee : 4 findings deja ACCEPTE+APPLIQUE le 2026-09-03 (tests/test_generate_deck_garde.py, write_diagnostic.py lui-meme, CLAUDE.md couverture, generate_deck.py::content_slide) mais jamais retires du fichier apres leur arbitrage sont pruned ; ne reste que le finding docs/cadrage-ppt/generate_deck.py:taille, toujours REMIS A L'ARBITRAGE depuis le 2026-09-03."
+    },
+    {
+      "cible": "docs/cadrage-ppt/generate_deck.py:taille",
+      "date": "2026-09-07",
+      "categories": [],
+      "decision": "ACCEPTE : arbitrage utilisateur explicite (2026-09-07) — la croissance mesuree (+40,6% cumule, +762 lignes en 24h le 2026-09-03) est due a la refonte graphique en cours (check_slide_synthese v2.13->v3-refonte, integree au deck de prod en v2.30 le 2026-09-04, deck aujourd'hui a v2.32), pas une derive non maitrisee. Confirme la NUANCE deja posee par le diagnostic du 2026-09-03 : filet fonctionnel intact (couverture mesuree, geometrie verte, tests generateur au vert y compris apres ce run). Ne cloture PAS le decoupage modulaire (cf. arbitrage separe flotte:23-items-cadres) : la refonte assumee dit seulement que le rythme actuel n'est pas un signal d'alarme a lui seul.",
+      "source": "diagnostic etage 2 du 2026-09-03 (agent-supervisor), finding 3 -- arbitre sur /orchestre du 2026-09-07"
+    },
+    {
+      "cible": "flotte:23-items-cadres",
+      "date": "2026-09-07",
+      "categories": [
+        "pratique-dev"
+      ],
+      "decision": "REMIS A L'ARBITRAGE, confirme (pas d'action) : le decoupage modulaire de generate_deck.py (4738+ lignes, 66+ fonctions) reste differe jusqu'a stabilisation du WIP -- la proposition du diagnostic le disait deja (\"decouper maintenant = conflits garantis\"), et l'etat reel au 2026-09-07 le confirme : 17 fichiers non commites sur ce meme chantier de refonte graphique, dont generate_deck.py (+868/-354 lignes de diff). Decision explicite plutot que silence : revisiter une fois le chantier refonte graphique (check_slide_synthese v3, integration deck v2.30+) commite.",
+      "source": "diagnostic etage 2 du 2026-09-04 (agent-supervisor), finding pratique-dev \"jamais decoupe\" -- arbitre sur /orchestre du 2026-09-07"
+    },
+    {
+      "cible": "flotte:23-items-cadres",
+      "date": "2026-09-07",
+      "categories": [
+        "pratique-dev"
+      ],
+      "decision": "ACCEPTE + APPLIQUE : dette de lint traitee (5 blocs d'imports ruff I001 : generate_deck.py:373,375,396 ; pptx_deck.py:10 ; test_generate_deck.py:39), retriee a la main bloc par bloc (jamais `ruff --fix` en aveugle, regle du projet) en suivant exactement la sortie `ruff check --select I001` comme guide. Verifie : `ruff check --select I001` propre sur les 3 fichiers, py_compile propre, ET `python test_generate_deck.py` rejoue en entier apres coup (49/49 pages rendues, TOUS LES TESTS PASSENT) -- aucune regression fonctionnelle malgre le WIP actif sur ces memes fichiers.",
+      "source": "diagnostic etage 2 du 2026-09-04 (agent-supervisor), finding pratique-dev \"dette de lint\" -- applique sur /orchestre du 2026-09-07"
+    },
+    {
+      "cible": "docs/cadrage-ppt/generate_deck.py:slide_executive_summary",
+      "date": "2026-09-07",
+      "categories": [],
+      "decision": "ACCEPTE + APPLIQUE : le contrat de deck-design-review passe de 4 a 5 blocs (OFFRE + POURQUOI/QUOI/COMMENT/RESULTAT) sur arbitrage utilisateur explicite -- le bloc OFFRE fait sens depuis l'ajout du chapitre 01 Exec Summary (le contrat a 4 blocs datait d'avant cet ajout). SKILL.md mis a jour, aucune modification du code du deck (la slide reste telle quelle).",
+      "source": "audit design deck-design-review du 2026-09-07 -- arbitre sur /orchestre du meme jour"
+    },
+    {
+      "cible": "VSCode3:audit-2026-09-02",
+      "date": "2026-09-09",
+      "decision": "TRAITE PARTIELLEMENT (mandat utilisateur du 2026-09-09, << traite les projets par ordre de risque >> ; VSCode3 traite en dernier comme le moins risque). Cadrage R1 constat par constat : deux etaient DEJA FERMES (les zip() sans strict=True par 17993b0, le hook qui ne reconnaissait pas -am par 986e0b7 -- les deux derniers zip() le sont dans le working tree de la session qui travaille sur le deck, ils partiront a son commit). UN SEUL etait libre de collision et il a ete corrige (commit d541f09) : la mesure de lint etait devenue illisible -- ruff remontait 16 erreurs dont 10 venaient d'un unique instantane fige de 271 Ko dans archives/, y compris 5 points deja corriges en amont. archives/ sort du perimetre mesure (pyproject.toml) et un test verifie les DEUX sens : l'archive est ignoree ET le code vivant reste lu, pour qu'une exclusion trop large ne puisse pas eteindre le linter en silence. Mesure : 16 erreurs -> 7, toutes sur du code vivant ; suite 173 -> 175 passed. NON APPLIQUE, decrit pour la session proprietaire du chantier deck : ITEM_SIZE_DEFAUT assigne jamais lu, deux blocs d'imports non tries dans des scripts non encore versionnes, archives/ non gitignore en entier (un snapshot de 4700 lignes est committable), et quatre .pptx de 2,2 Mo non suivis qu'un git add -A embarquerait. RESTENT A ARBITRER par l'utilisateur : la taille de generate_deck.py (3793 lignes au 2026-09-02, 4740 au dernier commit, 5091 en working tree, soit +34 % en 7 jours -- c'est le finding ouvert du diagnostic local depuis le 2026-09-03, a trancher entre rythme attendu d'une refonte et derive a ralentir), la purge d'historique (.git a 106 Mo pour 28 commits sur un binaire de 22,6 Mo), et la remontee des helpers de pptx_deck.py (305 lignes ici contre 988 chez VSCode2 et 1124 chez VSCode4)."
+    },
+    {
+      "cible": "VSCode3:audit-2026-09-09",
+      "date": "2026-09-09",
+      "decision": "ACCEPTE + APPLIQUE (meme mandat). Deux commits pousses. c20d1da : les TROIS filets de controle des homologues portes dans docs/cadrage-ppt/pptx_deck.py (305 -> 648 lignes) — verifier_debordements_texte, verifier_chrome_gabarit, verifier_plancher_de_dessin — avec 16 tests sur presentations construites en memoire, plus le .gitignore ferme sur archives/ entier et les .pptx lourds, avec DEUX exclusions explicites (le deck livre et template-octo.pptx, tous deux suivis et sources). 95a0ff5 : canon (scan_transcripts.py, log_run.py) resynchronise et guard_destructive_git.py rattrape depuis l'export — retard pur verifie ligne a ligne avant ecriture, 3 erreurs ruff (2 UP031 + 1 I001) ramenees a zero, suites du dispositif rejouees comme l'exige la regle du canon (31 passed). DEUX ADAPTATIONS DE GABARIT que la copie brute aurait cassees, et c'est le fond du travail : sur 10 des 34 layouts de template-octo.pptx, le champ de numero de page est porte par un ENFANT d'un groupe couvrant presque toute la slide (layout 63 : 0,30/0,32 -> 9,80/5,34) — sans la descente dans les groupes non transformes, la zone « protegee » ferait 9,5 x 5,0 pouces et le filet crierait sur tout le contenu ; et le plancher exige en plus un recouvrement HORIZONTAL, parce que le bord droit de ce projet passe a gauche du badge, la ou VSCode4 dessine pleine largeur. PASSE ADVERSARIALE reelle : huit mutants du code sous test rejoues dans un bac a sable, huit attrapes ; frontieres fixees DANS LES DEUX SENS (le filet se tait a -0,10 pouce et crie des 0,05 ; un recouvrement de 1 pt = 0,0139 pouce passe sous la tolerance de 0,02, mesure et non suppose). Elle a trouve un vrai trou dans le travail lui-meme : avec le bord droit a 9,15 le filet de plancher etait vert QUEL QUE SOIT le plancher, meme a 99 — un test « == [] » ne distinguait pas « rien ne se recouvre » de « filet inerte ». Corrige par un test qui pose une derive reelle. SUITE : 175 -> 191 passed. RESTE : 5 constats au chantier deck en cours (zip strict sur HEAD, ITEM_SIZE_DEFAUT, imports non tries des gen_check_slide_synthese*), et le depot a 109 Mo — decision utilisateur, irreversible. Effet de bord a signaler a la session deck : ses 4 .pptx de check n'apparaissent plus dans git status, ils sont desormais ignores. REMONTE AU HUB comme finding VScode5:kit-pptx-deck-en-retard-sur-ses-propres-cibles : la skill pptx-deck que le hub PUBLIE ne porte qu'un filet sur trois, alors que VSCode4 et desormais VSCode3 en ont trois — le hub distribue la version la plus pauvre des trois."
+    },
+    {
+      "cible": "docs/cadrage-ppt/generate_deck.py",
+      "date": "2026-09-02",
+      "categories": [],
+      "decision": "TRAITE (mesure re-verifiee par execution, action corrective restante hors perimetre). Rejoue : wc -l docs/cadrage-ppt/generate_deck.py = 3149 lignes -- identique au chiffre cite par le finding, confirme non perime. git show 29bc2c4:docs/cadrage-ppt/generate_deck.py | wc -l = 2781 au commit-repere de l'audit du hub (l'audit citait 2767, ecart de 14 lignes deja signale par le finding lui-meme, non recreuse ici). Croissance reelle confirmee : +368 lignes soit +13,2% depuis l'audit du 2026-07-30, toujours un fichier unique sans decoupage par chapitre. NON FAIT ICI, hors perimetre : relancer audit-technique pour re-coter risque_technique -- le fichier verdict (.claude/audits/VSCode3.json) vit dans le hub (C:\\Users\\claude.camus\\Documents\\VScode5 - Supervision projets\\.claude\\audits\\), pas dans ce depot ; le mandat de cette session interdit d'ecrire ailleurs que dans VSCode3 et precise que le hub s'en charge. A relancer depuis le hub ou au prochain diagnostic etage 2. Aucun decoupage engage : le finding l'interdit tant que l'audit ne l'a pas confirme, et le fichier est en evolution active (v2.7 du 2026-09-01).",
+      "source": "traitement findings diagnostic 2026-09-01, mandat utilisateur 2026-09-02 (onglet Arbitrer)"
+    },
+    {
+      "cible": "docs/cadrage-ppt/generate_deck.py",
+      "date": "2026-09-10",
+      "categories": [
+        "autre"
+      ],
+      "source": "arbitrage utilisateur 2026-09-10 (traitement des sujets transmis par le hub VScode5)",
+      "decision": "ACCEPTE — reconduction a la CIBLE EXACTE de l'arbitrage deja pris le 2026-09-07. Le fond n'a pas bouge : la croissance de generate_deck.py est due a la refonte graphique assumee (check_slide_synthese v2.13 -> v3-refonte, integree en v2.30), pas a une derive. CE QUI A BOUGE, et c'est la seule raison de cette entree : l'arbitrage du 2026-09-07 avait ete enregistre a la cible « docs/cadrage-ppt/generate_deck.py:taille », alors que le finding du hub porte la cible nue « docs/cadrage-ppt/generate_deck.py ». La fermeture se faisant par correspondance EXACTE de nom, le finding ressortait a chaque scan comme s'il n'avait jamais ete tranche — l'utilisateur a donc redecide une chose deja decidee. PORTEE VOLONTAIREMENT RESTREINTE a la categorie « autre » : sans ce champ, cette entree masquerait tout futur finding sur generate_deck.py, y compris un defaut de qualite reel. NE CLOT PAS le decoupage modulaire (cf. flotte:23-items-cadres, toujours differe)."
+    },
+    {
+      "cible": "flotte:point-du-jour-absent-des-5-cibles",
+      "date": "2026-09-10",
+      "categories": [
+        "pratique-dev"
+      ],
+      "source": "arbitrage utilisateur 2026-09-10 (traitement des sujets transmis par le hub VScode5)",
+      "decision": "CLOS POUR CE DEPOT, OUVERT AILLEURS — option (A) du finding, deja executee ici avant sa transmission. Mesure du 2026-09-10 : .claude/hooks/point_du_jour.py est present et cable en SessionStart dans .claude/settings.json (commits f5d8697 puis abb8fad, ce dernier alignant le hook sur le lint) ; il s'execute reellement a l'ouverture de cette session et y affiche les 5 findings sans arbitrage. La degradation propre exigee par le finding est verifiee sur le cas reel : .claude/audits/ ne contient ici qu'un README, et ligne_decisions_audit() n'a produit aucune erreur. RESTE OUVERT, ET CE N'EST PAS A CE DEPOT DE LE FERMER : les 4 autres cibles (VSCode, VSCode1, VSCode2, VSCode4) et l'ajout au kit exporte — le finding porte la cible « flotte: », son geste appartient au hub."
+    },
+    {
+      "cible": "VSCode3:audit-risque_technique-niveau-moyen",
+      "date": "2026-09-10",
+      "categories": [
+        "pratique-dev"
+      ],
+      "source": "arbitrage utilisateur 2026-09-10 (traitement des sujets transmis par le hub VScode5)",
+      "decision": "DIFFERE, avec sa condition de reouverture ECRITE — decision explicite, pas un silence. Le constat ouvert est que pptx_deck.py (640 l.) reste en deca de ses homologues en helpers reutilisables (police de marque, add_chip/add_badge/add_encart) presents chez VSCode2 (988 l.) et VSCode4 (1154 l.). MOTIF DU REPORT, mesure : le chantier deck etait en vol au moment de la transmission (839 lignes de diff non commitees sur generate_deck.py, seul consommateur de pptx_deck.py dans ce depot). Porter des helpers sous un appelant en mouvement, c'est le motif exact qui a fait differer le decoupage modulaire — « decouper maintenant = conflits garantis ». CONDITION DE REOUVERTURE : le chantier est commite depuis (e7ce21f puis 4f61470) ; le sujet se reprend des la prochaine demande qui touche pptx_deck.py, en commencant par un inventaire de l'ecart REEL avec VSCode2 et VSCode4 plutot que par un ecart en nombre de lignes — 348 lignes de moins ne prouvent pas 348 lignes de manque. LA DIMENSION RESTE DONC AU NIVEAU MOYEN et le compteur du hub ne doit PAS bouger : le constat n'est pas corrige, il est date et motive. Ce qui a ete traite dans le meme run et que le hub peut remesurer : les 3 erreurs ruff sont a zero et les trois filets de controle sont branches."
+    },
+    {
+      "cible": "VSCode3:brancher-les-trois-filets-dans-generate-deck",
+      "date": "2026-09-10",
+      "categories": [
+        "pratique-dev"
+      ],
+      "source": "arbitrage utilisateur 2026-09-10 (traitement des sujets transmis par le hub VScode5)",
+      "decision": "ACCEPTE + APPLIQUE — commit 4f61470. Le blocage cite par le finding (« generate_deck.py etait modifie par une autre session, donc non touche, R2 ») a ete leve par constat et non par hypothese : depot verifie au repos avant d'ecrire (deux releves git status --porcelain identiques, aucun processus tiers citant le depot), puis chantier de la seance precedente commite a part (e7ce21f). MESURE REFAITE AVANT DE BRANCHER, sur le deck du 2026-09-10 et non sur celui du 2026-09-09 — 839 lignes de chantier avaient atterri entre les deux : verifier_geometrie 0, verifier_chrome_gabarit 0, verifier_plancher_de_dessin 0, verifier_debordements_texte 58. Les trois premiers sont branches, exactement comme le proposait le finding. verifier_debordements_texte reste DEHORS par decision tracee, non par oubli : ce resultat gouverne le nom du fichier ecrit (.INVALIDE.pptx si non vide), donc le brancher a 58 constats sur un deck correct bloquerait la livraison. Son seuil se regle contre un rendu PowerPoint reel — sujet distinct, non ouvert ici. AJOUT AU-DELA DE LA PROPOSITION, et c'est le fond du travail : le self-check est sorti de build() dans _controler(prs). Sans cette couture, « ce filet est-il appele ? » n'avait pas de reponse automatique — c'est precisement pourquoi trois filets ont pu vivre debranches avec 16 tests verts, qui les testaient ISOLEMENT. 5 tests de cablage ajoutes, passe adversariale reelle : mutant « filets redebranches » -> 2 tests tombent ; mutant « debordements branche par inadvertance » -> le test dedie tombe. VERIFIE : ruff a zero, suite 191 -> 196 passed, test_generate_deck.py au vert (49 pages rendues via LibreOffice), deck regenere s'ecrivant sous son NOM LIVRABLE."
+    },
+    {
+      "cible": "VSCode3:reliquats-de-lint-du-chantier-deck",
+      "date": "2026-09-10",
+      "categories": [
+        "pratique-dev"
+      ],
+      "source": "arbitrage utilisateur 2026-09-10 (traitement des sujets transmis par le hub VScode5)",
+      "decision": "ACCEPTE + APPLIQUE — commit e7ce21f. Le finding disait « ces points se ferment au commit de ce chantier, pas avant » : le chantier est commite, ils sont fermes. ITEM_SIZE_DEFAUT n'etait pas une variable morte a supprimer mais une constante DEBRANCHEE : l'echelle de recherche de taille recopiait ses deux bornes en litteral (7 et 6.25) a cote des deux constantes qui les portent. Les brancher retire le F841 ET une divergence latente — changer ITEM_SIZE_PLANCHER laissait l'echelle finir a 6.25. Supprimer la constante, geste que le finding autorisait, aurait laisse la duplication en place. Trois blocs d'imports non tries corriges par un ruff --fix RESTREINT a I001, diff relu ligne a ligne (lecon VSCode2 : jamais --fix en aveugle) — diff reel : uniquement des deplacements. Les quatre zip() portaient deja strict=True et sont partis avec le commit. Les trois gen_check_slide_synthese*.py sont VERSIONNES plutot que gitignores, la branche que le finding laissait ouverte : ils portent le systeme de design extrait des deux decks OCTO de reference, pas du jetable. VERIFIE : py -m ruff check . rend « All checks passed! » sur le depot entier. SIGNALE, NON COMMITE : CLAUDE.md.propose, pose par l'installation du kit du 2026-09-10, est le squelette vide a placeholders — l'appliquer detruirait le CLAUDE.md reel de ce depot."
+    },
+    {
+      "cible": "VSCode3:audit-risque_technique-niveau-moyen",
+      "date": "2026-09-11",
+      "categories": [
+        "pratique-dev"
+      ],
+      "source": "arbitrage utilisateur 2026-09-11 (traitement des findings affiches au tableau de bord)",
+      "decision": "DIFFERE A NOUVEAU, meme motif que le 2026-09-10 — LA DIMENSION RESTE AU NIVEAU MOYEN. La condition de reouverture posee le 2026-09-10 (« chantier deck committe ») etait techniquement remplie, mais au moment de traiter la reouverture, git status montre generate_deck.py, test_generate_deck.py et bmad-iap-cadrage-synthese.pptx de nouveau modifies et non commites (nouveau chantier en vol) — exactement le risque de collision (seul consommateur de pptx_deck.py en mouvement) qui avait motive le report initial. Porter les helpers manquants (police de marque, add_chip/add_badge/add_encart) maintenant reexposerait au meme risque. CONDITION DE REOUVERTURE INCHANGEE : reprendre des que CE nouveau chantier est commite, en commencant par l'inventaire reel de l'ecart avec VSCode2/VSCode4 (pas un ecart en lignes). CE QUI A ETE VERIFIE DANS LE MEME PASSAGE ET QUI EST BIEN CORRIGE : la partie « 3 erreurs ruff » citee par le finding est perimee — py -m ruff check . sur docs/cadrage-ppt/ rend 0 erreur. Une erreur ruff DIFFERENTE (I001, import non trie) a ete trouvee ailleurs — .claude/hooks/warn_verif_before_commit.py, introduite par le commit f50f111 posterieur a l'audit — et corrigee dans ce meme run (diff d'une ligne, ordre alphabetique des deux noms importes, import reverifie apres coup) : py -m ruff check . rend a nouveau « All checks passed! » sur le depot entier."
+    },
+    {
+      "cible": "flotte:point-du-jour-importe-kit-installe-hub-only",
+      "date": "2026-09-11",
+      "categories": [
+        "pratique-dev"
+      ],
+      "source": "arbitrage utilisateur 2026-09-11 (« applique », traitement des findings affiches au tableau de bord)",
+      "decision": "APPLIQUE — CLOS POUR CE DEPOT, OUVERT AU HUB. Finding confirme exact : py .claude/hooks/point_du_jour.py rend toujours 'kit installe : mesure impossible (No module named kit_installe)', module qui n'existe que chez le hub (VScode5). Meme schema que flotte:point-du-jour-absent-des-5-cibles : la correction (piste (a) garder le bloc hub-only hors propagation, ou (b) le rendre silencieux si .claude/dispositif/ est absent) n'a pas sa place ici (lecon P1 — le canon se corrige au hub, jamais localement, les copies locales divergent). Deja signale a la session hub le 2026-09-10 (vscode3-7e -> vscode5-supervision-projets-84) ; aucun geste local supplementaire. RESTE OUVERT, ET CE N'EST PAS A CE DEPOT DE LE FERMER : le correctif au hub (kit_installe.py) et sa repropagation aux 5 cibles."
+    },
+    {
+      "cible": "flotte:point-du-jour-importe-kit-installe-hub-only",
+      "date": "2026-09-11",
+      "categories": [
+        "pratique-dev"
+      ],
+      "source": "arbitrage utilisateur 2026-09-11 (« signale sur le canal fichier », faute de session hub live)",
+      "decision": "COMPLEMENT, PAS UNE NOUVELLE DECISION. ListAgents interroge le 2026-09-11 : aucune session vscode5 (hub) parmi les pairs actifs — seules vscode4-51 et vscode2-a8 sont interactives a ce moment. Le SendMessage direct du 2026-09-10 (vscode3-7e -> vscode5-supervision-projets-84) n'est donc pas reproductible aujourd'hui. Choix utilisateur explicite : pas de relance live, le canal fichier (cette entree + le finding source dans diagnostic.json) suffit — la prochaine session hub qui scanne ce depot le voit sans geste supplementaire de ce depot."
+    },
+    {
+      "cible": "VSCode3:brancher-les-trois-filets-dans-generate-deck",
+      "date": "2026-09-11",
+      "categories": [
+        "pratique-dev"
+      ],
+      "decision": "CLOS, deja resolu avant ce tour : les trois filets (verifier_geometrie, verifier_chrome_gabarit, verifier_plancher_de_dessin) sont branches dans generate_deck.py::_controler depuis les commits 4f61470 et 20039af (2026-09-10, tous deux anterieurs a la generation de ce diagnostic a 18:48 le meme jour). Verifie par lecture directe du code (generate_deck.py:5510-5514) le 2026-09-11 : les trois filets sont bien appeles. Le diagnostic n'avait pas rattrape le fix. verifier_debordements_texte reste volontairement hors du controle par defaut (seuil non regle contre un rendu reel), decision deja documentee dans le code.",
+      "source": "traitement /orchestre du 2026-09-11 (findings dashboard : Audit - Robustesse)"
+    },
+    {
+      "cible": "VSCode3:audit-risque_technique-niveau-moyen",
+      "date": "2026-09-11",
+      "categories": [
+        "pratique-dev"
+      ],
+      "decision": "ACCEPTE + APPLIQUE. Le constat ouvert (pptx_deck.py en-deca en helpers reutilisables face a VSCode2/VSCode4) est resolu par le commit a5c469f : add_chip, add_badge et appliquer_police extraits de generate_deck.py vers pptx_deck.py, testes (tests/test_pptx_deck_helpers.py, 8 tests), le module reutilisable restant sans dependance au domaine metier (les constantes de marque POLICE_DECK/GLYPHES_HORS_POLICE_DECK restent locales au projet). Le volet ruff (3 erreurs sur chantier non commite, mentionne dans la preuve du finding) etait deja resolu avant ce tour (chantier committe, ruff propre, verifie). Verifie : py -m pytest tests/ (206 passed), py -m ruff check . (propre), deck regenere + test_generate_deck.py (54/54 pages), rendu reel inspecte a l'oeil.",
+      "source": "traitement /orchestre du 2026-09-11 (findings dashboard : Audit - Risque tech.), commit a5c469f"
+    },
+    {
+      "cible": "VSCode3:chantier-A-lecture-humaine-cadrage",
+      "decision": "REFUSE (pour l'instant) : l'utilisateur choisit de committer le reliquat v2.4 deja ecrit et de poursuivre le cadrage sans attendre la lecture prealable par l'agent utilisateur-produit. Le chantier A (lecture humaine non-auteur) reste a faire mais ne bloque plus les relances de version.",
+      "categories": [
+        "pratique-produit"
+      ],
+      "date": "2026-09-18",
+      "source": "orchestrateur /orchestre 'relance le cadrage de ce projet', arbitrage utilisateur via AskUserQuestion 2026-09-18"
+    }
+  ]
 }

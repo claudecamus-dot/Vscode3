@@ -894,9 +894,23 @@ def col_x(i, n, w=CONTENT_W, x0=MARGIN, gap=GAP):
     return x0 + i * (col_w + gap), col_w
 
 
-chip = D.add_chip  # extrait vers pptx_deck.py le 2026-09-11 (finding audit VScode5) ;
-# alias garde ici pour ne pas toucher les 12 sites d'appel du generateur
-# (grep \bchip\( generate_deck.py, hors ce commentaire, le 2026-09-11).
+def chip(slide, x, y, w, h, label, color, text_color="#ffffff", size=D.TYPE["tiny"]):
+    """Wrapper de `D.add_chip` (extrait vers pptx_deck.py le 2026-09-11 ; garde
+    ce nom pour ne pas toucher les ~12 sites d'appel du generateur, grep
+    \\bchip\\( generate_deck.py hors ce commentaire).
+
+    Garde D1 (arbitrage du 2026-09-10, ~1,9:1 sur blanc) : le cyan (ACCENT /
+    ACCENT_PLEIN) ne porte JAMAIS de texte. Beaucoup d'appelants passent une
+    `color` de palette (« un sur N en accent ») sans se soucier du texte par
+    defaut blanc du chip — quand cette couleur vaut le cyan ET que l'appelant
+    n'a pas deja choisi un texte lisible, l'aplat retombe sur NAVY : l'element
+    distingue garde un aplat PLEIN (navy, pas cyan), le texte blanc reste
+    lisible dessus. Un appelant qui a deja pose un `text_color` explicite
+    (ex. NAVY sur un chip cyan sur panneau navy, slide gate) n'est pas
+    touche : ce n'est pas le defaut corrige ici."""
+    if str(color).lower() == str(ACCENT).lower() and str(text_color).lower() == "#ffffff":
+        color = NAVY
+    return D.add_chip(slide, x, y, w, h, label, color, text_color=text_color, size=size)
 
 
 # --- Helpers du schéma « parcours de mission » (slide_offre_iap, v2.8) : pas de
@@ -1024,10 +1038,22 @@ def _chevron_arrow(slide, x, y, w, h, color=MUTED, frac_w=0.72, frac_h=0.5):
                    fill=WHITE, line=color, line_w=1.4)
 
 
-_badge = D.add_badge  # extrait vers pptx_deck.py le 2026-09-11 (finding audit VScode5) ;
-# alias garde ici pour ne pas toucher les 6 sites d'appel du generateur. WHITE
-# (theme lt1 de CE gabarit) mesure a #FFFFFF, identique au litteral '#ffffff'
-# dont add_badge se sert par defaut — repli confirme, pas suppose.
+def _badge(slide, cx, cy, d, color, symbol, filled=True, dashed=False, fill=None,
+           text_color=None, size=12, bold=True):
+    """Wrapper de `D.add_badge` (extrait vers pptx_deck.py le 2026-09-11 ; garde
+    ce nom pour ne pas toucher les ~6 sites d'appel du generateur). WHITE
+    (theme lt1 de CE gabarit) mesure a #FFFFFF, identique au litteral '#ffffff'
+    dont add_badge se sert par defaut — repli confirme, pas suppose.
+
+    Garde D1 (meme regle que `chip` ci-dessus) : un badge REMPLI (`filled`)
+    dont la couleur vaut le cyan ET dont l'appelant n'a pas deja choisi un
+    `text_color` retombe sur un aplat NAVY — pas de texte blanc sur cyan a
+    ~1,9:1. Le badge CONTOUR (`filled=False`) n'est pas concerne : il n'a
+    jamais de fond cyan plein, juste un trait."""
+    if filled and str(color).lower() == str(ACCENT).lower() and text_color is None:
+        color = NAVY
+    return D.add_badge(slide, cx, cy, d, color, symbol, filled=filled, dashed=dashed,
+                        fill=fill, text_color=text_color, size=size, bold=bold)
 
 
 def _bandeau_cloture(slide, texte, bas_contenu, nom_slide, size=12):
