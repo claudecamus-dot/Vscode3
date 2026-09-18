@@ -396,6 +396,38 @@ exécutive) : le schéma des workflows détaillé, la roadmap MVP et les points
 ouverts — les trois autres slides retirées au même commit ne sont PAS
 réintroduites.
 
+v2.35 (2026-09-18, restructuration validée en salle de délibération, arbitrage
+utilisateur) : le sommaire passe de 10 à 9 chapitres — 8 chapitres de corps
+dans l'ordre EXECUTIVE SUMMARY > CONTEXTE > ENJEUX > DOULEUR > OPPORTUNITES >
+OFFRE > DEMARCHES > NEXT STEPS, plus un chapitre ANNEXES. Mapping :
+  - Contexte reprend l'ancien Contexte + `slide_specificites_infra` (l'ancien
+    chapitre Spécificités de l'infra).
+  - Enjeux (NEUF, `slide_enjeux`) compose une lecture organisationnelle/macro
+    des tensions personas (les 4 portraits détaillés partent en annexe) et
+    récupère `slide_infra_run`/`slide_infra_transverse`/
+    `slide_infra_as_product_exemple`.
+  - Douleur = ancien Besoins & douleurs, inchangé.
+  - Opportunités (NEUF, `slide_opportunites`) compose ce que le cadrage rend
+    possible maintenant à partir de faits déjà écrits (gate IA, méthode
+    scorée, team topologies) sans dupliquer leur détail.
+  - Offre fusionne l'ancien Proposition et le reste de l'ancien IA (gate,
+    prudence, 3 agents candidats, export markdown).
+  - Démarches fusionne l'ancien Démarche et l'ancien Outillage IAP (l'ambition
+    et le lien SI deviennent une sous-partie plutôt qu'un chapitre à part).
+  - Next steps (NEUF, `slide_next_steps`) récupère `slide_conditions_reussite`
+    (fin de l'ancien Démarche) et résume le KPI à 4 indicateurs de suivi.
+  - Annexes (NEUF) garde, visibles et tracés — pas supprimés — les 4 portraits
+    personas (`slide_personas`, `slide_personas_divergences`) et le
+    dispositif KPI complet (`slide_kpis`, `slide_kpis_pourquoi_quoi`,
+    `slide_kpis_mise_en_place`, `slide_maturite`, `slide_kpis_exemple`).
+`slide_executive_summary` (le sommaire) est mis à jour pour citer les 8
+chapitres de corps et signaler l'annexe. Toute citation de chapitre par
+NOM dans les slides existantes a été corrigée pour pointer vers le nouveau
+nom (`chapitre IA`/`Proposition` -> `chapitre Offre`, `chapitre Démarche` ->
+`chapitre Démarches`, `chapitre Spécificités de l'infra` -> `chapitre
+Contexte`, `chapitre Outillage IAP` -> `chapitre Démarches`) — jamais par
+numéro, donc la renumérotation elle-même ne casse rien.
+
 Usage : python generate_deck.py
 Sortie : bmad-iap-cadrage-synthese.pptx (à côté de ce script).
 """
@@ -417,8 +449,8 @@ from pptx.util import Emu, Inches, Pt
 # 4 bumps de version consecutifs (v2.9 a v2.11 ont toutes laisse "v2.8 · date
 # perimee" sur la SLIDE LA PLUS VISIBLE du deck). Un seul endroit a changer
 # desormais.
-VERSION_DECK = "v2.34"
-DATE_VERSION_DECK = "2026-09-11"
+VERSION_DECK = "v2.35"
+DATE_VERSION_DECK = "2026-09-18"
 
 HERE = os.path.dirname(__file__)
 TEMPLATE = os.path.join(HERE, "template-octo.pptx")
@@ -1166,7 +1198,7 @@ def badge_deploiement_agentic(slide):
     D.add_text(slide, x + 0.12, CONTENT_TOP, BADGE_AGENTIC_W - 0.24, h, [
         ("DÉPLOIEMENT AGENTIC CHEZ LE CLIENT",
          dict(size=6, bold=True, color=ENCRE, line_spacing=1.1)),
-        ("cf. schéma d'architecture · chapitre Outillage IAP",
+        ("cf. schéma d'architecture · chapitre Démarches",
          dict(size=6, italic=True, color=MUTED, space_before=1)),
     ], anchor=MSO_ANCHOR.MIDDLE)
 
@@ -1259,7 +1291,8 @@ def slide_executive_summary(prs):
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, headline_h, [
         ("Transformer l'infrastructure en plateforme opérée comme un produit, ET traiter "
          "structurellement le gaspillage qui l'en empêche — le deck suit le fil : l'offre, "
-         "pourquoi, qui, quoi, comment, avec quoi, la preuve.",
+         "pourquoi, quoi, comment, la preuve. Détail des personas et des KPIs complets : "
+         "en annexe, en fin de deck.",
          dict(size=D.TYPE["small"], color=NAVY, italic=True, line_spacing=1.3)),
     ])
 
@@ -1276,21 +1309,21 @@ def slide_executive_summary(prs):
          "l'agentic accélère le consultant, en option chez le client.",
          "Exec summary"),
         ("POURQUOI", ENCRE, "L'infra subie coûte de plus en plus cher.",
-         "Trois déclencheurs, quatre personas interrogés séparément, des douleurs "
-         "mesurables plutôt que des plaintes.",
-         "Contexte → Besoins & douleurs"),
-        ("QUOI", ENCRE, "Traiter l'infra comme un produit — et assainir.",
-         "Double mission, méthode scorée (impact × faisabilité − prudence IA), IA sous "
-         "gate : jamais la réponse à un problème d'abord organisationnel.",
-         "Proposition → IA"),
+         "Trois déclencheurs, un terrain pas comme un autre, ce qui se joue pour la DSI "
+         "si rien ne change, des douleurs mesurables plutôt que des plaintes.",
+         "Contexte → Douleur"),
+        ("QUOI", ENCRE, "Ce que le moment ouvre, et ce qu'on livre pour le saisir.",
+         "Des leviers déjà instruits, la thèse infra-as-a-product, la méthode scorée et "
+         "l'IA sous gate — jamais la réponse à un problème d'abord organisationnel.",
+         "Opportunités → Offre"),
         ("COMMENT", ENCRE, "Trois temps et une boucle, personnes comprises.",
-         "Démarche ①②③⟲ avec son fil humain de bout en bout ; l'outillage IAP au "
-         "service de la démarche — jamais l'inverse.",
-         "Démarche → Outillage IAP"),
-        ("RÉSULTAT", NAVY, "Le delta instrumenté T0 → réévaluation.",
-         "Trois familles de KPIs, même instrument aux deux instants — la preuve, "
+         "Démarche ①②③⟲ avec son fil humain de bout en bout, l'outillage IAP au service "
+         "de la démarche — jamais l'inverse.",
+         "Démarches"),
+        ("RÉSULTAT", NAVY, "Les jalons, et le signal minimal pour savoir si ça marche.",
+         "Indicateurs de suivi dès le T0, même instrument à la réévaluation — la preuve, "
          "pas une opinion.",
-         "KPI"),
+         "Next steps"),
     ]
     n = len(items)
     pad = 0.16
@@ -2127,7 +2160,7 @@ def slide_infra_transverse(prs):
         ("Équipes produit", "Livrent de la valeur métier — l'infra est un moyen, jamais leur sujet."),
         ("Équipes applicatives", "Consomment la plateforme, ou la contournent si elle freine."),
         ("Sécurité, conformité & résilience", "Exigences transverses que personne ne budgète — "
-         "l'offre s'y arrime, ne les remplace pas (cf. chapitre Démarche)."),
+         "l'offre s'y arrime, ne les remplace pas (cf. chapitre Démarches)."),
         ("Direction", "Voit une ligne de coût, pas les arbitrages qui la produisent."),
     ]
 
@@ -2389,7 +2422,7 @@ def slide_qui_achete(prs):
          "Une mission flash d'entrée — intake, gate confidentialité, pilote court — puis la "
          "trajectoire ; jamais l'assainissement seul. Sous pression IA, un cas d'usage sur "
          "données publiques est packagé dès l'intake : « celui-ci, tout de suite, sous gate » "
-         "(chapitre IA)."),
+         "(chapitre Offre)."),
     ]
     _, band_w = col_x(0, 2)
     band_pad = 0.12
@@ -2885,7 +2918,7 @@ def slide_familles(prs):
                        color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.42, [
         ("Nommer la famille, c'est déjà pouvoir la détecter, la quantifier et la prioriser "
-         "(méthode de traitement → chapitre Proposition).",
+         "(méthode de traitement → chapitre Offre).",
          dict(size=D.TYPE["small"], color=NAVY, italic=True, line_spacing=1.25)),
     ])
     familles = [
@@ -3145,7 +3178,7 @@ def slide_gaspillage_partage(prs):
 
     _bandeau_cloture(
         s,
-        ("Ce qui change depuis le chapitre Spécificités de l'infra : le gaspillage "
+        ("Ce qui change depuis le chapitre Contexte : le gaspillage "
          "cesse d'être orphelin — il a un porteur nommé et un objectif partagé."),
         carte_top + carte_h + 0.12, "slide_gaspillage_partage")
     return s
@@ -4257,7 +4290,7 @@ def slide_export_markdown(prs):
     badge_deploiement_agentic(s)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W - BADGE_AGENTIC_W - 0.2, 0.5, [
         ("Pas un 5e deck PPT : un livrable markdown pour l'équipe qui exécute (versionnable, "
-         "committable) — les 4 decks du chapitre Démarche restent pour sponsor et comité de pilotage.",
+         "committable) — les 4 decks du chapitre Démarches restent pour sponsor et comité de pilotage.",
          dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
     ])
 
@@ -4365,7 +4398,7 @@ def slide_iap_contexte_client(prs):
         chip(s, px, py, pill_w, pill_h, nom, color, size=6.5)
     caption_top = pills_top + 2 * pill_h + 0.08 + 0.10
     D.add_text(s, cons_x + pad, caption_top, cons_w - 2 * pad, 0.40, [
-        ("Mêmes étapes que le schéma de fonctionnement (chapitre Démarche) — "
+        ("Mêmes étapes que le schéma de fonctionnement (chapitre Démarches) — "
          "fonctionne aussi sans IA externe si le gate l'impose (mode M0).",
          dict(size=6.5, color=MUTED, italic=True, line_spacing=1.2)),
     ])
@@ -4439,7 +4472,7 @@ def slide_iap_contexte_client(prs):
     D.add_rect(s, MARGIN, band_top, CONTENT_W, band_h, fill="#ffffff",
                line=ENCRE, line_w=1.0, rounded=True, radius=0.10)
     D.add_text(s, MARGIN + 0.2, band_top, CONTENT_W - 0.4, band_h, [
-        ("QUATRE PROPOSITIONS DE DÉPLOIEMENT AGENTIC — DÉTAILLÉES AU CHAPITRE IA",
+        ("QUATRE PROPOSITIONS DE DÉPLOIEMENT AGENTIC — DÉTAILLÉES AU CHAPITRE OFFRE",
          dict(size=7, bold=True, color=ENCRE)),
         ("Agent de triage RUN · veille FinOps · agent documentaire (RAG) · export markdown "
          "(qui porte la décision agentic/documentation) — chacune porte le badge "
@@ -4754,7 +4787,7 @@ def slide_kpis_exemple(prs):
     s = content_slide(prs, "KPI", "KPIs en pratique : le cas nominal RUN massif, avant/après", color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.28, [
         ("Même fixture illustrative que l'agent de triage de tickets et le cas nominal de "
-         "l'export markdown (chapitre IA) — pas un client réel.",
+         "l'export markdown (chapitre Offre) — pas un client réel.",
          dict(size=8, color=MUTED, italic=True)),
     ])
     col_widths = [2.85, 1.75, 1.85, 1.725]
@@ -5312,6 +5345,176 @@ def _controler(prs):
                 + _ANOMALIES_BUILD)
 
 
+# ==================================================================
+# v2.35 (restructuration 8 chapitres, arbitrage utilisateur en salle de
+# délibération) : 3 chapitres neufs — chacun compose une synthèse à partir de
+# faits déjà écrits ailleurs dans ce fichier (aucun fait inventé), plutôt que
+# de renommer une slide existante. Voir docstring de tête + `build()` pour le
+# mapping complet des 10 -> 8 chapitres.
+# ==================================================================
+
+def slide_enjeux(prs):
+    """Lecture organisationnelle/macro des tensions déjà posées par
+    `slide_personas_divergences` — pas les 4 portraits détaillés (restent en
+    annexe), seulement ce qui se joue pour la DSI si rien ne change."""
+    s = content_slide(prs, "Enjeux",
+                       "Si rien ne change : RUN qui s'aggrave, adoption qui stagne, "
+                       "confiance qui s'érode", color=ENCRE)
+    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.42, [
+        ("Quatre parties prenantes interrogées séparément (détail en annexe) convergent sur "
+         "un même constat, lu ici à l'échelle de la DSI plutôt que persona par persona.",
+         dict(size=D.TYPE["small"], color=NAVY, italic=True, line_spacing=1.25)),
+    ])
+    enjeux = [
+        ("Pilotage", "Un signal de flux que personne ne partage encore",
+         "Le management pilote à vue faute d'un métrique commun — l'infra comme guichet "
+         "ne produit qu'un reporting-miroir, jamais un signal de confiance."),
+        ("Adoption", "Un self-service qui reste un guichet si personne ne le choisit",
+         "Tant que le contournement reste plus rapide que la plateforme, l'utilisateur "
+         "applicatif la déserte — l'adoption ne se décrète pas, elle se conçoit."),
+        ("Confiance business", "Une promesse business que la structure actuelle ne tient pas",
+         "Le sponsor porte un problème business, pas un chantier cosmétique — sans capacité "
+         "RUN récupérée ni KPI de mission, la promesse reste déclarative."),
+        ("Conformité", "Une vitesse de preuve bridée par un gate non instruit",
+         "La tension entre vitesse de démonstration et gate confidentialité (RSSI non "
+         "interrogé à ce stade) reste un angle mort qui peut bloquer toute preuve par l'IA."),
+    ]
+    n_rows = 2
+    region_top = CONTENT_TOP + 0.55
+    row_gap = 0.16
+    _, colw = col_x(0, 2)
+    inner_w = colw - 0.34
+    label_h = 0.13
+    titre_h = max(_lignes(t, inner_w, D.TYPE["small"]) for _, t, _ in enjeux) * (D.TYPE["small"] * 1.1 / 72.0) + 0.03
+    corps_h = max(_lignes(c, inner_w, 8) for *_, c in enjeux) * (8 * 1.2 / 72.0) + 0.03
+    row_h = 0.12 + label_h + titre_h + 0.06 + corps_h + 0.16
+    region_h = n_rows * row_h + (n_rows - 1) * row_gap
+    region_top = CONTENT_TOP + 0.55 + max(0.0, (CONTENT_BOTTOM - CONTENT_TOP - 0.55 - region_h) / 2)
+    for i, (label, titre, corps) in enumerate(enjeux):
+        col = i % 2
+        row = i // 2
+        x, w = col_x(col, 2)
+        y = region_top + row * (row_h + row_gap)
+        D.add_rect(s, x, y, w, row_h, fill="#ffffff", line=LINE, line_w=0.75,
+                   rounded=True, radius=0.1)
+        D.add_rect(s, x, y, 0.06, row_h, fill=ENCRE, rounded=True, radius=0.5)
+        D.add_text(s, x + 0.2, y + 0.12, w - 0.34, row_h - 0.24, [
+            (label.upper(), dict(size=7, bold=True, color=MUTED)),
+            (titre, dict(size=D.TYPE["small"], bold=True, color=NAVY, space_before=3, line_spacing=1.1)),
+            (corps, dict(size=8, color=MUTED, space_before=4, line_spacing=1.2)),
+        ])
+    return s
+
+
+def slide_opportunites(prs):
+    """Ce que la situation rend possible MAINTENANT — pas le détail d'implémentation
+    (agents candidats, méthode scorée : chapitre Offre), le pourquoi-maintenant."""
+    s = content_slide(prs, "Opportunités",
+                       "Ce que la situation ouvre maintenant — un espace de leviers cadrés, "
+                       "pas un jaillissement gadget", color=ENCRE)
+    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.42, [
+        ("Trois bascules déjà instruites par le cadrage rendent le moment favorable — le "
+         "détail de ce qu'on livre pour les saisir suit au chapitre Offre.",
+         dict(size=D.TYPE["small"], color=NAVY, italic=True, line_spacing=1.25)),
+    ])
+    leviers = [
+        ("Une méthode déjà scorée", "8 familles de gaspillage nommées et priorisables "
+         "(impact × faisabilité − prudence IA) : la priorisation n'est plus à inventer."),
+        ("Un régime RUN devenu traitable", "Le RUN comme régime permanent, une fois nommé, "
+         "ouvre la voie à une infra as a product plutôt qu'à un guichet subi."),
+        ("Une IA sous gate, jamais la réponse d'abord", "Le gate confidentialité "
+         "(iap-ai-data-confidentiality-gate) et le principe « process explicite avant l'agent » "
+         "sécurisent l'usage — l'IA amplifie une réponse déjà là, elle ne la remplace pas."),
+        ("Une organisation cible déjà pensée", "Team topologies et partage gaspillage "
+         "mutualisé/tranché-à-deux donnent un porteur à ce qui, aujourd'hui, n'en a pas."),
+    ]
+    n = len(leviers)
+    pad = 0.2
+    _, w1 = col_x(0, n)
+    usable = w1 - 2 * pad
+    corps_h = max(_lignes(c, usable, 8.5) for _, c in leviers) * (8.5 * 1.22 / 72.0) + 0.06
+    card_h = 0.16 + 0.30 + 0.10 + corps_h + 0.18
+    top0 = CONTENT_TOP + max(0.55, (CONTENT_H - 0.55 - card_h) / 2 + 0.55)
+    for i, (titre, corps) in enumerate(leviers):
+        x, w = col_x(i, n)
+        accent = (i == 2)   # « un sur N » : le gate IA, seul principe non négociable de la série
+        if accent:
+            D.add_rect(s, x, top0, w, card_h, fill=NAVY, rounded=True, radius=0.08)
+        else:
+            D.add_rect(s, x, top0, w, card_h, fill="#ffffff", line=LINE, line_w=0.75,
+                       rounded=True, radius=0.08)
+        D.add_text(s, x + pad, top0 + 0.16, w - 2 * pad, 0.30, [
+            (str(i + 1), dict(size=8, bold=True, color="#8fd6db" if accent else ENCRE)),
+        ])
+        D.add_text(s, x + pad, top0 + 0.46, w - 2 * pad, 0.34, [
+            (titre, dict(size=9, bold=True, color="#ffffff" if accent else NAVY, line_spacing=1.1)),
+        ])
+        D.add_text(s, x + pad, top0 + 0.46 + 0.34 + 0.06, w - 2 * pad, corps_h, [
+            (corps, dict(size=8.5, color="#c7cbe0" if accent else MUTED, line_spacing=1.22)),
+        ])
+    return s
+
+
+def slide_next_steps(prs):
+    """Jalons immédiats + indicateurs de suivi minimaux (3-4, pas les 3 familles
+    complètes ni la grille de maturité en détail : ça reste en annexe)."""
+    s = content_slide(prs, "Next steps",
+                       "Les jalons immédiats, et le signal minimal pour savoir si ça marche",
+                       color=ENCRE)
+    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.36, [
+        ("Détail des 3 familles de KPIs et de la grille de maturité complète : en annexe.",
+         dict(size=8, color=MUTED, italic=True)),
+    ])
+    jalons = [
+        ("①", "Assessment flash", "Cadrage express : douleurs mesurées, familles de "
+         "gaspillage scorées, gate IA positionné."),
+        ("②", "Mise en place", "Priorisation actée, porteur désigné par gaspillage, "
+         "premiers agents candidats instruits sous gate."),
+        ("⟲", "Réévaluation T+6-12 mois", "Même instrument qu'au T0 : delta mesuré, "
+         "pas une nouvelle opinion."),
+    ]
+    top0 = CONTENT_TOP + 0.5
+    row_h = 0.72
+    row_gap = 0.12
+    n = len(jalons)
+    for i, (num, titre, corps) in enumerate(jalons):
+        y = top0 + i * (row_h + row_gap)
+        D.add_rect(s, MARGIN, y, CONTENT_W, row_h, fill=TRACK, rounded=True, radius=0.1)
+        # bold=False pour "⟲" (tofu en gras dans la police du template, cf.
+        # _GLYPHES_SANS_GRAS) — les chiffres encerclés "①②" le supportent, pas lui.
+        D.add_text(s, MARGIN + 0.18, y, 0.5, row_h, [
+            (num, dict(size=14, bold=(num not in _GLYPHES_SANS_GRAS), color=ENCRE,
+                       align=PP_ALIGN.CENTER)),
+        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+        D.add_text(s, MARGIN + 0.75, y + 0.1, CONTENT_W - 1.0, row_h - 0.2, [
+            (titre, dict(size=9.5, bold=True, color=NAVY, line_spacing=1.1)),
+            (corps, dict(size=8.5, color=MUTED, space_before=3, line_spacing=1.2)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+
+    indic_top = top0 + n * row_h + (n - 1) * row_gap + 0.2
+    D.add_text(s, MARGIN, indic_top, CONTENT_W, 0.24, [
+        ("INDICATEURS DE SUIVI MINIMAUX", dict(size=8, bold=True, color=MUTED)),
+    ])
+    indicateurs = [
+        "Gaspillage traité — capacité RUN récupérée",
+        "Adoption produit — usage du self-service",
+        "Fiabilité & SLA — MTTR, respect des engagements",
+        "Maturité — delta par pilier, T0 → réévaluation",
+    ]
+    ind_top = indic_top + 0.28
+    ind_h = CONTENT_BOTTOM - ind_top
+    n2 = len(indicateurs)
+    for i, texte in enumerate(indicateurs):
+        x, w = col_x(i, n2)
+        D.add_rect(s, x, ind_top, w, ind_h, fill="#ffffff", line=LINE, line_w=0.75,
+                   rounded=True, radius=0.1)
+        D.add_rect(s, x, ind_top, w, 0.05, fill=ENCRE, rounded=True, radius=0.5)
+        D.add_text(s, x + 0.14, ind_top + 0.14, w - 0.28, ind_h - 0.24, [
+            (texte, dict(size=8, color=NAVY, line_spacing=1.2)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+    return s
+
+
 def build():
     # Les anomalies sont accumulees dans une liste de MODULE : sans cette remise
     # a zero, deux build() dans le meme processus additionnent leurs constats et
@@ -5333,18 +5536,19 @@ def build():
     # remettait « sans outillage / avec le module / agentic chez le client » sur
     # trois lignes d'égal poids — ensemble, elles faisaient de l'IA le sujet de
     # l'exec summary, exactement l'inverse de la demande.
-    slide_chapitre(prs, "01", "Exec summary",
+    slide_chapitre(prs, "01", "Executive summary",
                    "La démarche infra en quatre temps — ce qu'on fait dans l'organisation "
                    "et sur la plateforme, sans prérequis d'IA — et ce qui la rend nécessaire.",
                    NAVY, "wheatfield", seed=0)
     slide_executive_summary(prs)
-    slide_synthese_pourquoi_quoi_comment(prs)
-
     slide_vision(prs)
 
-    # === Chapitre 02 — CONTEXTE : le problème ===
+    # === Chapitre 02 — CONTEXTE : le problème (ancien 02 + la moitié « pourquoi
+    # ce terrain n'est pas un terrain comme un autre » de l'ancien 03, v2.35
+    # restructuration 8 chapitres) ===
     slide_chapitre(prs, "02", "Contexte",
-                   "La double mission, et pourquoi cette transformation a du sens pour un client infra maintenant.",
+                   "La double mission, pourquoi cette transformation a du sens maintenant, "
+                   "et pourquoi ce terrain n'est pas un terrain comme un autre.",
                    ENCRE, "mountains", seed=0)
     slide_mission(prs)
     slide_pourquoi_contexte(prs)
@@ -5353,48 +5557,51 @@ def build():
     # jamais été redescendue. Vient APRÈS les 3 déclencheurs, qu'elle prolonge
     # (le déclencheur ① et l'écart 80/30 y sont repris comme réponse d'achat).
     slide_qui_achete(prs)
+    slide_specificites_infra(prs)
 
-    # === Chapitre 03 — SPÉCIFICITÉS DE L'INFRA : pourquoi ce terrain n'est pas
-    # un terrain comme un autre (v2.33, demande utilisateur du 2026-09-10).
-    # Placé APRÈS le contexte et AVANT les personas : ce qu'on dit ici — le RUN
-    # comme régime permanent, l'infra transverse — conditionne la lecture des
-    # douleurs et de la démarche qui suivent. slide_specificites_infra et
-    # slide_infra_as_product_exemple REMONTENT ici depuis le chapitre 01, où
-    # elles vivaient faute de chapitre d'accueil (v2.32) ; les deux slides
-    # suivantes sont neuves.
-    slide_chapitre(prs, "03", "Spécificités de l'infra",
-                   "Le RUN comme régime permanent, une infra transverse que personne "
-                   "ne porte en propre — et ce que ça change à la façon de la traiter.",
+    # === Chapitre 03 — ENJEUX (NOUVEAU, v2.35) : lecture organisationnelle/
+    # macro des tensions personas (détail des 4 portraits en annexe) + le reste
+    # du RUN/infra transverse de l'ancien chapitre « Spécificités de l'infra »
+    # (v2.33) — ce qui se joue pour la DSI si rien ne change, pas le détail
+    # terrain (ça, c'est Douleur). ===
+    slide_chapitre(prs, "03", "Enjeux",
+                   "Ce que la situation coûte à la DSI si rien ne change — pilotage, "
+                   "adoption, confiance business, conformité.",
                    # seed=5 (pas 0) : c'est l'index Openverse VÉRIFIÉ sans filigrane
                    # pour la requête "river delta" — cf. commentaire _REQUETES_PHOTO.
                    ENCRE, "riverdelta", seed=5)
-    slide_specificites_infra(prs)
+    slide_enjeux(prs)
     slide_infra_run(prs)
     slide_infra_transverse(prs)
     slide_infra_as_product_exemple(prs)
 
-    # === Chapitre 04 — PERSONAS : qui l'on transforme ===
-    slide_chapitre(prs, "04", "Personas",
-                   "Quatre parties prenantes interrogées séparément — leurs voix, leurs postures, les tensions.",
-                   ENCRE, "forest", seed=0)
-    slide_personas(prs)
-    slide_personas_divergences(prs)
-
-    # === Chapitre 05 — BESOINS & DOULEURS : ce qui fait mal ===
-    slide_chapitre(prs, "05", "Besoins & douleurs",
+    # === Chapitre 04 — DOULEUR : ce qui fait mal (ancien chapitre « Besoins &
+    # douleurs », inchangé — c'est la seule cible qui avait déjà sa maison
+    # exacte, v2.35) ===
+    slide_chapitre(prs, "04", "Douleur",
                    "Les douleurs approfondies et mesurables, et les 8 familles de gaspillage qui les rangent.",
                    ENCRE, "ocean", seed=0)
     slide_douleurs(prs)
     slide_familles(prs)
 
-    # === Chapitre 06 — PROPOSITION : le QUOI ===
-    # Fil rouge : la THÈSE (why_iap) ouvre, puis la MÉTHODE scorée (gaspillages),
-    # puis la cible d'organisation. v2.5 (chantier ④) : schéma de fonctionnement
-    # + livrables → Démarche ; ambition + lien SI → Outillage IAP. v2.6 : le
-    # sous-chapitre « Exemples » (séparateur slide_sous_chapitre + 3 slides
-    # illustratives) est supprimé à la demande — git garde l'historique (v2.5).
-    slide_chapitre(prs, "06", "Proposition",
-                   "Traiter l'infra comme un produit : la thèse, la méthode scorée et l'organisation cible.",
+    # === Chapitre 05 — OPPORTUNITES (NOUVEAU, v2.35) : ce que la situation
+    # rend possible maintenant — pas le détail d'implémentation (ça, c'est
+    # Offre). Composée à partir des faits déjà écrits pour la Proposition et
+    # l'IA (chapitres suivants), sans les répéter en détail. ===
+    slide_chapitre(prs, "05", "Opportunités",
+                   "Ce que la situation rend possible maintenant — les leviers déjà "
+                   "instruits par le cadrage, pas encore ce qu'on livre pour les saisir.",
+                   ENCRE, "dunes", seed=0)
+    slide_opportunites(prs)
+
+    # === Chapitre 06 — OFFRE : ce qu'on livre concrètement pour saisir
+    # l'opportunité (ancien chapitre « Proposition » + reste de l'ancien
+    # chapitre « IA », v2.35). Fil rouge : la THÈSE (why_iap) ouvre, puis la
+    # MÉTHODE scorée (gaspillages), l'organisation cible, puis l'IA au service
+    # de la réponse (gate, prudence, agents candidats, export). ===
+    slide_chapitre(prs, "06", "Offre",
+                   "Traiter l'infra comme un produit : la thèse, la méthode scorée, "
+                   "l'organisation cible et l'IA au service de la réponse.",
                    ENCRE, "dunes", seed=0)
     slide_why_iap(prs)
     slide_gaspillages(prs)
@@ -5403,11 +5610,9 @@ def build():
     # a deux — parce qu'un gaspillage mutualise n'acquiert de porteur que la.
     slide_gaspillage_partage(prs)
     slide_team_topologies(prs)
-
-    # === Chapitre 07 — IA : tirée APRÈS la proposition (l'IA amplifie, n'est jamais la réponse) ===
-    slide_chapitre(prs, "07", "IA",
-                   "L'IA au service de la réponse : le gate confidentialité, la prudence, les agents candidats, l'export.",
-                   ENCRE, "nightsky", seed=0)
+    # IA tirée APRÈS la thèse (l'IA amplifie, n'est jamais la réponse) —
+    # regroupée dans Offre depuis v2.35 (n'avait pas assez de substance propre
+    # pour justifier son propre chapitre dans un sommaire de 8).
     slide_gate_ia(prs)
     slide_prudence_ia(prs)
     slide_agent_ia(
@@ -5442,15 +5647,16 @@ def build():
         "Charge cognitive réduite, onboarding plus rapide, moins d'interruptions des experts "
         "seniors pour des questions déjà documentées.",
         ENCRE,
-        note=("Ces 3 candidats restent soumis au scoring (chapitre Proposition) et au gate IA (ouverture de ce chapitre) "
+        note=("Ces 3 candidats restent soumis au scoring et au gate IA (tous deux dans ce chapitre) "
               "avant toute décision — des exemples illustratifs, pas une liste actée."))
     slide_export_markdown(prs)
 
-    # === Chapitre 08 — DÉMARCHE : le COMMENT (après l'IA, pour enchaîner sur
-    # l'outillage puis la preuve — cf. docstring v2.5) ===
-    slide_chapitre(prs, "08", "Démarche",
+    # === Chapitre 07 — DÉMARCHES : le COMMENT (fusion des anciens chapitres
+    # « Démarche » et « Outillage IAP », v2.35 — l'outillage devient une
+    # sous-partie de la démarche plutôt qu'un chapitre à lui seul) ===
+    slide_chapitre(prs, "07", "Démarches",
                    "La trajectoire et ses livrables par phase, le fil humain, le schéma de "
-                   "fonctionnement et l'inventaire des agents.",
+                   "fonctionnement, l'inventaire des agents et l'outillage IAP.",
                    ENCRE, "canyon", seed=0)
     # v2.5 (chantier ①) : trajectoire fusionnée avec la vue bout-en-bout.
     slide_trajectoire(prs)
@@ -5464,41 +5670,48 @@ def build():
     # v2.6 (point ②) : les activités humaines de la démarche, avec/sans l'outil
     # — juste après le fil humain, qu'elle décline en registres d'activités.
     slide_activites_humaines(prs)
-    # 2026-09-01 : conditions de réussite et non-engagement — juste après le fil
-    # humain et ses activités, dont elle prolonge le « testé dès l'intake » : ce
-    # que la mission exige du client, et ce que son absence déclenche.
-    slide_conditions_reussite(prs)
     # v2.9 (arbitrage utilisateur) : le parcours de mission détaillé arrive du
-    # chapitre 01 · Exec summary. Placé ICI, en tête du bloc des schémas (parcours
+    # chapitre Executive summary. Placé ICI, en tête du bloc des schémas (parcours
     # de mission → schéma de fonctionnement → inventaire des agents → livrables),
     # plutôt qu'accolé à slide_trajectoire : le fil humain ①②③⟲ (trajectoire →
-    # fil humain → activités → conditions) reste d'un seul tenant.
+    # fil humain → activités) reste d'un seul tenant. Les conditions de
+    # réussite MIGRENT vers Next steps (v2.35), dont elles ouvrent le fil.
     slide_offre_iap(prs)
     # v2.5 (chantier ④) : déplacées de la Proposition (schéma, livrables) et de
     # l'IA (inventaire des agents) vers la Démarche.
     slide_schema_fonctionnement(prs)
     slide_architecture_agents(prs)
     slide_livrables_ppt(prs)
-
-    # === Chapitre 09 — OUTILLAGE IAP : l'AVEC QUOI (nouveau, v2.5) ===
-    slide_chapitre(prs, "09", "Outillage IAP",
-                   "Ce que le module met dans les mains du consultant : l'architecture en "
-                   "contexte client, trois niveaux d'ambition, le lien avec le SI.",
-                   ENCRE, "tropical", seed=0)
-    # v2.6 (point ③) : le chapitre OUVRE sur le schéma d'architecture en
-    # contexte client — ambition et lien SI le déclinent ensuite.
+    # v2.35 : l'outillage IAP (ancien chapitre à part entière) rejoint la
+    # Démarche comme sous-partie — le chapitre OUVRE sur le schéma d'architecture
+    # en contexte client, ambition et lien SI le déclinent ensuite (v2.6, point ③).
     slide_iap_contexte_client(prs)
     slide_ambition(prs)
     slide_architecture_si(prs)
 
-    # === Chapitre 10 — KPI : la preuve (clôture du deck) ===
-    # Les 3 familles ouvrent, puis leur pourquoi/quoi et leur mise en place ; la
-    # grille de maturité (slide_maturite, la 3e famille détaillée) vient ensuite
-    # (déplacée après kpis_mise_en_place, point ①), et le cas nominal chiffré
-    # ferme le deck.
-    slide_chapitre(prs, "10", "KPI",
-                   "Trois familles de KPIs à ne jamais confondre, leur mise en place, la grille de maturité, et le cas chiffré.",
+    # === Chapitre 08 — NEXT STEPS (NOUVEAU, v2.35) : clôture du deck — les
+    # conditions de réussite et les jalons (fin de l'ancien chapitre Démarche),
+    # puis un résumé de 4 indicateurs de suivi (le détail des 3 familles de
+    # KPIs complètes et de la grille de maturité migre en annexe). ===
+    slide_chapitre(prs, "08", "Next steps",
+                   "Ce que la mission exige du client, les jalons immédiats, et le "
+                   "signal minimal pour savoir si ça marche.",
                    ENCRE, "meadow", seed=1)
+    slide_conditions_reussite(prs)
+    slide_next_steps(prs)
+
+    # === Chapitre 09 — ANNEXES (NOUVEAU, v2.35) : les 4 portraits personas
+    # détaillés + leurs divergences, et le détail KPI complet (3 familles,
+    # grille de maturité, mise en place, cas chiffré) — retirés du corps du
+    # deck (repris en synthèse dans Enjeux et Next steps) mais gardés visibles
+    # et tracés ici, pas supprimés silencieusement (contrat de la salle de
+    # délibération qui a validé ce plan). ===
+    slide_chapitre(prs, "09", "Annexes",
+                   "Le détail non repris en corps de deck : les 4 portraits personas et "
+                   "le dispositif KPI complet.",
+                   ENCRE, "tropical", seed=0)
+    slide_personas(prs)
+    slide_personas_divergences(prs)
     slide_kpis(prs)
     slide_kpis_pourquoi_quoi(prs)
     slide_kpis_mise_en_place(prs)
