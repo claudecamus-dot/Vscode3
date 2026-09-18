@@ -97,7 +97,7 @@ garde la main par cible exacte). Routage par catégorie :
 | `bmad-code-review` | délégation `revue-increment` | revue de code adversariale |
 | `bmad-retrospective` | délégation `revue-increment` | rétrospective de fin d'epic |
 | `bmad-correct-course` | délégation `revue-increment` | changement de cap en cours de sprint |
-| `bmad-checkpoint-preview` | délégation `revue-increment` | revue humaine guidée d'un gros diff |
+| `bmad-walkthrough` | délégation `revue-increment` | revue humaine guidée d'un gros diff |
 | `bmad-help` | `revue-increment` + hook SessionStart | routeur BMAD (doute sur quel skill lancer) |
 | `bmad-product-brief`, `bmad-prd`, `bmad-architecture`, `bmad-create-epics-and-stories`, `bmad-check-implementation-readiness`, `bmad-sprint-planning`, `bmad-create-story`, `bmad-dev-story` (8) | étapes du playbook **généré** `cycle-produit-bmad` | cycle produit BMAD complet — **sur demande explicite** (playbook jamais joué ; ne pas éditer à la main, regénéré par `generate_bmad_playbook.py`) |
 
