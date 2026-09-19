@@ -301,3 +301,59 @@ def test_declenche_sur_un_fichier_surveille_seulement_modifie_avec_am(monkeypatc
     out = capsys.readouterr().out
     assert out.strip(), "le hook aurait du se declencher sur `git commit -am`"
     assert "docs/cadrage-ppt/" in json.loads(out)["systemMessage"]
+
+
+# --- (f) casse des motifs lus dans la configuration du depot ------------------
+# Finding audit VScode5 du 2026-09-19 : la commande analysee est passee en
+# `.lower()` (ligne `cmd = (inp.get("command") or "").lower()`), mais les motifs
+# lus dans `.claude/warn_verif_before_commit.json` ne l'etaient pas. Un depot qui
+# declarait `"verif_bash": ["Pytest"]` obtenait un garde-fou INDESARMABLE : la
+# preuve reellement produite n'etait jamais reconnue, le rappel tombait a CHAQUE
+# commit — le mode de defaillance qui fait debrancher un garde-fou.
+
+def _config_casse_mixte(monkeypatch, tmp_path):
+    cfg = tmp_path / "warn_verif_before_commit.json"
+    cfg.write_text(json.dumps({
+        "watched_prefixes": ["docs/cadrage-ppt/"],
+        "verif_bash": ["Pytest", "-m PyTest"],
+        "verif_skill": ["PPTX-Verify"],
+    }), encoding="utf-8")
+    monkeypatch.setattr(hook, "_config_path", lambda: str(cfg))
+    watched, verif_bash, verif_skill = hook._load_config()
+    monkeypatch.setattr(hook, "_WATCHED_PREFIXES", watched)
+    monkeypatch.setattr(hook, "_VERIF_BASH", verif_bash)
+    monkeypatch.setattr(hook, "_VERIF_SKILL", verif_skill)
+
+
+def test_motif_bash_en_casse_mixte_reconnait_la_verification(monkeypatch, tmp_path, capsys):
+    _config_casse_mixte(monkeypatch, tmp_path)
+    tool_use = {"message": {"content": [
+        {"type": "tool_use", "name": "Bash", "input": {"command": "py -m pytest tests/"}}
+    ]}}
+    out = _run_main(monkeypatch, capsys, tmp_path,
+                    staged=["docs/cadrage-ppt/generate_deck.py"],
+                    transcript_tool_use=tool_use)
+    assert out == "", (
+        "motif 'Pytest' en casse mixte : la verification reellement lancee doit "
+        "etre reconnue, sinon le garde-fou est indesarmable\n" + out)
+
+
+def test_motif_skill_en_casse_mixte_reconnait_la_verification(monkeypatch, tmp_path, capsys):
+    _config_casse_mixte(monkeypatch, tmp_path)
+    tool_use = {"message": {"content": [
+        {"type": "tool_use", "name": "Skill", "input": {"skill": "pptx-verify"}}
+    ]}}
+    out = _run_main(monkeypatch, capsys, tmp_path,
+                    staged=["docs/cadrage-ppt/generate_deck.py"],
+                    transcript_tool_use=tool_use)
+    assert out == "", "motif de skill en casse mixte non reconnu\n" + out
+
+
+def test_casse_mixte_le_garde_fou_crie_toujours_sans_verification(monkeypatch, tmp_path, capsys):
+    """Contre-epreuve : la normalisation de casse ne doit pas neutraliser la garde.
+    Sans aucune preuve dans le transcript, elle DOIT crier."""
+    _config_casse_mixte(monkeypatch, tmp_path)
+    out = _run_main(monkeypatch, capsys, tmp_path,
+                    staged=["docs/cadrage-ppt/generate_deck.py"])
+    assert out.strip(), "sans verification, le garde-fou doit crier"
+    assert "docs/cadrage-ppt/" in json.loads(out)["systemMessage"]
