@@ -173,8 +173,11 @@ def main():
     # puis 54 -> 52 (chapitre 01 « Exec summary » jugé trop lourd : ramené à
     # 3 slides de contenu, slide_pitch_iap et slide_demarche_avec_sans_agentic
     # supprimées, leur matière utile absorbée par
-    # slide_synthese_pourquoi_quoi_comment refondue).
-    check(len(prs.slides) == 53, f"53 slides — reçu {len(prs.slides)}")
+    # slide_synthese_pourquoi_quoi_comment refondue). 52 -> 53 (v2.35,
+    # restructuration en 9 chapitres dont Annexes). 53 -> 45 (v2.36, chapitre
+    # Annexes retiré à la demande utilisateur : 7 fonctions de slide
+    # supprimées avec lui, plus l'intercalaire de chapitre).
+    check(len(prs.slides) == 45, f"45 slides — reçu {len(prs.slides)}")
     check(bool(_vu), "build() consulte bien _controler (tous les filets), "
                      "et pas un sous-ensemble câblé en dur")
     check(not problemes,

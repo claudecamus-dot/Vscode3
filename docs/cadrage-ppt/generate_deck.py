@@ -416,17 +416,26 @@ OFFRE > DEMARCHES > NEXT STEPS, plus un chapitre ANNEXES. Mapping :
     et le lien SI deviennent une sous-partie plutôt qu'un chapitre à part).
   - Next steps (NEUF, `slide_next_steps`) récupère `slide_conditions_reussite`
     (fin de l'ancien Démarche) et résume le KPI à 4 indicateurs de suivi.
-  - Annexes (NEUF) garde, visibles et tracés — pas supprimés — les 4 portraits
+  - Annexes (NEUF en v2.35) gardait, visibles et tracés, les 4 portraits
     personas (`slide_personas`, `slide_personas_divergences`) et le
     dispositif KPI complet (`slide_kpis`, `slide_kpis_pourquoi_quoi`,
     `slide_kpis_mise_en_place`, `slide_maturite`, `slide_kpis_exemple`).
 `slide_executive_summary` (le sommaire) est mis à jour pour citer les 8
-chapitres de corps et signaler l'annexe. Toute citation de chapitre par
+chapitres de corps. Toute citation de chapitre par
 NOM dans les slides existantes a été corrigée pour pointer vers le nouveau
 nom (`chapitre IA`/`Proposition` -> `chapitre Offre`, `chapitre Démarche` ->
 `chapitre Démarches`, `chapitre Spécificités de l'infra` -> `chapitre
 Contexte`, `chapitre Outillage IAP` -> `chapitre Démarches`) — jamais par
 numéro, donc la renumérotation elle-même ne casse rien.
+
+v2.36 (2026-09-18, demande utilisateur) : le chapitre Annexes est retiré du
+deck — les 7 fonctions qu'il portait seules (`slide_personas`,
+`slide_personas_divergences`, `slide_kpis`, `slide_kpis_pourquoi_quoi`,
+`slide_kpis_mise_en_place`, `slide_maturite`, `slide_kpis_exemple`) sont
+supprimées du fichier (récupérables dans l'historique git, dernier état au
+commit 636f160). Le sommaire (`slide_executive_summary`) ne mentionne plus
+l'annexe. La synthèse déjà composée dans Enjeux et Next steps reste seule
+trace de ce contenu dans le deck.
 
 Usage : python generate_deck.py
 Sortie : bmad-iap-cadrage-synthese.pptx (à côté de ce script).
@@ -449,7 +458,7 @@ from pptx.util import Emu, Inches, Pt
 # 4 bumps de version consecutifs (v2.9 a v2.11 ont toutes laisse "v2.8 · date
 # perimee" sur la SLIDE LA PLUS VISIBLE du deck). Un seul endroit a changer
 # desormais.
-VERSION_DECK = "v2.35"
+VERSION_DECK = "v2.36"
 DATE_VERSION_DECK = "2026-09-18"
 
 HERE = os.path.dirname(__file__)
@@ -1291,8 +1300,7 @@ def slide_executive_summary(prs):
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, headline_h, [
         ("Transformer l'infrastructure en plateforme opérée comme un produit, ET traiter "
          "structurellement le gaspillage qui l'en empêche — le deck suit le fil : l'offre, "
-         "pourquoi, quoi, comment, la preuve. Détail des personas et des KPIs complets : "
-         "en annexe, en fin de deck.",
+         "pourquoi, quoi, comment, la preuve.",
          dict(size=D.TYPE["small"], color=NAVY, italic=True, line_spacing=1.3)),
     ])
 
@@ -2633,271 +2641,6 @@ def slide_why_iap(prs):
         ])
         chip(s, tx, footer_top + 0.16, content_w, footer_h - 0.16, ancre, color, size=8)
     return s
-
-
-def slide_maturite(prs):
-    s = content_slide(prs, "KPI",
-                       "La grille de maturité : deux échelles distinctes, mesurées dans le temps",
-                       color=ENCRE)
-    # Placée en fin de chapitre KPI (juste avant le cas chiffré) et CLARIFIÉE
-    # (point ①) : c'est la 3e famille de KPIs (grille de maturité). Message resserré :
-    # deux échelles ne mesurant PAS la même chose, chacune gouvernant une décision
-    # différente ; le KPI = le DELTA dans le temps, pas le niveau absolu. Ambiguïté
-    # « Remplace le M0–M4 » toujours levée (badge « Où se lit l'axe IA »).
-    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.42, [
-        ("La 3e famille de KPIs. Deux lectures qui ne mesurent pas la même chose et se lisent "
-         "séparément ; le KPI de progression, c'est le DELTA par pilier entre T0 et chaque "
-         "réévaluation — pas le niveau absolu.",
-         dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
-    ])
-    x0, w0 = col_x(0, 2)
-    x1, w1 = col_x(1, 2)
-
-    head_top = CONTENT_TOP + 0.5
-    D.add_text(s, x0, head_top, w0, 0.5, [
-        ("CAPACITÉ IA DU CLIENT (M0–M4)", dict(size=D.TYPE["tiny"], bold=True, color=NAVY)),
-        ("→ gouverne le choix du modèle IA et le gate",
-         dict(size=7.5, color=ENCRE, space_before=2, line_spacing=1.05)),
-    ])
-    niveaux = [
-        ("M0", "Pas d'IA interne utilisable", "Méthodo générique, données anonymisées"),
-        ("M1", "IA interne basique", "Synthèses internes, pas d'analyse critique auto"),
-        ("M2", "IA privée avec RAG", "Diagnostic documentaire, consolidation"),
-        ("M3", "Plateforme IA gouvernée", "Workflows agentic contrôlés"),
-        ("M4", "IA industrielle", "Agents spécialisés à fort volume, contrôle humain"),
-    ]
-    row_top = head_top + 0.52
-    row_h = 0.58
-    row_gap = 0.06
-    for i, (code, titre, strat) in enumerate(niveaux):
-        y = row_top + i * (row_h + row_gap)
-        chip(s, x0, y, 0.62, row_h, code, ENCRE, size=D.TYPE["tiny"])
-        D.add_text(s, x0 + 0.62 + 0.15, y, w0 - 0.77 - 0.15, row_h, [
-            (titre, dict(size=D.TYPE["tiny"], bold=True, color=NAVY)),
-            (strat, dict(size=8, color=MUTED, space_before=1, line_spacing=1.1)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
-
-    D.add_text(s, x1, head_top, w1, 0.5, [
-        ("MATURITÉ PRODUIT / PLATEFORME (grille V3.2)", dict(size=D.TYPE["tiny"], bold=True, color=NAVY)),
-        ("→ gouverne la trajectoire de transformation",
-         dict(size=7.5, color=ENCRE, space_before=2, line_spacing=1.05)),
-    ])
-    piliers = [
-        ("Équipe Produit", "Adjacent", False),
-        ("Excellence Technique", "Cœur du périmètre", True),
-        ("Culture de l'Entreprise Agile", "Adjacent", False),
-        ("Agilité à l'Échelle", "Cœur du périmètre", True),
-        ("IA, Agentic et Organisation Augmentée", "Où se lit l'axe IA (M0–M4)", True),
-    ]
-    # BUG DE CHARTE corrigé le 2026-09-11 : `D.couleur_pilier(i)` posait une
-    # couleur DIFFÉRENTE par pilier (palette arc-en-ciel héritée d'avant la
-    # bascule du 2026-09-10) — texte vert/rouge/or/violet selon l'index, alors
-    # que la charte interdit explicitement la couleur porteuse de sens. Trouvé
-    # par relecture du code (aucun test ne le voyait : ce n'est pas un accès
-    # littéral `D.PALETTE[i]`, le balayage regex de la bascule ne pouvait pas
-    # le voir). Remplacé par la distinction déjà réelle dans la donnée
-    # (`coeur`, 3 piliers sur 5) exprimée avec les seules couleurs de charte :
-    # ACCENT_PLEIN (cyan) en aplat sur le point, jamais sur le texte.
-    for i, (nom, badge, coeur) in enumerate(piliers):
-        y = row_top + i * (row_h + row_gap)
-        D.add_dot(s, x1, y + row_h / 2 - 0.07, 0.14, ACCENT_PLEIN if coeur else ENCRE)
-        tx = x1 + 0.28
-        tw = w1 - 0.28
-        D.add_text(s, tx, y, tw, row_h, [
-            (nom, dict(size=D.TYPE["tiny"], bold=coeur, color=NAVY, line_spacing=1.1)),
-            (badge, dict(size=8, color=(ENCRE if coeur else MUTED), space_before=1)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
-    return s
-
-
-# --- Nouveau (réouverture de périmètre, arbitrage 2026-07-21) : la Product
-# Discovery (personas/parcours/pain points), délibérément fusionnée dans
-# iap-product-definition pour MVP1 (§Décision de cadrage, ligne 236), est
-# rouverte ici en une slide dédiée. Quatre parties prenantes de la couverture
-# d'interview (§Synthesis, "répartition par persona : infra/utilisateur/
-# management/sponsor", ligne 457) — chacune sa voix, sa question directrice
-# (reprise des questions des §Agents), son irritant, son attente. Ouvre le
-# chapitre Personas (02) : on sait QUI l'on transforme avant d'exposer ses
-# douleurs (chapitre Besoins & douleurs) puis notre réponse (Proposition).
-def slide_personas(prs):
-    s = content_slide(prs, "Personas",
-                       "Quatre parties prenantes interrogées séparément — leur voix, leur posture",
-                       color=ENCRE)
-    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.5, [
-        ("Product Discovery fusionnée dans iap-product-definition en MVP1 — mais chaque partie "
-         "prenante répond à la même trame, pour révéler convergences ET divergences plutôt qu'un "
-         "diagnostic monolithique.",
-         dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
-    ])
-
-    # 2×2 cartes persona. Tuple : nom, accent, rôle (1 ligne), verbatim, ce qu'il
-    # SUBIT, ce qu'il VISE, posture face à la transformation + sa couleur.
-    #
-    # Cette slide a ÉCHAPPÉ à la bascule de charte du 2026-09-10 : elle passait
-    # par un alias local `P = D.PALETTE` puis `P[0]`…`P[5]`, que la regex
-    # `D\.PALETTE\[\d\]` ne pouvait pas voir. Elle est restée la seule du deck
-    # à rendre le feu tricolore (allié=vert, sceptique=rouge, vigilant=or) —
-    # exactement le dispositif que le reste du deck venait d'abandonner, et
-    # exactement ce que le retour utilisateur reprochait. Trouvée par revue de
-    # code, pas par un test : aucun contrôle ne mesure la charte.
-    #
-    # L'accent de carte tombe donc sur l'encre, et la POSTURE — le seul endroit
-    # où une nuance portait vraiment du sens ici — se lit désormais au libellé,
-    # avec le cyan réservé au persona central (« un sur N en accent »).
-    personas = [
-        ("Infra & RUN", ACCENT_PLEIN, "Tient l'exploitation, subit les astreintes.",
-         "« Opérable sans sacrifier le delivery ? »",
-         "Experts seniors mobilisés sur du répétitif.",
-         "Capacité récupérée, RUN maîtrisé.",
-         "Vigilant", ENCRE),
-        ("Utilisateur applicatif", ENCRE, "Consomme la plateforme — ou la contourne.",
-         "« Pourquoi adopterais-je la plateforme ? »",
-         "Guichet unique, contournement plus rapide.",
-         "Un self-service adopté par choix.",
-         "Sceptique", ENCRE),
-        ("Management", ENCRE, "Expert devenu manager, pilote à vue.",
-         "« Comment piloter avec un signal fiable ? »",
-         "Reporting-miroir et micromanagement.",
-         "Un signal de flux de confiance.",
-         "Allié", ENCRE),
-        ("Sponsor", ENCRE, "Porte le budget et la promesse business.",
-         "« Quel problème business règle-t-on ? »",
-         "Craint une transformation cosmétique.",
-         "Problème business réglé, KPIs de mission.",
-         "Allié exigeant", ENCRE),
-    ]
-    top0 = CONTENT_TOP + 0.62
-    row_gap = 0.18
-    card_h = (CONTENT_BOTTOM - top0 - row_gap) / 2
-    pad = 0.2
-    chip_w, chip_h = 1.2, 0.24
-    for i, (nom, accent, role, verbatim, subit, vise, posture, cposture) in enumerate(personas):
-        r, c = divmod(i, 2)
-        cx, cw = col_x(c, 2)
-        cy = top0 + r * (card_h + row_gap)
-        D.add_card(s, cx, cy, cw, card_h, accent)
-        tx = cx + 0.07 + pad
-        tw = cw - 0.07 - 2 * pad
-        D.add_text(s, tx, cy + 0.15, tw, card_h - 0.15 - chip_h - 0.18, [
-            # `encre_de` : sur la carte accentuee, `accent` vaut le cyan et le
-            # libelle se delaverait (1,86:1). Le liseré, lui, garde le cyan.
-            (nom, dict(size=D.TYPE["tiny"], bold=True, color=encre_de(accent),
-                       line_spacing=1.0)),
-            (role, dict(size=8, color=MUTED, space_before=1, line_spacing=1.1)),
-            (verbatim, dict(size=8, italic=True, color=NAVY, space_before=5, line_spacing=1.1)),
-            ("Subit — " + subit, dict(size=8, color=MUTED, space_before=6, line_spacing=1.1)),
-            ("Vise — " + vise, dict(size=8, color=encre_de(accent),
-                                    space_before=3, line_spacing=1.1)),
-        ])
-        chip(s, cx + cw - pad - chip_w, cy + card_h - 0.14 - chip_h, chip_w, chip_h,
-             posture.upper(), cposture, size=6.5)
-    return s
-
-
-# --- Nouveau (arbitrage cadrage validé) : corollaire direct de slide_personas.
-# Interviewer chaque partie prenante SÉPARÉMENT (§Synthesis) n'a de sens que si
-# l'on garde les divergences au lieu de les lisser en consensus — cette slide
-# les rend explicites. La distinction par couleur d'accent persona d'origine
-# (Infra/Utilisateur/Management en teintes propres, RSSI en rouge) a été
-# retirée à la bascule de charte du 2026-09-10 (couleur non porteuse de sens) ;
-# seule la rangée « ANGLE MORT » (Sponsor⟂RSSI) garde un accent, via `tag`
-# (comment corrigé le 2026-09-11). Le
-# symbole de tension « ⟂ » du cadrage est rendu par le connecteur texte « en
-# tension avec » plutôt que par le glyphe (non garanti dans la fonte du
-# template, cf. _GLYPHES_SANS_GRAS) — même prudence que pour « ⟲ ». Rangées
-# dimensionnées à leur contenu (pas de panneau sur-étiré).
-def slide_personas_divergences(prs):
-    s = content_slide(prs, "Personas",
-                       "Interroger chaque persona séparément révèle des tensions "
-                       "qu'un diagnostic fusionné lisserait",
-                       color=ENCRE)
-    # Note d'intro retirée (redondante avec le sous-titre) : les rangées démarrent
-    # plus haut pour laisser place, en bas, à la synthèse « pont » vers la Proposition.
-    # Passe de design 2026-07-23 — pattern 7 du catalogue deck-design-library
-    # (« rangée de cartes, une en accent ») : la rangée ANGLE MORT (Sponsor ⟂ RSSI)
-    # est la seule teintée — fond de support et contour d'encre depuis la
-    # bascule de charte du 2026-09-10 ; le « rouge très pâle + contour rouge »
-    # que décrivait ce commentaire n'existe plus, c'est le rang de la rangée et
-    # son fond qui la distinguent. Les 3 tensions instruites restent des cartes
-    # blanches identiques.
-    # De même, les 5 parties prenantes partageaient 5 teintes : elles partagent
-    # désormais l'encre, et se distinguent par le libellé et la position.
-    c_infra = ENCRE   # Infra & RUN
-    c_user = ENCRE    # Utilisateur applicatif
-    c_mgmt = ENCRE    # Management
-    c_spon = ENCRE    # Sponsor
-    c_rssi = ENCRE    # RSSI — porteur du gate (criticité portée par le libellé)
-    rows = [
-        (("Management", c_mgmt), ("Infra & RUN", c_infra), None,
-         "Le même métrique de flux, lu « signal de pilotage de confiance » d'un côté, "
-         "« surveillance » de l'autre."),
-        (("Sponsor", c_spon), ("Infra & RUN", c_infra), None,
-         "Horizon : valeur business rapide et visible d'un côté, soulagement durable et "
-         "structurel du RUN de l'autre."),
-        (("Utilisateur applicatif", c_user), ("Infra & RUN", c_infra), None,
-         "Self-service adopté par choix face à l'opérabilité sans sacrifier le delivery : "
-         "qui absorbe le coût du self-service ?"),
-        (("Sponsor", c_spon), ("RSSI", c_rssi), "ANGLE MORT",
-         "Vitesse de démonstration face au gate confidentialité, bloquant sur donnée client — "
-         "tension anticipée, le RSSI n'a pas été interrogé (voir note ci-dessous)."),
-    ]
-    top0 = CONTENT_TOP + 0.1
-    n = len(rows)
-    synth_h, note_h = 0.56, 0.34
-    bottom_reserve = synth_h + 0.14 + note_h + 0.10
-    row_gap = 0.12
-    region_bot = CONTENT_BOTTOM - bottom_reserve
-    row_h = (region_bot - top0 - (n - 1) * row_gap) / n
-    name_w = 2.7
-    x_name = MARGIN + 0.2
-    x_fric = x_name + name_w + 0.25
-    fric_w = (MARGIN + CONTENT_W) - x_fric - 0.15
-    for i, ((nomA, colA), (nomB, colB), tag, friction) in enumerate(rows):
-        y = top0 + i * (row_h + row_gap)
-        accent = tag is not None   # « un sur N » : l'angle mort, seul non instruit
-        D.add_rect(s, MARGIN, y, CONTENT_W, row_h,
-                   fill="#E7E9EE" if accent else "#ffffff",
-                   line=c_rssi if accent else LINE,
-                   line_w=1.0 if accent else 0.75,
-                   rounded=True, radius=0.08)
-        # liseré scindé : moitié haute = couleur A, moitié basse = couleur B
-        D.add_rect(s, MARGIN, y, 0.06, row_h / 2, fill=colA, rounded=True, radius=0.5)
-        D.add_rect(s, MARGIN, y + row_h / 2, 0.06, row_h / 2, fill=colB, rounded=True, radius=0.5)
-        lignes = [
-            (nomA, dict(size=D.TYPE["tiny"], bold=True, color=colA, line_spacing=1.0)),
-            ("en tension avec", dict(size=7, italic=True, color=MUTED, space_before=3, space_after=3)),
-            (nomB, dict(size=D.TYPE["tiny"], bold=True, color=colB, line_spacing=1.0)),
-        ]
-        if tag:
-            lignes.append((tag, dict(size=6.5, bold=True, color=c_rssi, space_before=3)))
-        D.add_text(s, x_name, y + 0.08, name_w, row_h - 0.16, lignes, anchor=MSO_ANCHOR.MIDDLE)
-        D.add_text(s, x_fric, y + 0.08, fric_w, row_h - 0.16, [
-            (friction, dict(size=8, color=NAVY, line_spacing=1.2)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
-
-    # Ligne de synthèse « pont » (issue du brainstorm) : les divergences ne se
-    # tranchent pas, la méthode (ch. Proposition) les tient des deux bouts —
-    # transforme la slide de « voici des conflits » en « voici pourquoi on n'a pas
-    # à choisir un camp », et donne l'élan vers la suite.
-    synth_top = top0 + n * row_h + (n - 1) * row_gap + 0.14
-    D.add_rect(s, MARGIN, synth_top, CONTENT_W, synth_h, fill=TRACK, rounded=True, radius=0.12)
-    D.add_rect(s, MARGIN, synth_top, 0.07, synth_h, fill=c_user, rounded=True, radius=0.5)
-    D.add_text(s, MARGIN + 0.26, synth_top, CONTENT_W - 0.42, synth_h, [
-        ("Ces tensions ne se tranchent pas — on les tient des deux bouts.",
-         dict(size=8.5, bold=True, color=c_user, line_spacing=1.05)),
-        ("La méthode (ch. Proposition) : la métrique de flux = signal partagé, le gate "
-         "confidentialité = non négociable.",
-         dict(size=8, color=NAVY, space_before=2, line_spacing=1.1)),
-    ], anchor=MSO_ANCHOR.MIDDLE)
-
-    note_top = synth_top + synth_h + 0.10
-    D.add_text(s, MARGIN, note_top, CONTENT_W, note_h, [
-        ("Angles morts, non interrogés à ce stade : le client métier consommateur des services, "
-         "le RSSI (porteur du gate), le junior / nouvel arrivant.",
-         dict(size=7.5, color=MUTED, italic=True, line_spacing=1.15)),
-    ])
-    return s
-
 
 # ---------------------------------------------------------------- Besoins & douleurs
 # Nouveau (restructuration 2026-07-22) : la grille des 8 familles de gaspillage,
@@ -4553,323 +4296,6 @@ def slide_ambition(prs):
     return s
 
 
-# ---------------------------------------------------------------- slide 12
-def slide_kpis(prs):
-    s = content_slide(prs, "KPI", "Trois familles de KPIs, à ne jamais confondre", color=ENCRE)
-    familles = [
-        ("KPIs de mission", ENCRE, "Côté client",
-         ["Gaspillage traité (capacité RUN récupérée)", "Adoption produit (self-service)",
-          "Fiabilité & SLA (MTTR, respect des engagements de service, coût/capacité)", "Gouvernance IA (supervision, incidents)",
-          "Maturité (delta par pilier, T0→réévaluation)"]),
-        ("KPIs d'usage du module", ENCRE, "Côté cabinet",
-         ["Accélération (temps pour un cadrage flash)", "Réutilisation (templates vs ad hoc)",
-          "Cohérence (écarts détectés par risk-reviewer)", "Capitalisation (REX ajoutés)",
-          "Adoption interne (consultants, missions)"]),
-        ("Grille de maturité", ENCRE, "Progression dans le temps",
-         ["Delta par pilier (Excellence Tech., Agilité, IA/Agentic)",
-          "Re-assessment T+6–12 mois",
-          "Score de priorisation ≠ KPI de résultat"]),
-    ]
-    n = 3
-    pad = 0.18
-    _, wcol = col_x(0, n)
-    usable = wcol - 2 * pad
-    # Carte plafonnée au contenu (titre + sous-titre + puces) puis bande de
-    # cartes CENTRÉE verticalement — au lieu de card_h = CONTENT_H qui étirait
-    # chaque colonne sur toute la hauteur et laissait un grand vide sous les
-    # puces (défaut « panneau sur-étiré », slide 28).
-    # Passe de design 2026-07-23 — pattern 3 du catalogue deck-design-library
-    # (« grille de cartes stat, une en accent ») : la Grille de maturité est la
-    # seule carte en fill navy plein — c'est la famille que le chapitre détaille
-    # ensuite (slide_maturite + message « le KPI = le delta T0→réévaluation ») ;
-    # corps monté à 8.5pt (la densité s'absorbe par la police, pas par le vide).
-    accent_idx = 2   # « Grille de maturité »
-    def _bloc_puces(items):
-        lignes = sum(_lignes("·  " + it, usable, 8.5) for it in items)
-        return lignes * (8.5 * 1.15 / 72.0) + len(items) * (4 / 72.0)
-    bullets_h = max(_bloc_puces(items) for *_, items in familles)
-    card_h = 0.8 + bullets_h + 0.22
-    top0 = CONTENT_TOP + max(0.0, (CONTENT_H - card_h) / 2)
-    for i, (titre, color, sous, items) in enumerate(familles):
-        x, w = col_x(i, n)
-        accent = (i == accent_idx)
-        if accent:
-            D.add_rect(s, x, top0, w, card_h, fill=NAVY, rounded=True, radius=0.06)
-            # Lisere CYAN sur la carte accentuee : en `color` (= ENCRE) il
-            # etait navy sur navy, donc la carte mise en avant etait la
-            # SEULE sans marqueur visible.
-            D.add_rect(s, x, top0, 0.07, card_h, fill=ACCENT_PLEIN, rounded=True, radius=0.5)
-        else:
-            D.add_card(s, x, top0, w, card_h, color)
-        D.add_text(s, x + pad, top0 + 0.16, w - 2 * pad, 0.55, [
-            (titre, dict(size=D.TYPE["small"], bold=True,
-                         color="#ffffff" if accent else color, line_spacing=1.05)),
-            (sous, dict(size=8.5, color="#aeb6d4" if accent else MUTED,
-                        italic=True, space_before=2)),
-        ])
-        lignes = [(f"·  {it}", dict(size=8.5, color="#e8ebf5" if accent else NAVY,
-                                    space_after=4, line_spacing=1.15))
-                  for it in items]
-        D.add_text(s, x + pad, top0 + 0.8, w - 2 * pad, card_h - 0.95, lignes)
-    return s
-
-# --- Brainstorm KPIs relancé (v2.1, docs/bmad-iap-cadrage.md §KPIs) — pourquoi
-# chaque famille, quoi mesurer précisément, comment la mettre en place, et un
-# exemple chiffré sur le cas nominal déjà posé pour l'export markdown.
-# Badge-lettre partagé par les 2 slides KPI redessinées (lot 4/4, ci-dessous) —
-# même ordre que les tuples `familles` des deux fonctions (Mission/Usage/
-# Maturité) : le lecteur voit tout de suite que ces 2 slides parlent des 3
-# MÊMES familles sous 2 angles (pourquoi/quoi, puis mise en place), sans
-# reprendre le vocabulaire A/B/C déjà pris par les niveaux d'ambition.
-_LETTRES_FAMILLES_KPI = ["M", "U", "G"]
-
-
-def slide_kpis_pourquoi_quoi(prs):
-    s = content_slide(prs, "KPI", "KPIs : pourquoi chaque famille, et quoi mesurer précisément", color=ENCRE)
-    familles = [
-        ("KPIs de mission", ENCRE,
-         "Sans eux, un deck peut être livré dans les règles sans jamais savoir si le client va "
-         "réellement mieux — la « transformation cosmétique » appliquée cette fois au résultat.",
-         "Capacité RUN récupérée en heures/mois ; delta de MTTR en minutes ; SLA/SLO tenus vs "
-         "promis (iap-product-definition) ; taux de self-service sur la capacité livrée — pas "
-         "un pourcentage vague."),
-        ("KPIs d'usage du module", ENCRE,
-         "Le module est réutilisé mission après mission — sans mesure d'usage, impossible de "
-         "distinguer une méthode qui s'améliore d'une méthode qui stagne.",
-         "Temps en heures consultant pour un cadrage flash ; part des livrables issus d'un template "
-         "sans réécriture substantielle — pas juste « utilisé un template »."),
-        # Accent "un sur N" (arbitrage 2026-09-11) : cohérence avec slide_kpis,
-        # qui accentue déjà cette même famille (accent_idx=2).
-        ("Grille de maturité", ACCENT_PLEIN,
-         "Sans mesure répétée dans le temps, la maturité reste une opinion de consultant, pas un "
-         "delta objectivable — ce qui rend la boucle ⟲ vérifiable plutôt que déclarative.",
-         "Delta par pilier (pas un score agrégé qui masquerait un recul) ; même instrument (grille "
-         "V3.2) à T0 et à chaque re-assessment."),
-    ]
-    # Refonte graphique lot 4/4 (audit design, ch.09) : 3 rangées de tableau
-    # (nom | pourquoi | quoi), alignées en colonnes strictes, cédaient à
-    # l'effet tableau plat — transposées en 3 FICHES verticales (deck-design-
-    # library #13, « icône ronde + étiquette + carte ») : un badge-lettre par
-    # famille au-dessus d'une carte à 2 rubriques empilées (POURQUOI puis QUOI,
-    # séparateur fin) plutôt que 3 lignes lisant les 2 questions côte à côte.
-    n = len(familles)
-    badge_d = 0.5
-    pad = 0.2
-    _, colw = col_x(0, n)
-    usable = colw - 2 * pad
-    name_h = 0.3
-    label_h = 0.16
-    txt_size = 8.5
-    lh = txt_size * 1.25 / 72.0
-    top_pad = 0.16
-    label_gap = 0.04
-    mid_gap = 0.20
-    divider_th = 0.012
-    bottom_pad = 0.16
-
-    pourquoi_lines = max(_lignes(p, usable, txt_size) for _, _, p, _ in familles)
-    quoi_lines = max(_lignes(q, usable, txt_size) for _, _, _, q in familles)
-    pourquoi_h = pourquoi_lines * lh
-    quoi_h = quoi_lines * lh
-    card_h = (top_pad + label_h + label_gap + pourquoi_h + mid_gap
-              + label_h + label_gap + quoi_h + bottom_pad)
-
-    block_h = badge_d + 0.1 + name_h + 0.1 + card_h
-    top0 = CONTENT_TOP + max(0.0, (CONTENT_H - block_h) / 2)
-
-    for i, (nom, color, pourquoi, quoi) in enumerate(familles):
-        x, w = col_x(i, n)
-        cx = x + w / 2
-        _badge(s, cx, top0 + badge_d / 2, badge_d, color, _LETTRES_FAMILLES_KPI[i], size=15)
-        D.add_text(s, x, top0 + badge_d + 0.1, w, name_h, [
-            (nom, dict(size=9.5, bold=True, color=encre_de(color), align=PP_ALIGN.CENTER, line_spacing=1.05)),
-        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-        card_top = top0 + badge_d + 0.1 + name_h + 0.1
-        D.add_rect(s, x, card_top, w, card_h, fill="#ffffff", line=LINE, line_w=0.75,
-                   rounded=True, radius=0.08)
-        y1 = card_top + top_pad
-        D.add_text(s, x + pad, y1, usable, label_h, [
-            ("POURQUOI", dict(size=7, bold=True, color=MUTED)),
-        ])
-        D.add_text(s, x + pad, y1 + label_h + label_gap, usable, pourquoi_h, [
-            (pourquoi, dict(size=txt_size, color=NAVY, line_spacing=1.25)),
-        ])
-        divider_y = y1 + label_h + label_gap + pourquoi_h + (mid_gap - divider_th) / 2
-        D.add_rect(s, x + pad, divider_y, usable, divider_th, fill=LINE)
-        y2 = y1 + label_h + label_gap + pourquoi_h + mid_gap
-        D.add_text(s, x + pad, y2, usable, label_h, [
-            ("QUOI, PRÉCISÉMENT", dict(size=7, bold=True, color=MUTED)),
-        ])
-        D.add_text(s, x + pad, y2 + label_h + label_gap, usable, quoi_h, [
-            (quoi, dict(size=txt_size, color=NAVY, line_spacing=1.25)),
-        ])
-    return s
-
-
-def slide_kpis_mise_en_place(prs):
-    s = content_slide(prs, "KPI", "KPIs : comment on les met en place, concrètement", color=ENCRE)
-    familles = [
-        ("KPIs de mission", ENCRE, "iap-metrics-sre-finops-lead",
-         "ServiceNow/Jira/CMDB si accès (preuves externes), sinon déclaratif — tagué DÉDUIT",
-         "Continu, lu à chaque étape ②③⟲"),
-        ("KPIs d'usage du module", ENCRE, "Le consultant, au fil des missions",
-         "Journal de mission + bibliothèque de REX",
-         "Par mission, consolidé à MVP5"),
-        # Accent "un sur N" (arbitrage 2026-09-11) : cohérence avec slide_kpis
-        # et slide_kpis_pourquoi_quoi, qui accentuent déjà cette même famille.
-        ("Grille de maturité", ACCENT_PLEIN, "iap-strategy-lead",
-         "Grille V3.2 repassée en atelier ou en interview",
-         "T0 (① Assessment flash) puis chaque boucle ⟲"),
-    ]
-    # Refonte graphique lot 4/4 (audit design, ch.09) : table plate à 4
-    # colonnes (nom | owner | source | cadence) — owner/source/cadence sont en
-    # fait une séquence opérationnelle (qui produit la mesure -> d'où vient la
-    # donnée -> à quelle fréquence elle est relue), pas 3 attributs isolés.
-    # Chaque famille devient une ligne de MINI-PIPELINE : badge-lettre (même
-    # M/U/G que la slide précédente) + 3 pastilles reliées par un chevron de
-    # flux (`_chevron_arrow`, déjà le vocabulaire de flux du deck) au lieu de
-    # 3 cellules alignées sans relation visuelle entre elles.
-    n_familles = len(familles)
-    label_w = 1.55
-    badge_d = 0.34
-    n_steps = 3
-    step_gap = 0.26
-    steps_x0 = MARGIN + label_w + 0.16
-    steps_total_w = CONTENT_W - label_w - 0.16
-    step_w = (steps_total_w - (n_steps - 1) * step_gap) / n_steps
-    step_pad = 0.14
-    usable_step = step_w - 2 * step_pad
-    step_label_h = 0.15
-    step_size = 8
-    step_lh = step_size * 1.2 / 72.0
-
-    specs_par_famille = [
-        [("OWNER", owner), ("SOURCE DES DONNÉES", source), ("CADENCE", cadence)]
-        for (_, _, owner, source, cadence) in familles
-    ]
-    max_lines = max(_lignes(val, usable_step, step_size)
-                     for specs in specs_par_famille for _, val in specs)
-    step_val_h = max_lines * step_lh
-    row_h = step_pad + step_label_h + 0.03 + step_val_h + step_pad
-    row_gap = 0.16
-
-    top0 = CONTENT_TOP + 0.05
-    for i, (nom, color, _owner, _source, _cadence) in enumerate(familles):
-        y = top0 + i * (row_h + row_gap)
-        cy = y + row_h / 2
-        _badge(s, MARGIN + badge_d / 2, cy, badge_d, color, _LETTRES_FAMILLES_KPI[i], size=11)
-        D.add_text(s, MARGIN + badge_d + 0.14, y, label_w - badge_d - 0.14, row_h, [
-            (nom, dict(size=8.5, bold=True, color=encre_de(color), line_spacing=1.15)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
-        for j, (label, val) in enumerate(specs_par_famille[i]):
-            x = steps_x0 + j * (step_w + step_gap)
-            D.add_rect(s, x, y, step_w, row_h, fill=_pale(color, 0.10), rounded=True, radius=0.14)
-            D.add_text(s, x + step_pad, y + step_pad, usable_step, row_h - 2 * step_pad, [
-                (label, dict(size=6.5, bold=True, color=MUTED)),
-                (val, dict(size=step_size, color=NAVY, space_before=3, line_spacing=1.2)),
-            ])
-            if j < n_steps - 1:
-                _chevron_arrow(s, x + step_w, y, step_gap, row_h, color=color)
-
-    note_top = top0 + n_familles * row_h + (n_familles - 1) * row_gap + 0.16
-    note_h = min(0.85, CONTENT_BOTTOM - note_top)
-    D.add_rect(s, MARGIN, note_top, CONTENT_W, note_h, fill=TRACK, rounded=True, radius=0.08)
-    D.add_text(s, MARGIN + 0.2, note_top, CONTENT_W - 0.4, note_h, [
-        ("Pas d'instrumentation automatique en MVP1", dict(size=8, bold=True, color=NAVY)),
-        ("Cohérent avec le Niveau A/B assumé (§Ambition de l'outil) : recueil et rapport à la main "
-         "tant qu'aucun tableau de bord temps réel n'est promis avant le Niveau C.",
-         dict(size=8, color=MUTED, space_before=3, line_spacing=1.2)),
-    ], anchor=MSO_ANCHOR.MIDDLE)
-    return s
-
-
-def slide_kpis_exemple(prs):
-    s = content_slide(prs, "KPI", "KPIs en pratique : le cas nominal RUN massif, avant/après", color=ENCRE)
-    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.28, [
-        ("Même fixture illustrative que l'agent de triage de tickets et le cas nominal de "
-         "l'export markdown (chapitre Offre) — pas un client réel.",
-         dict(size=8, color=MUTED, italic=True)),
-    ])
-    col_widths = [2.85, 1.75, 1.85, 1.725]
-    headers = ["KPI", "T0 · ① ASSESSMENT FLASH", "T+6-12 MOIS · ⟲ RÉÉVALUATION", "TAG"]
-    xs = []
-    cx = MARGIN
-    for cw in col_widths:
-        xs.append(cx)
-        cx += cw + 0.12
-
-    header_y = CONTENT_TOP + 0.4
-    for x, w, label in zip(xs, col_widths, headers, strict=True):
-        # _header_cell : le "⟲" de « T+6-12 MOIS · ⟲ RÉÉVALUATION » serait un
-        # tofu en gras (cf. _GLYPHES_SANS_GRAS) — posé bold=False pour ce seul
-        # caractère, le reste du libellé reste en gras.
-        _header_cell(s, x, header_y, w, 0.24, label, size=7, color=MUTED, bold=True)
-
-    tagcolor = {"CONFIRMÉ": SEVERITE[0], "DÉDUIT": SEVERITE[2], "—": MUTED}
-    rows = [
-        ("Pilier Agentic Readiness", "[1] — process pas assez explicite",
-         "[2] — process explicite, rôles définis", "CONFIRMÉ"),
-        ("Tickets récurrents évités / mois", "0", "≈ 15", "DÉDUIT"),
-        ("Temps de triage moyen / ticket", "25 min", "12 min", "DÉDUIT"),
-        ("Recommandation associée", "Documentation-first (runbook)",
-         "Agentic-implementation (même fichier amendé)", "—"),
-    ]
-    row_top = header_y + 0.32
-    row_h = 0.62
-    row_gap = 0.08
-    for i, (kpi, t0, t1, tag) in enumerate(rows):
-        y = row_top + i * (row_h + row_gap)
-        D.add_rect(s, MARGIN, y + row_h, CONTENT_W, 0.012, fill=LINE)
-        D.add_text(s, xs[0], y, col_widths[0], row_h, [
-            (kpi, dict(size=8, bold=True, color=NAVY, line_spacing=1.15)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
-        D.add_text(s, xs[1], y, col_widths[1], row_h, [
-            (t0, dict(size=8, color=NAVY, line_spacing=1.15)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
-        D.add_text(s, xs[2], y, col_widths[2], row_h, [
-            (t1, dict(size=8, color=NAVY, line_spacing=1.15)),
-        ], anchor=MSO_ANCHOR.MIDDLE)
-        if tag == "—":
-            D.add_text(s, xs[3], y, col_widths[3], row_h, [
-                (tag, dict(size=8, color=MUTED, align=PP_ALIGN.CENTER)),
-            ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-        else:
-            chip(s, xs[3], y + row_h / 2 - 0.13, min(1.1, col_widths[3]), 0.26, tag, tagcolor[tag], size=7)
-
-    note_top = row_top + 4 * row_h + 3 * row_gap + 0.15
-    note_h = min(0.6, CONTENT_BOTTOM - note_top)
-    D.add_text(s, MARGIN, note_top, CONTENT_W, note_h, [
-        ("Le point à retenir n'est pas l'ampleur des chiffres (fixture, pas une preuve) mais la "
-         "discipline de mesure : même instrument aux deux instants, tag de confiance explicite, et "
-         "un KPI de maturité qui déclenche directement le changement de recommandation.",
-         dict(size=8, color=MUTED, italic=True, line_spacing=1.25)),
-    ])
-    return s
-
-
-# --- Nouveau (brainstorm) : rendre tangible, dans le chapitre IA (chapitre 05
-# en v2.5, APRÈS la proposition), ce que "piste agentique" veut dire concrètement — 3
-# candidats illustratifs ancrés sur des familles de gaspillage déjà cadrées
-# (§Traitement des gaspillages), pas des exemples inventés hors cadre. Les 3
-# appels passent désormais tous ENCRE via l'argument `color` — la distinction
-# par couleur de famille de gaspillage (RUN=rouge, Financier=or, Cognitif=
-# violet) a été retirée à la bascule de charte du 2026-09-10 (comment corrigé
-# le 2026-09-11) ; le lien à slide_familles reste porté par le LIBELLÉ de la
-# famille citée dans chaque carte, pas par une couleur partagée.
-#
-# Refonte graphique lot 3/4 (audit design, ch.06) : les 3 appels de cette
-# fonction template rendaient des slides visuellement IDENTIQUES (mêmes 3
-# bandeaux bordés empilés), sans repère propre à chaque agent. Deux
-# changements, tous deux pilotés par les paramètres déjà passés (générique,
-# rien de codé en dur pour un agent en particulier) :
-#   - un médaillon-icône par `famille` (vocabulaire de silhouettes MSO_SHAPE,
-#     comme _picto plus haut — pas de glyphe exotique) : GEAR_6 = tâche
-#     répétitive (RUN), CLOUD = ressources cloud scannées (Financier),
-#     FOLDED_CORNER = document indexé (Cognitif) ;
-#   - le flux why/what/gain n'est plus 3 cartes bordées identiques mais UNE
-#     chaîne connectée (spine verticale + pilules-étiquettes, pattern 6 du
-#     catalogue deck-design-library) qui part du médaillon — la forme dit
-#     « un seul agent, un enchaînement », pas « trois blocs de texte ».
 _ICONES_FAMILLE_AGENT = {
     "RUN": MSO_SHAPE.GEAR_6,
     "Financier": MSO_SHAPE.CLOUD,
@@ -5354,14 +4780,15 @@ def _controler(prs):
 # ==================================================================
 
 def slide_enjeux(prs):
-    """Lecture organisationnelle/macro des tensions déjà posées par
-    `slide_personas_divergences` — pas les 4 portraits détaillés (restent en
-    annexe), seulement ce qui se joue pour la DSI si rien ne change."""
+    """Lecture organisationnelle/macro des tensions entre parties prenantes
+    (ex-`slide_personas_divergences`, retirée en v2.36) — pas les 4 portraits
+    détaillés (supprimés du deck), seulement ce qui se joue pour la DSI si
+    rien ne change."""
     s = content_slide(prs, "Enjeux",
                        "Si rien ne change : RUN qui s'aggrave, adoption qui stagne, "
                        "confiance qui s'érode", color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.42, [
-        ("Quatre parties prenantes interrogées séparément (détail en annexe) convergent sur "
+        ("Quatre parties prenantes interrogées séparément convergent sur "
          "un même constat, lu ici à l'échelle de la DSI plutôt que persona par persona.",
          dict(size=D.TYPE["small"], color=NAVY, italic=True, line_spacing=1.25)),
     ])
@@ -5456,13 +4883,14 @@ def slide_opportunites(prs):
 
 
 def slide_next_steps(prs):
-    """Jalons immédiats + indicateurs de suivi minimaux (3-4, pas les 3 familles
-    complètes ni la grille de maturité en détail : ça reste en annexe)."""
+    """Jalons immédiats + indicateurs de suivi minimaux (3-4, pas le détail
+    complet des 3 familles de KPIs ni de la grille de maturité, retiré du
+    deck en v2.36)."""
     s = content_slide(prs, "Next steps",
                        "Les jalons immédiats, et le signal minimal pour savoir si ça marche",
                        color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.36, [
-        ("Détail des 3 familles de KPIs et de la grille de maturité complète : en annexe.",
+        ("Le signal à suivre après l'assessment flash — un instrument, pas un rapport.",
          dict(size=8, color=MUTED, italic=True)),
     ])
     jalons = [
@@ -5700,23 +5128,14 @@ def build():
     slide_conditions_reussite(prs)
     slide_next_steps(prs)
 
-    # === Chapitre 09 — ANNEXES (NOUVEAU, v2.35) : les 4 portraits personas
-    # détaillés + leurs divergences, et le détail KPI complet (3 familles,
-    # grille de maturité, mise en place, cas chiffré) — retirés du corps du
-    # deck (repris en synthèse dans Enjeux et Next steps) mais gardés visibles
-    # et tracés ici, pas supprimés silencieusement (contrat de la salle de
-    # délibération qui a validé ce plan). ===
-    slide_chapitre(prs, "09", "Annexes",
-                   "Le détail non repris en corps de deck : les 4 portraits personas et "
-                   "le dispositif KPI complet.",
-                   ENCRE, "tropical", seed=0)
-    slide_personas(prs)
-    slide_personas_divergences(prs)
-    slide_kpis(prs)
-    slide_kpis_pourquoi_quoi(prs)
-    slide_kpis_mise_en_place(prs)
-    slide_maturite(prs)
-    slide_kpis_exemple(prs)
+    # Chapitre Annexes retiré (v2.36, demande utilisateur) : les 4 portraits
+    # personas détaillés, leurs divergences, et le détail KPI complet (3
+    # familles, grille de maturité, mise en place, cas chiffré) sont
+    # supprimés du deck — leur synthèse reste dans Enjeux et Next steps.
+    # slide_personas, slide_personas_divergences, slide_kpis,
+    # slide_kpis_pourquoi_quoi, slide_kpis_mise_en_place, slide_maturite,
+    # slide_kpis_exemple : fonctions retirées du fichier (récupérables dans
+    # l'historique git, cf. commit 636f160 pour leur dernier état).
 
     _appliquer_police_deck(prs)
 
