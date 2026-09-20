@@ -306,8 +306,16 @@ def test_diagnostic_arbitre_disparait_du_todo_et_de_la_prudence_mais_reste_mesur
     # Avec arbitrage sur cette cible : le constat disparaît du TODO et de prudence,
     # mais le diagnostic reste "lancé" (pas "jamais lancé") et la décision reste visible.
     (tmp_path / "arbitrages.json").write_text(json.dumps({"arbitrages": [
+        # `categories` explicite : depuis l'amnistie de l'héritage (bascule
+        # 2026-09-19, `scan_transcripts.AMNISTIE_HERITAGE`), un arbitrage daté AVANT
+        # la bascule et sans `categories` ne ferme plus rien — 137 des 258 arbitrages
+        # réels, écrits par `refuser_arbitrage.py` qui n'a jamais rempli ce champ,
+        # masquaient à perpétuité TOUT constat futur de leur cible. Le contrat visé
+        # ici (un constat qualitatif arbitré sort du TODO et de prudence) s'exprime
+        # donc désormais par un arbitrage qui NOMME sa catégorie, ce que
+        # `log_arbitrage.py` exige de toute nouvelle entrée.
         {"cible": "pptx-verify", "decision": "soffice installé sur le poste dev depuis le 2026-07-19",
-         "date": "2026-07-19"},
+         "date": "2026-07-19", "categories": ["ko-repete"]},
     ]}, ensure_ascii=False), encoding="utf-8")
     result = _run(tmp_path)
     assert result.returncode == 0, result.stderr
@@ -374,9 +382,27 @@ def test_arbitrage_a_categories_ne_masque_que_ces_categories(tmp_path):
     hints = json.loads((tmp_path / "routing-hints.json").read_text(encoding="utf-8"))
     assert hints["prudence"] == []  # inefficacite arbitrée → hors routage ; verif jamais en prudence
 
-    # Sans le champ `categories` : l'arbitrage ferme les DEUX constats (comportement historique).
+    # AMNISTIE DE L'HERITAGE (bascule `scan_transcripts.AMNISTIE_HERITAGE` = 2026-09-19).
+    # Ce bloc encodait « sans `categories`, l'arbitrage ferme tout » ; le canon a
+    # RETOURNE ce cas pour les entrées ANTÉRIEURES à la bascule. Motif mesuré : 137
+    # des 258 arbitrages réels, tous écrits par `refuser_arbitrage.py` qui ne remplit
+    # jamais `categories`, masquaient à perpétuité tout constat futur de leur cible —
+    # plus l'utilisateur arbitrait, plus le dispositif devenait aveugle. Un arbitrage
+    # daté d'avant la bascule et sans `categories` ne ferme donc plus RIEN.
     (tmp_path / "arbitrages.json").write_text(json.dumps({"arbitrages": [
         {"cible": "ppt-designer", "decision": "active voie unique deck", "date": "2026-07-21"},
+    ]}, ensure_ascii=False), encoding="utf-8")
+    _run(tmp_path)
+    page = (tmp_path / "page.md").read_text(encoding="utf-8")
+    assert "1. **ppt-designer rend une slide mal composee**" in page
+    assert "2. **ppt-designer sur-instancie**" in page
+    assert "~~ppt-designer sur-instancie~~" not in page
+
+    # …mais une entrée SANS DATE garde l'ancien comportement (ferme tout) : on ne peut
+    # pas la situer par rapport à la bascule, et la trancher au hasard effacerait une
+    # décision humaine. C'est la seule survivance du « ferme tout » implicite.
+    (tmp_path / "arbitrages.json").write_text(json.dumps({"arbitrages": [
+        {"cible": "ppt-designer", "decision": "active voie unique deck"},
     ]}, ensure_ascii=False), encoding="utf-8")
     _run(tmp_path)
     page = (tmp_path / "page.md").read_text(encoding="utf-8")

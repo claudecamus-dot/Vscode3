@@ -71,6 +71,13 @@ def test_log_run_appends_valid_run_with_ts(tmp_path):
         ],
         "resultat": "succes",
         "reprises": 0,
+        # Canon du 2026-09-19 (`verifier_validation_utilisateur`) : `livrable_utilisateur`
+        # est OBLIGATOIRE à l'append sur tout `succes`. Motif du durcissement : 194 runs
+        # journalisés `succes` sans jamais déclarer si un humain consommait un artefact —
+        # R5 disait quoi ÉCRIRE sans qu'aucun contrôle ne l'exige. Un `false` nu étant la
+        # case à cocher qui désarme la garde, le motif est exigé avec lui.
+        "livrable_utilisateur": False,
+        "livrable_utilisateur_motif": "test d'append : aucun artefact ouvert par un humain",
     }
     result = _log_run(tmp_path, payload)
     assert result.returncode == 0, result.stderr
@@ -102,7 +109,14 @@ def test_log_run_refuse_un_succes_orchestre_sans_revue_increment(tmp_path):
     (couverte par `test_log_run_appends_valid_run_with_ts`), une mention
     `revue-increment` dans `notes` (revue de campagne couvrant plusieurs runs), ou un
     champ `derogation_revue` motivé. On vérifie ici le refus et les deux échappatoires
-    non couvertes ailleurs — un garde-fou qu'on ne fait jamais crier n'est pas testé."""
+    non couvertes ailleurs — un garde-fou qu'on ne fait jamais crier n'est pas testé.
+
+    Le canon du 2026-09-19 a inséré un refus EN AMONT de celui-ci :
+    `verifier_validation_utilisateur` (champ `livrable_utilisateur` obligatoire) est
+    appelé avant `verifier_revue_increment`, pour qu'un run muet sur son livrable soit
+    nommé pour ce qu'il est plutôt que renvoyé vers la boucle de revue. Le payload
+    déclare donc `false` + motif : sans cela ce test n'exercerait plus la revue
+    d'incrément mais la quittance, et son assertion sur `revue-increment` mentirait."""
     sans_revue = {
         "demande": "export du deck",
         "qualification": "orchestre",
@@ -110,6 +124,8 @@ def test_log_run_refuse_un_succes_orchestre_sans_revue_increment(tmp_path):
                   "modele": "sonnet"}],
         "resultat": "succes",
         "reprises": 0,
+        "livrable_utilisateur": False,
+        "livrable_utilisateur_motif": "run de test, aucun artefact ouvert par un humain",
     }
     refus = _log_run(tmp_path, sans_revue)
     assert refus.returncode == 1
