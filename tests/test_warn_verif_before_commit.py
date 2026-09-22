@@ -357,3 +357,35 @@ def test_casse_mixte_le_garde_fou_crie_toujours_sans_verification(monkeypatch, t
                     staged=["docs/cadrage-ppt/generate_deck.py"])
     assert out.strip(), "sans verification, le garde-fou doit crier"
     assert "docs/cadrage-ppt/" in json.loads(out)["systemMessage"]
+
+
+# --- memoisation de _read_config_dict (finding risque_technique VScode5 2026-09-19) --
+
+def test_read_config_dict_ouvre_le_fichier_une_seule_fois(monkeypatch, tmp_path):
+    """_load_config, _load_extra_config et _load_gardes_config appellent toutes
+    _read_config_dict : avant memoisation, le fichier etait rouvert trois fois
+    pour un contenu identique. Compte les ouvertures reelles via un wrapper
+    autour de `open` builtin, cible sur ce seul chemin de fichier."""
+    hook._CONFIG_DICT_CACHE.clear()
+    cfg = tmp_path / "cfg.json"
+    cfg.write_text(json.dumps({"watched_prefixes": ["backend/"]}), encoding="utf-8")
+    monkeypatch.setattr(hook, "_config_path", lambda: str(cfg))
+
+    import builtins
+    ouvertures = []
+    reel_open = builtins.open
+
+    def _open_compte(*args, **kwargs):
+        if args and str(args[0]) == str(cfg):
+            ouvertures.append(args[0])
+        return reel_open(*args, **kwargs)
+
+    monkeypatch.setattr(hook, "open", _open_compte, raising=False)
+
+    hook._load_config()
+    hook._load_extra_config()
+    hook._load_gardes_config()
+
+    assert len(ouvertures) == 1, (
+        f"_read_config_dict a rouvert le fichier {len(ouvertures)} fois "
+        "au lieu d'une seule (cache par chemin attendu)")
