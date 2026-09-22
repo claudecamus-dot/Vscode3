@@ -100,6 +100,7 @@ def _verifier_contrat_cache_image():
     succès, sans passer par un vrai appel HTTP."""
     import tempfile
     from unittest import mock
+
     from pptx.util import Emu
 
     tmp_img = tempfile.mkdtemp(prefix="test-imgcache-")

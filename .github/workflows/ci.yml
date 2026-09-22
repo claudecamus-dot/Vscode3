@@ -1,0 +1,36 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installer les dependances
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+
+      # Le depot reel (racine, hors docs/cadrage-ppt/archives/ exclu par
+      # pyproject.toml) doit etre a 0 diagnostic : tests/test_lint_perimetre.py
+      # ne verifie que la CONFIGURATION d'exclusion sur un mini-depot jetable,
+      # pas le code reel (finding risque_technique, audit VScode5 2026-09-19).
+      - name: Lint (ruff, depot reel)
+        run: python -m ruff check .
+
+      - name: Analyse de vulnerabilite des dependances
+        run: |
+          pip install pip-audit
+          pip-audit -r requirements.txt
+
+      - name: Tests
+        run: python -m pytest tests/ -q
