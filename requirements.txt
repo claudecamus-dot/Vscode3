@@ -5,4 +5,10 @@
 # version de python-pptx aurait casse la generation sans qu'aucun fichier du
 # depot ne l'ait annoncee (finding risque_technique de l'audit du 2026-09-13).
 python-pptx==1.0.2
-Pillow==12.2.0
+# Pillow 12.2.0 -> 12.3.0 le 2026-09-22 : 25 avis PYSEC reels sur 12.2.0
+# (finding securite de l'audit VScode5 du meme jour). Bump verifie par un
+# rendu reel avant application (pas seulement pytest) : generation complete
+# du deck (`python generate_deck.py`, CONTROLE OK), conversion PDF/PNG via
+# LibreOffice headless, inspection visuelle des slides couverture (image
+# cadree) et contexte (texte) — aucune regression constatee.
+Pillow==12.3.0
