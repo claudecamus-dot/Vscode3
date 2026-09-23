@@ -2,7 +2,27 @@
 
 # BMAD IAP — Infra as a Product Transformation Pack
 
-**Statut :** draft consolidé v2.5 (v2.1, revue localement le 2026-07-15 : brainstorm sur un export markdown de recommandation d'implémentation — agentic ou documentation, selon le contexte client — en complément des 4 profils de livrables PPT déjà cadrés, plus un cas nominal illustratif traçant une intervention de l'intake à l'amélioration de la recommandation à la boucle de réévaluation ; puis un second brainstorm relancé sur les KPIs — pourquoi, quoi mesurer précisément, comment les mettre en place, exemple chiffré sur le même cas nominal, §Trajectoire. v2.2, revue de fond le 2026-07-22 — cf. `docs/reflexions/revue-cadrage.md` : recomptage de l'inventaire des artefacts, requalification de la thèse de financement croisé en hypothèse à prouver, et cross-walk des échelles pour réduire la charge cognitive ; puis traitement des points porteurs restants de la revue — continuité de la boucle ⟲, plafond de débit du checkpoint humain au Niveau C, phasage QA/MVP, audio D2+ au repos sur mobile, statut ordinal du score de priorisation, l'enveloppe commerciale restant seule hors périmètre. v2.3, revue produit + research + market-research du 2026-07-23 — cf. `docs/reflexions/revue-produit-marche.md` : ajout de la section [Vue d'ensemble] Positionnement & achat, alignement du discours sponsor sur le statut d'hypothèse du financement croisé, plan de preuve des missions pilotes, et 8 nouveaux points ouverts produit. v2.4, intégration sourcée du chevauchement avec l'offre « Agentic Product Run » de VScode6-learning-sprintIA (chantiers A′/B1/B2, 2026-09-17) : 5 notes de recoupement sourcées `VScode6-learning-sprintIA@eab29bd:docs/run-ia/…`, tag de confiance `ILLUSTRATIF` introduit pour cette classe de source externe, point ouvert « cohabitation avec l'offre Agentic Product Run » ajouté. v2.5, revue du 2026-09-18 : 2 notes de recoupement supplémentaires sourcées sur le même projet — déclencheur ③ et doctrine de preuve — corroborant des arguments déjà tenus par IAP sans y ajouter de fait nouveau ; aucun changement du deck PPT, ces recoupements ne modifient aucun message destiné au client, cf. note en fin de §Points ouverts)
+**Statut :** draft consolidé v2.7 — **contre-revue du 2026-09-23** (analyses dans
+`docs/reflexions/analyse-cas-limites-cadrage.md` et `analyse-points-revues-anterieures.md`) :
+comptes et renvois corrigés, sept cas limites traités — cumul de scénarios, cumul des
+plafonds DevOps × D3/D4, branche « financement croisé réfuté », compte déjà client de
+l'offre sœur, fraîcheur d'`ExternalEvidence`, corpus mixte, delta vs bruit organisationnel ;
+seuils laissés `INCERTAIN`. v2.6 — **relance de cadrage du 2026-09-20** : revue adverse
+(lentilles adverse + écarts-de-vérification) et deux relevés factuels indépendants — revue
+**non archivée** : ce statut et les sections qu'elle a produites en sont la seule trace ;
+une contre-revue du 2026-09-23 en a vérifié les constats factuels et corrigé les comptes.
+Trois apports ; aucune promesse de vente ajoutée, mais le discours de faisabilité est
+**durci** (grille V3.2 plus dite « éprouvée » en domaine infra, agents requalifiés en cible). (1) §État des
+MVP, nouvelle et seule autorité sur l'avancement : mesuré, le module `bmad-iap` n'existe ni
+dans ce dépôt ni ailleurs dans la flotte et **MVP0 n'est pas commencé** — les 11 agents et 11 workflows sont une cible de conception, à lire au futur
+partout où ce document les dit au présent. (2) §Points échus — réattribution humaine :
+huit bloquants pour une première mission (B1-B8) et trois attributions circulaires cassées,
+les owners passant d'un slug d'agent non construit à un humain. (3) `docs/product-brief.md`
+réaligné, il vendait au présent un outillage décrit au futur. Ce que cette relance n'a
+**pas** fait : trancher les contradictions internes recensées (contrat ADR-009 défini à
+l'opposé en deux endroits, seuils de tagging non implémentables, score de priorisation
+ordinal mais comparé à un seuil signé) ni rédiger les artefacts manquants — chantiers
+ouverts, non traités. (Historique : v2.1, revue localement le 2026-07-15 : brainstorm sur un export markdown de recommandation d'implémentation — agentic ou documentation, selon le contexte client — en complément des 4 profils de livrables PPT déjà cadrés, plus un cas nominal illustratif traçant une intervention de l'intake à l'amélioration de la recommandation à la boucle de réévaluation ; puis un second brainstorm relancé sur les KPIs — pourquoi, quoi mesurer précisément, comment les mettre en place, exemple chiffré sur le même cas nominal, §Trajectoire. v2.2, revue de fond le 2026-07-22 — cf. `docs/reflexions/revue-cadrage.md` : recomptage de l'inventaire des artefacts, requalification de la thèse de financement croisé en hypothèse à prouver, et cross-walk des échelles pour réduire la charge cognitive ; puis traitement des points porteurs restants de la revue — continuité de la boucle ⟲, plafond de débit du checkpoint humain au Niveau C, phasage QA/MVP, audio D2+ au repos sur mobile, statut ordinal du score de priorisation, l'enveloppe commerciale restant seule hors périmètre. v2.3, revue produit + research + market-research du 2026-07-23 — cf. `docs/reflexions/revue-produit-marche.md` : ajout de la section [Vue d'ensemble] Positionnement & achat, alignement du discours sponsor sur le statut d'hypothèse du financement croisé, plan de preuve des missions pilotes, et 8 nouveaux points ouverts produit. v2.4, intégration sourcée du chevauchement avec l'offre « Agentic Product Run » de VScode6-learning-sprintIA (chantiers A′/B1/B2, 2026-09-17) : 5 notes de recoupement sourcées `VScode6-learning-sprintIA@eab29bd:docs/run-ia/…`, tag de confiance `ILLUSTRATIF` introduit pour cette classe de source externe, point ouvert « cohabitation avec l'offre Agentic Product Run » ajouté. v2.5, revue du 2026-09-18 : 2 notes de recoupement supplémentaires sourcées sur le même projet — déclencheur ③ et doctrine de preuve — corroborant des arguments déjà tenus par IAP sans y ajouter de fait nouveau ; aucun changement du deck PPT, ces recoupements ne modifient aucun message destiné au client, cf. note en fin de §Points ouverts)
 **Langue :** FR (vocabulaire technique conservé)
 **Confidentialité :** client-data-first
 **Sources croisées :** VSCode1 (grille de maturité) · VSCode2 (moteur d'assessment + OpenHub)
@@ -85,7 +105,7 @@ La prudence IAP n'est pas une frilosité : c'est l'**anticipation du retour de b
 
 ### Quick win IA légitime — pour le sponsor sous pression IA
 
-Le scénario « Pression IA sponsor » (§Routage des scénarios) route vers le gate + la discovery gaspillage — nécessaire, mais commercialement sec si l'offre ne sait répondre que « pas tout de suite ». Complément v2.3 : **packager dès l'intake un cas D0/D1 à readiness [2]+** — le matériau existe déjà dans le routage (classification des données §Gate IA, seuil de readiness §Export markdown) ; l'offre répond désormais « **celui-ci, tout de suite, sous gate** », sans rien céder à la règle d'or 3.2.1.
+Le scénario « Pression IA sponsor » (§Routage des scénarios) route vers le gate + la discovery gaspillage — nécessaire, mais commercialement sec si l'offre ne sait répondre que « pas tout de suite ». Complément v2.3 : **packager dès l'intake un cas D0/D1 à readiness [2]+** — le matériau existe déjà dans le routage (classification des données §Gate IA, seuil de readiness §Export markdown, section définie plus loin) ; l'offre répond désormais « **celui-ci, tout de suite, sous gate** », sans rien céder à la règle d'or 3.2.1.
 
 ## [Vue d'ensemble] Structure & emplacement du corpus
 
@@ -196,6 +216,7 @@ Tags : `D0 · Public` — `D1 · Interne non sensible` — `D2 · Confidentiel` 
 | D2 | Notes d'interview, reporting, portefeuille projets | IA client ou LLM privé/local |
 | D3 | Tickets détaillés, logs, CMDB, IAM | LLM local/client, contrôles forts |
 | D4 | Secrets de production, données réglementées | Local/on-prem, éventuellement sans IA générative |
+| Mixte | Notes D2 citant des tickets D3, export mêlant coûts et IAM | **Niveau le plus élevé présent**. Un sous-ensemble ne se traite à un niveau inférieur que s'il est extrait dans un corpus séparé, la séparation tracée par `iap-ai-data-confidentiality-gate` ; en cas de doute, le niveau supérieur (v2.7) |
 
 ### Modes d'exécution
 
@@ -240,7 +261,7 @@ Deux échelles indépendantes — ne pas les mélanger dans un seul diagnostic.
 
 ### Maturité produit / plateforme (v0.6 — remplacé par la grille VSCode1)
 
-Le raisonnement en 3 dimensions imaginé en v0.5 (état de l'art / marches à franchir / mode d'accompagnement) reste valable comme *lecture* de la grille, mais n'est plus l'instrument de mesure : on réutilise telle quelle la **Grille d'Assessment Agile V3.2 (variante IA-Agentic-Complet)** du projet VSCode1 — un référentiel déjà éprouvé (outil web de passation, résultats agrégés en radar, export de restitution PPT), plutôt que d'inventer une échelle qualitative à 5 crans.
+Le raisonnement en 3 dimensions imaginé en v0.5 (état de l'art / marches à franchir / mode d'accompagnement) reste valable comme *lecture* de la grille, mais n'est plus l'instrument de mesure : on réutilise la **Grille d'Assessment Agile V3.2 (variante IA-Agentic-Complet)** du projet VSCode1 — un référentiel déjà éprouvé **comme outillage** (outil web de passation, résultats agrégés en radar, export de restitution PPT), plutôt que d'inventer une échelle qualitative à 5 crans. Éprouvée en domaine agile logiciel seulement : en domaine infra, elle reste « adaptée de » tant que la passe de validation B4 n'est pas faite.
 
 Format du référentiel : **5 Piliers → Objectifs → Questions → 4 Niveaux (0–3)**, chaque niveau portant un texte descriptif complet (pas un simple chiffre).
 
@@ -300,6 +321,8 @@ Le cadrage manipule plusieurs échelles à paliers qui se recoupent partiellemen
 - Grille **Excellence Technique / Usine DevOps niveau [0]** → interdit le pattern « Automatiser » (§Traitement des gaspillages) : on ne dépasse pas le palier bas tant que la chaîne n'est pas fiabilisée.
 - Grille **Agentic Readiness [0]–[1]** → force la branche **documentation-first**, interdit le palier « délégué » d'un agent (§Export markdown) : le process doit être explicite *avant* l'agent, pas après.
 - Classification **D3–D4 sans LLM local qualifié** → mode M0 / documentation-first (§Gate IA).
+
+> **Cumul des plafonds (DevOps [0] et D3–D4 sans LLM local) — v2.7.** Les deux règles se cumulent : ni pattern « Automatiser », ni IA sur les données réelles. La mission ne change pas de nature, elle change de livrables : (1) Transformer en entier (cible produit, roadmap, gouvernance) ; (2) Assainir par les seuls patterns hors automatisation (supprimer, simplifier, standardiser) ; (3) les `runbook-<processus>.md` du chemin documentation (§Export markdown) ; (4) un plan de fiabilisation de la chaîne DevOps dont l'atteinte du niveau [1] est le critère de levée du gate à la réévaluation. Ce que la mission ne vend pas est écrit dans la proposition, pas découvert en cours de route. Viabilité commerciale de ce périmètre : `INCERTAIN` — non testée.
 
 > **Ce que ce cross-walk ne fait pas :** il n'aplatit pas les échelles en une seule. Coach/Délégué reste **binaire** (une US est Coach *ou* Délégué), le gradient agent est à **3 paliers**, l'ambition A/B/C est un **choix de gouvernance non nécessairement linéaire** — les correspondances par ligne sont des repères de lecture, pas des synonymes interchangeables. L'intérêt : un consultant qui a intégré « bas / milieu / haut = qui fait, qui supervise, qui laisse faire » n'a plus qu'**un** mouvement mental à tenir, décliné selon l'objet, au lieu de six vocabulaires à mémoriser séparément.
 
@@ -492,7 +515,7 @@ Le diagnostic BMAD IAP restait, jusqu'ici, décrit comme une prose libre issue d
 Mission (= engagement IAP)
   └─ Trame
        └─ Theme          ← les axes de diagnostic déjà identifiés
-            └─ Question   ← reprend §8.4 : flux/priorisation, RUN/support,
+            └─ Question   ← reprend §8.4 du corpus source : flux/priorisation, RUN/support,
                              humain/compétences, financier/environnemental,
                              cognitif/UX, décisionnel/gouvernance, IA/données
 
@@ -520,11 +543,13 @@ Le MVP6 (« Transformation Companion », voir §Roadmap) reste hors périmètre 
 ```
 Interview → Answer / Verbatim   ← déclaratif, sujet au biais de l'interviewé
 ExternalEvidence → source, type, date, référence   ← factuel, extrait d'un système
-                                                       tag de confiance : toujours CONFIRMÉ
-                                                       (donnée système, pas une opinion)
+                                                       tag de confiance : CONFIRMÉ si source identifiée,
+                                                       date d'extraction connue et période couverte
+                                                       incluant la période diagnostiquée ; sinon DÉDUIT,
+                                                       motif écrit (règle d'or fraîcheur, v2.7)
 ```
 
-> **Pourquoi une entité séparée plutôt que fondre les deux :** Un ticket ServiceNow n'a pas le même statut épistémique qu'un verbatim d'interview : c'est une preuve factuelle (tag `CONFIRMÉ` automatique, voir §Agents), pas une déclaration à recouper. Séparer `ExternalEvidence` d'`Interview` permet à `iap-incident-postmortem-miner` (voir décisions ci-dessous) de croiser les deux sans confondre un fait et une perception — utile en particulier pour objectiver l'écart entre RUN perçu et RUN réel (voir §KPIs).
+> **Pourquoi une entité séparée plutôt que fondre les deux :** Un ticket ServiceNow n'a pas le même statut épistémique qu'un verbatim d'interview : c'est une preuve factuelle (tag `CONFIRMÉ` dès que la source est identifiée, datée et couvre la période diagnostiquée — sinon `DÉDUIT`, motif écrit : une donnée système n'est pas une opinion, mais elle peut être périmée ; règle d'or « Vérifier provenance, qualité, fraîcheur des données », §Règles d'or), pas une déclaration à recouper. Séparer `ExternalEvidence` d'`Interview` permet à `iap-incident-postmortem-miner` (voir décisions ci-dessous) de croiser les deux sans confondre un fait et une perception — utile en particulier pour objectiver l'écart entre RUN perçu et RUN réel (voir §KPIs).
 
 Format d'import minimal attendu : un CSV/export brut par outil source, mappé à la Trame via un fichier `import-mapping.md` par engagement (quelles colonnes source correspondent à quels Thèmes/Questions) — pas de connecteur API, juste un import de fichier déposé par le client ou le consultant.
 
@@ -735,6 +760,9 @@ Un seul est bloquant avant tout usage IA sur données client : `iap-ai-data-conf
 | Pression IA sponsor | « Mettre de l'IA » sans cas d'usage | AI/Data Gate + discovery gaspillage |
 | Données sensibles | Tickets, logs, coûts, PII | IA client ou LLM local + anonymisation |
 | Maturité IA faible | Pas de plateforme IA gouvernée | Méthodo + données synthétiques |
+| Absence de sponsor mandaté | Acheteur d'un audit qui ne portera pas la cible ; pas de mandat écrit ; « je ne veux que la baisse de coûts » (§Positionnement & achat) | Test d'engagement du sponsor **avant signature** (B6) ; échec = critère de non-engagement, pas un aléa de mission (§Mise en œuvre du target operating model) |
+
+> **Cumul de scénarios (v2.7).** Les scénarios se répartissent en deux natures. Les **contraintes** (« Données sensibles », « Maturité IA faible ») ne choisissent pas le chemin : elles le plafonnent et s'appliquent toujours, cumulées. Les **moteurs** (les autres lignes, sauf « Absence de sponsor mandaté », qui est un **préalable** : son échec exclut la mission au lieu de l'orienter) choisissent le chemin : un seul est retenu comme moteur de la mission, les autres sont notés comme scénarios secondaires traités par le chemin du moteur ou reportés à la réévaluation. Le choix du moteur est une décision ADR prise à l'intake avec le sponsor, alternatives rejetées obligatoires. Aucun ordre de préséance n'est fixé entre moteurs à ce stade — `INCERTAIN`, à instruire sur les missions pilotes.
 
 ## [Trajectoire] Ambition de l'outil (v0.8 — cadrage initial, affiné par 2 agents en cours)
 
@@ -843,7 +871,8 @@ Le point à retenir n'est pas l'ampleur des chiffres (fixture, pas une preuve) m
 
 1. **Matrice hypothèse × mission** — 3 hypothèses maximum par pilote, chacune avec un **critère de réfutation écrit AVANT la mission**, au format ADR (celui que l'offre impose partout — appliqué ici à son propre plan de preuve). Hypothèse n°1 du pilote 1 : le **financement croisé** (§Vue d'ensemble, hypothèse porteuse).
 2. **Réévaluation contractée à froid** — l'engagement de remesure T+6-12 mois (boucle ⟲) se contracte **dès l'intake**, pas en fin de mission : à chaud, personne n'a intérêt à remesurer si le delta s'annonce faible.
-3. **Scénario « delta plat » pré-écrit** — avant la mission : que mesure-t-on exactement, que dit le deck de bilan si le delta est nul, et comment on distingue le delta de mission du bruit organisationnel sur 6-12 mois (réorgs, coupes budgétaires, départs). La narrative d'échec fait partie du dispositif de preuve, pas une éventualité qu'on improvisera le moment venu.
+3. **Scénario « delta plat » pré-écrit** — avant la mission : que mesure-t-on exactement, que dit le deck de bilan si le delta est nul, et comment on distingue le delta de mission du bruit organisationnel sur 6-12 mois (réorgs, coupes budgétaires, départs). La narrative d'échec fait partie du dispositif de preuve, pas une éventualité qu'on improvisera le moment venu. Méthode minimale (v2.7) : (i) un **journal des événements exogènes** tenu dès l'intake (réorganisations, coupes, départs, changements d'outil), daté et rattaché aux périmètres touchés ; (ii) chaque KPI est lu **par périmètre**, traité vs non traité par la mission quand un périmètre non traité comparable existe ; (iii) un delta n'est attribué à la mission que si le journal n'explique pas l'écart, et il reste tagué `DÉDUIT` — jamais `CONFIRMÉ` : l'attribution causale n'est pas établie par cette méthode.
+4. **Branche « financement croisé réfuté »** (v2.7) — écrite avant le pilote 1. Réfutation sur **un** pilote : on distingue « capacité non récupérée » (échec d'Assainir) de « capacité récupérée mais absorbée ailleurs » (échec du réinvestissement) — seul le second touche la thèse ; l'hypothèse est maintenue et rejouée au pilote suivant. Réfutation répétée (nombre de pilotes : `INCERTAIN`, à fixer par la Direction de cabinet) : la colonne « Ce qu'il finance » de §Mission & vision est réécrite — les deux piliers restent vendus comme conjoints, le discours sponsor retire « la capacité récupérée finance la trajectoire » et `docs/product-brief.md` est mis à jour dans le même mouvement.
 
 ## [Trajectoire] Qualité & test du module (v1.3 — rattaché à MVP5, Industrialisation)
 
@@ -872,7 +901,7 @@ Un `product-canvas-infra.md` avec les 6 champs remplis peut rester une général
 
 > **Pré-check structurel avant iap-risk-reviewer :** Séparer une couche structurelle/mécanique (champs manquants, double-scoring waste/recommandation déjà repéré comme incohérence possible, tag DÉDUIT posé sous le seuil de couverture, décision ADR sans Alternatives rejetées) qui peut devenir un script ou sous-agent déterministe passé **avant** la revue humaine — et une couche jugement pur qui reste le rôle de l'agent. Règle non négociable : ce pré-check ne corrige jamais silencieusement, il liste des anomalies à trancher par l'agent producteur — même règle « lecture seule » que `iap-risk-reviewer` lui-même.
 
-**9 checklists de readiness, deux couches par item** : chaque item tagué `[STRUCTUREL]` (case à cocher, automatisable) ou `[JUGEMENT]` (question ouverte, irréductiblement humaine) dès la rédaction — prépare une automatisation future sans l'exiger dès MVP1. `ai-confidentiality-readiness` est la plus structurelle des 8 par nature (classification D0-D4, mode d'exécution documentés) mais son checkpoint final reste, par doctrine, toujours un jugement humain (ADR-006). `no-waste-shift-checklist` est presque entièrement jugement par construction.
+**9 checklists de readiness, deux couches par item** : chaque item tagué `[STRUCTUREL]` (case à cocher, automatisable) ou `[JUGEMENT]` (question ouverte, irréductiblement humaine) dès la rédaction — prépare une automatisation future sans l'exiger dès MVP1. `ai-confidentiality-readiness` est la plus structurelle des 9 par nature (classification D0-D4, mode d'exécution documentés) mais son checkpoint final reste, par doctrine, toujours un jugement humain (ADR-006). `no-waste-shift-checklist` est presque entièrement jugement par construction.
 
 > **Anti-pattern : la QA cosmétique côté outillage :** Un badge « validé » qui ne précise pas explicitement ce qui a été vérifié (structurel seul, ou structurel + relecture humaine) crée une fausse confiance — même écart que « transformation cosmétique » déjà nommé côté client, reproduit cette fois côté outillage QA. Un badge `QA structurelle uniquement — relecture qualitative non faite` rend visible le niveau de contrôle réellement appliqué, sur le même principe que le badge « Synthèse manuelle — mode M0 ».
 
@@ -970,7 +999,7 @@ Le template `template-octo.pptx` porte déjà, dans ses slides d'exemple (« Not
 
 > **Ce que ça ne crée pas :** pas de nouvel agent — `iap-change-coach` porte le fil humain de bout en bout, cohérent avec le refus déjà acté d'un agent par sujet transverse (§Comitologie, §Recommandations niveau équipe) et avec son rôle existant (§Focus management, §Modèles d'équipe : il couvrait le manager et l'adoption d'agent, il couvre désormais aussi la trajectoire) ; pas de phase supplémentaire ni de calendrier décrété — chaque dispositif suit la doctrine anti-décret (proposé, expérimenté, ajusté au contexte, §Comitologie « Expérimentée, pas décrétée ») ; pas d'import du vocabulaire agile (WHY, PI Planning, CODIR, vote de confiance formel) — les mécanismes sont reformulés dans le vocabulaire infra déjà cadré, la mission étant plus courte et plus ciblée qu'une transformation agile d'entreprise.
 
-> **Répercussion sur les livrables :** le deck de plan de déploiement (②, §Livrables PPT ci-dessous) gagne une section « accompagnement » (équipes volontaires, dispositif de formation-coaching, relais internes visés) ; le deck de comité de pilotage (③) ajoute la santé humaine du déploiement (adhésion, résistances actives et ce qu'elles révèlent) aux côtés des risques techniques ; le deck de bilan (⟲) présente le delta collaborateurs à côté du delta de maturité. Le chapitre Démarche du deck de synthèse du cadrage (`docs/cadrage-ppt/`) reflète cette dimension depuis la v2.4 du deck (`slide_fil_humain`, juste après `slide_trajectoire`).
+> **Répercussion sur les livrables :** le deck de plan de déploiement (②, tableau des 4 profils de livrable ci-dessous, porté par `iap-deck-builder` §Workflows) gagne une section « accompagnement » (équipes volontaires, dispositif de formation-coaching, relais internes visés) ; le deck de comité de pilotage (③) ajoute la santé humaine du déploiement (adhésion, résistances actives et ce qu'elles révèlent) aux côtés des risques techniques ; le deck de bilan (⟲) présente le delta collaborateurs à côté du delta de maturité. Le chapitre Démarche du deck de synthèse du cadrage (`docs/cadrage-ppt/`) reflète cette dimension depuis la v2.4 du deck (`slide_fil_humain`, juste après `slide_trajectoire`).
 
 `iap-deck-builder` est aujourd'hui cadré comme **un seul** deck modulaire à 16 sections (§Workflows), produit une fois à la Restitution. La trajectoire ci-dessus implique plusieurs publics et plusieurs moments de décision — un seul deck monolithique ne les sert pas tous. Brainstorm : décliner le même moteur modulaire en **plusieurs instanciations**, chacune un sous-ensemble de sections pertinent pour son étape et son public — pas un générateur séparé par deck, cohérent avec le flag `mode: brouillon` déjà cadré qui allège déjà le nombre de sections.
 
@@ -1059,9 +1088,110 @@ La QA ici = **fixtures rejouées de bout en bout, REX consolidé, industrialisat
 
 Vision d'un assistant connecté en direct à ServiceNow, Jira, Confluence, Datadog, CMDB, FinOps tooling. Changement d'échelle en termes de sécurité/confidentialité — acté comme horizon hors périmètre explicite plutôt que laissé en non-dit.
 
+## [Trajectoire] État des MVP (v2.6 — mesuré le 2026-09-20)
+
+> **Pourquoi cette section existe.** La roadmap ci-dessus pose sept jalons, et le
+> tableau des points ouverts date ses échéances par rapport à eux (« avant MVP1 »,
+> « MVP3 »…). Aucun de ces jalons n'avait d'état déclaré nulle part dans le dépôt :
+> une échéance exprimée en jalon dont personne ne sait s'il est atteint n'est pas une
+> échéance, c'est une intention. Relevé indépendamment par deux passes de revue le
+> 2026-09-20. Cette section est désormais **la seule autorité sur l'avancement** — elle
+> se met à jour quand un jalon bouge, et aucune autre section ne redit l'avancement.
+
+**Mesure du 2026-09-20.** Commandes : `find . -iname "*iap*" -not -path "./.git/*"`,
+`find . -type d -iname "knowledge"`, `find . -type d -iname "engagements"`. Résultat :
+le module `bmad-iap` **n'existe pas dans le dépôt**. Ni `knowledge/`, ni `engagements/`,
+ni `module.yaml`, ni aucun des 11 agents. **Étendu le 2026-09-23 à la flotte** — commande :
+`Get-ChildItem C:\Users\claude.camus\Documents -Directory | % { Get-ChildItem $_.FullName -Recurse -Directory -Filter "*iap*" -Depth 4 }`
+(`.git` et `node_modules` exclus), 0 résultat :
+absent partout. L'emplacement cible du module (ce dépôt, un dépôt dédié, ou `_bmad/`)
+**n'est pas décidé** — c'est la première décision de MVP0, porteur Claude Camus. Les seuls artefacts IAP réels sont ce cadrage,
+`docs/product-brief.md`, `docs/reflexions/demarche-iap-scale.md` et le deck
+`docs/cadrage-ppt/`.
+
+| Jalon | Contenu | État au 2026-09-20 | Preuve |
+|---|---|---|---|
+| MVP 0 · Corpus | Décomposition du corpus dans `knowledge/` | **NON COMMENCÉ** | `knowledge/` absent du dépôt |
+| MVP 1 · Cœur | `iap-intake`, `iap-product-definition`, `iap-deck-builder` | **NON COMMENCÉ** | aucun agent IAP sur le disque |
+| MVP 2 · Gate IA | `iap-ai-data-confidentiality-gate` + templates IA | **NON COMMENCÉ** | idem |
+| MVP 3 · Diagnostic & gaspillages | Diagnostic systémique, discovery, waste treatment, operating model, couche `[STRUCTUREL]` | **NON COMMENCÉ** | idem |
+| MVP 4 · Spécialisation | Scénario playbook, adoption plan, agentic opportunities, agents restants | **NON COMMENCÉ** | idem |
+| MVP 5 · Industrialisation | QA, REX, templates slides, connecteurs éventuels | **NON COMMENCÉ** | idem |
+| MVP 6 · Connecteurs | « Transformation Companion » | **NON ENGAGÉ** — décision de cadrage, pas un retard | §Roadmap, §Décisions de cadrage |
+
+**Ce que cet état change pour la lecture du reste du document.** Les 11 agents (§Agents
+BMAD) et les 11 workflows (§Workflows) décrivent une **cible de conception**, pas un
+outillage disponible. Partout où ce document — ou `docs/product-brief.md` — en parle au
+présent, lire au futur. Deux conséquences directes, qui ne sont pas des détails de forme :
+
+1. **Aucune échéance formulée « avant MVP1 » n'est tenable** tant que MVP0 n'est pas
+   commencé. Les points concernés ne sont pas en retard sur un plan : ils attendent un
+   plan.
+2. **Tout point ouvert dont l'owner est un slug d'agent est sans porteur réel.** Un agent
+   non construit ne tranche rien. Trois de ces attributions sont même circulaires — le
+   point est censé être tranché par un agent que le jalon de sa propre échéance doit
+   produire. Voir la réattribution ci-dessous.
+
+## [Trajectoire] Points échus — réattribution humaine (v2.6)
+
+> **Pourquoi cette section existe.** Le tableau des points ouverts porte 28 lignes :
+> 24 attribuées à un slug d'agent BMAD non construit, 3 à « Direction de cabinet » sans
+> nom ni date, 1 mixte (`iap-strategy-lead` + Direction). La revue adverse du 2026-09-20
+> (non archivée, cf. Statut) l'a formulé ainsi : sans réattribution
+> humaine datée, aucun point n'a de mécanisme de levée — ils se découvriront ouverts le
+> jour où une mission les rencontrera. Cette section ne remplace pas le tableau : elle
+> extrait ce qui doit tomber **avant une première mission** et lui donne un porteur qui
+> existe. Le tableau reste la liste complète.
+
+**Les trois circularités, nommées et cassées.** Un point dont l'owner est produit par le
+jalon de sa propre échéance ne peut pas être tranché — il faut un humain avant l'agent :
+
+| Point | Attribution circulaire | Réattribution |
+|---|---|---|
+| Convention de nommage des `<client-slug>` | owner `iap-intake`, échéance « avant MVP1 » — or `iap-intake` est livré **à** MVP1 | Claude Camus, avant la première création d'un dossier `engagements/` |
+| Process de redaction du REX | owner `iap-ai-governance-lead` (livré MVP4), échéance « avant clôture MVP0 » | Claude Camus, avant l'intégration du premier REX réel |
+| Critère observable de la règle d'or 3.2.1 | owner `iap-ai-governance-lead` (MVP4), échéance MVP2 | Claude Camus, avant la première mission — voir B5 ci-dessous |
+
+**Ce qui doit tomber avant une première mission.** Huit points classés bloquants par la
+revue adverse du 2026-09-20. Aucun n'est rédigé ici : cette section les rend suivables,
+elle ne fait pas le travail à leur place.
+
+> **Limite assumée de cette réattribution (contre-revue du 2026-09-23).** Elle remplace
+> des owners non joignables par **un porteur unique** (six lignes sur huit, plus les trois
+> circularités), et ses échéances sont **événementielles, pas calendaires** (« avant la
+> première proposition commerciale »). Elle rend donc les points suivables, pas encore
+> levables à date : le mécanisme « humain daté » promis ci-dessus n'est complet qu'une fois
+> (1) une date calendaire posée par ligne et (2) une doublure nommée pour le cas où le
+> porteur unique devient indisponible — **deux décisions du porteur, non prises à ce jour**.
+
+| # | Ce qui bloque | Pourquoi ça casse en mission | Porteur | Échéance |
+|---|---|---|---|---|
+| B1 | Nom public de l'offre — collision `CONFIRMÉ` avec Thoughtworks et Itential | Le premier document remis porte un titre ; se déclenche à la remise, pas sur une hypothèse de fond | Direction de cabinet | Avant la première proposition commerciale |
+| B2 | Cohabitation avec l'offre « Agentic Product Run » (VScode6) | Un même compte peut recevoir les deux discours séparément — **et un compte déjà client d'« Agentic Product Run » peut se voir proposer IAP par-dessus une mission en cours** (v2.7). Règle attendue de l'arbitrage : quelle offre mène sur un compte déjà engagé, et comment l'intake IAP reprend les constats existants plutôt que de ré-interviewer. Signal d'intake : « une mission Agentic Product Run est-elle en cours ou passée sur ce compte ? » | Direction de cabinet | Avant la première proposition commerciale |
+| B3 | Mission flash non scopée — **trois définitions concurrentes** dans ce document : « à scoper » (§Points ouverts), « Assessment flash 1-2 semaines » (§Mise en œuvre du target operating model), « intake + gate IA + pilote d'une semaine » (§Utilisation simple par le coach) | Le seul produit d'entrée. Délai annoncé oralement au sponsor, périmètre arbitré par lui en cours de route. Aucun de ces délais n'a de source : le KPI qui les produirait est précisément celui déclaré jamais essayé | Claude Camus | Avant la première proposition commerciale |
+| B4 | Grille V3.2 — passe de validation de domaine infra (astreinte, obsolescence, TMA, CMDB) | ~50 questions de delivery agile logiciel devant un DSI infra, en première semaine. **Contrainte de séquence** : la discipline « même instrument à T0 et à ⟲ » interdit de corriger la grille après T0 — la passe doit être faite **avant**, jamais après | Claude Camus | Avant la première mission |
+| B5 | Règle d'or 3.2.1 — critère observable + dérogation ADR | Scénario « Pression IA sponsor », le plus probable : refus sur un jugement non opposable face à un budget IA. Le contre-modèle exact existe déjà dans ce document — le gate de maturité DevOps, règle dure adossée à un niveau **mesuré**, avec dérogation ADR | Claude Camus | Avant la première mission |
+| B6 | Test d'engagement du sponsor — gabarit inexistant, porteur divergent (`iap-intake` §Mise en œuvre du target operating model vs `iap-change-coach` §Points ouverts) | Acté « condition d'engagement, pas une option », à jouer avant signature : sera sauté ou improvisé en avant-vente | Claude Camus | Avant la première proposition commerciale |
+| B7 | Boucle ⟲ — clause de réévaluation signable | La réévaluation doit être contractée **dès l'intake**, mais tarification et packaging sont hors périmètre du cadrage et la modalité reste ouverte jusqu'à MVP4 : à la signature, le consultant n'a rien à faire signer. Une clause de retour ne se rattrape pas à froid | Claude Camus + Direction de cabinet | Avant la première signature |
+| B8 | `iap-re-assessment` et `iap-incident-postmortem-miner` cités sans exister | `iap-re-assessment` est cité à plusieurs reprises (compte non figé : il bouge à chaque édition) et porte la boucle ⟲ — le différenciateur de vente — mais ne figure ni dans les 11 agents ni dans les 11 workflows (vérifié au grep). Soit les inventaires sont faux, soit les renvois le sont | Claude Camus | Immédiatement pour la cohérence du document ; MVP1 pour la conception |
+
+**Points échus sans être bloquants**, à traiter dans la foulée : vecteur d'import de la
+grille (Excel vendored vs JSON portable), granularité des contrats de handoff, teinte des
+sections gaspillage du deck, sort des tags `CONFIRMÉ`/`DÉDUIT` dans le deck sponsor,
+dispositifs humains transposés de SCALE au format court, et validation de la couche
+`[STRUCTUREL]` sur mission pilote. Porteur par défaut : Claude Camus, tant que les agents
+correspondants n'existent pas.
+
+**Ce que cette section ne fait pas.** Elle ne tranche aucun point et ne rédige aucun
+artefact manquant. Écrire le gabarit du test sponsor, construire le critère de la 3.2.1
+ou scoper la mission flash sont des **chantiers**, pas des paragraphes de cadrage — les
+inscrire ici les rend visibles, pas faits.
+
 ## [Trajectoire] Décisions de cadrage v0.5
 
 Consolidation des arbitrages tranchés au fil de l'analyse du corpus (doc d'intégration + brainstorm source).
+
+> **Rôle de cette section (contre-revue du 2026-09-23).** C'est un **journal des décisions**, pas une seconde description : chaque puce redit en une ligne une décision développée dans sa section de doctrine, de méthode ou d'exécution. **En cas d'écart, la section développée fait foi** ; une lecture linéaire peut sauter ce journal sans rien perdre.
 
 - **[Structure] Pas de fichier pivot** — Décomposition directe du corpus dans knowledge/, avec un nouveau fichier ai-confidentiality-doctrine.md.
 - **[Ownership] Fichiers partagés entre workflows** — Un propriétaire canonique par fichier (gate IA pour les décisions de mode, agent AI Governance pour le risk register) ; les autres l'amendent.
@@ -1084,7 +1214,7 @@ Consolidation des arbitrages tranchés au fil de l'analyse du corpus (doc d'int�
 - **[Documentation] Décisions de modèle-cible au format ADR** — iap-operating-model produit un fichier de décision par choix structurant (Statut/Contexte/Décision/Conséquences/Alternatives rejetées), amendable sans réécrire l'historique, plutôt qu'un operating-model.md monolithique.
 - **[Mission] Double mission Transformer/Assainir** — Le traitement des gaspillages devient un pilier de mission à part entière, pas une méthode annexe — la capacité récupérée finance la trajectoire produit. Affiné par l'agent de réflexion en cours.
 - **[Positionnement] Spectre d'ambition A/B/C non tranché comme linéaire** — Aide au coach / assistant interactif / companion connecté ne sont pas nécessairement empilables — le niveau C change la nature du risque (accès direct aux données de prod). Cadrage initial, en cours d'affinage par 2 agents.
-- **[Données] Import manuel de données outils (ExternalEvidence)** — Repli sans connecteur live : import CSV/export de ServiceNow/Jira/CMDB/FinOps, entité distincte de l'Interview (tag de confiance toujours CONFIRMÉ), mappée à la Trame via import-mapping.md par engagement.
+- **[Données] Import manuel de données outils (ExternalEvidence)** — Repli sans connecteur live : import CSV/export de ServiceNow/Jira/CMDB/FinOps, entité distincte de l'Interview (tag de confiance CONFIRMÉ sous condition de fraîcheur — « toujours » levé en v2.7, cf. §Moteur d'assessment), mappée à la Trame via import-mapping.md par engagement.
 - **[Méthode] Expérimentations pilotes nourrissent l'operating model** — Le target operating model n'est pas décrété a priori — des expérimentations mesurées (nouvelle cadence testée 6 semaines, etc.) amendent les décisions ADR correspondantes, sur le même principe que le pilot-first déjà en doctrine.
 - **[Artefact] Backlog de transformation — US Coach/Délégué** — transformation-backlog.md reprend le pattern Epic/US de VSCode1, chaque US taguée Coach (réalisée par le consultant) ou Délégué (confiée au client ou à un autre agent) — évite que le consultant fasse tout à la place du client.
 - **[Gate IA] Fonctionnement sans IA externe outillé** — Le mode M0 (pas d'IA) reste intégralement exécutable à la main : badge jamais silencieux, manual-synthesis-guide.md formalisant la méthode fréquence/cooccurrence de VSCode2, scoring de priorisation rappelé comme indépendant de l'IA.
@@ -1110,6 +1240,8 @@ Consolidation des arbitrages tranchés au fil de l'analyse du corpus (doc d'int�
 ## [Trajectoire] Points ouverts
 
 > **Discipline de suivi (v1.6) :** Le cadrage impose un format ADR strict (Statut/Contexte/Décision/Conséquences/Alternatives rejetées) aux décisions produit, mais n'appliquait jusqu'ici aucune rigueur équivalente à ses propres points ouverts — aucun n'avait d'owner ni d'échéance. Corrigé ci-dessous : chaque point porte désormais un owner (agent ou rôle responsable de le trancher) et une échéance cible (jalon MVP ou repère temporel). Deux points précédemment listés ici sont retirés parce que déjà tranchés ailleurs dans ce document et non par oubli de mise à jour : le schéma `module.yaml` (voir §Structure, "Résolution module.yaml") et la règle dure/souple du gate de maturité DevOps (voir §Traitement des gaspillages). Un troisième — les tags hétérogènes de GlobalSynthesis — était déjà fermé par la clarification v1.4 sur la distribution des tags (§Moteur d'assessment) mais était resté listé ici par erreur ; retiré pour la même raison.
+>
+> **Limite de cette discipline, mesurée en v2.6 :** owner et échéance ne suffisent pas à rendre un point levable. Deux relevés indépendants du 2026-09-20 l'ont établi. (1) **Les owners ne sont pas joignables** : 24 des 28 lignes désignent un slug d'agent BMAD qui n'existe pas encore, 3 « Direction de cabinet » sans nom et 1 mixte (`iap-strategy-lead` + Direction). Un agent non construit ne tranche rien, et trois attributions sont circulaires. (2) **Les échéances n'ont pas de référentiel** : elles sont exprimées en jalons MVP dont aucun n'avait d'état déclaré — et la mesure de ce même jour montre que **MVP0 n'est pas commencé**, le module `bmad-iap` n'existant pas dans le dépôt. Une vérification systématique des 28 libellés contre le reste du corpus (product-brief, les fichiers de `docs/reflexions/` présents ce jour-là, `git log`) n'a trouvé **aucun** point tranché ailleurs : le tableau ci-dessous dit vrai, il n'a pas de graisse à retirer. Ce qui manquait n'était pas la rigueur de la liste, mais un porteur réel et un référentiel d'avancement — voir §État des MVP et §Points échus — réattribution humaine, tous deux au-dessus.
 
 | Point ouvert | Owner | Échéance cible |
 |---|---|---|
@@ -1142,7 +1274,9 @@ Consolidation des arbitrages tranchés au fil de l'analyse du corpus (doc d'int�
 | Cohabitation avec l'offre « Agentic Product Run » (VScode6) — une offre RUN/TMA déjà nommée et prête pour soutenance commerciale existe ailleurs dans la flotte, sur un champ sémantique voisin (RUN, TMA, autonomie de l'IA) mais un périmètre plus étroit qu'IAP (pas de pilier produit/plateforme ni de traitement structurel du gaspillage) ; à clarifier avant qu'un même compte ne reçoive les deux discours séparément — fusion, complémentarité affichée, ou étanchéité assumée (VScode6 — `docs/run-ia/README.md`) | Direction de cabinet (choix commercial, pas un agent) | Avant la première proposition commerciale |
 | Dispositifs humains transposés de SCALE (v2.4, §Accompagnement de l'humain dans la trajectoire) — restitution-embarquement avec retour aux interviewés, formation expérientielle sur cas réels, communauté de managers, sondage collaborateurs avant/après, Team Health Check : conçus chez SCALE pour des transformations de 1-3 ans, jamais joués sur une mission IAP — valider ce qui survit au format court (mission flash + boucle) et le formaliser en gabarits | `iap-change-coach` | Première mission pilote (dispositifs ①②) · MVP4 (généralisation ③ et gabarits) |
 
-> **Pourquoi le deck PPT n'a pas bougé en v2.5 :** les recoupements VScode6 ajoutés en v2.4 et v2.5 sont tous `ILLUSTRATIF` — ils corroborent depuis un point de vue indépendant des arguments qu'IAP tient déjà (déclencheur ③, doctrine de preuve, scoping de la mission flash, ciblage du sponsor) sans ajouter de fait nouveau opposable à un client. Le deck (`docs/cadrage-ppt/`) reste calibré sur les faits `CONFIRMÉ`/`DÉDUIT` propres à IAP ; la seule évolution que ces recoupements appellent côté deck est un arbitrage commercial encore ouvert — la cohabitation avec l'offre Agentic Product Run elle-même (ligne ci-dessus) — pas une slide. Le seul changement de deck de cette revue est indépendant du contenu : la garde de couleur `chip`/`badge` de `generate_deck.py` (texte jamais blanc sur cyan, cf. commit du reliquat v2.4).
+> **État du deck au 2026-09-20 (v2.6).** Le deck a continué d'évoluer de son côté pendant que ce document ne bougeait pas : `docs/cadrage-ppt/` est en v2.36 — restructuration en 8 chapitres (Executive summary / Contexte / Enjeux / Douleur / Opportunités / Offre / Démarches / Next steps), puis retrait du chapitre Annexes (le nombre de slides n'est pas figé ici : il se lit dans `test_generate_deck.py` et `git log docs/cadrage-ppt/`). Relevé du 2026-09-20 : la matière retirée du deck (personas, KPIs, grille de maturité) **reste intégralement ici** — rien à rapatrier. La dérive est dans l'autre sens : neuf sections substantielles de ce cadrage n'ont aucune slide (Isolation multi-client, Règles d'or, Cross-walk, Comitologie, Moteur d'assessment, les 11 agents et leur graphe de handoffs, Workflows et routage, Qualité & test du module, Roadmap MVP 0-6), et deux slides n'ont pas de section ici (`slide_fil_technique`, dont le générateur note lui-même que la matière « n'existait qu'en 4 notes TECH éparpillées », et les slides d'architecture SI). Toutes ne sont pas des défauts — la comitologie interne n'a rien à faire dans une restitution client — mais la roadmap MVP et les 11 agents absents du deck se défendent moins bien. **Arbitrage de contenu du deck, non traité en v2.6.**
+>
+> **Pourquoi le deck PPT n'avait pas bougé en v2.5 :** les recoupements VScode6 ajoutés en v2.4 et v2.5 sont tous `ILLUSTRATIF` — ils corroborent depuis un point de vue indépendant des arguments qu'IAP tient déjà (déclencheur ③, doctrine de preuve, scoping de la mission flash, ciblage du sponsor) sans ajouter de fait nouveau opposable à un client. Le deck (`docs/cadrage-ppt/`) reste calibré sur les faits `CONFIRMÉ`/`DÉDUIT` propres à IAP ; la seule évolution que ces recoupements appellent côté deck est un arbitrage commercial encore ouvert — la cohabitation avec l'offre Agentic Product Run elle-même (ligne ci-dessus) — pas une slide. Le seul changement de deck de cette revue est indépendant du contenu : la garde de couleur `chip`/`badge` de `generate_deck.py` (texte jamais blanc sur cyan, cf. commit du reliquat v2.4).
 
 ---
 

@@ -1,7 +1,7 @@
 # Product-brief — BMAD IAP (« Infra as a Product »)
 
 > **Porte d'entrée produit (1 page).** Synthèse stable du cadrage de fond
-> `docs/bmad-iap-cadrage.md` (v2.5, ~1145 lignes) et de la revue produit/marché
+> `docs/bmad-iap-cadrage.md` (v2.7) et de la revue produit/marché
 > `docs/reflexions/revue-produit-marche.md` — ces deux fichiers restent la **source de
 > vérité** ; ce brief n'en est que le résumé d'accroche. **Honnêteté épistémique
 > préservée** (finding critique C1 de la revue) : le *financement croisé* (« la capacité
@@ -24,8 +24,11 @@ produit + gaspillage + doctrine IA, pas l'étiquette.
   basics », modernisation infra en recul face à la cyber — baromètre Abraxio 12/2025).
 - **Utilisateurs internes visés** : équipes plateforme/RUN, **SRE seniors drainés** par le
   répétitif, métiers qui contournent une plateforme peu adoptée.
-- **Opérateur de l'offre** : consultant senior OCTO outillé par le module BMAD IAP
-  (11 agents, 11 workflows, gate IA confidentialité). *Point ouvert assumé (M5) : offre
+- **Opérateur de l'offre** : consultant senior OCTO, qui sera outillé par le module BMAD
+  IAP (11 agents, 11 workflows, gate IA confidentialité) — **cible de conception, pas
+  outillage disponible** : mesure du 2026-09-20, le module n'existe pas encore dans le
+  dépôt et MVP0 n'est pas commencé (cadrage, §État des MVP). À ce jour la mission se
+  déroule à la main, sur la méthode de ce cadrage. *Point ouvert assumé (M5) : offre
   aujourd'hui opérable surtout par son auteur — l'économie junior/senior reste à établir.*
 
 ## Pourquoi maintenant — les trois déclencheurs d'achat
@@ -85,9 +88,12 @@ produit, Big4 sur la gouvernance seule, AIOps sans transformation).
   2026, DORA, SPACE) n'outille le lien « capacité récupérée → réinvestie » : angle mort de
   l'industrie, donc actif différenciant **si** IAP l'outille en premier, charge de preuve
   portée seul (chantier propriétaire assumé).
-- **Faisabilité** : la Grille d'Assessment Agile V3.2 (référentiel déjà éprouvé, réutilisé
-  tel quel — cf. §Modèles de maturité) est éprouvée comme *outillage*, pas encore validée
-  comme *instrument* en domaine infra (M2).
+- **Faisabilité** : la Grille d'Assessment Agile V3.2 est éprouvée comme *outillage* en
+  delivery agile logiciel, et **pas encore validée comme instrument en domaine infra**
+  (M2, bloquant B4 du cadrage) — la dire « adaptée de », jamais « éprouvée » sur ce
+  domaine. Contrainte de séquence : la discipline « même instrument à T0 et à ⟲ » interdit
+  de la corriger après T0, donc la passe de validation infra (astreinte, obsolescence,
+  TMA, CMDB) se fait **avant** la première mission, pas après.
 - **Usabilité** : test d'apprenabilité (dérouler l'intake par un consultant qui n'a pas
   écrit le cadrage) restant à programmer (M5).
 
@@ -102,12 +108,33 @@ produit, Big4 sur la gouvernance seule, AIOps sans transformation).
 
 ## Statut & points ouverts
 
-Cadrage v2.5, **draft consolidé** — le « comment faire la mission » est au-dessus du
-standard du marché ; les chantiers propriétaires restants (nom public de l'offre, KPI de
+Cadrage v2.7, **draft consolidé** — le « comment faire la mission » est au-dessus du
+standard du marché ; ce qui manque est l'**artefact exécutable derrière**, pas la pensée.
+
+> **Avant tout rendez-vous, lire ceci.** Huit points sont bloquants pour une première
+> mission (B1 à B8) : ils sont suivis au cadrage, §Points échus — réattribution humaine,
+> seule source à jour. Les quatre à sortir en premier y sont B1 (nom public de l'offre),
+> B3 (mission flash), B4 (grille V3.2 en domaine infra) et B6 (test d'engagement du
+> sponsor, « condition d'engagement, pas une option »). Ce brief ne recopie pas leur
+> détail : il y renvoie.
+
+Les chantiers propriétaires restants (nom public de l'offre, KPI de
 réinvestissement, plan de preuve hypothèse × mission, scoping de la mission flash) sont
 tracés au §Points ouverts du cadrage de fond. Point ouvert non tranché depuis v2.4 :
 **cohabitation avec l'offre « Agentic Product Run »** de VScode6-learning-sprintIA, sur un
 champ sémantique voisin (RUN, TMA) — détail et sources dans le cadrage complet, §Points
-ouverts. v2.5 n'ajoute que des recoupements `ILLUSTRATIF` corroborant des arguments déjà
-tenus par IAP (déclencheur ③, doctrine de preuve, ciblage sponsor) ; le deck PPT n'a pas
-changé de contenu. Ce brief est révisé quand l'un des points ouverts est tranché.
+ouverts. v2.5 n'ajoutait que des recoupements `ILLUSTRATIF` corroborant des arguments déjà
+tenus par IAP (déclencheur ③, doctrine de preuve, ciblage sponsor). v2.6 n'ajoute aucune promesse
+de vente mais durcit le discours de faisabilité (grille V3.2 plus dite « éprouvée » en domaine infra,
+agents au statut de cible) : elle installe l'état réel des MVP, réattribue à des humains les points
+dont l'owner était un agent non construit, et aligne ce brief sur ce que le dépôt contient
+vraiment. v2.7 (contre-revue du 2026-09-23) corrige comptes et renvois et traite sept cas
+limites du raisonnement (cumul de scénarios, périmètre sans automatisation ni IA, branche
+« financement croisé réfuté », etc.) sans changer la proposition de valeur. Ce brief est révisé quand l'un des points ouverts est tranché.
+
+**Le deck, lui, a continué d'évoluer** (`docs/cadrage-ppt/`, v2.36 : restructuration en
+8 chapitres puis retrait du chapitre Annexes ; nombre de slides non figé ici). La matière retirée du deck
+— personas, KPIs, grille de maturité — reste intégralement dans le cadrage de fond ; neuf
+sections du cadrage n'ont en revanche aucune slide, dont la roadmap MVP et les 11 agents.
+Écart relevé le 2026-09-20, non traité à ce tour : il appelle un arbitrage de contenu du
+deck, pas une correction du cadrage.
