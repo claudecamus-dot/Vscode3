@@ -115,11 +115,12 @@ niveau du cadrage : aucune construction du module `bmad-iap` n'est engagée.
 > **Avant de présenter l'offre, lire ceci.** Les points dont dépend sa crédibilité sont
 > suivis au cadrage, §Points échus — ce que l'offre doit tenir. Tranchés le 2026-09-23 :
 > le nom reste **Infra as a Product** (B1), et l'offre reprend les éléments utiles
-> d'« Agentic Product Run » plutôt que de cohabiter avec elle (B2). Encore ouverts : la
-> mission flash, qui a trois définitions (B3), et la grille V3.2 en domaine infra (B4).
+> d'« Agentic Product Run » plutôt que de cohabiter avec elle (B2). La mission
+> flash a une seule définition : l'**Assessment flash**, qui ouvre la démarche avant toute
+> action d'accompagnement (B3). Encore ouverte : la grille V3.2 en domaine infra (B4).
 
 Les chantiers restants (KPI de réinvestissement, plan de preuve hypothèse × mission,
-scoping de la mission flash) sont tracés au §Points ouverts du cadrage de fond. v2.5 n'ajoutait que des recoupements `ILLUSTRATIF` corroborant des arguments déjà
+contenu détaillé de l'Assessment flash) sont tracés au §Points ouverts du cadrage de fond. v2.5 n'ajoutait que des recoupements `ILLUSTRATIF` corroborant des arguments déjà
 tenus par IAP (déclencheur ③, doctrine de preuve, ciblage sponsor). v2.6 n'ajoute aucune promesse
 de vente mais durcit le discours de faisabilité (grille V3.2 plus dite « éprouvée » en domaine infra,
 agents au statut de cible) : elle installe l'état réel des MVP, liste les points dont dépend
