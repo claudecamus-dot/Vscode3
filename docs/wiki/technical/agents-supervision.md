@@ -8,18 +8,18 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-09-23T14:52:25+02:00 · **19 sessions** (transcripts) · **75** invocations de skills · **115** lancements de sous-agents.
+Dernier scan : 2026-09-23T17:50:00+02:00 · **20 sessions** (transcripts) · **79** invocations de skills · **118** lancements de sous-agents.
 
 ## Skills — usage réel
 
 | Skill | Famille | Invocations | Première | Dernière |
 | --- | --- | --- | --- | --- |
-| `agent-orchestrator` | projet | 27 | 2026-07-21 | 2026-09-23 |
-| `bmad-review` | BMAD | 10 | 2026-09-07 | 2026-09-23 |
+| `agent-orchestrator` | projet | 28 | 2026-07-21 | 2026-09-23 |
+| `bmad-review` | BMAD | 11 | 2026-09-07 | 2026-09-23 |
 | `bmad-party-mode` | BMAD | 7 | 2026-09-02 | 2026-09-18 |
 | `bmad-brainstorming` | BMAD | 6 | 2026-09-11 | 2026-09-18 |
 | `bmad-advanced-elicitation` | BMAD | 5 | 2026-09-11 | 2026-09-18 |
-| `deck-design-library` | projet | 4 | 2026-09-03 | 2026-09-23 |
+| `deck-design-library` | projet | 5 | 2026-09-03 | 2026-09-23 |
 | `revue-increment` | projet | 4 | 2026-07-21 | 2026-09-11 |
 | `agent-supervisor` | projet | 3 | 2026-07-21 | 2026-09-03 |
 | `bmad-code-review` | BMAD | 2 | 2026-09-10 | 2026-09-10 |
@@ -27,6 +27,7 @@ Dernier scan : 2026-09-23T14:52:25+02:00 · **19 sessions** (transcripts) · **7
 | `artifact-design` | (builtin/session) | 1 | 2026-09-11 | 2026-09-11 |
 | `audit-technique` | projet | 1 | 2026-09-03 | 2026-09-03 |
 | `bmad-agent-pm` | BMAD | 1 | 2026-07-22 | 2026-07-22 |
+| `bmad-agent-ux-designer` | BMAD | 1 | 2026-09-23 | 2026-09-23 |
 | `code-review` | (builtin/session) | 1 | 2026-09-11 | 2026-09-11 |
 | `update-config` | (builtin/session) | 1 | 2026-09-07 | 2026-09-07 |
 
@@ -34,8 +35,8 @@ Dernier scan : 2026-09-23T14:52:25+02:00 · **19 sessions** (transcripts) · **7
 
 | Sous-agent | Lancements | Premier | Dernier |
 | --- | --- | --- | --- |
-| `general-purpose` | 70 | 2026-07-21 | 2026-09-23 |
-| `ppt-designer` | 20 | 2026-07-21 | 2026-09-23 |
+| `general-purpose` | 72 | 2026-07-21 | 2026-09-23 |
+| `ppt-designer` | 21 | 2026-07-21 | 2026-09-23 |
 | `Explore` | 11 | 2026-07-21 | 2026-09-20 |
 | `bmad-revue` | 10 | 2026-09-07 | 2026-09-23 |
 | `agent-supervisor` | 2 | 2026-09-03 | 2026-09-03 |
@@ -48,11 +49,11 @@ Dernier scan : 2026-09-23T14:52:25+02:00 · **19 sessions** (transcripts) · **7
 
 `agent-securite`, `veille-agentic`
 
-**BMAD** — 44/50 jamais invoqués :
+**BMAD** — 43/50 jamais invoqués :
 
 <details><summary>Voir la liste</summary>
 
-`bmad-agent-analyst`, `bmad-agent-architect`, `bmad-agent-dev`, `bmad-agent-ux-designer`, `bmad-architecture`, `bmad-build`, `bmad-build-auto`, `bmad-checkpoint-preview`, `bmad-correct-course`, `bmad-create-architecture`, `bmad-create-epics-and-stories`, `bmad-create-prd`, `bmad-create-story`, `bmad-customize`, `bmad-deep-recon`, `bmad-dev-auto`, `bmad-dev-story`, `bmad-document-project`, `bmad-domain-research`, `bmad-edit-prd`, `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-forge-idea`, `bmad-generate-project-context`, `bmad-help`, `bmad-market-research`, `bmad-prd`, `bmad-prfaq`, `bmad-product-brief`, `bmad-project-context`, `bmad-qa-generate-e2e-tests`, `bmad-quick-dev`, `bmad-retrospective`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-review-verification-gap`, `bmad-spec`, `bmad-sprint-planning`, `bmad-sprint-status`, `bmad-technical-research`, `bmad-ux`, `bmad-validate-prd`, `bmad-walkthrough`
+`bmad-agent-analyst`, `bmad-agent-architect`, `bmad-agent-dev`, `bmad-architecture`, `bmad-build`, `bmad-build-auto`, `bmad-checkpoint-preview`, `bmad-correct-course`, `bmad-create-architecture`, `bmad-create-epics-and-stories`, `bmad-create-prd`, `bmad-create-story`, `bmad-customize`, `bmad-deep-recon`, `bmad-dev-auto`, `bmad-dev-story`, `bmad-document-project`, `bmad-domain-research`, `bmad-edit-prd`, `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-forge-idea`, `bmad-generate-project-context`, `bmad-help`, `bmad-market-research`, `bmad-prd`, `bmad-prfaq`, `bmad-product-brief`, `bmad-project-context`, `bmad-qa-generate-e2e-tests`, `bmad-quick-dev`, `bmad-retrospective`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-review-verification-gap`, `bmad-spec`, `bmad-sprint-planning`, `bmad-sprint-status`, `bmad-technical-research`, `bmad-ux`, `bmad-validate-prd`, `bmad-walkthrough`
 
 </details>
 
@@ -148,7 +149,7 @@ _7 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir 
 
 ## Seuil de qualification — la mesure
 
-Depuis le 2026-09-10 : **116** demande(s) vue(s) hors commande slash (+ 17 slash), **8** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **7 %** des demandes orchestrées.
+Depuis le 2026-09-10 : **142** demande(s) vue(s) hors commande slash (+ 18 slash), **8** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **6 %** des demandes orchestrées.
 _Ce chiffre ne dit pas ce qui AURAIT dû être orchestré : le hook compte, il ne juge pas. Il donne le dénominateur qui manquait pour arbitrer le seuil sur données plutôt que sur habitude._
 
 ---
