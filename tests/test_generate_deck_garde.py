@@ -29,9 +29,9 @@ def test_import_avec_template_present_charge_le_theme(generate_deck):
 
 def test_garde_nomme_le_chemin_attendu_si_template_absent(generate_deck, monkeypatch):
     absent = str(CADRAGE / "template-absent-volontaire.pptx")
-    monkeypatch.setattr(generate_deck, "TEMPLATE", absent)
+    monkeypatch.setattr(generate_deck.deck_theme, "TEMPLATE", absent)
     with pytest.raises(SystemExit) as exc:
-        generate_deck._exiger_template()
+        generate_deck.deck_theme._exiger_template()
     message = str(exc.value)
     assert "template introuvable" in message
     assert "template-octo.pptx" in message
@@ -39,7 +39,7 @@ def test_garde_nomme_le_chemin_attendu_si_template_absent(generate_deck, monkeyp
 
 
 def test_new_prs_porte_la_meme_garde(generate_deck, monkeypatch):
-    monkeypatch.setattr(generate_deck, "TEMPLATE",
+    monkeypatch.setattr(generate_deck.deck_theme, "TEMPLATE",
                         str(CADRAGE / "template-absent-volontaire.pptx"))
     with pytest.raises(SystemExit):
         generate_deck.new_prs()
@@ -96,7 +96,7 @@ def test_un_repli_impossible_degrade_au_lieu_de_planter(generate_deck, monkeypat
     Le defaut remonte alors dans `_ANOMALIES_BUILD`, donc dans `problemes` —
     il ne disparait pas en silence.
     """
-    monkeypatch.setattr(generate_deck, "IMG_DIR", str(tmp_path))
+    monkeypatch.setattr(generate_deck.deck_images, "IMG_DIR", str(tmp_path))
     generate_deck._ANOMALIES_BUILD[:] = []
 
     def echec(*a, **k):
@@ -263,7 +263,7 @@ def test_remplir_cadre_retelecharge_si_cache_invalide(generate_deck, monkeypatch
     dès qu'un fichier — même vide — existait sous ce nom : ce test échoue sans
     le correctif car `fetch_to` n'est jamais rappelé.
     """
-    monkeypatch.setattr(generate_deck, "IMG_DIR", str(tmp_path))
+    monkeypatch.setattr(generate_deck.deck_images, "IMG_DIR", str(tmp_path))
     generate_deck._ANOMALIES_BUILD[:] = []
     scene = "canyon"
     px_w, px_h = 960, 720  # doit correspondre au calcul interne pour aspect 4/3
@@ -281,7 +281,7 @@ def test_remplir_cadre_retelecharge_si_cache_invalide(generate_deck, monkeypatch
 
     from pptx.util import Emu, Inches
     cadre = (0, 0, Emu(Inches(px_w / 96.0)), Emu(Inches(px_h / 96.0)), None)
-    monkeypatch.setattr(generate_deck, "place_image_in_frame", lambda *a, **k: None)
+    monkeypatch.setattr(generate_deck.deck_images, "place_image_in_frame", lambda *a, **k: None)
 
     generate_deck._remplir_cadre(None, cadre, scene, seed=0)
     assert appels, "le cache invalide (0 octet) n'a pas redéclenché fetch_to"
@@ -294,7 +294,7 @@ def test_remplir_cadre_replie_si_image_openverse_corrompue(generate_deck, monkey
     du contenu, l'ancien code posait ce fichier tel quel (`path_a_poser = path`
     dès que `fetch_to` ne levait pas). Ce test échoue sans le correctif.
     """
-    monkeypatch.setattr(generate_deck, "IMG_DIR", str(tmp_path))
+    monkeypatch.setattr(generate_deck.deck_images, "IMG_DIR", str(tmp_path))
     generate_deck._ANOMALIES_BUILD[:] = []
     scene = "canyon"
 
@@ -308,7 +308,7 @@ def test_remplir_cadre_replie_si_image_openverse_corrompue(generate_deck, monkey
             dst.write(src.read())
 
     monkeypatch.setattr(generate_deck.stock_images, "fetch_to", faux_fetch_corrompu)
-    monkeypatch.setattr(generate_deck, "cover_crop_to_aspect", faux_crop)
+    monkeypatch.setattr(generate_deck.deck_images, "cover_crop_to_aspect", faux_crop)
 
     replis = []
 
@@ -318,7 +318,7 @@ def test_remplir_cadre_replie_si_image_openverse_corrompue(generate_deck, monkey
         Image.new("RGB", (80, 60), color=(4, 5, 6)).save(dest)
 
     monkeypatch.setattr(generate_deck.nature_images, "generate_to", faux_repli)
-    monkeypatch.setattr(generate_deck, "place_image_in_frame", lambda *a, **k: None)
+    monkeypatch.setattr(generate_deck.deck_images, "place_image_in_frame", lambda *a, **k: None)
 
     from pptx.util import Emu, Inches
     cadre = (0, 0, Emu(Inches(10)), Emu(Inches(7.5)), None)
@@ -339,7 +339,8 @@ def test_sys_path_ne_masque_pas_les_modules_standards(generate_deck):
     tests et déjà modifié par l'import du fixture module-scope).
     """
     lignes_code = [
-        l for l in CADRAGE.joinpath("generate_deck.py").read_text(encoding="utf-8").splitlines()
+        l for f in ["generate_deck.py", *sorted(p.name for p in CADRAGE.glob("deck_*.py"))]
+        for l in CADRAGE.joinpath(f).read_text(encoding="utf-8").splitlines()
         if "sys.path." in l and not l.strip().startswith("#")
     ]
     # Exclut l'exemple de commande dans le docstring d'usage (`py -c "import

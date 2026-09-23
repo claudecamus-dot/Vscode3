@@ -104,9 +104,9 @@ def _verifier_contrat_cache_image():
     from pptx.util import Emu
 
     tmp_img = tempfile.mkdtemp(prefix="test-imgcache-")
-    img_dir_reel, manifest_reel = gen.IMG_DIR, gen.IMG_MANIFEST
-    gen.IMG_DIR = tmp_img
-    gen.IMG_MANIFEST = os.path.join(tmp_img, "manifest.json")
+    img_dir_reel, manifest_reel = gen.deck_images.IMG_DIR, gen.deck_images.IMG_MANIFEST
+    gen.deck_images.IMG_DIR = tmp_img
+    gen.deck_images.IMG_MANIFEST = os.path.join(tmp_img, "manifest.json")
     try:
         prs = Presentation(gen.TEMPLATE)
         slide = prs.slides.add_slide(prs.slide_layouts[6])
@@ -131,7 +131,7 @@ def _verifier_contrat_cache_image():
               "réseau revenu après une panne : Openverse est retenté "
               "(le repli ne squatte plus le nom de cache de la vraie photo)")
     finally:
-        gen.IMG_DIR, gen.IMG_MANIFEST = img_dir_reel, manifest_reel
+        gen.deck_images.IMG_DIR, gen.deck_images.IMG_MANIFEST = img_dir_reel, manifest_reel
         import shutil
         shutil.rmtree(tmp_img, ignore_errors=True)
 

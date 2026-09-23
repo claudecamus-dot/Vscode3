@@ -521,175 +521,47 @@ from pptx.util import Emu, Inches, Pt
 VERSION_DECK = "v2.45"
 DATE_VERSION_DECK = "2026-09-23"
 
-HERE = os.path.dirname(__file__)
-TEMPLATE = os.path.join(HERE, "template-octo.pptx")
-REPO_ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
-sys.path.append(os.path.join(REPO_ROOT, ".claude", "skills", "pptx-framed-image", "scripts"))
-import nature_images  # noqa: E402
-import stock_images  # noqa: E402
-from framed_image import cover_crop_to_aspect, frame_obstructions, place_image_in_frame  # noqa: E402
-from PIL import Image as _PILImage  # noqa: E402
+import deck_theme  # noqa: E402
+import deck_images  # noqa: E402
+from deck_theme import (  # noqa: E402,F401 — extraction mécanique v2.46
+    HERE,
+    TEMPLATE,
+    LAYOUT_COUVERTURE,
+    LAYOUT_TITRE_SEUL,
+    LAYOUT_VIDE,
+    LAYOUT_CHAPITRE,
+    LAYOUT_VISUEL_DROITE,
+    MARGIN,
+    BORD_DROIT,
+    CONTENT_TOP,
+    CONTENT_BOTTOM,
+    CONTENT_W,
+    CONTENT_H,
+    GAP,
+    _exiger_template,
+    TH,
+    NAVY,
+    DK2,
+    WHITE,
+    ACCENT,
+    MUTED,
+    ACCENT1,
+    ACCENT2,
+    LINE,
+    TRACK,
+    RAYON_COIN_IN,
+    _add_rect_brut,
+    _add_rect_arrondi,
+    SEVERITE,
+    _rgb,
+    new_prs,
+    ENCRE,
+    ACCENT_PLEIN,
+    SUPPORT,
+    SUPPORT_LIGNE,
+    encre_de,
+)
 
-IMG_DIR = os.path.join(HERE, "_img")
-os.makedirs(IMG_DIR, exist_ok=True)
-IMG_MANIFEST = os.path.join(HERE, "images-manifest.json")
-
-LAYOUT_COUVERTURE = 8   # "40 - Couverture [1]" — idx0 titre, idx1 sous-titre, idx2/idx3 crédit+date
-LAYOUT_TITRE_SEUL = 5   # "04 - Titre seul" — idx0 titre, garde logo/pied de page/n° de slide
-LAYOUT_VIDE = 0         # "06 - Slide vide" — pas de placeholder, juste logo + badge de pagination
-LAYOUT_CHAPITRE = 2     # "50 - Chapitre [1]" — idx0 titre (grand), idx1 numéro ; cadre photo teardrop
-LAYOUT_VISUEL_DROITE = 15  # "63 - Titre, contenu et visuel à droite - cadre blanc"
-
-# --- Géométrie du template OCTO réel (10 x 5.625 in, 16:9) — cf.
-# docs/vscode1-export/template-octo.md §4-5, vérifiée localement contre
-# template-octo.pptx (mêmes dims/layouts/thème). Contenu dessiné dans la
-# zone de contenu du layout « Titre seul » (sous le titre, au-dessus du
-# pied de page), marge gauche alignée sur le placeholder titre (0.615 in),
-# marge droite plafonnée avant le badge de pagination bas-droit.
-SLIDE_W, SLIDE_H = 10.0, 5.625
-MARGIN = 0.615
-BORD_DROIT = 9.15
-CONTENT_TOP = 1.15
-CONTENT_BOTTOM = 5.45
-CONTENT_W = BORD_DROIT - MARGIN
-CONTENT_H = CONTENT_BOTTOM - CONTENT_TOP
-GAP = 0.2
-
-def _exiger_template():
-    """Garde à l'import (finding robustesse, audit 2026-07-23) : sans elle, un
-    template absent remontait en FileNotFoundError brute depuis python-pptx. Le
-    générateur est lancé à la main — l'échec doit nommer le fichier attendu et
-    son emplacement, sans exiger de lire la stack."""
-    if not os.path.isfile(TEMPLATE):
-        raise SystemExit(
-            "generate_deck : template introuvable — placer template-octo.pptx "
-            f"à côté du générateur (attendu : {TEMPLATE})"
-        )
-
-
-_exiger_template()
-TH = D.theme_colors(Presentation(TEMPLATE))
-NAVY = TH.get("dk1", D.INK)          # #0E2356 — texte principal, titres
-DK2 = TH.get("dk2", NAVY)            # #3E4F78 — navy secondaire (palier de gradient sans PALETTE)
-WHITE = TH.get("lt1", "#FFFFFF")
-ACCENT = TH.get("accent3", NAVY)    # #00D2DD — cyan OCTO, identité du deck
-MUTED = TH.get("lt2", D.MUTED)       # #586586 — slate 600, texte secondaire
-ACCENT1 = TH.get("accent1", MUTED)   # #6E7B9A — bleu-gris clair (palier de gradient sans PALETTE)
-ACCENT2 = TH.get("accent2", ACCENT1)  # #9FA7BB — bleu-gris très clair, le plus clair du thème
-LINE = TH.get("accent5", D.LINE)     # #CFD3DD — slate 200, bordures de cards
-TRACK = TH.get("accent6", D.TRACK)   # #E7E9EE — slate 100, fonds d'encarts
-
-# D0..D4 : rampe MONOCHROME de la famille navy, du clair au foncé. Une
-# échelle ordonnée se rend par une rampe, pas par des teintes étrangères —
-# le vert->rouge d'avant lisait comme un feu tricolore sur un thème qui n'a
-# ni vert ni rouge. Les 5 tons portent tous du texte blanc (chip() écrit en
-# blanc par défaut) : le plus clair, #586586, tient 5,80:1 — un chiffre estimé
-# à 5,0 de tête ici le 2026-09-10, puis mesuré. Le rejouer plutôt que le citer :
-#   ratio = (L1+0,05)/(L2+0,05), L = luminance relative WCAG 2.x.
-# ATTENTION, mesuré aussi : la rampe ne discrimine plus ses paliers adjacents
-# (1,18 / 1,18 / 1,40 / 1,33). D0 et D2 — « CONFIRMÉ » et « DÉDUIT » — ne se
-# distinguent QUE par leur texte. C'est assumé tant qu'un libellé les
-# accompagne ; une échelle lue à l'œil seul demanderait plus d'amplitude.
-# --- v2.45 (demande utilisateur : « des formes plus jolies avec plus
-# d'arrondi ») : UN rayon de coin absolu pour tout le deck, au lieu de ~12
-# ajustements relatifs épars (0.06 à 0.35 × le petit côté — un encart de 0,5in
-# à 0.12 n'avait que 0,06in de coin, une carte de 2in à 0.08 en avait 0,16).
-# Toute forme arrondie non pilule reçoit AU MOINS ce rayon, exprimé en pouces ;
-# les pilules (0.5) restent des pilules. Branché sur D.add_rect, donc aussi sur
-# D.add_card et tous les helpers du générateur qui dessinent par lui.
-RAYON_COIN_IN = 0.20
-_add_rect_brut = D.add_rect
-
-
-def _add_rect_arrondi(slide, l, t, w, h, fill=None, line=None, line_w=1.0, rounded=False,
-                      radius=0.12):
-    if rounded and radius < 0.5 and min(w, h) > 0:
-        radius = max(radius, min(0.5, RAYON_COIN_IN / min(w, h)))
-    return _add_rect_brut(slide, l, t, w, h, fill=fill, line=line, line_w=line_w,
-                          rounded=rounded, radius=radius)
-
-
-D.add_rect = _add_rect_arrondi
-
-
-SEVERITE = ["#586586", "#4A5A80", "#3E4F78", "#26386A", "#0E2356"]
-
-
-def _rgb(hexcolor):
-    return RGBColor.from_string(hexcolor.lstrip("#").upper())
-
-
-def new_prs():
-    _exiger_template()
-    prs = Presentation(TEMPLATE)
-    # Retire les 9 slides d'exemple du template — masters/layouts/thème conservés.
-    # Il faut aussi supprimer la relation (drop_rel), sinon les parties
-    # ppt/slides/slideN.xml orphelines entrent en collision de nom avec les
-    # nouvelles slides ajoutées ensuite (même numérotation réutilisée).
-    xml_slides = prs.slides._sldIdLst
-    for sld in list(xml_slides):
-        rId = sld.get(D.qn("r:id"))
-        prs.part.drop_rel(rId)
-        xml_slides.remove(sld)
-    return prs
-
-
-# Il n'y a PLUS de couleur par chapitre. Un mecanisme `PALETTE_CHAPITRES` /
-# `couleur_chapitre()` a existe quelques heures le 2026-09-10, entre la mesure
-# de l'ecart a la charte et l'arbitrage qui a suivi : il cyclait 4 tons du
-# theme sur les chapitres. L'arbitrage — la couleur ne porte pas le sens — l'a
-# rendu caduc le jour meme. Retire plutot que laisse en place : ses 10 appels
-# reels passaient deja `ENCRE` en dur, et ses 2 seuls appelants residuels
-# donnaient un kicker GRIS a deux slides dont l'intercalaire est navy.
-#
-# --- Vocabulaire de différenciation SANS code couleur (arbitrage du 2026-09-10)
-#
-# La couleur ne porte plus le sens. Les 160 sites qui appelaient `D.PALETTE[n]`
-# — un bleu pour l'infra, un teal pour l'utilisateur, un or pour le management,
-# un violet pour le sponsor — pointent tous sur `ENCRE`. Ce qui différencie
-# désormais deux éléments de même niveau, dans l'ordre où le catalogue des decks
-# OCTO réels les emploie (`deck-design-library`) :
-#
-#   1. « UN SUR N EN ACCENT » — dans une série d'éléments égaux, un SEUL reçoit
-#      un aplat plein (cyan ou navy), les autres restent blancs à contour. Le
-#      catalogue le donne comme le mécanisme de hiérarchie le plus systématique
-#      du deck, avant même la taille de police.
-#   2. La NUMÉROTATION (badge « goutte » + connecteur) et la POSITION (quinconce
-#      plutôt qu'alignement en tableau).
-#   3. La FORME-SIGNATURE : coins arrondis + un coin coupé pour le contenu
-#      riche, pilule pour les chips et étiquettes.
-#   4. La TYPOGRAPHIE : accroche grasse + complément régulier, sous-en-têtes en
-#      majuscules 8-9pt comme rupture sans bordure.
-#
-# RÈGLE DURE, mesurée au rendu du 2026-09-10 : le cyan ne porte JAMAIS de texte
-# sur blanc — il plafonne à ~1,9:1 et le libellé se délave (constaté sur
-# « Infra & RUN » de la slide personas). Cyan = aplat, badge, chip, connecteur.
-ENCRE = NAVY                 # tout ce qui porte du sens : texte, contours, filets
-ACCENT_PLEIN = ACCENT        # cyan — l'élément mis en avant d'une série, EN APLAT
-SUPPORT = TRACK              # fond neutre d'encart, jamais porteur de sens
-SUPPORT_LIGNE = LINE         # bordures discrètes
-
-
-def encre_de(color):
-    """Couleur de TEXTE sûre pour un élément dont l'accent est `color`.
-
-    Beaucoup de renderers font piloter la bordure, la barre d'accent ET le
-    libellé par une seule variable `color`. C'est commode tant que la couleur
-    est sombre — et faux dès qu'elle vaut le cyan : le texte se délave à
-    ~1,9:1 sur blanc (constaté au rendu du 2026-09-10 sur l'exec summary et sur
-    « Infra & RUN »). Cette garde laisse passer les tons sombres et rabat le
-    seul cyan sur l'encre, pour que l'accent reste VISIBLE (bordure, barre,
-    aplat) sans que le libellé devienne illisible.
-    """
-    return ENCRE if str(color).lower() == str(ACCENT).lower() else color
-
-
-# v2.40 : le kicker d'une slide de contenu EST le nom du chapitre qui la porte.
-# Il était écrit en dur à chaque appel (« IA », « PROPOSITION », « BESOINS &
-# DOULEURS »...) et survivait aux fusions de chapitres — cinq kickers citaient
-# des chapitres disparus au rendu v2.39. build() pose ici le chapitre courant
-# (intercalaire, ou « Executive summary » / « Annexe » sans intercalaire) ;
-# les appelants passent `kicker=None`. Contrôlé par test_generate_deck.py.
 _CHAPITRE_COURANT = [None]
 
 
@@ -774,251 +646,25 @@ def _sans_puce(paragraph):
     pPr.append(pPr.makeelement(qn("a:buNone"), {}))
 
 
-def _find_frame_by_geom(shapes, prst):
-    """Cadre non groupé (top-level) portant un prstGeom donné — variante de
-    pptx-framed-image.frame_geometry pour le cas où le cadre n'est pas niché
-    dans un groupe (le layout Chapitre du template, à la différence des
-    layouts « cadre blanc », place son cadre teardrop directement)."""
-    for sh in shapes:
-        spPr = getattr(sh._element, "spPr", None)
-        if spPr is None:
-            continue
-        g = spPr.find(qn("a:prstGeom"))
-        if g is not None and g.get("prst") == prst:
-            return sh.left, sh.top, sh.width, sh.height, g
-    return None
-
-
-def _find_frame_in_group(shapes, group_name, inner_name):
-    from framed_image import frame_geometry
-    for sh in shapes:
-        if sh.name == group_name:
-            return frame_geometry(sh, inner_name)
-    return None
-
-
-# scene -> requête Openverse (photo réelle) ; la génération procédurale
-# (nature_images) reste le nom de "scene" utilisé comme repli hors-ligne.
-_REQUETES_PHOTO = {
-    "mountains": "mountains landscape",
-    "forest": "green forest sunlight",
-    # Littoral rocheux turquoise (chapitre Besoins & douleurs) : « ocean waves aerial » (horizon
-    # brumeux délavé en blanc) puis « turquoise sea water aerial » (0 résultat
-    # Openverse -> repli procédural à ciel pâle) échouaient tous deux à ancrer le
-    # haut du cadre teardrop sur le fond blanc de la slide. « turquoise water »
-    # (seed 0) renvoie une vue plongeante roche+eau+écume, texturée et contrastée
-    # sur les quatre bords — VÉRIFIÉE au rendu réel le 2026-07-21.
-    "ocean": "turquoise water",
-    "sunset": "sunset sky",
-    # Chapitres à photo (restructurations 7 puis 8 puis 9 chapitres) : scènes réelles
-    # distinctes, VÉRIFIÉES au rendu réel — une requête mot-clé n'a aucun jugement (cf. « plage
-    # bondée », « desert dune » seed 0 → fossile de musée, « winding river » →
-    # cloître de monastère), donc chaque photo est validée à l'œil (fetch du _brut
-    # puis lecture image avant câblage). Le repli nature_images (procédural) ne se
-    # déclenche que si Openverse est indisponible (SSL/0-résultat) ET que le nom de
-    # scène est connu du fallback (forest/meadow/mountains/ocean/sunset/tropical) —
-    # sinon le générateur PLANTE (ValueError unknown scene). Préférer une vraie photo
-    # à du procédural ; cf. mémoire reference-deck-image-fetcher.
-    #   dunes  (Proposition) = vue aérienne NASA ; nightsky (IA) = astrophoto ;
-    #   canyon (Démarche)    = strates de roche (nom NEUF → repli qui PLANTE, comme
-    #                          dunes/nightsky : dépend d'un vrai fetch) ;
-    #   meadow (KPI, seed 1) = asters/verges d'or (nom CONNU du fallback → sûr).
-    "dunes": "sand dunes",
-    "nightsky": "starry night sky",
-    "canyon": "canyon landscape",
-    "meadow": "meadow wildflowers",
-    # tropical (Outillage IAP, chapitre 08 — nommé chapitre 07 en v2.5) : nom CONNU
-    # du fallback procédural (forest/meadow/mountains/ocean/sunset/tropical), donc
-    # sûr même hors ligne. Photo à VÉRIFIER au rendu réel comme les autres.
-    "tropical": "tropical palm leaves",
-    # wheatfield (Exec summary, chapitre 01, nouveau v2.8) : épis de blé doré, gros
-    # plan texturé — la récolte/le résultat, en écho au thème du chapitre (l'offre
-    # ET sa synthèse, « ce que la mission produit »). « golden wheat field sunset »/
-    # « wheat field golden hour » (0 résultat Openverse en aspect carré, le cadre
-    # teardrop de ce layout est carré — pas « tall » comme les autres chapitres)
-    # échouaient ; « wheat field » simple RENVOIE un résultat, gros plan contrasté
-    # sur les 4 bords — VÉRIFIÉE au rendu réel le 2026-09-02. Nom NEUF → repli
-    # procédural qui PLANTE sauf mapping _SCENE_REPLI (ci-dessous).
-    "wheatfield": "wheat field",
-    # riverdelta (Specificites de l'infra, chapitre 03, neuf en v2.33) : un delta
-    # — un seul cours d'eau qui alimente toutes les branches — dit litteralement
-    # le sujet du chapitre (une infra transverse sous plusieurs equipes). « canyon »
-    # etait deja pris par la Demarche : deux chapitres a la meme photo se lisent
-    # comme une erreur de montage. Nom NEUF -> repli obligatoire ci-dessous.
-    # Photo A VERIFIER AU RENDU comme toutes les autres : une requete mot-cle
-    # n'a aucun jugement (cf. « desert dune » -> fossile de musee, trouve puis
-    # ecarte le 2026-09-01, jamais expose car hors des scenes REELLEMENT
-    # appelees par le deck — seul « river delta aerial » l'etait).
-    # « river delta aerial » (seed=0, requete d'origine) rendait le resultat
-    # Openverse #0 : une image satellite en fausses couleurs arc-en-ciel
-    # PORTANT UN FILIGRANE « rawpixel » tuile visible sur toute la photo —
-    # trouve au rendu reel zoome du 2026-09-11, jamais vu au rendu non-zoome
-    # (la vignette de slide le masque). Reciblee sur la requete plus large
-    # « river delta » (7 resultats CC0) : l'index 5 (NASA, credit Openverse,
-    # delta du Gange/Brahmapoutre) est SANS filigrane sur toute sa surface
-    # (verifie par crop plein-cadre des 3 coins) et sa palette (chenaux
-    # sombres/creme) est plus proche de la charte navy+cyan que l'original.
-    # Ordre Openverse reverifie stable entre deux appels le 2026-09-11 (meme
-    # URL) — meme fragilite structurelle que le reste de ce mapping mot-cle
-    # (aucun jugement de contenu cote API), a re-verifier si jamais le
-    # resultat change de nature au rendu.
-    "riverdelta": "river delta",
-}
-
-
-# Repli procedural : nature_images ne connait que 6 scenes
-# (forest/meadow/mountains/ocean/sunset/tropical). Les noms NEUFS choisis pour
-# les chapitres (dunes, nightsky, canyon) n'y sont pas — hors reseau ou sur
-# 0-resultat Openverse, generate_to levait ValueError HORS du try, ce qui tuait
-# build() en entier : 0 slide produite alors que 37 des 40 n'ont pas de photo
-# (mesure du 2026-09-01). On mappe donc chaque nom neuf sur la scene connue la
-# plus proche visuellement. Ce n'est PAS la meme image — c'est un repli assume,
-# dont le but est que le deck sorte, pas qu'il soit identique.
-_SCENE_REPLI = {
-    "dunes": "sunset",       # tons chauds sable/orange
-    "nightsky": "sunset",    # composition de ciel (clair au lieu de sombre)
-    "canyon": "mountains",   # relief rocheux
-    "wheatfield": "meadow",  # champ ouvert, tons chauds proches
-    # « ocean » aurait ete le repli visuellement le plus proche, mais c'est la
-    # scene REELLE du chapitre 05 : hors ligne, les chapitres 03 et 05 auraient
-    # rendu la meme image. « sunset » n'est la scene reelle d'aucun chapitre —
-    # un repli doit degrader, pas dupliquer un voisin. (« canyon » -> mountains
-    # porte le meme defaut, anterieur a ce chantier : mountains est la scene du
-    # chapitre 02.)
-    "riverdelta": "sunset",
-}
-
-# Anomalies relevees pendant le build (pas seulement d'image, malgre le nom
-# historique), fusionnees dans `problemes` par build(). Sans cela, un defaut
-# ne sortait qu'en print : le build annoncait « GEOMETRIE: OK » avec des
-# photos manquantes (cadre introuvable/repli impossible) OU, depuis v2.11,
-# avec un contenu qui deborde silencieusement sous un element de pied de
-# carte (cf. slide_pitch_iap, supprimee en v2.34 -- voir archives/ : le
-# self-check geometrique de pptx_deck.py ne
-# mesure QUE les formes que NOUS dessinons hors-cadre — pas un debordement de
-# texte dans son propre panneau).
-_ANOMALIES_BUILD = []
-
-
-def _image_cache_valide(path):
-    """True si `path` est une image utilisable : fichier non vide, décodable
-    par PIL, et de dimensions plausibles pour un cadre du deck (>= 32 px sur
-    chaque côté, <= 8000 px). Un fichier de 0 octet laissé par un build
-    interrompu (Ctrl-C pendant `fetch_to`/`save`) — ou, pour le contenu
-    Openverse fraîchement téléchargé, une image corrompue/hors format —
-    ne doit jamais être réputé valide (audit VSCode3 2026-09-23, constats
-    R2/S1 : `os.path.exists()` seul ne prouve rien sur le contenu)."""
-    try:
-        if not os.path.exists(path) or os.path.getsize(path) <= 0:
-            return False
-        with _PILImage.open(path) as im:
-            im.verify()
-        with _PILImage.open(path) as im:
-            largeur, hauteur = im.size
-            if largeur < 32 or hauteur < 32 or largeur > 8000 or hauteur > 8000:
-                return False
-        return True
-    except Exception:
-        return False
-
-
-def _remplir_cadre(slide, cadre, scene, seed=0):
-    """Pose une vraie photo libre de droit (Openverse, CC0) à l'aspect exact
-    du cadre, repli sur la génération procédurale (nature_images) si le
-    réseau/l'API n'est pas disponible — cf. pptx-framed-image, greffé depuis
-    VSCode1. Une photo réelle lit mieux qu'un aplat vectoriel généré, constat
-    fait en comparant au REX "⛱️ L'Été de l'IA" (VSCode1) qui utilise de
-    vraies photos sur ces mêmes cadres.
-
-    Contrat du cache disque (``_img/``) : le nom de fichier ``path`` ci-dessous
-    ne doit exister QUE pour une vraie photo Openverse — jamais pour un repli
-    procédural. Avant ce correctif, le repli s'écrivait SOUS LE MÊME NOM que la
-    photo réelle ; `os.path.exists(path)` passait alors à True pour de bon, et
-    plus aucun build suivant ne retentait Openverse pour cette scène — même
-    après le retour du réseau, un incident réseau transitoire dégradait le
-    deck en PERMANENCE (repro : appel avec `fetch_to` en échec puis en succès,
-    le 2e appel ne rappelait jamais `fetch_to`). Le repli est donc désormais
-    écrit sous un nom distinct (`_repli`) : il ne bloque plus la case
-    `os.path.exists(path)` qui protège la vraie photo, et chaque build retente
-    Openverse tant qu'aucune vraie photo n'a été mise en cache."""
-    if cadre is None:
-        msg = f"cadre introuvable pour la scène '{scene}' — image non posée"
-        print(f"  {msg}")
-        _ANOMALIES_BUILD.append(msg)
-        return
-    left, top, width, height, geom = cadre
-    aspect = Emu(width).inches / Emu(height).inches
-    px_w = 960
-    px_h = int(round(px_w / aspect))
-    # Cache en .jpg, pas .png : le contenu est une PHOTO (network ou repli
-    # procedural), et cover_crop_to_aspect()/generate_to() infèrent l'encodage
-    # du seul suffixe du chemin passé. Une photo cachée en PNG (lossless) sur
-    # ~1000px pèse 5 à 10× plus qu'un JPEG visuellement identique — c'était
-    # la quasi-totalité des 26 Mo mesurés dans le .pptx exporté (2026-09-11).
-    path = os.path.join(IMG_DIR, f"{scene}_{seed}_{px_w}x{px_h}.jpg")
-    # Nom DISTINCT pour le repli procedural : il ne doit jamais faire passer
-    # `os.path.exists(path)` (ci-dessus) a True a la place d'une vraie photo —
-    # cf. docstring de la fonction pour le defaut que ce nom distinct ferme.
-    path_repli = os.path.join(IMG_DIR, f"{scene}_{seed}_{px_w}x{px_h}_repli.jpg")
-    path_a_poser = path
-    if not _image_cache_valide(path):
-        requete = _REQUETES_PHOTO.get(scene, scene)
-        aspect_ratio = "wide" if aspect > 1.15 else "tall" if aspect < 0.85 else "square"
-        brut = os.path.join(IMG_DIR, f"_brut_{scene}_{seed}.jpg")
-        # Try restreint au seul appel réseau (constat R1, audit VSCode3
-        # 2026-09-23) : une erreur d'import ou d'encodage ne doit plus être
-        # rapportée « Openverse indisponible » — imports sortis en tête de
-        # module, ré-encodage traité dans un second try au message distinct.
-        try:
-            stock_images.fetch_to(brut, requete, seed=seed, aspect_ratio=aspect_ratio,
-                                   manifest_path=IMG_MANIFEST)
-        except Exception as e:
-            repli = _SCENE_REPLI.get(scene, scene)
-            note = f" (scène '{scene}' inconnue du repli -> '{repli}')" if repli != scene else ""
-            print(f"  Openverse indisponible pour '{scene}' ({e}) — repli sur nature_images{note}")
-            try:
-                nature_images.generate_to(path_repli, repli, px_w, px_h, seed=seed)
-                path_a_poser = path_repli
-            except Exception as e2:
-                # Degrader, jamais planter : la slide sort sans photo et le
-                # defaut remonte dans `problemes`, il ne disparait pas.
-                msg = f"aucune image pour '{scene}' : Openverse KO ({e}) et repli KO ({e2})"
-                print(f"  {msg}")
-                _ANOMALIES_BUILD.append(msg)
-                return
-        else:
-            try:
-                cover_crop_to_aspect(brut, path, aspect)
-                # cover_crop_to_aspect() sauve avec les défauts PIL (JPEG
-                # qualité 75) : ré-encodage local à qualité 90 pour un rendu
-                # plein cadre sur un deck client — le gain de poids vient de
-                # PNG->JPEG, pas d'une compression agressive en plus.
-                _PILImage.open(path).convert("RGB").save(path, quality=90, optimize=True)
-                # Constat S1 : contenu tiers Openverse non validé avant usage
-                # dans un livrable client — valider le fichier téléchargé
-                # (format image décodable, dimensions bornées) avant de le
-                # poser. Un fichier retenu invalide ne doit pas rester en
-                # cache pour le build suivant (constat R2).
-                if not _image_cache_valide(path):
-                    raise ValueError(f"image Openverse invalide pour '{scene}' ({path})")
-                print(f"  photo réelle posée pour '{scene}' ({requete!r}, via Openverse CC0)")
-                path_a_poser = path
-            except Exception as e:
-                if os.path.exists(path):
-                    os.remove(path)
-                repli = _SCENE_REPLI.get(scene, scene)
-                note = f" (scène '{scene}' inconnue du repli -> '{repli}')" if repli != scene else ""
-                print(f"  image Openverse illisible pour '{scene}' ({e}) — repli sur nature_images{note}")
-                try:
-                    nature_images.generate_to(path_repli, repli, px_w, px_h, seed=seed)
-                    path_a_poser = path_repli
-                except Exception as e2:
-                    msg = f"aucune image pour '{scene}' : encodage/validation KO ({e}) et repli KO ({e2})"
-                    print(f"  {msg}")
-                    _ANOMALIES_BUILD.append(msg)
-                    return
-    place_image_in_frame(slide, path_a_poser, left, top, width, height, geom=geom)
-
+from deck_images import (  # noqa: E402,F401 — extraction mécanique v2.46
+    REPO_ROOT,
+    nature_images,
+    stock_images,
+    cover_crop_to_aspect,
+    frame_obstructions,
+    place_image_in_frame,
+    _PILImage,
+    IMG_DIR,
+    IMG_MANIFEST,
+    _find_frame_by_geom,
+    _find_frame_in_group,
+    _REQUETES_PHOTO,
+    _SCENE_REPLI,
+    _ANOMALIES_BUILD,
+    _image_cache_valide,
+    _remplir_cadre,
+    _photo_libre,
+)
 
 def slide_chapitre(prs, numero, titre, couverture, color, scene, seed=0):
     """Slide d'intercalaire de chapitre — vrai layout dédié du template
@@ -1066,340 +712,33 @@ def slide_chapitre(prs, numero, titre, couverture, color, scene, seed=0):
     return s
 
 
-def dot_scale(slide, x, y, n, score, color, d=0.14, gap=0.06, empty_color=None):
-    """Jauge à points 0..n (score plein en `color`, reste en `empty_color`) —
-    pattern repris de la carte de recommandation valeur/complexité observée
-    dans l'autre template analysé (analyse-template-alternatif.md §4)."""
-    empty_color = empty_color or TRACK
-    for i in range(n):
-        fill = color if i < score else empty_color
-        D.add_dot(slide, x + i * (d + gap), y, d, fill)
+from deck_shapes import (  # noqa: E402,F401 — extraction mécanique v2.46
+    dot_scale,
+    col_x,
+    chip,
+    _oval,
+    _pale,
+    _dashed_rect,
+    QUOTE,
+    DOT,
+    _rich,
+    _split_emph,
+    _chevron_shape,
+    _chevron_arrow,
+    _badge,
+    _bandeau_cloture,
+    _quote_banner,
+    _noeud_socle,
+    _pilule_variante,
+    _note_mecanisme,
+    _fleche_h,
+    BADGE_AGENTIC_W,
+    badge_deploiement_agentic,
+    _GLYPHES_SANS_GRAS,
+    _header_cell,
+    _lignes,
+)
 
-
-def col_x(i, n, w=CONTENT_W, x0=MARGIN, gap=GAP):
-    col_w = (w - (n - 1) * gap) / n
-    return x0 + i * (col_w + gap), col_w
-
-
-def chip(slide, x, y, w, h, label, color, text_color="#ffffff", size=D.TYPE["tiny"]):
-    """Wrapper de `D.add_chip` (extrait vers pptx_deck.py le 2026-09-11 ; garde
-    ce nom pour ne pas toucher les ~12 sites d'appel du generateur, grep
-    \\bchip\\( generate_deck.py hors ce commentaire).
-
-    Garde D1 (arbitrage du 2026-09-10, ~1,9:1 sur blanc) : le cyan (ACCENT /
-    ACCENT_PLEIN) ne porte JAMAIS de texte. Beaucoup d'appelants passent une
-    `color` de palette (« un sur N en accent ») sans se soucier du texte par
-    defaut blanc du chip — quand cette couleur vaut le cyan ET que l'appelant
-    n'a pas deja choisi un texte lisible, l'aplat retombe sur NAVY : l'element
-    distingue garde un aplat PLEIN (navy, pas cyan), le texte blanc reste
-    lisible dessus. Un appelant qui a deja pose un `text_color` explicite
-    (ex. NAVY sur un chip cyan sur panneau navy, slide gate) n'est pas
-    touche : ce n'est pas le defaut corrige ici."""
-    if str(color).lower() == str(ACCENT).lower() and str(text_color).lower() == "#ffffff":
-        color = NAVY
-    return D.add_chip(slide, x, y, w, h, label, color, text_color=text_color, size=size)
-
-
-# --- Helpers du schéma « parcours de mission » (slide_offre_iap, v2.8) : pas de
-# CONNECTOR/oval réutilisable ailleurs dans le générateur avant ce schéma, donc
-# petits helpers dédiés plutôt qu'un détour par pptx_deck (déjà surchargé de
-# add_rect/add_card génériques — ceux-ci sont spécifiques à ce diagramme).
-def _oval(slide, x, y, w, h, fill=None, line=None, line_w=1.0):
-    """Ellipse simple (nœuds « entrée/sortie » du schéma de parcours)."""
-    shp = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(x), Inches(y), Inches(w), Inches(h))
-    try:
-        shp.shadow.inherit = False
-    except Exception:
-        pass
-    if fill is None:
-        shp.fill.background()
-    else:
-        shp.fill.solid()
-        shp.fill.fore_color.rgb = _rgb(fill)
-    if line is None:
-        shp.line.fill.background()
-    else:
-        shp.line.color.rgb = _rgb(line)
-        shp.line.width = Pt(line_w)
-    shp.text_frame.paragraphs[0].text = ""
-    return shp
-
-
-def _pale(hexcolor, factor=0.1):
-    """Teinte pâle d'une couleur PALETTE (mélange à `factor` avec du blanc) —
-    fond de carte discret qui garde l'accent de couleur lisible sans l'écraser."""
-    r, g, b = (int(hexcolor[i:i + 2], 16) for i in (1, 3, 5))
-    mix = lambda c: round(c * factor + 255 * (1 - factor))
-    return f"#{mix(r):02x}{mix(g):02x}{mix(b):02x}"
-
-
-def _dashed_rect(slide, x, y, w, h, fill, line, line_w=1.0, radius=0.12):
-    """Rectangle à bordure pointillée (« mécanisme additif » du schéma de parcours) —
-    python-pptx n'expose le style de trait qu'en LineFormat.dash_style, pas via
-    D.add_rect (qui ne prend pas ce paramètre)."""
-    shp = D.add_rect(slide, x, y, w, h, fill=fill, line=line, line_w=line_w,
-                      rounded=True, radius=radius)
-    shp.line.dash_style = MSO_LINE_DASH_STYLE.DASH
-    return shp
-
-
-# ---- Helpers « refonte graphique v3 » (2026-09-04, exercice d'idéation sur 2
-# decks OCTO réels — cf. gen_check_slide_synthese_v3_refonte.py pour la trace
-# complète du système de design). Système : conteneur = contour seul, jamais
-# un aplat plein ; étiquette courte = pilule pleine ; chevron = marqueur de
-# séquence ; badge à cheval sur un bord plutôt que relié par une flèche ;
-# emphase en ligne (mot-clé gras dans une phrase normale) plutôt qu'une
-# phrase entière en gras/italique ; barre d'accent verticale ; bandeau de
-# clôture citation (guillemet blanc + filet cyan en aplat, v2.39).
-QUOTE = "“"   # guillemet ouvrant décoratif (confirmé dans le cmap Outfit)
-DOT = "•"     # point isolé de clôture (confirmé dans le cmap Outfit)
-
-
-def _rich(slide, x, y, w, h, paragraphs, anchor=MSO_ANCHOR.TOP, wrap=True):
-    """Zone de texte MULTI-RUNS par paragraphe : `paragraphs` = liste de
-    (runs, para_opts) où runs = liste de (texte, run_opts). Nécessaire pour
-    l'emphase EN LIGNE (mot-clé gras/coloré au milieu d'une phrase normale) —
-    `D.add_text` ne pose qu'un seul run par paragraphe."""
-    box = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
-    tf = box.text_frame
-    tf.word_wrap = wrap
-    tf.vertical_anchor = anchor
-    for m in ("margin_left", "margin_right", "margin_top", "margin_bottom"):
-        setattr(tf, m, 0)
-    for i, (runs, popts) in enumerate(paragraphs):
-        p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-        p.alignment = popts.get("align", PP_ALIGN.LEFT)
-        if "space_before" in popts:
-            p.space_before = Pt(popts["space_before"])
-        if "space_after" in popts:
-            p.space_after = Pt(popts["space_after"])
-        if "line_spacing" in popts:
-            p.line_spacing = popts["line_spacing"]
-        for texte, ropts in runs:
-            r = p.add_run()
-            r.text = texte
-            r.font.size = Pt(ropts.get("size", 10))
-            r.font.bold = ropts.get("bold", False)
-            r.font.italic = ropts.get("italic", False)
-            r.font.color.rgb = _rgb(ropts.get("color", NAVY))
-    return box
-
-
-def _split_emph(texte, emph):
-    """Coupe `texte` en (avant, emph, après) — la sous-phrase `emph` doit
-    exister MOT POUR MOT dans `texte` (lève si absente : garde-fou contre une
-    emphase qui déviendrait du texte source)."""
-    i = texte.index(emph)
-    return texte[:i], emph, texte[i + len(emph):]
-
-
-def _chevron_shape(slide, x, y, w, h, fill=WHITE, line=MUTED, line_w=1.25):
-    """Silhouette « pilule + pointe » (encoche gauche, pointe droite) — le
-    seul preset natif python-pptx qui rend cette silhouette SANS rotation
-    (une rotation fausserait `verifier_geometrie`, qui mesure le cadre non
-    pivoté — piège déjà documenté dans ce dépôt pour un groupe pivoté 180°)."""
-    shp = slide.shapes.add_shape(MSO_SHAPE.CHEVRON, Inches(x), Inches(y), Inches(w), Inches(h))
-    try:
-        shp.shadow.inherit = False
-    except Exception:
-        pass
-    if fill is None:
-        shp.fill.background()
-    else:
-        shp.fill.solid()
-        shp.fill.fore_color.rgb = _rgb(fill)
-    if line is None:
-        shp.line.fill.background()
-    else:
-        shp.line.color.rgb = _rgb(line)
-        shp.line.width = Pt(line_w)
-    shp.text_frame.paragraphs[0].text = ""
-    return shp
-
-
-def _chevron_arrow(slide, x, y, w, h, color=MUTED, frac_w=0.72, frac_h=0.5):
-    """Petite flèche de flux (chevron fin) centrée dans la cellule (x,y,w,h) —
-    remplace le glyphe texte '→' entre 2 pilules constat/réponse."""
-    cw, ch = w * frac_w, h * frac_h
-    _chevron_shape(slide, x + (w - cw) / 2, y + (h - ch) / 2, cw, ch,
-                   fill=WHITE, line=color, line_w=1.4)
-
-
-def _badge(slide, cx, cy, d, color, symbol, filled=True, dashed=False, fill=None,
-           text_color=None, size=12, bold=True):
-    """Wrapper de `D.add_badge` (extrait vers pptx_deck.py le 2026-09-11 ; garde
-    ce nom pour ne pas toucher les ~6 sites d'appel du generateur). WHITE
-    (theme lt1 de CE gabarit) mesure a #FFFFFF, identique au litteral '#ffffff'
-    dont add_badge se sert par defaut — repli confirme, pas suppose.
-
-    Garde D1 (meme regle que `chip` ci-dessus) : un badge REMPLI (`filled`)
-    dont la couleur vaut le cyan ET dont l'appelant n'a pas deja choisi un
-    `text_color` retombe sur un aplat NAVY — pas de texte blanc sur cyan a
-    ~1,9:1. Le badge CONTOUR (`filled=False`) n'est pas concerne : il n'a
-    jamais de fond cyan plein, juste un trait."""
-    if filled and str(color).lower() == str(ACCENT).lower() and text_color is None:
-        color = NAVY
-    return D.add_badge(slide, cx, cy, d, color, symbol, filled=filled, dashed=dashed,
-                        fill=fill, text_color=text_color, size=size, bold=bold)
-
-
-def _bandeau_cloture(slide, texte, bas_contenu, nom_slide, size=12):
-    """Bandeau de clôture dimensionné par SON TEXTE et posé en bas de slide.
-
-    Deux règles de dimensionnement coexistaient, dont une fausse. La variante
-    « étirée » (`h = CONTENT_BOTTOM - y`) remplit tout le vide restant : quand
-    le contenu est court, elle produit un pavé navy de plus d'un pouce de haut
-    pour une phrase — constaté au rendu du 2026-09-10, et deux slides du même
-    chapitre l'utilisaient encore juste à côté de deux slides corrigées.
-    Ici la hauteur vient du texte, le blanc restant respire, et le
-    chevauchement échoue AU BUILD plutôt qu'à la relecture.
-    """
-    h = _lignes(texte, CONTENT_W - 0.76, size) * (size * 1.2 / 72.0) + 0.34
-    top = CONTENT_BOTTOM - h
-    if top < bas_contenu:
-        raise SystemExit(
-            f"{nom_slide} : le bandeau de clôture chevauche le contenu "
-            f"({bas_contenu - top:.3f}in de trop) — resserrer avant de régénérer."
-        )
-    _quote_banner(slide, MARGIN, top, CONTENT_W, h, texte, size=size)
-
-
-def _quote_banner(slide, x, y, w, h, text, size=15.5):
-    """Bandeau de clôture : fond navy plein (la phrase qu'on retient reste le
-    SEUL aplat plein d'une slide en système « contour ») + guillemet décoratif
-    blanc en coin + filet cyan en aplat sur le bord gauche.
-
-    v2.39 (revue design 2026-09-23) : le guillemet et le point final étaient
-    des RUNS de texte cyan — la charte (arbitrage 2026-09-10) interdit le cyan
-    sur tout texte ou glyphe. Le cyan survit en aplat (filet), le point final
-    décoratif disparaît (la phrase a déjà sa ponctuation)."""
-    D.add_rect(slide, x, y, w, h, fill=NAVY, rounded=True, radius=0.10)
-    D.add_rect(slide, x + 0.07, y + 0.10, 0.05, max(0.05, h - 0.20), fill=ACCENT)
-    D.add_text(slide, x + 0.18, y + 0.02, 0.4, min(0.4, h - 0.04), [
-        (QUOTE, dict(size=24, bold=True, color=WHITE)),
-    ], anchor=MSO_ANCHOR.TOP)
-    _rich(slide, x + 0.56, y, w - 0.76, h, [
-        ([(text, dict(size=size, bold=True, color=WHITE))],
-         dict(align=PP_ALIGN.CENTER)),
-    ], anchor=MSO_ANCHOR.MIDDLE)
-
-
-def _noeud_socle(slide, x, y, w, h, titre, sous_titre=None, oval=False):
-    """Nœud « mouvement du socle » (toujours présent) du schéma de parcours —
-    fill bleu-gris clair, bordure navy ; ellipse pour les nœuds d'entrée/sortie."""
-    fill = "#dce6f5"
-    if oval:
-        _oval(slide, x, y, w, h, fill=fill, line=NAVY, line_w=1.0)
-    else:
-        D.add_rect(slide, x, y, w, h, fill=fill, line=NAVY, line_w=1.0, rounded=True, radius=0.14)
-    lignes = [(titre, dict(size=8, bold=True, color=NAVY, align=PP_ALIGN.CENTER, line_spacing=1.0))]
-    if sous_titre:
-        lignes.append((sous_titre, dict(size=8, color=MUTED, align=PP_ALIGN.CENTER,
-                                         italic=True, space_before=1, line_spacing=1.0)))
-    D.add_text(slide, x + 0.04, y, w - 0.08, h, lignes, anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-
-
-def _pilule_variante(slide, x, y, w, h, texte, size=8):
-    """Pilule « variante conditionnée au contexte » (sable/or) du schéma de parcours.
-    Si `h` est None, la hauteur est calculée à partir du texte (pilules « si contexte
-    politique », plus longues que les pilules courtes « Contexte léger/politique ») —
-    retourne toujours la hauteur effectivement utilisée."""
-    pad = 0.03
-    if h is None:
-        lignes = _lignes(texte, w - 2 * pad, size)
-        h = 2 * pad + lignes * (size * 1.15 / 72.0)
-    D.add_rect(slide, x, y, w, h, fill="#E7E9EE", line=ENCRE, line_w=1.0,
-               rounded=True, radius=0.35)
-    D.add_text(slide, x + 0.05, y, w - 0.10, h, [
-        (texte, dict(size=size, bold=True, color=ENCRE, align=PP_ALIGN.CENTER, line_spacing=1.05)),
-    ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-    return h
-
-
-def _note_mecanisme(slide, x, y, w, titre, corps, title_size=8, body_size=8, pad=0.04):
-    """Encadré pointillé pâle = « mécanisme additif » (extension, checklist transverse)
-    du schéma de parcours — hauteur calculée à partir du corps, jamais fixe (cf. défaut
-    « panneau sur-étiré » du dépôt) ; retourne la hauteur effectivement utilisée."""
-    lignes = _lignes(corps, w - 2 * pad, body_size)
-    # v2.43 : +0.06 — à 8 pt, l'estimation laissait le corps déborder au rendu.
-    h = 2 * pad + (title_size * 1.1 / 72.0) + 0.05 + lignes * (body_size * 1.2 / 72.0)
-    _dashed_rect(slide, x, y, w, h, fill="#F2F4F8", line=ENCRE, line_w=0.9, radius=0.10)
-    # v2.45 : +0.10 en x — le coin plus arrondi mordait sur la 1re lettre.
-    D.add_text(slide, x + pad + 0.10, y + pad * 0.6, w - 2 * pad - 0.20, h - pad * 1.2, [
-        (titre, dict(size=title_size, bold=True, color=ENCRE, line_spacing=1.05)),
-        (corps, dict(size=body_size, color=MUTED, italic=True, space_before=2, line_spacing=1.15)),
-    ])
-    return h
-
-
-def _fleche_h(slide, x, y, w, h, color=MUTED, size=10):
-    """Flèche « → » centrée dans une cellule (vocabulaire de flux du schéma de
-    parcours — même simplification texte que slide_iap_contexte_client)."""
-    D.add_text(slide, x, y, w, h, [
-        ("→", dict(size=size, bold=True, color=encre_de(color), align=PP_ALIGN.CENTER)),
-    ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-
-
-# --- Badge de série (v2.6, point ④) : les 4 slides « proposition de déploiement
-# agentic chez le client » du chapitre IA (3 agents candidats + export
-# markdown) portent le MÊME petit badge — signal visuel récurrent et discret qui
-# les relie à la zone « déploiement agentic » du schéma d'architecture
-# (slide_iap_contexte_client, chapitre 08). Renvoi par CHAPITRE, jamais par
-# numéro de page (les numéros bougent). ENCRE = encre navy, la couleur du
-# chapitre IA, la même que la zone du schéma.
-BADGE_AGENTIC_W = 2.3
-
-
-def badge_deploiement_agentic(slide):
-    x = BORD_DROIT - BADGE_AGENTIC_W
-    h = 0.42
-    D.add_rect(slide, x, CONTENT_TOP, BADGE_AGENTIC_W, h, fill="#ffffff",
-               line=ENCRE, line_w=1.0, rounded=True, radius=0.18)
-    D.add_text(slide, x + 0.12, CONTENT_TOP, BADGE_AGENTIC_W - 0.24, h, [
-        ("DÉPLOIEMENT AGENTIC",
-         dict(size=8, bold=True, color=ENCRE, line_spacing=1.1)),
-        ("cf. les trois niveaux d'ambition",
-         dict(size=8, italic=True, color=MUTED, space_before=1)),
-    ], anchor=MSO_ANCHOR.MIDDLE)
-
-
-# Le glyphe "⟲" (U+27F2) n'a pas de variante GRASSE dans la police du template
-# (rendu LibreOffice = case vide/tofu dans un run bold) alors que sa variante
-# normale s'affiche — même correctif que slide_trajectoire/slide_schema_*
-# /slide_livrables_ppt : forcer bold=False pour ce SEUL caractère. Voir
-# CLAUDE.md §docs/cadrage-ppt.
-_GLYPHES_SANS_GRAS = ("⟲",)
-
-
-def _header_cell(slide, x, y, w, h, label, size=7, color=MUTED, bold=True,
-                 anchor=MSO_ANCHOR.TOP):
-    """En-tête de colonne en un seul paragraphe multi-runs : chaque caractère de
-    `_GLYPHES_SANS_GRAS` est posé en bold=False même si le libellé est en gras,
-    pour éviter le tofu du "⟲" en fonte grasse (cf. _GLYPHES_SANS_GRAS)."""
-    import re as _re
-    box = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
-    tf = box.text_frame
-    tf.word_wrap = True
-    tf.vertical_anchor = anchor
-    for m in ("margin_left", "margin_right", "margin_top", "margin_bottom"):
-        setattr(tf, m, 0)
-    p = tf.paragraphs[0]
-    motif = "(" + "|".join(_re.escape(g) for g in _GLYPHES_SANS_GRAS) + ")"
-    for part in _re.split(motif, label):
-        if not part:
-            continue
-        r = p.add_run()
-        r.text = part
-        r.font.size = Pt(size)
-        r.font.bold = bool(bold) and part not in _GLYPHES_SANS_GRAS
-        r.font.color.rgb = _rgb(color)
-    return box
-
-
-def _lignes(texte, largeur_in, taille_pt):
-    """Nombre de lignes estimé pour `texte` (helper de dimensionnement des
-    panneaux à la hauteur de leur contenu — cf. « panneau sur-étiré »)."""
-    return max(1, D.estimer_lignes(texte, largeur_in, taille_pt))
 
 
 # ---------------------------------------------------------------- slide 1
@@ -4453,29 +3792,6 @@ _CONVICTION_AGENTIC = (
      "Une expertise OCTO qui complète notre démarche : jamais un prérequis, toujours "
      "après le gate de confidentialité."],
 )
-
-
-# v2.45 : photo « pour aérer » (demande utilisateur), et UNIQUEMENT une photo
-# réelle libre de droit (« pas d'image générée ») : on recadre un brut Openverse
-# CC0 DÉJÀ en cache (source et licence dans images-manifest.json), sans appel
-# réseau ni repli procédural. Brut absent = pas d'image, jamais un substitut.
-# Cadre : le prstGeom round2DiagRect CLONÉ du layout « cadre blanc » du
-# gabarit (méthode pptx-framed-image), pas d'arrondi fait dans PIL.
-def _photo_libre(slide, scene, seed, x, y, w, h):
-    brut = os.path.join(IMG_DIR, f"_brut_{scene}_{seed}.jpg")
-    if not _image_cache_valide(brut):
-        print(f"  pas de photo réelle en cache pour '{scene}' — slide laissée sans image")
-        return None
-    layout = slide.slide_layout.slide_master.slide_layouts[LAYOUT_VISUEL_DROITE]
-    cadre = _find_frame_in_group(layout.shapes, "Google Shape;212;p17", "Google Shape;213;p17")
-    geom = cadre[4] if cadre else None
-    aspect = w / h
-    px_w = 960
-    out = os.path.join(IMG_DIR, f"{scene}_{seed}_libre_{px_w}x{int(round(px_w / aspect))}.jpg")
-    if not _image_cache_valide(out):
-        cover_crop_to_aspect(brut, out, aspect)
-        _PILImage.open(out).convert("RGB").save(out, quality=90, optimize=True)
-    return place_image_in_frame(slide, out, Inches(x), Inches(y), Inches(w), Inches(h), geom=geom)
 
 
 def _frise_convictions(s, items, debut, txt_w, accent_idx, top0):
