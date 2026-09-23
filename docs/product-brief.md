@@ -108,26 +108,22 @@ produit, Big4 sur la gouvernance seule, AIOps sans transformation).
 
 ## Statut & points ouverts
 
-Cadrage v2.7, **draft consolidé** — le « comment faire la mission » est au-dessus du
-standard du marché ; ce qui manque est l'**artefact exécutable derrière**, pas la pensée.
+Cadrage v2.7, **draft consolidé** — une **démarche et une offre** qui mettent en forme
+nos convictions pour montrer notre savoir-faire, en interne et au client. On reste au
+niveau du cadrage : aucune construction du module `bmad-iap` n'est engagée.
 
-> **Avant tout rendez-vous, lire ceci.** Sept points sont bloquants pour une première
-> mission (B1 à B8, B6 retiré) : ils sont suivis au cadrage, §Points échus — réattribution humaine,
-> seule source à jour. Les quatre à sortir en premier y sont B1 (nom public de l'offre),
-> B3 (mission flash), B4 (grille V3.2 en domaine infra) et B7 (clause de
-> réévaluation). Ce brief ne recopie pas leur
-> détail : il y renvoie.
+> **Avant de présenter l'offre, lire ceci.** Les points dont dépend sa crédibilité sont
+> suivis au cadrage, §Points échus — ce que l'offre doit tenir. Tranchés le 2026-09-23 :
+> le nom reste **Infra as a Product** (B1), et l'offre reprend les éléments utiles
+> d'« Agentic Product Run » plutôt que de cohabiter avec elle (B2). Encore ouverts : la
+> mission flash, qui a trois définitions (B3), et la grille V3.2 en domaine infra (B4).
 
-Les chantiers propriétaires restants (nom public de l'offre, KPI de
-réinvestissement, plan de preuve hypothèse × mission, scoping de la mission flash) sont
-tracés au §Points ouverts du cadrage de fond. Point ouvert non tranché depuis v2.4 :
-**cohabitation avec l'offre « Agentic Product Run »** de VScode6-learning-sprintIA, sur un
-champ sémantique voisin (RUN, TMA) — détail et sources dans le cadrage complet, §Points
-ouverts. v2.5 n'ajoutait que des recoupements `ILLUSTRATIF` corroborant des arguments déjà
+Les chantiers restants (KPI de réinvestissement, plan de preuve hypothèse × mission,
+scoping de la mission flash) sont tracés au §Points ouverts du cadrage de fond. v2.5 n'ajoutait que des recoupements `ILLUSTRATIF` corroborant des arguments déjà
 tenus par IAP (déclencheur ③, doctrine de preuve, ciblage sponsor). v2.6 n'ajoute aucune promesse
 de vente mais durcit le discours de faisabilité (grille V3.2 plus dite « éprouvée » en domaine infra,
-agents au statut de cible) : elle installe l'état réel des MVP, réattribue à des humains les points
-dont l'owner était un agent non construit, et aligne ce brief sur ce que le dépôt contient
+agents au statut de cible) : elle installe l'état réel des MVP, liste les points dont dépend
+l'offre, et aligne ce brief sur ce que le dépôt contient
 vraiment. v2.7 (contre-revue du 2026-09-23) corrige comptes et renvois et traite sept cas
 limites du raisonnement (cumul de scénarios, périmètre sans automatisation ni IA, branche
 « financement croisé réfuté », etc.) sans changer la proposition de valeur. Ce brief est révisé quand l'un des points ouverts est tranché.
