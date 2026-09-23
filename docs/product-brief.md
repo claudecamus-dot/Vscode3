@@ -25,7 +25,7 @@ produit + gaspillage + doctrine IA, pas l'étiquette.
 - **Utilisateurs internes visés** : équipes plateforme/RUN, **SRE seniors drainés** par le
   répétitif, métiers qui contournent une plateforme peu adoptée.
 - **Opérateur de l'offre** : consultant senior OCTO, qui sera outillé par le module BMAD
-  IAP (11 agents, 11 workflows, gate IA confidentialité) — **cible de conception, pas
+  IAP (12 agents, 11 workflows, gate IA confidentialité) — **cible de conception, pas
   outillage disponible** : mesure du 2026-09-20, le module n'existe pas encore dans le
   dépôt et MVP0 n'est pas commencé (cadrage, §État des MVP). À ce jour la mission se
   déroule à la main, sur la méthode de ce cadrage. *Point ouvert assumé (M5) : offre
@@ -130,6 +130,6 @@ limites du raisonnement (cumul de scénarios, périmètre sans automatisation ni
 **Le deck, lui, a continué d'évoluer** (`docs/cadrage-ppt/`, v2.36 : restructuration en
 8 chapitres puis retrait du chapitre Annexes ; nombre de slides non figé ici). La matière retirée du deck
 — personas, KPIs, grille de maturité — reste intégralement dans le cadrage de fond ; neuf
-sections du cadrage n'ont en revanche aucune slide, dont la roadmap MVP et les 11 agents.
+sections du cadrage n'ont en revanche aucune slide, dont la roadmap MVP et les 12 agents.
 Écart relevé le 2026-09-20, non traité à ce tour : il appelle un arbitrage de contenu du
 deck, pas une correction du cadrage.

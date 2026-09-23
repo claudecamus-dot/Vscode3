@@ -21,7 +21,7 @@ une contre-revue du 2026-09-23 en a vérifié les constats factuels et corrigé 
 Trois apports ; aucune promesse de vente ajoutée, mais le discours de faisabilité est
 **durci** (grille V3.2 plus dite « éprouvée » en domaine infra, agents requalifiés en cible). (1) §État des
 MVP, nouvelle et seule autorité sur l'avancement : mesuré, le module `bmad-iap` n'existe ni
-dans ce dépôt ni ailleurs dans la flotte et **MVP0 n'est pas commencé** — les 11 agents et 11 workflows sont une cible de conception, à lire au futur
+dans ce dépôt ni ailleurs dans la flotte et **MVP0 n'est pas commencé** — les 12 agents et 11 workflows sont une cible de conception, à lire au futur
 partout où ce document les dit au présent. (2) §Points échus — ce que l'offre doit tenir (titre recadré le 2026-09-23) :
 huit bloquants pour une première mission (B1-B8, B6 retiré depuis) et trois attributions circulaires cassées,
 les owners passant d'un slug d'agent non construit à un humain. (3) `docs/product-brief.md`
@@ -132,7 +132,7 @@ Décision de cadrage : pas de fichier pivot `iap-module-context.md`. Le corpus s
 ```
 bmad-iap/
   module.yaml ← résolu (v1.6) : scaffoldé via bmb, voir §Structure "Résolution module.yaml"
-  agents/            11 agents — voir §Agents
+  agents/            12 agents — voir §Agents
   workflows/         11 workflows — voir §Workflows
   templates/         (cible, compte non figé)
   checklists/        (cible, compte non figé)
@@ -301,7 +301,7 @@ BMAD IAP réutilise des artefacts vivants issus de deux projets frères qui cont
 | Contrats de handoff & checkpoint OpenHub — ADR-006 / ADR-009 (VSCode2) | Version des ADR au moment de l'emprunt, à consigner dans `knowledge/doctrine-and-golden-rules.md` | Contrats de handoff (§Agents) et checkpoint non-automatisable (§Gate IA) | Revue si OpenHub republie ADR-006 ou ADR-009 sous un numéro/contenu modifié |
 | Moteur d'assessment / Interview-to-Deck (VSCode2) | Structure de données seule (Mission/Trame/Theme/Question…), pas le code applicatif | `platform-maturity-model.md`-adjacent — voir §Moteur d'assessment | Revue si VSCode2 change son schéma de données source |
 
-Règle de cadrage : chaque dépendance externe versionnée est revue systématiquement à deux moments — à chaque boucle de réévaluation `iap-re-assessment` (T+6–12 mois, voir §Schéma de fonctionnement) et à chaque passage de MVP gate (voir §Roadmap) — plutôt que laissée sans point de contrôle jusqu'à ce qu'une incohérence soit détectée en mission. Propriétaire de cette revue : `iap-strategy-lead`, consigné dans le même fichier que les décisions ADR de l'operating model.
+Règle de cadrage : chaque dépendance externe versionnée est revue systématiquement à deux moments — à chaque boucle de réévaluation `iap-strategy-lead` (T+6–12 mois, voir §Schéma de fonctionnement) et à chaque passage de MVP gate (voir §Roadmap) — plutôt que laissée sans point de contrôle jusqu'à ce qu'une incohérence soit détectée en mission. Propriétaire de cette revue : `iap-strategy-lead`, consigné dans le même fichier que les décisions ADR de l'operating model.
 
 ## [Doctrine] Cross-walk des échelles & vocabulaires (v2.2 — réduction de charge cognitive)
 
@@ -510,7 +510,7 @@ La réflexion ci-dessus pose le cadre (paliers, préalable, mandat, risques) ; e
 | 1 · Cadrer le process | Documenter/stabiliser le processus cible **avant** l'agent (préalable non négociable ci-dessus) | `iap-operating-model-architect` | Processus explicite et validé par l'équipe — pas de version tacite/disputée |
 | 2 · Mandater | Rédiger le mandat écrit : décide seul / escalade / owner des erreurs (checklist ci-dessus) | `iap-ai-governance-lead` + manager de l'équipe cliente | Mandat signé des deux côtés, versionné dans `team-topology-map.md` |
 | 3 · Piloter en assisté | 1 à 2 cas réels, l'humain valide chaque sortie ; accompagnement humain en parallèle sur le volet résistance/compétences — mêmes 3 pistes que la persona « expert devenu manager malgré lui » (mentorat par un pair externe, pairing sur des situations réelles, formation ciblée sur un seul geste), §Focus management | `iap-change-coach` (accompagnement) + équipe pilote | Taux d'adhésion mesuré, aucun incident non détecté |
-| 4 · Élargir en supervisé, puis délégué | Périmètre élargi, audit a posteriori par échantillon ; bascule en délégué seulement si le signal `deskilling-risk` est négatif (« l'équipe saurait-elle reprendre la main une semaine sans l'agent ? ») | `iap-metrics-sre-finops-lead` (mesure) + `iap-risk-reviewer` (challenge avant généralisation) | Cadence de revue périodique actée, alignée sur la boucle `iap-re-assessment` (§Schéma de fonctionnement) |
+| 4 · Élargir en supervisé, puis délégué | Périmètre élargi, audit a posteriori par échantillon ; bascule en délégué seulement si le signal `deskilling-risk` est négatif (« l'équipe saurait-elle reprendre la main une semaine sans l'agent ? ») | `iap-metrics-sre-finops-lead` (mesure) + `iap-risk-reviewer` (challenge avant généralisation) | Cadence de revue périodique actée, alignée sur la boucle `iap-strategy-lead` (§Schéma de fonctionnement) |
 
 > **Ce que cette démarche n'est pas :** un plan de déploiement technique séquencé par des dates. Chaque passage de phase se déclenche par un critère observé (adhésion, incidents, signal deskilling), pas par un calendrier — même principe anti-décret que le reste de la doctrine d'automatisation (§Traitement des gaspillages) et qu'une nouvelle cadence de comitologie (§Comitologie, « Expérimentée, pas décrétée »). Une équipe peut rester durablement en phase 3 (assisté) par choix, au même titre qu'un cabinet peut rester au niveau d'ambition A (§Ambition de l'outil) — la démarche n'a pas de palier « final » obligatoire.
 
@@ -669,7 +669,7 @@ Rend opérationnelles deux règles déjà présentes dans la doctrine (« explic
 
 `iap-risk-reviewer` adopte la règle stricte des agents d'audit OpenHub : **« ne réalise jamais d'action hors lecture »**. Il challenge, verdict, recommande — mais ne modifie jamais directement un livrable produit par un autre agent. Une correction proposée par `iap-risk-reviewer` reste une recommandation à valider par l'agent propriétaire du fichier, jamais une réécriture directe.
 
-### Les 11 agents
+### Les 12 agents
 
 - **iap-strategy-lead** — Cadre la transformation, sponsors, scénarios, trajectoire. *« Quel problème business règle-t-on vraiment ? »*
 - **iap-platform-product-pm** — Définit produits infra, personas, valeur, catalogue, roadmap. *« Est-ce un produit ou juste un composant technique ? »*
@@ -682,6 +682,7 @@ Rend opérationnelles deux règles déjà présentes dans la doctrine (« explic
 - **iap-ai-governance-lead** — Cas d'usage IA/agentic, garde-fous, supervision, audit. *« L'IA est-elle sûre, utile et gouvernable ? »*
 - **iap-change-coach** — Middle management, compétences, RH, communautés. *« Comment évite-t-on une transformation cosmétique ? »*
 - **iap-risk-reviewer** — Revue critique des livrables, angles morts. *« Qu'est-ce qui va échouer chez ce client ? »*
+- **iap-incident-postmortem-miner** — Croise les preuves outillées (`ExternalEvidence` : tickets, incidents, CMDB) avec les interviews pour objectiver l'écart entre RUN perçu et RUN réel (ajouté à l'inventaire le 2026-09-23, B8). *« Que disent les incidents que les interviews ne disent pas ? »*
 
 > **Matière concrète disponible (VScode6) pour `iap-run-tma-specialist` :** le deck « Agentic Product Run » détaille, engagement par engagement, où un dispositif RUN augmenté par l'IA change ce qu'une TMA/un MCO classique tient déjà — correctif (cause racine prouvée plutôt que devinée), évolutif (impact connu avant engagement), disponibilité (récurrents traités à la source), documentation (mise à jour datée par la résolution), sécurité (vulnérabilités alertées avant l'incident), réversibilité (cartographie produite en continu) (`ILLUSTRATIF`, VScode6-learning-sprintIA@eab29bd:docs/run-ia/contenu_deck.py, bloc `SOCLE`). C'est un exemple de soutenance commerciale pour une offre RUN pure, à ne pas confondre avec le modèle cible opérationnel qu'`iap-operating-model` produit pour IAP (RUN/BUILD, TMA, cadences, financement par capacité) — mais la grille des six engagements peut nourrir la checklist d'`iap-run-tma-specialist` sur « ce qu'une TMA existante engage déjà » avant de proposer un modèle cible.
 
@@ -846,7 +847,7 @@ Les trois familles ci-dessus listent déjà des indicateurs, mais jamais la rais
 |---|---|---|
 | KPIs de mission | Sans eux, un cabinet peut livrer un deck exécutif dans les règles sans jamais savoir si le client va réellement mieux — le risque nommé en doctrine de « transformation cosmétique » (§Focus management) appliqué cette fois au résultat, pas à la posture managériale | Capacité RUN récupérée en **heures/mois** sur le processus ciblé (pas un pourcentage vague) ; delta de MTTR en **minutes**, mesuré sur le même périmètre d'incidents avant/après ; taux de self-service = part des demandes traitées sans ticket humain sur la capacité livrée |
 | KPIs d'usage du module | Le module BMAD IAP est réutilisé mission après mission — sans mesure d'usage, impossible de distinguer une méthode qui s'améliore d'une méthode qui stagne, ni de justifier l'investissement de capitalisation (`rex-library.md`, MVP5) | Temps en **heures consultant** pour produire un cadrage flash (intake → deck sponsor) ; part des livrables provenant d'un template BMAD IAP sans réécriture substantielle (pas juste « utilisé un template ») |
-| Grille de maturité | Sans mesure répétée dans le temps, la maturité reste une opinion de consultant plutôt qu'un delta objectivable — c'est ce qui **rendra** la boucle de réévaluation (⟲) vérifiable plutôt que déclarative — une fois B4 levé et le vecteur d'import tranché | Delta de score **par pilier** (pas un score agrégé unique qui masquerait un pilier qui recule pendant qu'un autre progresse), mesuré au même instrument (grille V3.2) à T0 et à chaque `iap-re-assessment` |
+| Grille de maturité | Sans mesure répétée dans le temps, la maturité reste une opinion de consultant plutôt qu'un delta objectivable — c'est ce qui **rendra** la boucle de réévaluation (⟲) vérifiable plutôt que déclarative — une fois B4 levé et le vecteur d'import tranché | Delta de score **par pilier** (pas un score agrégé unique qui masquerait un pilier qui recule pendant qu'un autre progresse), mesuré au même instrument (grille V3.2) à T0 et à chaque `iap-strategy-lead` |
 
 ### Mise en place — owners, source des données, cadence (brainstorm v2.1)
 
@@ -942,7 +943,7 @@ Vue d'ensemble du mode opératoire : deux sources de collecte convergent vers un
   (Product definition / Operating model → Deck exécutif)
   ─────────────────────────────────────────────────────────────────────────────────
 
-  ⟲ Boucle de réévaluation : iap-re-assessment · boucle T+6–12 mois · alimente rex-library.md
+  ⟲ Boucle de réévaluation : iap-strategy-lead · boucle T+6–12 mois · alimente rex-library.md
      (repart du bandeau de revue et reboucle vers la Collecte)
 
   Chaque flèche traverse implicitement le bandeau Gate IA dès qu'une étape invoque un LLM sur des données client.
@@ -962,7 +963,7 @@ Le template `template-octo.pptx` porte déjà, dans ses slides d'exemple (« Not
 ① ASSESSMENT FLASH          ② PREMIER DÉPLOIEMENT           ③ IMPLÉMENTATION ITÉRATIVE        ⟲ BOUCLE
   1–2 semaines                 4–5 semaines                    en continu, jusqu'à T+6–12 mois     T+6–12 mois
 
-  = le Schéma de              1-2 équipes pilotes,             Généralisation progressive         iap-re-assessment
+  = le Schéma de              1-2 équipes pilotes,             Généralisation progressive         iap-strategy-lead
   fonctionnement déjà         mode Coach dominant               aux équipes restantes,              (déjà cadré)
   cadré ci-dessus             (US taguées Coach)                bascule Coach → Délégué            reboucle vers
   (Collecte→Diagnostic→                                         équipe par équipe                  la Collecte
@@ -1062,7 +1063,7 @@ Communs aux deux : tag de confiance CONFIRMÉ/DÉDUIT/INCERTAIN (même doctrine 
 | 4 | **Export markdown (nouveau)** | `iap-agentic-opportunities` route sur **Documentation-first** (readiness [1] < seuil [2]) → produit `runbook-triage-tickets.md`, tag `DÉDUIT` (pas encore de preuve terrain), owner `iap-adoption-plan`. Pas de plan d'agent à ce stade. | `runbook-triage-tickets.md` |
 | 5 | ② Premier déploiement | L'équipe pilote exécute le runbook à la main, mode Coach dominant, US taguées `Coach` sur `transformation-backlog.md`. Le deck de plan de déploiement (livrable PPT ② déjà cadré) résume en une ligne : « Triage documenté, agent non recommandé — readiness [1] ». | Deck de plan de déploiement, `transformation-backlog.md` |
 | 6 | ③ Implémentation itérative | Le runbook s'affine à l'usage, le processus se stabilise ; bascule Coach → Délégué mesurée dans le temps (§Traitement des gaspillages). | Delta de KPIs, cadence de revue |
-| 7 | ⟲ Boucle de réévaluation (T+6–12 mois) | `iap-re-assessment` remesure la grille : **Agentic Readiness passe à [2]** — le processus est désormais explicite, mesurable, et le runbook documente déjà les rôles humains. | Delta de maturité T0 → T+6-12 |
+| 7 | ⟲ Boucle de réévaluation (T+6–12 mois) | `iap-strategy-lead` remesure la grille : **Agentic Readiness passe à [2]** — le processus est désormais explicite, mesurable, et le runbook documente déjà les rôles humains. | Delta de maturité T0 → T+6-12 |
 | 8 | **« J'améliore ce qui a été proposé »** | Le **même fichier** est ré-évalué, jamais dupliqué : la branche bascule de Documentation-first à Agentic-implementation. `iap-agentic-opportunities` amende `runbook-triage-tickets.md` (historique conservé en append) vers un contenu `agentic-implementation-plan.md` — mandat écrit désormais rédigeable puisque le préalable « process explicite » est rempli. La démarche en 5 phases (§Modèles d'équipe v1.8) démarre à la phase 0 (Qualifier) sur un candidat qui a cette fois un runbook mesuré à l'appui, pas un score à l'aveugle. | `agentic-implementation-plan.md` (même fichier amendé) |
 | 9 | Deck de bilan | Le deck de bilan/ré-évaluation (livrable PPT ⟲ déjà cadré) montre le delta readiness [1]→[2] **et** la recommandation qui bascule de documentation à agentic — preuve visible que la boucle sert à quelque chose, pas un re-scoring administratif de plus. | Deck de bilan / ré-évaluation |
 
@@ -1109,7 +1110,7 @@ Vision d'un assistant connecté en direct à ServiceNow, Jira, Confluence, Datad
 **Mesure du 2026-09-20.** Commandes : `find . -iname "*iap*" -not -path "./.git/*"`,
 `find . -type d -iname "knowledge"`, `find . -type d -iname "engagements"`. Résultat :
 le module `bmad-iap` **n'existe pas dans le dépôt**. Ni `knowledge/`, ni `engagements/`,
-ni `module.yaml`, ni aucun des 11 agents. **Étendu le 2026-09-23 à la flotte** — commande :
+ni `module.yaml`, ni aucun des 12 agents. **Étendu le 2026-09-23 à la flotte** — commande :
 `Get-ChildItem C:\Users\claude.camus\Documents -Directory | % { Get-ChildItem $_.FullName -Recurse -Directory -Filter "*iap*" -Depth 4 }`
 (`.git` et `node_modules` exclus), 0 résultat :
 absent partout. Conforme au périmètre : l'offre reste au niveau du cadrage, aucune construction
@@ -1127,7 +1128,7 @@ n'est engagée (voir l'encadré en tête du document). Les seuls artefacts IAP r
 | MVP 5 · Industrialisation | QA, REX, templates slides, connecteurs éventuels | **NON COMMENCÉ** | idem |
 | MVP 6 · Connecteurs | « Transformation Companion » | **NON ENGAGÉ** — décision de cadrage, pas un retard | §Roadmap, §Décisions de cadrage |
 
-**Ce que cet état change pour la lecture du reste du document.** Les 11 agents (§Agents
+**Ce que cet état change pour la lecture du reste du document.** Les 12 agents (§Agents
 BMAD) et les 11 workflows (§Workflows) décrivent une **cible de conception**, pas un
 outillage disponible. Partout où ce document — ou `docs/product-brief.md` — en parle au
 présent, lire au futur. Deux conséquences directes, qui ne sont pas des détails de forme :
@@ -1160,7 +1161,7 @@ présent, lire au futur. Deux conséquences directes, qui ne sont pas des détai
 | B5 | Règle d'or 3.2.1 — critère observable + dérogation ADR | Face au scénario « Pression IA sponsor », une conviction non opposable se discute ; le contre-modèle existe déjà (gate de maturité DevOps, règle adossée à un niveau **mesuré**, avec dérogation ADR) | Ouvert |
 | ~~B6~~ | *Retiré* — test d'engagement du sponsor | Hors sujet : l'offre porte nos convictions, elle ne pose pas de condition au sponsor (arbitré le 2026-09-23) | — |
 | B7 | Boucle ⟲ — forme de la réévaluation | C'est le différenciateur de l'offre ; sa forme commerciale (clause, forfait) est hors périmètre du cadrage mais doit pouvoir se dire | Ouvert — Direction de cabinet |
-| B8 | `iap-re-assessment` et `iap-incident-postmortem-miner` cités sans figurer dans les inventaires | `iap-re-assessment` porte la boucle ⟲ mais n'est ni dans les 11 agents ni dans les 11 workflows : incohérence interne du document | Ouvert — cohérence du document, pas un travail de construction |
+| B8 | Deux agents cités hors inventaire | La boucle ⟲ est le différenciateur de l'offre ; un document incohérent sur son porteur l'affaiblit | **Tranché le 2026-09-23** : la réévaluation est portée par `iap-strategy-lead` (déjà responsable de la grille — pas d'agent dédié, ex-`iap-re-assessment`) ; `iap-incident-postmortem-miner` entre dans l'inventaire, qui passe à **12 agents** |
 
 **Points secondaires**, sans urgence : vecteur d'import de la grille (Excel vendored vs
 JSON portable), granularité des contrats de handoff, teinte des sections gaspillage du
@@ -1215,7 +1216,7 @@ Consolidation des arbitrages tranchés au fil de l'analyse du corpus (doc d'int�
 - **[Données] Enregistrement audio — filet de sécurité, pas un contournement** — audio_backup_path repris de VSCode2 pour Interview + nouvelle entité CoachNote (réflexion libre hors trame). Classification D2+ par défaut, transcription soumise au même mode d'exécution IA que le reste — jamais un raccourci vers une IA externe.
 - **[Outillage] Website en primaire, App en complément de capture** — Le Website (pattern VSCode1/VSCode2 déjà éprouvé) reste l'unique source de vérité ; une App mobile légère ne sert qu'à la capture terrain (audio, notes hors connexion) qui se synchronise vers le même modèle de données — pas deux systèmes parallèles.
 - **[Confidentialité] Redaction du REX appliquée au cadrage lui-même** — Les noms de clients réels et la donnée démographique identifiante de la source brute ont été remplacés par des alias sectoriels génériques directement dans ce wiki (voir §Structure) ; le process de redaction reproductible pour les prochains REX reste un point ouvert distinct.
-- **[Gouvernance] Dépendances externes versionnées et revues** — Grille VSCode1 (pin V3.2), contrats OpenHub ADR-006/ADR-009 et schéma de données Interview-to-Deck (VSCode2) sont désormais des dépendances explicitement pinnées, revues à chaque boucle `iap-re-assessment` et à chaque MVP gate, propriété de `iap-strategy-lead` (voir §Modèles de maturité).
+- **[Gouvernance] Dépendances externes versionnées et revues** — Grille VSCode1 (pin V3.2), contrats OpenHub ADR-006/ADR-009 et schéma de données Interview-to-Deck (VSCode2) sont désormais des dépendances explicitement pinnées, revues à chaque boucle `iap-strategy-lead` et à chaque MVP gate, propriété de `iap-strategy-lead` (voir §Modèles de maturité).
 - **[Rigueur] Points ouverts avec owner et échéance** — Chaque point ouvert du cadrage porte désormais un owner (agent/rôle) et une échéance cible (jalon MVP), sur le même principe de traçabilité que le format ADR déjà imposé aux décisions produit (voir §Points ouverts).
 - **[Outillage] Résolution du schéma module.yaml** — Levé via l'installation BMAD locale (`_bmad/`) : `module.yaml` est un asset de définition de module fourni en gabarit par le module `bmb` (bmad-builder) déjà installé, distinct des `config.yaml` d'exécution par module. Scaffoldé via `bmb` en MVP1 plutôt que rédigé à la main (voir §Structure).
 - **[Méthode] Gate de maturité DevOps — règle dure par défaut, dérogation ADR tracée** — Le pattern « Automatiser » est bloqué par défaut sous le niveau [0] du pilier Excellence Technique/Usine DevOps (grille VSCode1) ; toute dérogation doit être consignée comme décision ADR avec Alternatives rejetées obligatoires et contre-signature `iap-risk-reviewer` (voir §Traitement des gaspillages).
@@ -1257,7 +1258,7 @@ Consolidation des arbitrages tranchés au fil de l'analyse du corpus (doc d'int�
 | ~~Cohabitation avec l'offre « Agentic Product Run »~~ — **tranché le 2026-09-23 : on reste sur Infra as a Product en reprenant les éléments utiles d'Agentic Product Run** (complémentarité par intégration, pas cohabitation de deux discours ; sources VScode6 — `docs/run-ia/README.md`, B2) | — | Fermé |
 | Dispositifs humains transposés de SCALE (v2.4, §Accompagnement de l'humain dans la trajectoire) — restitution-embarquement avec retour aux interviewés, formation expérientielle sur cas réels, communauté de managers, sondage collaborateurs avant/après, Team Health Check : conçus chez SCALE pour des transformations de 1-3 ans, jamais joués sur une mission IAP — valider ce qui survit au format court (mission flash + boucle) et le formaliser en gabarits | `iap-change-coach` | Première mission pilote (dispositifs ①②) · MVP4 (généralisation ③ et gabarits) |
 
-> **État du deck au 2026-09-20 (v2.6).** Le deck a continué d'évoluer de son côté pendant que ce document ne bougeait pas : `docs/cadrage-ppt/` est en v2.36 — restructuration en 8 chapitres (Executive summary / Contexte / Enjeux / Douleur / Opportunités / Offre / Démarches / Next steps), puis retrait du chapitre Annexes (le nombre de slides n'est pas figé ici : il se lit dans `test_generate_deck.py` et `git log docs/cadrage-ppt/`). Relevé du 2026-09-20 : la matière retirée du deck (personas, KPIs, grille de maturité) **reste intégralement ici** — rien à rapatrier. La dérive est dans l'autre sens : neuf sections substantielles de ce cadrage n'ont aucune slide (Isolation multi-client, Règles d'or, Cross-walk, Comitologie, Moteur d'assessment, les 11 agents et leur graphe de handoffs, Workflows et routage, Qualité & test du module, Roadmap MVP 0-6), et deux slides n'ont pas de section ici (`slide_fil_technique`, dont le générateur note lui-même que la matière « n'existait qu'en 4 notes TECH éparpillées », et les slides d'architecture SI). Toutes ne sont pas des défauts — la comitologie interne n'a rien à faire dans une restitution client — mais la roadmap MVP et les 11 agents absents du deck se défendent moins bien. **Arbitrage de contenu du deck, non traité en v2.6.**
+> **État du deck au 2026-09-20 (v2.6).** Le deck a continué d'évoluer de son côté pendant que ce document ne bougeait pas : `docs/cadrage-ppt/` est en v2.36 — restructuration en 8 chapitres (Executive summary / Contexte / Enjeux / Douleur / Opportunités / Offre / Démarches / Next steps), puis retrait du chapitre Annexes (le nombre de slides n'est pas figé ici : il se lit dans `test_generate_deck.py` et `git log docs/cadrage-ppt/`). Relevé du 2026-09-20 : la matière retirée du deck (personas, KPIs, grille de maturité) **reste intégralement ici** — rien à rapatrier. La dérive est dans l'autre sens : neuf sections substantielles de ce cadrage n'ont aucune slide (Isolation multi-client, Règles d'or, Cross-walk, Comitologie, Moteur d'assessment, les 12 agents et leur graphe de handoffs, Workflows et routage, Qualité & test du module, Roadmap MVP 0-6), et deux slides n'ont pas de section ici (`slide_fil_technique`, dont le générateur note lui-même que la matière « n'existait qu'en 4 notes TECH éparpillées », et les slides d'architecture SI). Toutes ne sont pas des défauts — la comitologie interne n'a rien à faire dans une restitution client — mais la roadmap MVP et les 12 agents absents du deck se défendent moins bien. **Arbitrage de contenu du deck, non traité en v2.6.**
 >
 > **Pourquoi le deck PPT n'avait pas bougé en v2.5 :** les recoupements VScode6 ajoutés en v2.4 et v2.5 sont tous `ILLUSTRATIF` — ils corroborent depuis un point de vue indépendant des arguments qu'IAP tient déjà (déclencheur ③, doctrine de preuve, scoping de la mission flash, ciblage du sponsor) sans ajouter de fait nouveau opposable à un client. Le deck (`docs/cadrage-ppt/`) reste calibré sur les faits `CONFIRMÉ`/`DÉDUIT` propres à IAP ; la seule évolution que ces recoupements appellent côté deck est un arbitrage commercial encore ouvert — la cohabitation avec l'offre Agentic Product Run elle-même (ligne ci-dessus) — pas une slide. Le seul changement de deck de cette revue est indépendant du contenu : la garde de couleur `chip`/`badge` de `generate_deck.py` (texte jamais blanc sur cyan, cf. commit du reliquat v2.4).
 
