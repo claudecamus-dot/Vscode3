@@ -115,8 +115,8 @@ Décision de cadrage : pas de fichier pivot `iap-module-context.md`. Le corpus s
 
 - 11 — Agents
 - 11 — Workflows
-- 14 — Templates *(baseline v1.1 — périmé, voir note de cohérence ci-dessous)*
-- 9 — Checklists *(baseline v1.1 — périmé, voir note de cohérence ci-dessous)*
+- Templates — **cible, compte non figé** (MVP0 non commencé : à lire au scaffolding, pas ici)
+- Checklists — **cible, compte non figé** (idem)
 - 9+ — Knowledge (dont 2 nouveaux v0.6–0.7)
 - 1 — Gate IA transversal non-automatisable
 
@@ -127,8 +127,8 @@ bmad-iap/
   module.yaml ← résolu (v1.6) : scaffoldé via bmb, voir §Structure "Résolution module.yaml"
   agents/            11 agents — voir §Agents
   workflows/         11 workflows — voir §Workflows
-  templates/         14 templates
-  checklists/        9 checklists
+  templates/         (cible, compte non figé)
+  checklists/        (cible, compte non figé)
   knowledge/
     infra-product-definition.md   ← mission/vision + invariants organisationnels + ITIL4/Platform Eng.
     doctrine-and-golden-rules.md  ← règles d'or IAP + IA/données (renforcées)
@@ -322,7 +322,7 @@ Le cadrage manipule plusieurs échelles à paliers qui se recoupent partiellemen
 - Grille **Agentic Readiness [0]–[1]** → force la branche **documentation-first**, interdit le palier « délégué » d'un agent (§Export markdown) : le process doit être explicite *avant* l'agent, pas après.
 - Classification **D3–D4 sans LLM local qualifié** → mode M0 / documentation-first (§Gate IA).
 
-> **Cumul des plafonds (DevOps [0] et D3–D4 sans LLM local) — v2.7.** Les deux règles se cumulent : ni pattern « Automatiser », ni IA sur les données réelles. La mission ne change pas de nature, elle change de livrables : (1) Transformer en entier (cible produit, roadmap, gouvernance) ; (2) Assainir par les seuls patterns hors automatisation (supprimer, simplifier, standardiser) ; (3) les `runbook-<processus>.md` du chemin documentation (§Export markdown) ; (4) un plan de fiabilisation de la chaîne DevOps dont l'atteinte du niveau [1] est le critère de levée du gate à la réévaluation. Ce que la mission ne vend pas est écrit dans la proposition, pas découvert en cours de route. Viabilité commerciale de ce périmètre : `INCERTAIN` — non testée.
+> **Cumul des plafonds (DevOps [0] et D3–D4 sans LLM local) — v2.7.** Les deux règles se cumulent : ni pattern « Automatiser », ni IA sur les données réelles. La mission ne change pas de nature, elle change de livrables : (1) Transformer en entier (cible produit, roadmap, gouvernance) ; (2) Assainir par les seuls patterns hors automatisation (supprimer, simplifier, standardiser) ; (3) les `runbook-<processus>.md` du chemin documentation (§Export markdown) ; (4) un plan de fiabilisation de la chaîne DevOps dont l'atteinte du niveau [1] est le critère de levée du gate à la réévaluation. Ce que la mission ne vend pas est écrit dans la proposition, pas découvert en cours de route. Vendu **sous le même nom d'offre** (arbitré le 2026-09-23) : mêmes piliers, livrables différents, écrits dans la proposition. Viabilité commerciale : `INCERTAIN` — non testée.
 
 > **Ce que ce cross-walk ne fait pas :** il n'aplatit pas les échelles en une seule. Coach/Délégué reste **binaire** (une US est Coach *ou* Délégué), le gradient agent est à **3 paliers**, l'ambition A/B/C est un **choix de gouvernance non nécessairement linéaire** — les correspondances par ligne sont des repères de lecture, pas des synonymes interchangeables. L'intérêt : un consultant qui a intégré « bas / milieu / haut = qui fait, qui supervise, qui laisse faire » n'a plus qu'**un** mouvement mental à tenir, décliné selon l'objet, au lieu de six vocabulaires à mémoriser séparément.
 
@@ -370,6 +370,8 @@ Le focus le plus développé du corpus — traité comme un objet de transformat
 Détecter → Qualifier → Quantifier → Comprendre la cause racine → Choisir un pattern → Prioriser → Expérimenter → Mesurer → Industrialiser → Prévenir la réapparition.
 
 ### Scoring de priorisation
+
+> **Dette assumée (v2.7) :** deux systèmes de scoring coexistent — Impact × Faisabilité − Prudence IA d'un côté, valeur/complexité 1–5 de l'autre. Leurs écarts sont mesurés comme un indicateur de cohérence, pas éliminés ; les fusionner est un chantier de conception, non engagé.
 
 ```
 Score impact     = capacité + utilisateur + delivery + RUN + financier + risque + environnement
@@ -549,7 +551,7 @@ ExternalEvidence → source, type, date, référence   ← factuel, extrait d'un
                                                        motif écrit (règle d'or fraîcheur, v2.7)
 ```
 
-> **Pourquoi une entité séparée plutôt que fondre les deux :** Un ticket ServiceNow n'a pas le même statut épistémique qu'un verbatim d'interview : c'est une preuve factuelle (tag `CONFIRMÉ` dès que la source est identifiée, datée et couvre la période diagnostiquée — sinon `DÉDUIT`, motif écrit : une donnée système n'est pas une opinion, mais elle peut être périmée ; règle d'or « Vérifier provenance, qualité, fraîcheur des données », §Règles d'or), pas une déclaration à recouper. Séparer `ExternalEvidence` d'`Interview` permet à `iap-incident-postmortem-miner` (voir décisions ci-dessous) de croiser les deux sans confondre un fait et une perception — utile en particulier pour objectiver l'écart entre RUN perçu et RUN réel (voir §KPIs).
+> **Pourquoi une entité séparée plutôt que fondre les deux :** Un ticket ServiceNow n'a pas le même statut épistémique qu'un verbatim d'interview : c'est une preuve factuelle (tag `CONFIRMÉ` dès que la source est identifiée, datée et couvre la période diagnostiquée — sinon `DÉDUIT`, motif écrit ; la couverture de période suffit, sans durée plafond — arbitré le 2026-09-23 : une donnée système n'est pas une opinion, mais elle peut être périmée ; règle d'or « Vérifier provenance, qualité, fraîcheur des données », §Règles d'or), pas une déclaration à recouper. Séparer `ExternalEvidence` d'`Interview` permet à `iap-incident-postmortem-miner` (voir décisions ci-dessous) de croiser les deux sans confondre un fait et une perception — utile en particulier pour objectiver l'écart entre RUN perçu et RUN réel (voir §KPIs).
 
 Format d'import minimal attendu : un CSV/export brut par outil source, mappé à la Trame via un fichier `import-mapping.md` par engagement (quelles colonnes source correspondent à quels Thèmes/Questions) — pas de connecteur API, juste un import de fichier déposé par le client ou le consultant.
 
@@ -762,7 +764,7 @@ Un seul est bloquant avant tout usage IA sur données client : `iap-ai-data-conf
 | Maturité IA faible | Pas de plateforme IA gouvernée | Méthodo + données synthétiques |
 | Absence de sponsor mandaté | Acheteur d'un audit qui ne portera pas la cible ; pas de mandat écrit ; « je ne veux que la baisse de coûts » (§Positionnement & achat) | Test d'engagement du sponsor **avant signature** (B6) ; échec = critère de non-engagement, pas un aléa de mission (§Mise en œuvre du target operating model) |
 
-> **Cumul de scénarios (v2.7).** Les scénarios se répartissent en deux natures. Les **contraintes** (« Données sensibles », « Maturité IA faible ») ne choisissent pas le chemin : elles le plafonnent et s'appliquent toujours, cumulées. Les **moteurs** (les autres lignes, sauf « Absence de sponsor mandaté », qui est un **préalable** : son échec exclut la mission au lieu de l'orienter) choisissent le chemin : un seul est retenu comme moteur de la mission, les autres sont notés comme scénarios secondaires traités par le chemin du moteur ou reportés à la réévaluation. Le choix du moteur est une décision ADR prise à l'intake avec le sponsor, alternatives rejetées obligatoires. Aucun ordre de préséance n'est fixé entre moteurs à ce stade — `INCERTAIN`, à instruire sur les missions pilotes.
+> **Cumul de scénarios (v2.7).** Les scénarios se répartissent en deux natures. Les **contraintes** (« Données sensibles », « Maturité IA faible » ; « Pression IA sponsor » est un moteur — arbitré le 2026-09-23) ne choisissent pas le chemin : elles le plafonnent et s'appliquent toujours, cumulées. Les **moteurs** (les autres lignes, sauf « Absence de sponsor mandaté », qui est un **préalable** : son échec exclut la mission au lieu de l'orienter) choisissent le chemin : un seul est retenu comme moteur de la mission, les autres sont notés comme scénarios secondaires traités par le chemin du moteur ou reportés à la réévaluation. Le choix du moteur est une décision ADR prise à l'intake avec le sponsor, alternatives rejetées obligatoires. Aucun ordre de préséance n'est fixé entre moteurs à ce stade — `INCERTAIN`, à instruire sur les missions pilotes.
 
 ## [Trajectoire] Ambition de l'outil (v0.8 — cadrage initial, affiné par 2 agents en cours)
 
@@ -838,7 +840,7 @@ Les trois familles ci-dessus listent déjà des indicateurs, mais jamais la rais
 |---|---|---|
 | KPIs de mission | Sans eux, un cabinet peut livrer un deck exécutif dans les règles sans jamais savoir si le client va réellement mieux — le risque nommé en doctrine de « transformation cosmétique » (§Focus management) appliqué cette fois au résultat, pas à la posture managériale | Capacité RUN récupérée en **heures/mois** sur le processus ciblé (pas un pourcentage vague) ; delta de MTTR en **minutes**, mesuré sur le même périmètre d'incidents avant/après ; taux de self-service = part des demandes traitées sans ticket humain sur la capacité livrée |
 | KPIs d'usage du module | Le module BMAD IAP est réutilisé mission après mission — sans mesure d'usage, impossible de distinguer une méthode qui s'améliore d'une méthode qui stagne, ni de justifier l'investissement de capitalisation (`rex-library.md`, MVP5) | Temps en **heures consultant** pour produire un cadrage flash (intake → deck sponsor) ; part des livrables provenant d'un template BMAD IAP sans réécriture substantielle (pas juste « utilisé un template ») |
-| Grille de maturité | Sans mesure répétée dans le temps, la maturité reste une opinion de consultant plutôt qu'un delta objectivable — c'est ce qui rend la boucle de réévaluation (⟲) vérifiable plutôt que déclarative | Delta de score **par pilier** (pas un score agrégé unique qui masquerait un pilier qui recule pendant qu'un autre progresse), mesuré au même instrument (grille V3.2) à T0 et à chaque `iap-re-assessment` |
+| Grille de maturité | Sans mesure répétée dans le temps, la maturité reste une opinion de consultant plutôt qu'un delta objectivable — c'est ce qui **rendra** la boucle de réévaluation (⟲) vérifiable plutôt que déclarative — une fois B4 levé et le vecteur d'import tranché | Delta de score **par pilier** (pas un score agrégé unique qui masquerait un pilier qui recule pendant qu'un autre progresse), mesuré au même instrument (grille V3.2) à T0 et à chaque `iap-re-assessment` |
 
 ### Mise en place — owners, source des données, cadence (brainstorm v2.1)
 
@@ -901,7 +903,7 @@ Un `product-canvas-infra.md` avec les 6 champs remplis peut rester une général
 
 > **Pré-check structurel avant iap-risk-reviewer :** Séparer une couche structurelle/mécanique (champs manquants, double-scoring waste/recommandation déjà repéré comme incohérence possible, tag DÉDUIT posé sous le seuil de couverture, décision ADR sans Alternatives rejetées) qui peut devenir un script ou sous-agent déterministe passé **avant** la revue humaine — et une couche jugement pur qui reste le rôle de l'agent. Règle non négociable : ce pré-check ne corrige jamais silencieusement, il liste des anomalies à trancher par l'agent producteur — même règle « lecture seule » que `iap-risk-reviewer` lui-même.
 
-**9 checklists de readiness, deux couches par item** : chaque item tagué `[STRUCTUREL]` (case à cocher, automatisable) ou `[JUGEMENT]` (question ouverte, irréductiblement humaine) dès la rédaction — prépare une automatisation future sans l'exiger dès MVP1. `ai-confidentiality-readiness` est la plus structurelle des 9 par nature (classification D0-D4, mode d'exécution documentés) mais son checkpoint final reste, par doctrine, toujours un jugement humain (ADR-006). `no-waste-shift-checklist` est presque entièrement jugement par construction.
+**Checklists de readiness (cible), deux couches par item** : chaque item tagué `[STRUCTUREL]` (case à cocher, automatisable) ou `[JUGEMENT]` (question ouverte, irréductiblement humaine) dès la rédaction — prépare une automatisation future sans l'exiger dès MVP1. `ai-confidentiality-readiness` est la plus structurelle de toutes par nature (classification D0-D4, mode d'exécution documentés) mais son checkpoint final reste, par doctrine, toujours un jugement humain (ADR-006). `no-waste-shift-checklist` est presque entièrement jugement par construction.
 
 > **Anti-pattern : la QA cosmétique côté outillage :** Un badge « validé » qui ne précise pas explicitement ce qui a été vérifié (structurel seul, ou structurel + relecture humaine) crée une fausse confiance — même écart que « transformation cosmétique » déjà nommé côté client, reproduit cette fois côté outillage QA. Un badge `QA structurelle uniquement — relecture qualitative non faite` rend visible le niveau de contrôle réellement appliqué, sur le même principe que le badge « Synthèse manuelle — mode M0 ».
 
@@ -1028,7 +1030,7 @@ Le template `template-octo.pptx` porte déjà, dans ses slides d'exemple (« Not
 | idem | [2]–[3] : rôles humains/agents définis, process mesurable | **Agentic-implementation** possible |
 | Classification des données (Gate IA, §Doctrine) | D3–D4 sans LLM local qualifié | **Documentation-first** (ou mode M0, §Fonctionner sans IA externe) |
 | idem | D0–D2, ou D3–D4 avec LLM local qualifié | **Agentic-implementation** possible |
-| Score de traitement du gaspillage (Priorité = impact × faisabilité − prudence IA) | Négatif ou faible | **Documentation-first** |
+| Score de traitement du gaspillage (palier ordinal, §Scoring de priorisation) | Palier faible | **Documentation-first** |
 | Signal `deskilling-risk` (§Modèles d'équipe) sur un processus voisin déjà agentifié | Risque déjà élevé | **Documentation-first**, prudence |
 
 **Deux gabarits, pas trois :**
@@ -1169,7 +1171,7 @@ elle ne fait pas le travail à leur place.
 | B1 | Nom public de l'offre — collision `CONFIRMÉ` avec Thoughtworks et Itential | Le premier document remis porte un titre ; se déclenche à la remise, pas sur une hypothèse de fond | Direction de cabinet | Avant la première proposition commerciale |
 | B2 | Cohabitation avec l'offre « Agentic Product Run » (VScode6) | Un même compte peut recevoir les deux discours séparément — **et un compte déjà client d'« Agentic Product Run » peut se voir proposer IAP par-dessus une mission en cours** (v2.7). Règle attendue de l'arbitrage : quelle offre mène sur un compte déjà engagé, et comment l'intake IAP reprend les constats existants plutôt que de ré-interviewer. Signal d'intake : « une mission Agentic Product Run est-elle en cours ou passée sur ce compte ? » | Direction de cabinet | Avant la première proposition commerciale |
 | B3 | Mission flash non scopée — **trois définitions concurrentes** dans ce document : « à scoper » (§Points ouverts), « Assessment flash 1-2 semaines » (§Mise en œuvre du target operating model), « intake + gate IA + pilote d'une semaine » (§Utilisation simple par le coach) | Le seul produit d'entrée. Délai annoncé oralement au sponsor, périmètre arbitré par lui en cours de route. Aucun de ces délais n'a de source : le KPI qui les produirait est précisément celui déclaré jamais essayé | Claude Camus | Avant la première proposition commerciale |
-| B4 | Grille V3.2 — passe de validation de domaine infra (astreinte, obsolescence, TMA, CMDB) | ~50 questions de delivery agile logiciel devant un DSI infra, en première semaine. **Contrainte de séquence** : la discipline « même instrument à T0 et à ⟲ » interdit de corriger la grille après T0 — la passe doit être faite **avant**, jamais après | Claude Camus | Avant la première mission |
+| B4 | Grille V3.2 — passe de validation de domaine infra (astreinte, obsolescence, TMA, CMDB) | 43 questions de delivery agile logiciel (+ 18 IA/agentic) devant un DSI infra (comptage du 2026-09-23 : lignes à cellule terminée par « ? » dans `VSCode1/reference grille/Grille-Assessment-Agile-V3.2-IA-Agentic-Complet.xlsx` — heuristique, à recouper au scaffolding), en première semaine. **Contrainte de séquence** : la discipline « même instrument à T0 et à ⟲ » interdit de corriger la grille après T0 — la passe doit être faite **avant**, jamais après | Claude Camus | Avant la première mission |
 | B5 | Règle d'or 3.2.1 — critère observable + dérogation ADR | Scénario « Pression IA sponsor », le plus probable : refus sur un jugement non opposable face à un budget IA. Le contre-modèle exact existe déjà dans ce document — le gate de maturité DevOps, règle dure adossée à un niveau **mesuré**, avec dérogation ADR | Claude Camus | Avant la première mission |
 | B6 | Test d'engagement du sponsor — gabarit inexistant, porteur divergent (`iap-intake` §Mise en œuvre du target operating model vs `iap-change-coach` §Points ouverts) | Acté « condition d'engagement, pas une option », à jouer avant signature : sera sauté ou improvisé en avant-vente | Claude Camus | Avant la première proposition commerciale |
 | B7 | Boucle ⟲ — clause de réévaluation signable | La réévaluation doit être contractée **dès l'intake**, mais tarification et packaging sont hors périmètre du cadrage et la modalité reste ouverte jusqu'à MVP4 : à la signature, le consultant n'a rien à faire signer. Une clause de retour ne se rattrape pas à froid | Claude Camus + Direction de cabinet | Avant la première signature |
@@ -1205,7 +1207,7 @@ Consolidation des arbitrages tranchés au fil de l'analyse du corpus (doc d'int�
 - **[Méthode] Incrément pilote minimal** — mvp-target-model.md ajouté comme output optionnel de iap-product-definition.
 - **[Scope] Transformation Companion hors périmètre** — Acté explicitement comme MVP 6 non engagé plutôt que laissé en non-dit.
 - **[Contenu] Matériel argumentaire récupéré** — Tables problème→méthode du brainstorm rattachées au deck-builder, slide 02.
-- **[Maturité] Grille VSCode1 importée telle quelle** — Le modèle 3 dimensions inventé en v0.5 est remplacé par la Grille d'Assessment Agile V3.2 (5 piliers, 17 objectifs, ~50 questions, 4 niveaux rédigés) — Excellence Technique et Agilité à l'Échelle pour la maturité produit/plateforme, IA/Agentic/Organisation Augmentée en lieu et place du M0-M4 générique.
+- **[Maturité] Grille VSCode1 importée telle quelle** — Le modèle 3 dimensions inventé en v0.5 est remplacé par la Grille d'Assessment Agile V3.2 (5 piliers, 17 objectifs, 61 questions dont 18 IA/agentic, 4 niveaux rédigés) — Excellence Technique et Agilité à l'Échelle pour la maturité produit/plateforme, IA/Agentic/Organisation Augmentée en lieu et place du M0-M4 générique.
 - **[Assessment] Moteur d'assessment emprunté à VSCode2** — Structure Mission/Trame/Theme/Question + Interview/Verbatim par persona + Synthesis/GlobalSynthesis (5 catégories) + RecommendationAxis/Recommendation (valeur/complexité) reprise d'Interview-to-Deck pour structurer iap-intake, iap-diagnostic-systemique et iap-discovery-gaspillage.
 - **[Agents] Contrats de handoff formalisés** — Chaque paire agent producteur→consommateur reçoit un bloc « Retour vers <consommateur> » normalisé avec champs actionnables — le consommateur ne construit jamais un output depuis une sortie non structurée (ADR-009 OpenHub).
 - **[Gouvernance] Checkpoint gate IA non-automatisable** — Quel que soit le mode d'autonomie choisi à l'intake (manuel/semi-auto/auto), la décision du gate IA/confidentialité reste toujours un checkpoint humain (ADR-006 OpenHub).
@@ -1264,7 +1266,7 @@ Consolidation des arbitrages tranchés au fil de l'analyse du corpus (doc d'int�
 | Gabarits `runbook-<processus>.md` / `agentic-implementation-plan.md` (export markdown agentic-ou-documentation) — routage sur seuils déjà cadrés à valider sur mission pilote réelle, pas seulement sur le cas nominal fictif | `iap-agentic-opportunities` (technique) + `iap-ai-governance-lead` (validation doctrinale) | MVP4 (spécialisation) |
 | Définitions précises + mécanique de mise en place des KPIs (owners, sources, cadence) — posées en brainstorm v2.1, jamais essayées sur une mission réelle ; le "pas d'instrumentation automatique avant le Niveau C" reste à confirmer dans la durée | `iap-metrics-sre-finops-lead` | MVP5 (Industrialisation) |
 | Sort des tags CONFIRMÉ/DÉDUIT dans le deck sponsor (v2.3, finding M1) — recommandation : légende consolidée + argumentaire « pourquoi nos chiffres prudents valent plus », et accès aux exports outils posé comme condition d'engagement, pas comme repli | `iap-deck-builder` | MVP1 |
-| Validation de domaine de la Grille V3.2 (v2.3, finding M2) — passe de contenu des ~50 questions vs spécificités infra (astreinte, obsolescence, TMA, CMDB) ; d'ici là, la qualifier « adaptée de », pas « éprouvée » en domaine infra | `iap-strategy-lead` | Avant la première mission pilote |
+| Validation de domaine de la Grille V3.2 (v2.3, finding M2) — passe de contenu des 43 questions agiles (+ 18 IA/agentic) vs spécificités infra (astreinte, obsolescence, TMA, CMDB) ; d'ici là, la qualifier « adaptée de », pas « éprouvée » en domaine infra | `iap-strategy-lead` | Avant la première mission pilote |
 | Capitalisation REX outillée (v2.3, finding M3) — redaction reproductible en fin de chaque mission + objectif chiffré de REX/an ; le moat (rex-library/scenario-library) est en tension avec l'isolation multi-client — tension de produit, pas d'hygiène | `iap-ai-governance-lead` (redaction) · `iap-strategy-lead` (objectif) | MVP5 (Industrialisation) |
 | Carte staffing junior / junior+revue / senior par étape du parcours coach + test d'apprenabilité réel (intake + diagnostic déroulés par un consultant qui n'a pas écrit le cadrage, chronométré) (v2.3, finding M5) | `iap-strategy-lead` + Direction de cabinet (staffing) | MVP5 — test d'apprenabilité dès qu'un consultant hors-auteur est disponible |
 | Critère observable + dérogation ADR pour la règle d'or 3.2.1 « jamais l'IA sur un problème d'abord organisationnel » — adosser au pilier Agentic Readiness de la grille, même mécanique que le gate de maturité DevOps [0] (v2.3, finding m1) | `iap-ai-governance-lead` | MVP2 (Gate IA) |
