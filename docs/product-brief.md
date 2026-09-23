@@ -111,11 +111,11 @@ produit, Big4 sur la gouvernance seule, AIOps sans transformation).
 Cadrage v2.7, **draft consolidé** — le « comment faire la mission » est au-dessus du
 standard du marché ; ce qui manque est l'**artefact exécutable derrière**, pas la pensée.
 
-> **Avant tout rendez-vous, lire ceci.** Huit points sont bloquants pour une première
-> mission (B1 à B8) : ils sont suivis au cadrage, §Points échus — réattribution humaine,
+> **Avant tout rendez-vous, lire ceci.** Sept points sont bloquants pour une première
+> mission (B1 à B8, B6 retiré) : ils sont suivis au cadrage, §Points échus — réattribution humaine,
 > seule source à jour. Les quatre à sortir en premier y sont B1 (nom public de l'offre),
-> B3 (mission flash), B4 (grille V3.2 en domaine infra) et B6 (test d'engagement du
-> sponsor, « condition d'engagement, pas une option »). Ce brief ne recopie pas leur
+> B3 (mission flash), B4 (grille V3.2 en domaine infra) et B7 (clause de
+> réévaluation). Ce brief ne recopie pas leur
 > détail : il y renvoie.
 
 Les chantiers propriétaires restants (nom public de l'offre, KPI de

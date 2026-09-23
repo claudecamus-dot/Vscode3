@@ -2,6 +2,13 @@
 
 # BMAD IAP — Infra as a Product Transformation Pack
 
+> **Nature et périmètre de ce document (arbitré le 2026-09-23).** BMAD IAP est une
+> **démarche et une offre** : ce cadrage met en forme nos convictions pour montrer notre
+> savoir-faire, en interne et au client. **Il reste au niveau du cadrage : aucun travail de
+> construction du module `bmad-iap` n'est lancé.** Les agents, workflows et jalons MVP
+> décrits plus bas illustrent la cible outillée de la démarche ; ils ne sont pas un plan
+> de réalisation engagé, et leur absence du dépôt est normale, pas un retard.
+
 **Statut :** draft consolidé v2.7 — **contre-revue du 2026-09-23** (analyses dans
 `docs/reflexions/analyse-cas-limites-cadrage.md` et `analyse-points-revues-anterieures.md`) :
 comptes et renvois corrigés, sept cas limites traités — cumul de scénarios, cumul des
@@ -16,7 +23,7 @@ Trois apports ; aucune promesse de vente ajoutée, mais le discours de faisabili
 MVP, nouvelle et seule autorité sur l'avancement : mesuré, le module `bmad-iap` n'existe ni
 dans ce dépôt ni ailleurs dans la flotte et **MVP0 n'est pas commencé** — les 11 agents et 11 workflows sont une cible de conception, à lire au futur
 partout où ce document les dit au présent. (2) §Points échus — réattribution humaine :
-huit bloquants pour une première mission (B1-B8) et trois attributions circulaires cassées,
+huit bloquants pour une première mission (B1-B8, B6 retiré depuis) et trois attributions circulaires cassées,
 les owners passant d'un slug d'agent non construit à un humain. (3) `docs/product-brief.md`
 réaligné, il vendait au présent un outillage décrit au futur. Ce que cette relance n'a
 **pas** fait : trancher les contradictions internes recensées (contrat ADR-009 défini à
@@ -562,7 +569,7 @@ Une **Synthesis** par Thème (convergences/divergences entre interviewés), puis
 Catégories : `Contexte` · `Culture & ADN` · `Forces / succès` · `Points d'amélioration` · `Aspirations (ou leur absence)`
 
 > **Revue de structure — 3 clarifications (v1.4) :**
-> - **Aspirations autorise explicitement un contenu négatif** — résignation, épuisement, aspiration absente sont des constats de plein droit, pas un échec à remplir la case. Les scénarios « organisation sceptique », « RUN massif » ou « absence de sponsor mandaté » (§Routage des scénarios) produisent rarement une vision positive spontanée ; forcer une formulation positive de façade ment sur l'état réel.
+> - **Aspirations autorise explicitement un contenu négatif** — résignation, épuisement, aspiration absente sont des constats de plein droit, pas un échec à remplir la case. Les scénarios « organisation sceptique » ou « RUN massif » (§Routage des scénarios) produisent rarement une vision positive spontanée ; forcer une formulation positive de façade ment sur l'état réel.
 > - **Non-duplication explicite avec le waste-register** : « Forces/succès » et « Points d'amélioration » sont la couche *exécutive* (5-10 lignes qu'un sponsor lit en premier), le waste-register reste l'outil de travail scoré du consultant — les deux publics et les deux granularités sont différents, ça doit être dit dans le livrable (« voir waste-treatment-backlog.md pour le détail scoré »), pas seulement supposé.
 > - **Distribution des tags visible par catégorie** — chaque paragraphe de GlobalSynthesis liste en fin de texte la distribution des tags de ses constats sources (ex. « 3 CONFIRMÉ, 2 DÉDUIT, 1 INCERTAIN »), pour ne pas aplatir en un seul bloc lisse des constats de fiabilité très inégale. Ferme le point ouvert v1.1 sur les tags hétérogènes.
 >
@@ -762,9 +769,8 @@ Un seul est bloquant avant tout usage IA sur données client : `iap-ai-data-conf
 | Pression IA sponsor | « Mettre de l'IA » sans cas d'usage | AI/Data Gate + discovery gaspillage |
 | Données sensibles | Tickets, logs, coûts, PII | IA client ou LLM local + anonymisation |
 | Maturité IA faible | Pas de plateforme IA gouvernée | Méthodo + données synthétiques |
-| Absence de sponsor mandaté | Acheteur d'un audit qui ne portera pas la cible ; pas de mandat écrit ; « je ne veux que la baisse de coûts » (§Positionnement & achat) | Test d'engagement du sponsor **avant signature** (B6) ; échec = critère de non-engagement, pas un aléa de mission (§Mise en œuvre du target operating model) |
 
-> **Cumul de scénarios (v2.7).** Les scénarios se répartissent en deux natures. Les **contraintes** (« Données sensibles », « Maturité IA faible » ; « Pression IA sponsor » est un moteur — arbitré le 2026-09-23) ne choisissent pas le chemin : elles le plafonnent et s'appliquent toujours, cumulées. Les **moteurs** (les autres lignes, sauf « Absence de sponsor mandaté », qui est un **préalable** : son échec exclut la mission au lieu de l'orienter) choisissent le chemin : un seul est retenu comme moteur de la mission, les autres sont notés comme scénarios secondaires traités par le chemin du moteur ou reportés à la réévaluation. Le choix du moteur est une décision ADR prise à l'intake avec le sponsor, alternatives rejetées obligatoires. Aucun ordre de préséance n'est fixé entre moteurs à ce stade — `INCERTAIN`, à instruire sur les missions pilotes.
+> **Cumul de scénarios (v2.7).** Les scénarios se répartissent en deux natures. Les **contraintes** (« Données sensibles », « Maturité IA faible » ; « Pression IA sponsor » est un moteur — arbitré le 2026-09-23) ne choisissent pas le chemin : elles le plafonnent et s'appliquent toujours, cumulées. Les **moteurs** (les autres lignes) choisissent le chemin : un seul est retenu comme moteur de la mission, les autres sont notés comme scénarios secondaires traités par le chemin du moteur ou reportés à la réévaluation. Le choix du moteur est une décision ADR prise à l'intake avec le sponsor, alternatives rejetées obligatoires. Aucun ordre de préséance n'est fixé entre moteurs à ce stade — `INCERTAIN`, à instruire sur les missions pilotes.
 
 ## [Trajectoire] Ambition de l'outil (v0.8 — cadrage initial, affiné par 2 agents en cours)
 
@@ -980,7 +986,7 @@ Le template `template-octo.pptx` porte déjà, dans ses slides d'exemple (« Not
 
 **Cinq mécanismes SCALE retenus, transposés au contexte infra :**
 
-1. **« La transformation ne peut pas aller plus loin que ce que le Leader peut porter »** — l'engagement *personnel* du sponsor se teste avant de démarrer (SCALE : « tester la propension de l'environnement à se mettre en mouvement » avant de s'engager), pas en cours de mission. Rejoint ce que le cadrage documente déjà du sponsor (§Positionnement & achat : le « je ne veux que la baisse de coûts » ; §Routage des scénarios : « absence de sponsor mandaté ») : un sponsor qui achète un audit mais ne portera pas la cible est un critère de non-engagement, pas un aléa.
+1. **« La transformation ne peut pas aller plus loin que ce que le Leader peut porter »** — conviction de la démarche : la transformation se construit **avec** le Leader, dont l'engagement se travaille dès l'intake (SCALE : « tester la propension de l'environnement à se mettre en mouvement ») plutôt que de se supposer acquis. Ce n'est pas une condition posée au client (arbitré le 2026-09-23 : IAP est une démarche et une offre qui portent nos convictions, pas une mission à sécuriser contre le sponsor).
 2. **Le diagnostic co-produit engage, le diagnostic subi se conteste** — les règles d'or SCALE (« vous êtes les acteurs clés », « vos décideurs participent aux ateliers », « co-construire le chemin ») transposées : les interviews et ateliers déjà cadrés (§Moteur d'assessment) ne sont pas qu'une collecte de données, ce sont le premier acte d'accompagnement — l'écoute des tensions (« où sont prises les décisions ? qui arbitre ? ») fait prendre conscience avant même la restitution.
 3. **« Pas de formation sans coaching »** — la montée en compétence passe par l'expérience sur les cas réels de l'équipe (formation expérientielle, sur site), jamais par la formation générique seule. Déjà la position du §Focus management (pairing sur situations réelles plutôt que formation générique) — SCALE la généralise à toutes les équipes touchées, pas seulement au manager.
 4. **Les managers comme agents du changement, en communauté** — 6 leviers SCALE dont : créer une communauté de managers (l'aide vient des pairs, pas seulement du consultant), impliquer les N+1/N+2 des managers concernés, recevoir du feedback des managés. Étend le §Focus management (qui traite le manager *individuellement*) d'une dimension collective.
@@ -990,7 +996,7 @@ Le template `template-octo.pptx` porte déjà, dans ses slides d'exemple (« Not
 
 | Temps | Volet humain | Dispositifs transposés | Owner |
 |---|---|---|---|
-| ① Assessment flash | **Engager** : engagement personnel du sponsor vérifié dès l'intake (disponibilité des équipes pour interviews/ateliers comprise) ; interviews menées comme un acte d'écoute des tensions, pas une extraction de données ; restitution = moment d'embarquement — retour fait **aux interviewés**, pas au seul sponsor, avec recueil de feedback (transposition légère du « vote de confiance » SCALE) | Test d'engagement à l'intake · restitution élargie aux équipes interviewées | `iap-intake` (test d'engagement) · `iap-change-coach` (restitution-embarquement) |
+| ① Assessment flash | **Engager** : mobilisation du sponsor et des équipes organisée dès l'intake (disponibilité des équipes pour interviews/ateliers comprise) ; interviews menées comme un acte d'écoute des tensions, pas une extraction de données ; restitution = moment d'embarquement — retour fait **aux interviewés**, pas au seul sponsor, avec recueil de feedback (transposition légère du « vote de confiance » SCALE) | Test d'engagement à l'intake · restitution élargie aux équipes interviewées | `iap-intake` (test d'engagement) · `iap-change-coach` (restitution-embarquement) |
 | ② Premier déploiement | **Expérimenter avec des volontaires** : équipes pilotes choisies parmi les « premiers acteurs positionnés en faveur du changement », jamais désignées d'office ; formation expérientielle sur les cas réels de l'équipe ; posture Former → Mentorer → Coacher | Ateliers de cadrage co-construits (décideurs présents, en capacité de décider) · formation sur cas réels | `iap-change-coach` + équipe pilote (déjà mode Coach dominant, §Trajectoire) |
 | ③ Implémentation itérative | **Traiter les résistances, outiller les managers, monter les relais** : les « îlots de résistance » sont un signal à écouter (souvent une information sur un défaut de la cible ou un impact non assumé), pas un obstacle à contourner ; communauté de managers (6 leviers, N+1/N+2 embarqués) ; RH impliquée dès que la cible touche rôles/évaluation (« frein ou principal accélérateur ») ; formation des relais internes qui porteront le modèle après la mission — éventuellement en cascade (une équipe formée restitue à la suivante) | Communauté de pairs · 6 leviers managers · relais internes formés | `iap-change-coach` (humain) · `iap-operating-model-architect` (cible) |
 | ⟲ Boucle | **Mesurer l'humain, pas seulement la maturité** : satisfaction/adhésion des équipes mesurée au même instrument à T0 et à la réévaluation (même discipline de delta que la grille, §KPIs) ; les relais internes formés en ③ sont un candidat naturel à la modalité de continuité de la boucle (point ouvert §ci-dessus — variante « relais interne outillé ») | Sondage avant/après · Team Health Check périodique historisé | `iap-metrics-sre-finops-lead` (mesure) · `iap-change-coach` (lecture) |
@@ -1106,8 +1112,8 @@ le module `bmad-iap` **n'existe pas dans le dépôt**. Ni `knowledge/`, ni `enga
 ni `module.yaml`, ni aucun des 11 agents. **Étendu le 2026-09-23 à la flotte** — commande :
 `Get-ChildItem C:\Users\claude.camus\Documents -Directory | % { Get-ChildItem $_.FullName -Recurse -Directory -Filter "*iap*" -Depth 4 }`
 (`.git` et `node_modules` exclus), 0 résultat :
-absent partout. L'emplacement cible du module (ce dépôt, un dépôt dédié, ou `_bmad/`)
-**n'est pas décidé** — c'est la première décision de MVP0, porteur Claude Camus. Les seuls artefacts IAP réels sont ce cadrage,
+absent partout. Conforme au périmètre : l'offre reste au niveau du cadrage, aucune construction
+n'est engagée (voir l'encadré en tête du document). Les seuls artefacts IAP réels sont ce cadrage,
 `docs/product-brief.md`, `docs/reflexions/demarche-iap-scale.md` et le deck
 `docs/cadrage-ppt/`.
 
@@ -1154,12 +1160,12 @@ jalon de sa propre échéance ne peut pas être tranché — il faut un humain a
 | Process de redaction du REX | owner `iap-ai-governance-lead` (livré MVP4), échéance « avant clôture MVP0 » | Claude Camus, avant l'intégration du premier REX réel |
 | Critère observable de la règle d'or 3.2.1 | owner `iap-ai-governance-lead` (MVP4), échéance MVP2 | Claude Camus, avant la première mission — voir B5 ci-dessous |
 
-**Ce qui doit tomber avant une première mission.** Huit points classés bloquants par la
+**Ce qui doit tomber avant une première mission.** Huit points classés bloquants (sept depuis le retrait de B6, 2026-09-23) par la
 revue adverse du 2026-09-20. Aucun n'est rédigé ici : cette section les rend suivables,
 elle ne fait pas le travail à leur place.
 
 > **Limite assumée de cette réattribution (contre-revue du 2026-09-23).** Elle remplace
-> des owners non joignables par **un porteur unique** (six lignes sur huit, plus les trois
+> des owners non joignables par **un porteur unique** (cinq lignes sur sept, plus les trois
 > circularités), et ses échéances sont **événementielles, pas calendaires** (« avant la
 > première proposition commerciale »). Elle rend donc les points suivables, pas encore
 > levables à date : le mécanisme « humain daté » promis ci-dessus n'est complet qu'une fois
@@ -1173,7 +1179,7 @@ elle ne fait pas le travail à leur place.
 | B3 | Mission flash non scopée — **trois définitions concurrentes** dans ce document : « à scoper » (§Points ouverts), « Assessment flash 1-2 semaines » (§Mise en œuvre du target operating model), « intake + gate IA + pilote d'une semaine » (§Utilisation simple par le coach) | Le seul produit d'entrée. Délai annoncé oralement au sponsor, périmètre arbitré par lui en cours de route. Aucun de ces délais n'a de source : le KPI qui les produirait est précisément celui déclaré jamais essayé | Claude Camus | Avant la première proposition commerciale |
 | B4 | Grille V3.2 — passe de validation de domaine infra (astreinte, obsolescence, TMA, CMDB) | 43 questions de delivery agile logiciel (+ 18 IA/agentic) devant un DSI infra (comptage du 2026-09-23 : lignes à cellule terminée par « ? » dans `VSCode1/reference grille/Grille-Assessment-Agile-V3.2-IA-Agentic-Complet.xlsx` — heuristique, à recouper au scaffolding), en première semaine. **Contrainte de séquence** : la discipline « même instrument à T0 et à ⟲ » interdit de corriger la grille après T0 — la passe doit être faite **avant**, jamais après | Claude Camus | Avant la première mission |
 | B5 | Règle d'or 3.2.1 — critère observable + dérogation ADR | Scénario « Pression IA sponsor », le plus probable : refus sur un jugement non opposable face à un budget IA. Le contre-modèle exact existe déjà dans ce document — le gate de maturité DevOps, règle dure adossée à un niveau **mesuré**, avec dérogation ADR | Claude Camus | Avant la première mission |
-| B6 | Test d'engagement du sponsor — gabarit inexistant, porteur divergent (`iap-intake` §Mise en œuvre du target operating model vs `iap-change-coach` §Points ouverts) | Acté « condition d'engagement, pas une option », à jouer avant signature : sera sauté ou improvisé en avant-vente | Claude Camus | Avant la première proposition commerciale |
+| ~~B6~~ | *Retiré* — test d'engagement du sponsor | Hors sujet (arbitré le 2026-09-23 : IAP est une démarche et une offre qui portent nos convictions, pas une mission à sécuriser contre le sponsor) | — | — |
 | B7 | Boucle ⟲ — clause de réévaluation signable | La réévaluation doit être contractée **dès l'intake**, mais tarification et packaging sont hors périmètre du cadrage et la modalité reste ouverte jusqu'à MVP4 : à la signature, le consultant n'a rien à faire signer. Une clause de retour ne se rattrape pas à froid | Claude Camus + Direction de cabinet | Avant la première signature |
 | B8 | `iap-re-assessment` et `iap-incident-postmortem-miner` cités sans exister | `iap-re-assessment` est cité à plusieurs reprises (compte non figé : il bouge à chaque édition) et porte la boucle ⟲ — le différenciateur de vente — mais ne figure ni dans les 11 agents ni dans les 11 workflows (vérifié au grep). Soit les inventaires sont faux, soit les renvois le sont | Claude Camus | Immédiatement pour la cohérence du document ; MVP1 pour la conception |
 
