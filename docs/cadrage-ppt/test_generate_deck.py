@@ -193,7 +193,8 @@ def main():
     # agentic d'OCTO » (0), schéma d'accompagnement passé en annexe (0).
     # v2.42 (six retours utilisateur) : 37 -> 34 — « Ce que ça coûte » 6 -> 3
     # slides (-3), « L'offre » 4 -> 3 (-1), intercalaire « Annexes » (+1).
-    check(len(prs.slides) == 34, f"34 slides — reçu {len(prs.slides)}")
+    # v2.44 : 34 -> 35 — convictions sur deux slides (fusion avec l'exemple client).
+    check(len(prs.slides) == 35, f"35 slides — reçu {len(prs.slides)}")
     check(bool(_vu), "build() consulte bien _controler (tous les filets), "
                      "et pas un sous-ensemble câblé en dur")
     check(not problemes,

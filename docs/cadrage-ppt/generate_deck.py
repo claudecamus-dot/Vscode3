@@ -489,6 +489,16 @@ slide_mission (sandwich piliers) refondues ; activités outillées passées à
 
 Usage : python generate_deck.py
 Sortie : bmad-iap-cadrage-synthese.pptx (à côté de ce script).
+
+v2.44 (2026-09-23, demande utilisateur) : la slide convictions devient deux
+slides — nos convictions fusionnées avec celles de l'exemple client
+(docs/Import/Convictions.pptx), sept au total, plus un pavé « notre conviction
+sur l'agentic » (contour épais + filet cyan, pas de 2e aplat navy).
+
+v2.45 (2026-09-23, demande utilisateur) : formes plus arrondies — un rayon de
+coin absolu unique (RAYON_COIN_IN) branché sur D.add_rect — et trois photos
+réelles CC0 déjà en cache pour aérer (convictions 1/2 et 2/2, pourquoi IaaP),
+dans le cadre round2DiagRect du gabarit, sans image générée.
 """
 import os
 import sys
@@ -508,7 +518,7 @@ from pptx.util import Emu, Inches, Pt
 # 4 bumps de version consecutifs (v2.9 a v2.11 ont toutes laisse "v2.8 · date
 # perimee" sur la SLIDE LA PLUS VISIBLE du deck). Un seul endroit a changer
 # desormais.
-VERSION_DECK = "v2.43"
+VERSION_DECK = "v2.45"
 DATE_VERSION_DECK = "2026-09-23"
 
 HERE = os.path.dirname(__file__)
@@ -580,6 +590,28 @@ TRACK = TH.get("accent6", D.TRACK)   # #E7E9EE — slate 100, fonds d'encarts
 # (1,18 / 1,18 / 1,40 / 1,33). D0 et D2 — « CONFIRMÉ » et « DÉDUIT » — ne se
 # distinguent QUE par leur texte. C'est assumé tant qu'un libellé les
 # accompagne ; une échelle lue à l'œil seul demanderait plus d'amplitude.
+# --- v2.45 (demande utilisateur : « des formes plus jolies avec plus
+# d'arrondi ») : UN rayon de coin absolu pour tout le deck, au lieu de ~12
+# ajustements relatifs épars (0.06 à 0.35 × le petit côté — un encart de 0,5in
+# à 0.12 n'avait que 0,06in de coin, une carte de 2in à 0.08 en avait 0,16).
+# Toute forme arrondie non pilule reçoit AU MOINS ce rayon, exprimé en pouces ;
+# les pilules (0.5) restent des pilules. Branché sur D.add_rect, donc aussi sur
+# D.add_card et tous les helpers du générateur qui dessinent par lui.
+RAYON_COIN_IN = 0.20
+_add_rect_brut = D.add_rect
+
+
+def _add_rect_arrondi(slide, l, t, w, h, fill=None, line=None, line_w=1.0, rounded=False,
+                      radius=0.12):
+    if rounded and radius < 0.5 and min(w, h) > 0:
+        radius = max(radius, min(0.5, RAYON_COIN_IN / min(w, h)))
+    return _add_rect_brut(slide, l, t, w, h, fill=fill, line=line, line_w=line_w,
+                          rounded=rounded, radius=radius)
+
+
+D.add_rect = _add_rect_arrondi
+
+
 SEVERITE = ["#586586", "#4A5A80", "#3E4F78", "#26386A", "#0E2356"]
 
 
@@ -1292,7 +1324,8 @@ def _note_mecanisme(slide, x, y, w, titre, corps, title_size=8, body_size=8, pad
     # v2.43 : +0.06 — à 8 pt, l'estimation laissait le corps déborder au rendu.
     h = 2 * pad + (title_size * 1.1 / 72.0) + 0.05 + lignes * (body_size * 1.2 / 72.0)
     _dashed_rect(slide, x, y, w, h, fill="#F2F4F8", line=ENCRE, line_w=0.9, radius=0.10)
-    D.add_text(slide, x + pad, y + pad * 0.6, w - 2 * pad, h - pad * 1.2, [
+    # v2.45 : +0.10 en x — le coin plus arrondi mordait sur la 1re lettre.
+    D.add_text(slide, x + pad + 0.10, y + pad * 0.6, w - 2 * pad - 0.20, h - pad * 1.2, [
         (titre, dict(size=title_size, bold=True, color=ENCRE, line_spacing=1.05)),
         (corps, dict(size=body_size, color=MUTED, italic=True, space_before=2, line_spacing=1.15)),
     ])
@@ -1437,7 +1470,7 @@ def slide_executive_summary(prs):
          "des douleurs mesurables et nommées.",
          "Contexte · Ce que ça coûte"),
         ("CONVICTIONS", ENCRE, "Partir des utilisateurs, traiter le gaspillage d'abord.",
-         "Cinq convictions sur ce qui fait réussir une infra en mode produit — et un "
+         "Sept convictions et une conviction agentic sur ce qui fait réussir — et un "
          "exemple avant/après de ce qu'elle change.",
          "Nos convictions"),
         ("OFFRE", NAVY, "Traiter l'infra comme un produit, sans prérequis d'IA.",
@@ -4379,62 +4412,95 @@ def slide_next_steps(prs):
     return s
 
 
-# v2.40 (arbitrage utilisateur du 2026-09-23) : chapitre « Nos convictions ».
-# Formulations VALIDÉES telles quelles par l'utilisateur — ne pas les
-# réécrire sans nouvel arbitrage. Pattern : formation-po n°30 (liste numérotée
-# de principes) en frise verticale, sur l'exemple docs/Import/Convictions.pptx
-# (slides 2-3) — onglet numéroté + filet vertical + point de fin.
-_CONVICTIONS = [
+# v2.44 (demande utilisateur du 2026-09-23 : « il me manque la slide convictions
+# présente dans le PPT convictions.pptx et à compléter d'un pavé convictions sur
+# l'agentic » — puis « Fusionner les deux ») : nos convictions et celles de
+# l'exemple client (docs/Import/Convictions.pptx, slides 2-3), adaptées à
+# l'infra, sur deux slides, plus un pavé agentic. Aucune mention du client
+# d'origine. Pattern : formation-po n°30 (liste numérotée de principes) en
+# frise verticale, comme l'exemple — onglet numéroté + filet + point de fin.
+_CONVICTIONS_1 = [
     ("Partir des utilisateurs et de leurs douleurs, pas du catalogue d'outils.",
      ["Une plateforme n'est adoptée que si elle résout une douleur mesurée chez ceux "
       "qui la consomment."]),
-    ("Traiter le gaspillage avant de construire.",
-     ["Nommer, scorer et prioriser les 8 familles libère la capacité que le RUN "
-      "confisque aujourd'hui."]),
+    ("Bien choisir les premiers périmètres de transformation.",
+     ["Significatifs au regard de ce que la transformation doit résoudre.",
+      "Ni trop complexes, pour réussir et apprendre ; ni trop simples, pour créer du "
+      "mouvement et faire émerger des promoteurs."]),
+    ("Traiter le gaspillage avant de construire, et prioriser sur des critères partagés.",
+     ["Nommer, scorer, prioriser (valeur, coût, complexité) libère la capacité que le RUN "
+      "confisque aujourd'hui.",
+      "Des décisions ritualisées, reliées au budget."]),
     ("Un propriétaire, une roadmap, une valeur mesurée.",
      ["Sans porteur produit, l'infra retourne au guichet."]),
-    ("L'IA fait gagner du temps là où il est perdu, pas là où on décide.",
-     ["Elle accélère le diagnostic, la qualification des demandes et la restitution : le "
-      "temps de triage du RUN est rendu aux équipes, mesuré dès le T0, pas promis.",
-      "Elle ne passe jamais avant le gate de confidentialité et n'est jamais un "
-      "prérequis : la démarche tient sans elle, l'IA l'accélère."]),
-    ("Nous rendre dispensables.",
-     ["La réussite se mesure au jour où l'équipe tient le modèle sans nous."]),
 ]
+_CONVICTIONS_2 = [
+    ("Articuler la transformation à tous les niveaux.",
+     ["Central (DSI et sponsor, garants de l'approche) ; opérationnel (animation des "
+      "équipes) ; transverse (fluidifier les interactions entre équipes).",
+      "RH : rôles, parcours de formation, accompagnement des profils clés."]),
+    ("S'améliorer en continu, au rythme des saisons.",
+     ["Mesure systématique et transparente des progrès, à tous les niveaux.",
+      "Des équipes redevables de leurs améliorations ; succès et erreurs partagés."]),
+    ("Nous rendre dispensables.",
+     ["Transmettre pour que vos équipes portent et incarnent la transformation : la "
+      "réussite se mesure au jour où elles tiennent le modèle sans nous."]),
+]
+_CONVICTION_AGENTIC = (
+    "L'IA fait gagner du temps là où il est perdu, pas là où on décide.",
+    ["Elle accélère le diagnostic, la qualification des demandes et la restitution : le "
+     "temps de triage du RUN est rendu aux équipes, mesuré dès le T0, pas promis.",
+     "Une expertise OCTO qui complète notre démarche : jamais un prérequis, toujours "
+     "après le gate de confidentialité."],
+)
 
 
-def slide_convictions(prs):
-    s = content_slide(prs, None, "Nos convictions sur votre infrastructure en mode produit",
-                       color=ENCRE)
-    D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.26, [
-        ("Ce qui fait réussir une Infra as a Product — et ce qui la fait échouer",
-         dict(size=D.TYPE["small"], color=NAVY, italic=True)),
-    ])
+# v2.45 : photo « pour aérer » (demande utilisateur), et UNIQUEMENT une photo
+# réelle libre de droit (« pas d'image générée ») : on recadre un brut Openverse
+# CC0 DÉJÀ en cache (source et licence dans images-manifest.json), sans appel
+# réseau ni repli procédural. Brut absent = pas d'image, jamais un substitut.
+# Cadre : le prstGeom round2DiagRect CLONÉ du layout « cadre blanc » du
+# gabarit (méthode pptx-framed-image), pas d'arrondi fait dans PIL.
+def _photo_libre(slide, scene, seed, x, y, w, h):
+    brut = os.path.join(IMG_DIR, f"_brut_{scene}_{seed}.jpg")
+    if not _image_cache_valide(brut):
+        print(f"  pas de photo réelle en cache pour '{scene}' — slide laissée sans image")
+        return None
+    layout = slide.slide_layout.slide_master.slide_layouts[LAYOUT_VISUEL_DROITE]
+    cadre = _find_frame_in_group(layout.shapes, "Google Shape;212;p17", "Google Shape;213;p17")
+    geom = cadre[4] if cadre else None
+    aspect = w / h
+    px_w = 960
+    out = os.path.join(IMG_DIR, f"{scene}_{seed}_libre_{px_w}x{int(round(px_w / aspect))}.jpg")
+    if not _image_cache_valide(out):
+        cover_crop_to_aspect(brut, out, aspect)
+        _PILImage.open(out).convert("RGB").save(out, quality=90, optimize=True)
+    return place_image_in_frame(slide, out, Inches(x), Inches(y), Inches(w), Inches(h), geom=geom)
+
+
+def _frise_convictions(s, items, debut, txt_w, accent_idx, top0):
     tab_w, tab_h = 0.50, 0.34
     tab_x = MARGIN
     fil_x = tab_x + 0.10
     txt_x = MARGIN + tab_w + 0.30
-    txt_w = BORD_DROIT - txt_x
-    t_size, b_size = 10.5, 8.5
+    t_size, b_size = 10.5, 9
 
     def lh(pt, ls):
         return pt * ls / 72.0
 
     hauteurs = []
-    for claim, puces in _CONVICTIONS:
+    for claim, puces in items:
         h = _lignes(claim, txt_w, t_size) * lh(t_size, 1.15) + 0.05
         pw = txt_w - (0.16 if len(puces) > 1 else 0)
         h += sum(_lignes(p, pw, b_size) * lh(b_size, 1.2) + 0.03 for p in puces)
         hauteurs.append(max(tab_h, h))
-    top0 = CONTENT_TOP + 0.40
     dispo = CONTENT_BOTTOM - top0
-    gap = min(0.30, (dispo - sum(hauteurs)) / (len(hauteurs) - 1))
+    gap = min(0.34, (dispo - sum(hauteurs)) / max(1, len(hauteurs) - 1))
     if gap < 0.10:
-        raise SystemExit(f"slide_convictions : contenu trop haut ({gap:.2f}in d'interligne)")
+        raise SystemExit(f"convictions : contenu trop haut ({gap:.2f}in d'interligne)")
     y = top0
-    for i, ((claim, puces), h) in enumerate(zip(_CONVICTIONS, hauteurs, strict=True)):
-        accent = i == 0   # « un sur N » : la conviction 1, en aplat navy
-        # Onglet numéroté (coins diagonaux, signature du gabarit).
+    for i, ((claim, puces), h) in enumerate(zip(items, hauteurs, strict=True)):
+        accent = i == accent_idx
         onglet = s.shapes.add_shape(MSO_SHAPE.ROUND_2_DIAG_RECTANGLE, Inches(tab_x),
                                     Inches(y), Inches(tab_w), Inches(tab_h))
         try:
@@ -4446,25 +4512,55 @@ def slide_convictions(prs):
         onglet.line.color.rgb = _rgb(NAVY)
         onglet.line.width = Pt(1.25)
         D.add_text(s, tab_x, y, tab_w, tab_h, [
-            (f"{i + 1}.", dict(size=12, bold=True, color=WHITE if accent else NAVY,
-                               align=PP_ALIGN.CENTER)),
+            (f"{debut + i}.", dict(size=12, bold=True, color=WHITE if accent else NAVY,
+                                   align=PP_ALIGN.CENTER)),
         ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-        # Filet vertical de l'onglet au point de fin de la conviction.
         bas = y + h + gap * 0.45
         D.add_rect(s, fil_x - 0.008, y + tab_h, 0.016, bas - (y + tab_h), fill=NAVY)
         _oval(s, fil_x - 0.04, bas - 0.04, 0.08, 0.08, fill=NAVY)
-        paras = [([(claim, dict(size=t_size, bold=True, color=NAVY))],
-                  dict(line_spacing=1.15))]
+        paras = [([(claim, dict(size=t_size, bold=True, color=NAVY))], dict(line_spacing=1.15))]
         for p in puces:
-            if len(puces) > 1:
-                paras.append(([("–  ", dict(size=b_size, bold=True, color=NAVY)),
-                               (p, dict(size=b_size, color=MUTED))],
-                              dict(line_spacing=1.2, space_before=2)))
-            else:
-                paras.append(([(p, dict(size=b_size, color=MUTED))],
-                              dict(line_spacing=1.2, space_before=2)))
+            runs = ([("–  ", dict(size=b_size, bold=True, color=NAVY))] if len(puces) > 1 else []) \
+                + [(p, dict(size=b_size, color=MUTED))]
+            paras.append((runs, dict(line_spacing=1.2, space_before=2)))
         _rich(s, txt_x, y - 0.02, txt_w, h + 0.04, paras, anchor=MSO_ANCHOR.TOP)
         y += h + gap
+
+
+def slide_convictions(prs):
+    s = content_slide(prs, None, "Nos convictions sur votre transformation en mode produit "
+                      "(1/2) — les conditions qui favorisent le succès", color=ENCRE)
+    txt_x = MARGIN + 0.50 + 0.30
+    ph_w = 2.30
+    _frise_convictions(s, _CONVICTIONS_1, 1, BORD_DROIT - ph_w - 0.30 - txt_x, 0, CONTENT_TOP + 0.10)
+    _photo_libre(s, "tropical", 0, BORD_DROIT - ph_w, CONTENT_TOP + 0.10, ph_w, 3.90)
+    return s
+
+
+def slide_convictions_2(prs):
+    """Suite de la frise (5 à 7), sans aplat navy : le pavé agentic à droite
+    porte l'unique accent de la slide par un contour épais navy et un filet
+    cyan EN APLAT — jamais un 2e fond navy (charte : un seul accent)."""
+    s = content_slide(prs, None, "Nos convictions sur votre transformation en mode produit (2/2)",
+                       color=ENCRE)
+    pav_w = 3.05
+    pav_x = BORD_DROIT - pav_w
+    txt_x = MARGIN + 0.50 + 0.30
+    _frise_convictions(s, _CONVICTIONS_2, 5, pav_x - 0.35 - txt_x, -1, CONTENT_TOP + 0.10)
+    titre, puces = _CONVICTION_AGENTIC
+    top = CONTENT_TOP + 0.10
+    h = 2.95   # dimensionné au contenu (étiré, il laissait ~1in de vide)
+    D.add_rect(s, pav_x, top, pav_w, h, fill=WHITE, line=NAVY, line_w=2.25, rounded=True, radius=0.08)
+    D.add_rect(s, pav_x + 0.12, top + 0.18, 0.06, h - 0.36, fill=ACCENT_PLEIN, rounded=True, radius=0.5)
+    paras = [
+        ([("NOTRE CONVICTION SUR L'AGENTIC", dict(size=8, bold=True, color=MUTED))], dict()),
+        ([(titre, dict(size=11.5, bold=True, color=NAVY))], dict(space_before=6, line_spacing=1.15)),
+    ]
+    for p in puces:
+        paras.append(([("–  ", dict(size=9, bold=True, color=NAVY)), (p, dict(size=9, color=NAVY))],
+                      dict(space_before=8, line_spacing=1.25)))
+    _rich(s, pav_x + 0.34, top + 0.22, pav_w - 0.52, h - 0.4, paras, anchor=MSO_ANCHOR.TOP)
+    _photo_libre(s, "nightsky", 0, pav_x, top + h + 0.18, pav_w, CONTENT_BOTTOM - (top + h + 0.18))
     return s
 
 
@@ -4937,15 +5033,18 @@ def slide_why_iap(prs):
     s = content_slide(prs, None,
                        "Pourquoi « Infrastructure as a Product » — le socle de la proposition",
                        color=ENCRE)
-    th_h = 0.78
-    D.add_rect(s, MARGIN, CONTENT_TOP, CONTENT_W, th_h, fill=NAVY, rounded=True, radius=0.10)
+    th_h = 1.00
+    ph_w = 2.10
+    th_w = CONTENT_W - ph_w - 0.18
+    D.add_rect(s, MARGIN, CONTENT_TOP, th_w, th_h, fill=NAVY, rounded=True, radius=0.10)
+    _photo_libre(s, "sunset", 1, BORD_DROIT - ph_w, CONTENT_TOP, ph_w, th_h)
     D.add_rect(s, MARGIN + 0.10, CONTENT_TOP + 0.14, 0.06, th_h - 0.28, fill=ACCENT_PLEIN,
                rounded=True, radius=0.5)
-    D.add_text(s, MARGIN + 0.34, CONTENT_TOP, CONTENT_W - 0.6, th_h, [
-        ("Traiter l'infrastructure comme un produit, pas comme un guichet de tickets.",
-         dict(size=14, bold=True, color=WHITE)),
-        ("Un produit a des utilisateurs, un cycle de vie et une valeur mesurée — trois bascules "
-         "qui répondent directement aux personas et à leurs douleurs.",
+    D.add_text(s, MARGIN + 0.34, CONTENT_TOP, th_w - 0.5, th_h, [
+        ("Traiter l'infrastructure comme un produit, pas comme un guichet.",
+         dict(size=13, bold=True, color=WHITE)),
+        ("Des utilisateurs, un cycle de vie, une valeur mesurée — trois bascules qui "
+         "répondent aux personas et à leurs douleurs.",
          dict(size=9, color="#c7cbe0", space_before=3)),
     ], anchor=MSO_ANCHOR.MIDDLE)
     bascules = [
@@ -5340,10 +5439,11 @@ def build():
     slide_familles(prs)
 
     slide_chapitre(prs, "03", "Nos convictions",
-                   "Ce qui fait réussir une infra en mode produit, et un exemple "
+                   "Sept convictions, une conviction sur l'agentic, et un exemple "
                    "avant/après de ce qu'elle change.",
                    ENCRE, "wheatfield", seed=0)
     slide_convictions(prs)
+    slide_convictions_2(prs)
     slide_infra_as_product_exemple(prs)
 
     slide_chapitre(prs, "04", "L'offre",
