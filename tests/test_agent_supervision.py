@@ -446,7 +446,7 @@ def test_write_diagnostic_rejette_sans_preuve_ou_categorie_inconnue(tmp_path):
     ]})
     assert sans_preuve.returncode == 1 and "preuve" in sans_preuve.stdout
     mauvaise_cat = _write_diag(tmp_path, {"findings": [
-        {"categorie": "ressenti", "cible": "Explore", "titre": "t", "preuve": "p"},
+        {"categorie": "ressenti", "cible": "Explore", "titre": "t", "preuve": "grep -c motif : 1"},
     ]})
     assert mauvaise_cat.returncode == 1 and "categorie invalide" in mauvaise_cat.stdout
     assert not (tmp_path / "diagnostic.json").exists()
@@ -496,7 +496,7 @@ def test_diagnostic_perime_par_activite_meme_recent(tmp_path):
     tdir.mkdir()
     (tdir / "s1.jsonl").write_text(_line(skill="run-dev-server"), encoding="utf-8")
     assert _write_diag(tmp_path, {"findings": [
-        {"categorie": "autre", "cible": "Explore", "titre": "t", "preuve": "p"},
+        {"categorie": "autre", "cible": "Explore", "titre": "t", "preuve": "grep -c motif : 1"},
     ]}).returncode == 0
     # 3 runs postérieurs au diagnostic : périmé malgré une date récente.
     futur = "2099-01-01T00:00:00+00:00"

@@ -3,9 +3,9 @@
     "source": "hub de supervision VScode5, .claude/veille/veille.json",
     "projection": "entrees dont projets_concernes nomme VSCode3",
     "ne_pas_editer": "Fichier GENERE, en lecture seule : une correction faite ici sera ecrasee a la prochaine propagation. La veille s'ecrit AU HUB, ou elle est lue (section 3 du wiki) et arbitree. Une veille lancee depuis ce depot doit y etre remontee.",
-    "date": "2026-09-18"
+    "date": "2026-09-23"
   },
-  "derniere_veille": "2026-09-16T00:00:00",
+  "derniere_veille": "2026-09-23T12:00:00",
   "entrees": [
     {
       "titre": "BMAD-METHOD — v7 ANNONCEE (uv standard) — PAS sortie : derniere release v6.10.0",
@@ -152,6 +152,59 @@
       "action_corrective": "ADOPTE PARTIELLEMENT 2026-09-13 : `agent-securite` en fait l'un de ses outils de base (skill § Méthode, réutilisation avant analyse manuelle). L'ajout d'une étape optionnelle aux playbooks `evolution-flotte`/`dev-verifie` reste à étudier séparément — écarté de ce cycle, pas refusé.",
       "date": "2026-09-12",
       "statut": "adopte"
+    },
+    {
+      "titre": "Ruff PT (flake8-pytest-style) non active dans la flotte : PT015 assert-always-false - les 4 pyproject.toml selectionnent F,I,UP,B sans PT",
+      "url": "https://docs.astral.sh/ruff/rules/pytest-assert-always-false/",
+      "type": "outil",
+      "projets_concernes": [
+        "VScode5",
+        "VSCode2",
+        "VSCode3",
+        "VSCode4"
+      ],
+      "date": "2026-09-19",
+      "statut": "adopte",
+      "source_referentiel": "Astral - doc officielle Ruff, regle PT015 derivee de flake8-pytest-style (consultee 2026-09-19). NATURE : doc officielle. CLASSE : prouve (regle publiee, implementee, sortie non nulle sur detection).",
+      "pertinence": "B1 - motif syntaxique du test qui ne peut pas echouer. Constat local mesure le 2026-09-19 : les 4 pyproject.toml de la flotte portent select = [F, I, UP, B] ; B015 (useless-comparison : comparaison nue sans assert) est donc DEJA actif, mais la famille PT ne l'est pas. Extension a cout quasi nul : ajouter PT au select existant. LIMITE HONNETE, tranchee : aucune regle PT n'aurait attrape nos cas reels (assertion sur des noms d'outils inexistants, garde comparant un chapitre a lui-meme, regex ou \\b est devenu un backspace 0x08) - ces tests sont syntaxiquement irreprochables et semantiquement vides. PT et B015 couvrent la classe triviale, pas la notre. [adopte le 2026-09-19 : PT ajoute au select ruff du HUB SEULEMENT (les 3 autres pyproject.toml sont dans des depots occupes par un autre agent). Tri AVANT de graver, aucun --fix : 158 points PT remontes, 140 PT018 ecartes nommement dans pyproject.toml (eclater `assert a and b` ferait perdre le message d'assertion unique que nos gardes portent), 18 points gardes et inscrits a la baseline de lint. Portee honnete gravee dans le fichier : PT n'attrape AUCUN de nos 6 cas reels. Regle inscrite au referentiel en oo (mesurable a froid mais NON outillee : adoption scopee hub).]",
+      "regle_proposee": "Tout pyproject.toml de la flotte qui selectionne des familles ruff DOIT inclure PT (mesurable a froid par le scan : lecture de [tool.ruff.lint].select dans chaque pyproject.toml).",
+      "action_corrective": "Ajouter PT a select dans les 4 pyproject.toml, lancer ruff check une fois et trier les remontees avant de graver (jamais de ruff --fix aveugle : un --fix a casse un re-export sur VSCode2 le 2026-07-23). Cout : ~15 min par projet."
+    },
+    {
+      "titre": "vulture - filet jamais appele : code injoignable, condition if/while insatisfiable, code de sortie 3 sur detection",
+      "url": "https://github.com/jendrikseipp/vulture",
+      "type": "outil",
+      "projets_concernes": [
+        "VScode5",
+        "VSCode2",
+        "VSCode3",
+        "VSCode4"
+      ],
+      "date": "2026-09-19",
+      "statut": "adopte",
+      "source_referentiel": "jendrikseipp/vulture - README officiel (consulte 2026-09-19) : detecte fonctions/classes/variables/imports inutilises, code injoignable apres return/break/raise, ET conditions if/while insatisfiables ; codes de sortie 0 = rien, 3 = dead code trouve ; --min-confidence 100 ne rend que le certain ; whitelists (--make-whitelist) pour les appels dynamiques. NATURE : doc officielle de depot. CLASSE : prouve (echec mecanique par code 3).",
+      "pertinence": "B2 - prouver a froid qu'un filet de securite est appele EN PRODUCTION, pas seulement dans sa propre suite. La couverture de tests ne repond pas a cette question : une fonction de garde couverte a 100 % par ses tests et jamais cablee dans le chemin applicatif est verte. vulture --min-confidence 100 sur le code applicatif seul, tests exclus, liste ce qu'aucun point d'entree n'atteint. LIMITE HONNETE : vulture est statique et rate les appels dynamiques - or nos hooks sont appeles par NOM depuis settings.json, donc ils remonteront en faux positifs. Le detecteur utile n'est pas vulture nu mais vulture + whitelist DERIVEE de settings.json (generee, pas ecrite a la main). [adopte le 2026-09-19 : INSTRUCTION SEULE, conformement au texte de l'entree - RIEN n'a ete cable au scan. Instruction faite sur le HUB (VSCode2 etant occupe par un autre agent). Whitelist GENEREE depuis settings.json (17 points d'entree). Taux de faux positifs MESURE : 5 sur 9 remontees a --min-confidence 60, soit 56 % ; a --min-confidence 100, 0 remontee donc 0 % de FP mais 0 utilite comme gate. Conclusion inscrite au referentiel : un critere a 56 % de bruit ne se cable pas, l'outil reste utile a la main.]",
+      "regle_proposee": "Critere mesurable a froid : 'vulture <code_applicatif> --min-confidence 100 --exclude tests' sort en 0, avec une whitelist generee depuis les points d'entree declares (hooks de settings.json, console_scripts, routes). Un filet present mais non atteint depuis un point d'entree reel est un ecart.",
+      "action_corrective": "Instruire sur UN depot (VSCode2) avant toute generalisation : generer la whitelist, lire les remontees, MESURER le taux de faux positifs. Cout : ~45 min sur le premier depot, ~10 min ensuite. Ne pas cabler au scan avant d'avoir ce chiffre."
+    },
+    {
+      "titre": "Hook Stop / SubagentStop bloquant (exit 2) - le seul mecanisme publie qui rend un gate de fin d'increment opposable",
+      "url": "https://code.claude.com/docs/en/hooks",
+      "type": "pratique",
+      "projets_concernes": [
+        "VScode5",
+        "VSCode",
+        "VSCode1",
+        "VSCode2",
+        "VSCode3",
+        "VSCode4"
+      ],
+      "date": "2026-09-19",
+      "statut": "adopte",
+      "source_referentiel": "Anthropic - doc officielle Claude Code / Hooks (consultee 2026-09-19 ; docs.claude.com/en/docs/claude-code/hooks redirige en 301 vers code.claude.com/docs/en/hooks). Stop et SubagentStop : 'Can block? Yes' ; le code de sortie 2 empeche l'arret et poursuit la conversation ; le message vient du champ de raison JSON, sinon de stderr ; garde-fou stop_hook_active contre la boucle infinie. NATURE : doc officielle. CLASSE : ANNONCE, pas prouve - la doc decrit le mecanisme, je n'ai ouvert AUCUN transcript reel ou un hook Stop a effectivement bloque.",
+      "pertinence": "A2 - rendre un gate humain BLOQUANT avant qu'un increment soit marque termine. La flotte n'a aujourd'hui que des hooks de RAPPEL (remind_revue_increment, warn_verif_before_commit), tous fail-open : rien n'empeche mecaniquement de conclure. Le couple Stop + code 2 est le seul mecanisme publie qui transforme le rappel en blocage, et stop_hook_active repond precisement a l'objection 'un hook bloquant fera boucler l'agent'. [adopte le 2026-09-19 : PREUVE CHERCHEE, AUCUN GATE CABLE - conformement au texte de l'entree. Hook Stop jetable ecrit HORS DU DEPOT (scratchpad) : il rend bien 2 sur le cas nominal et 0 quand stop_hook_active est vrai (la reponse publiee a l'objection de la boucle infinie). MAIS le blocage au niveau du HARNAIS n'a PAS ete observe : aucun transcript de session bloquee n'a pu etre produit depuis un sous-agent. L'entree RESTE donc classee 'annonce' au referentiel, et settings.json n'a pas ete touche. La distinction rappel (fail-open, sortie 0) / gate (sortie 2) est inscrite au referentiel en oo.]",
+      "regle_proposee": "Distinguer au referentiel les hooks de RAPPEL (fail-open, sortie 0) des hooks de GATE (sortie 2 bloquante). Critere mesurable a froid : un projet qui pretend gater la fin d'increment doit avoir au moins un chemin de sortie 2 dans le hook concerne - grep sys.exit(2) dans .claude/hooks/*.py croise avec la declaration Stop de settings.json.",
+      "action_corrective": "NE PAS cabler avant preuve : ecrire d'abord un hook Stop jetable dans le scratchpad, provoquer le blocage, LIRE le transcript, et seulement alors proposer le gate. Cout de verification : ~30 min, 0 token reseau. Tant que ce transcript n'existe pas, cette entree reste classee 'annonce'."
     }
   ]
 }
