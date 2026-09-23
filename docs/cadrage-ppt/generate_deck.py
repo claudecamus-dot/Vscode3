@@ -458,7 +458,7 @@ from pptx.util import Emu, Inches, Pt
 # 4 bumps de version consecutifs (v2.9 a v2.11 ont toutes laisse "v2.8 · date
 # perimee" sur la SLIDE LA PLUS VISIBLE du deck). Un seul endroit a changer
 # desormais.
-VERSION_DECK = "v2.36"
+VERSION_DECK = "v2.38"
 DATE_VERSION_DECK = "2026-09-18"
 
 HERE = os.path.dirname(__file__)
