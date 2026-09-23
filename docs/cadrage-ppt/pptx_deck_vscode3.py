@@ -1,3 +1,16 @@
+"""FORK ASSUME de la skill pptx-deck, propre a VSCode3 (arbitrage utilisateur du
+2026-09-23, constat d'audit risque_technique « deux copies divergentes »).
+
+Ce module N'EST PAS une copie en retard de `.claude/skills/pptx-deck/scripts/
+pptx_deck.py` : c'est la version VIVANTE du deck VSCode3 (13 definitions
+divergentes mesurees le 2026-09-23 : TYPE title 26 pt contre 20, add_badge
+cx/cy/symbol, appliquer_police(prs, ...), verifier_debordements_texte(compte)...).
+Brancher la skill a sa place changerait le deck. Renomme depuis `pptx_deck.py`
+pour qu'aucun import ni aucune propagation du kit ne puisse les confondre ;
+tests/test_pptx_deck_fork.py interdit le retour d'un `pptx_deck.py` ici.
+Remonter ses ameliorations dans la skill reste possible, comme un chantier
+distinct (il changerait les decks des autres projets).
+"""
 """pptx_deck — petite bibliotheque d'aide pour construire des slides python-pptx
 "de qualite" : echelle typographique coherente, formes (barres, jauge, cartes),
 couleurs, et surtout quatre filets de controle automatique :

@@ -34,7 +34,7 @@ ZONE_BADGE = (9.2512, 5.0874, 9.7974, 5.3374)  # mesuree sur template-octo.pptx
 @pytest.fixture(scope="module")
 def D():
     spec = importlib.util.spec_from_file_location(
-        "pptx_deck_sous_test", CADRAGE / "pptx_deck.py")
+        "pptx_deck_sous_test", CADRAGE / "pptx_deck_vscode3.py")
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod

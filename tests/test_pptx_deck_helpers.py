@@ -28,7 +28,7 @@ CADRAGE = Path(__file__).resolve().parents[1] / "docs" / "cadrage-ppt"
 @pytest.fixture(scope="module")
 def D():
     spec = importlib.util.spec_from_file_location(
-        "pptx_deck_sous_test_helpers", CADRAGE / "pptx_deck.py")
+        "pptx_deck_sous_test_helpers", CADRAGE / "pptx_deck_vscode3.py")
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     return mod

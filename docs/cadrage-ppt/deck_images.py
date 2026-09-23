@@ -5,7 +5,7 @@ _remplir_cadre et _photo_libre.
 import os
 import sys
 
-import pptx_deck as D
+import pptx_deck_vscode3 as D
 from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.enum.dml import MSO_LINE_DASH_STYLE

@@ -504,7 +504,7 @@ import os
 import sys
 
 sys.path.append(os.path.dirname(__file__))
-import pptx_deck as D
+import pptx_deck_vscode3 as D
 from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.enum.dml import MSO_LINE_DASH_STYLE
@@ -3470,7 +3470,7 @@ def _controler(prs):
     l'écart plutôt que croire un chiffre daté (58 contre 0 le 2026-09-10) :
 
         py -c "import sys;sys.path.insert(0,'docs/cadrage-ppt');\
-    import pptx_deck as D;from pptx import Presentation;\
+    import pptx_deck_vscode3 as D;from pptx import Presentation;\
     p=Presentation('docs/cadrage-ppt/bmad-iap-cadrage-synthese.pptx');\
     print(len(D.verifier_debordements_texte(p)))"
 
