@@ -437,6 +437,16 @@ commit 636f160). Le sommaire (`slide_executive_summary`) ne mentionne plus
 l'annexe. La synthèse déjà composée dans Enjeux et Next steps reste seule
 trace de ce contenu dans le deck.
 
+v2.37 (2026-09-20, demande utilisateur « plus lisible ») : fils humain et
+technique fusionnés en `slide_deux_fils`, les 3 slides d'agent regroupées en
+`slide_agents_candidats`, `slide_livrables_ppt` supprimée — 45 -> 41 slides.
+
+v2.38 (2026-09-23, arbitrages du cadrage v2.7) : IAP est une démarche et une
+offre de conviction — `slide_conditions_reussite` ne parle plus de
+non-engagement ni de test sponsor avant signature ; le nom « Infrastructure
+as a Product » est gardé ; l'Assessment flash ouvre la démarche avant toute
+action d'accompagnement ; la réévaluation est portée par `iap-strategy-lead`.
+
 Usage : python generate_deck.py
 Sortie : bmad-iap-cadrage-synthese.pptx (à côté de ce script).
 """
@@ -459,7 +469,7 @@ from pptx.util import Emu, Inches, Pt
 # perimee" sur la SLIDE LA PLUS VISIBLE du deck). Un seul endroit a changer
 # desormais.
 VERSION_DECK = "v2.38"
-DATE_VERSION_DECK = "2026-09-18"
+DATE_VERSION_DECK = "2026-09-23"
 
 HERE = os.path.dirname(__file__)
 TEMPLATE = os.path.join(HERE, "template-octo.pptx")
