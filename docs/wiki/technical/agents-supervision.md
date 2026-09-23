@@ -1,5 +1,5 @@
 ---
-updated: 2026-09-18
+updated: 2026-09-23
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -8,36 +8,36 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-09-18T10:40:43+02:00 · **17 sessions** (transcripts) · **63** invocations de skills · **95** lancements de sous-agents.
+Dernier scan : 2026-09-23T14:52:25+02:00 · **19 sessions** (transcripts) · **75** invocations de skills · **115** lancements de sous-agents.
 
 ## Skills — usage réel
 
 | Skill | Famille | Invocations | Première | Dernière |
 | --- | --- | --- | --- | --- |
-| `agent-orchestrator` | projet | 25 | 2026-07-21 | 2026-09-18 |
-| `bmad-party-mode` | BMAD | 6 | 2026-09-02 | 2026-09-18 |
-| `bmad-brainstorming` | BMAD | 5 | 2026-09-11 | 2026-09-18 |
-| `bmad-review` | BMAD | 5 | 2026-09-07 | 2026-09-17 |
-| `bmad-advanced-elicitation` | BMAD | 4 | 2026-09-11 | 2026-09-18 |
+| `agent-orchestrator` | projet | 27 | 2026-07-21 | 2026-09-23 |
+| `bmad-review` | BMAD | 10 | 2026-09-07 | 2026-09-23 |
+| `bmad-party-mode` | BMAD | 7 | 2026-09-02 | 2026-09-18 |
+| `bmad-brainstorming` | BMAD | 6 | 2026-09-11 | 2026-09-18 |
+| `bmad-advanced-elicitation` | BMAD | 5 | 2026-09-11 | 2026-09-18 |
+| `deck-design-library` | projet | 4 | 2026-09-03 | 2026-09-23 |
 | `revue-increment` | projet | 4 | 2026-07-21 | 2026-09-11 |
 | `agent-supervisor` | projet | 3 | 2026-07-21 | 2026-09-03 |
-| `deck-design-library` | projet | 3 | 2026-09-03 | 2026-09-17 |
 | `bmad-code-review` | BMAD | 2 | 2026-09-10 | 2026-09-10 |
+| `deck-design-review` | projet | 2 | 2026-09-07 | 2026-09-23 |
 | `artifact-design` | (builtin/session) | 1 | 2026-09-11 | 2026-09-11 |
 | `audit-technique` | projet | 1 | 2026-09-03 | 2026-09-03 |
 | `bmad-agent-pm` | BMAD | 1 | 2026-07-22 | 2026-07-22 |
 | `code-review` | (builtin/session) | 1 | 2026-09-11 | 2026-09-11 |
-| `deck-design-review` | projet | 1 | 2026-09-07 | 2026-09-07 |
 | `update-config` | (builtin/session) | 1 | 2026-09-07 | 2026-09-07 |
 
 ## Sous-agents
 
 | Sous-agent | Lancements | Premier | Dernier |
 | --- | --- | --- | --- |
-| `general-purpose` | 58 | 2026-07-21 | 2026-09-18 |
-| `ppt-designer` | 19 | 2026-07-21 | 2026-09-11 |
-| `Explore` | 9 | 2026-07-21 | 2026-09-11 |
-| `bmad-revue` | 5 | 2026-09-07 | 2026-09-10 |
+| `general-purpose` | 70 | 2026-07-21 | 2026-09-23 |
+| `ppt-designer` | 20 | 2026-07-21 | 2026-09-23 |
+| `Explore` | 11 | 2026-07-21 | 2026-09-20 |
+| `bmad-revue` | 10 | 2026-09-07 | 2026-09-23 |
 | `agent-supervisor` | 2 | 2026-09-03 | 2026-09-03 |
 | `Plan` | 1 | 2026-07-21 | 2026-07-21 |
 | `claude-code-guide` | 1 | 2026-07-21 | 2026-07-21 |
@@ -127,10 +127,14 @@ Ce que 'traiter' ces 3 points pourrait vouloir dire (a instruire au hub, pas tra
 - **`VSCode3:brancher-les-trois-filets-dans-generate-deck`** (2026-09-11) : CLOS, deja resolu avant ce tour : les trois filets (verifier_geometrie, verifier_chrome_gabarit, verifier_plancher_de_dessin) sont branches dans generate_deck.py::_controler depuis les commits 4f61470 et 20039af (2026-09-10, tous deux anterieurs a la generation de ce diagnostic a 18:48 le meme jour). Verifie par lecture directe du code (generate_deck.py:5510-5514) le 2026-09-11 : les trois filets sont bien appeles. Le diagnostic n'avait pas rattrape le fix. verifier_debordements_texte reste volontairement hors du controle par defaut (seuil non regle contre un rendu reel), decision deja documentee dans le code.
 - **`VSCode3:audit-risque_technique-niveau-moyen`** (2026-09-11) : ACCEPTE + APPLIQUE. Le constat ouvert (pptx_deck.py en-deca en helpers reutilisables face a VSCode2/VSCode4) est resolu par le commit a5c469f : add_chip, add_badge et appliquer_police extraits de generate_deck.py vers pptx_deck.py, testes (tests/test_pptx_deck_helpers.py, 8 tests), le module reutilisable restant sans dependance au domaine metier (les constantes de marque POLICE_DECK/GLYPHES_HORS_POLICE_DECK restent locales au projet). Le volet ruff (3 erreurs sur chantier non commite, mentionne dans la preuve du finding) etait deja resolu avant ce tour (chantier committe, ruff propre, verifie). Verifie : py -m pytest tests/ (206 passed), py -m ruff check . (propre), deck regenere + test_generate_deck.py (54/54 pages), rendu reel inspecte a l'oeil.
 - **`VSCode3:chantier-A-lecture-humaine-cadrage`** (2026-09-18) : REFUSE (pour l'instant) : l'utilisateur choisit de committer le reliquat v2.4 deja ecrit et de poursuivre le cadrage sans attendre la lecture prealable par l'agent utilisateur-produit. Le chantier A (lecture humaine non-auteur) reste a faire mais ne bloque plus les relances de version.
+- **`flotte:point-du-jour-absent-des-5-cibles`** (2026-09-18) : REFUSE : PERIME (R1). Verifie sur les 7 depots reels de la flotte (pas 5 -- la flotte compte 7 cibles depuis le 2026-09-15) : .claude/hooks/point_du_jour.py EST present et CABLE dans .claude/settings.json (SessionStart) sur les 7 -- VSCode, VSCode1, VSCode2, VSCode3, VSCode4, VScode6-learning-sprintIA, Vscode7-CAT. Le manifeste export_agentic.py le porte deja (hooks/point_du_jour.py). Le finding decrivait un etat qui n'est plus vrai.
+- **`VSCode3:brancher-les-trois-filets-dans-generate-deck`** (2026-09-21) : REFUSE (deja fait, constat) : les trois filets sont branches dans docs/cadrage-ppt/generate_deck.py lignes 4667-4669 (return list(D.verifier_geometrie(prs) + D.verifier_chrome_gabarit(prs) + D.verifier_plancher_de_dessin(prs, CONTENT_BOTTOM, ...))). Le fichier fait 5040 lignes (la ligne 5062 citee dans le finding n'existe plus).
+- **`VSCode3:reliquats-de-lint-du-chantier-deck`** (2026-09-21) : REFUSE (deja fait, constat) : les deux zip() du chantier ont bien strict=True (generate_deck.py:3865 et :4479). ruff check sur docs/cadrage-ppt/gen_check_slide_synthese*.py -> All checks passed (les deux blocs d'imports non tries cites dans le finding sont resolus). Il reste seulement 2 erreurs ruff ailleurs dans le chantier (UP031 generate_deck.py:4286, I001 test_generate_deck.py:101), pas les 3 F841/imports d'origine : la situation a change mais aucun reliquat bloquant ne correspond plus au constat initial.
+- **`flotte:point-du-jour-absent-des-5-cibles`** (2026-09-21) : REFUSE (deja fait, constat) : .claude/hooks/point_du_jour.py existe maintenant sur les 5 cibles (VSCode, VSCode1, VSCode2, VSCode3, VSCode4), pas au chemin .claude/supervision/ initialement cherche mais bien present et distribue.
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 
-_Diagnostic à jour — rien à signaler, tous les constats précédents ont été arbitrés._
+_Diagnostic ⚠️ à relancer (> 14 j) — rien à signaler, tous les constats précédents ont été arbitrés._
 
 _7 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir un, demander au superviseur un `re_challenge` avec des données nouvelles :_
 
@@ -144,7 +148,7 @@ _7 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir 
 
 ## Seuil de qualification — la mesure
 
-Depuis le 2026-09-10 : **69** demande(s) vue(s) hors commande slash (+ 13 slash), **7** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **10 %** des demandes orchestrées.
+Depuis le 2026-09-10 : **116** demande(s) vue(s) hors commande slash (+ 17 slash), **8** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **7 %** des demandes orchestrées.
 _Ce chiffre ne dit pas ce qui AURAIT dû être orchestré : le hook compte, il ne juge pas. Il donne le dénominateur qui manquait pour arbitrer le seuil sur données plutôt que sur habitude._
 
 ---

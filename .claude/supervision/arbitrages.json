@@ -356,6 +356,36 @@
       ],
       "date": "2026-09-18",
       "decision": "REFUSE : PERIME (R1). Verifie sur les 7 depots reels de la flotte (pas 5 -- la flotte compte 7 cibles depuis le 2026-09-15) : .claude/hooks/point_du_jour.py EST present et CABLE dans .claude/settings.json (SessionStart) sur les 7 -- VSCode, VSCode1, VSCode2, VSCode3, VSCode4, VScode6-learning-sprintIA, Vscode7-CAT. Le manifeste export_agentic.py le porte deja (hooks/point_du_jour.py). Le finding decrivait un etat qui n'est plus vrai."
+    },
+    {
+      "cible": "VSCode3:brancher-les-trois-filets-dans-generate-deck",
+      "date": "2026-09-21",
+      "titre": "Les trois filets de controle sont portes et testes dans pptx_deck.py mais AUCUN n'est branche : le point d'appel appartient au chantier deck en cours",
+      "categories": [
+        "pratique-dev"
+      ],
+      "decision": "REFUSE (deja fait, constat) : les trois filets sont branches dans docs/cadrage-ppt/generate_deck.py lignes 4667-4669 (return list(D.verifier_geometrie(prs) + D.verifier_chrome_gabarit(prs) + D.verifier_plancher_de_dessin(prs, CONTENT_BOTTOM, ...))). Le fichier fait 5040 lignes (la ligne 5062 citee dans le finding n'existe plus).",
+      "preuve_application": "grep -n verifier_geometrie|verifier_chrome_gabarit|verifier_plancher_de_dessin docs/cadrage-ppt/generate_deck.py -> lignes 4667-4669 montrent les trois filets combines dans un seul return ; wc -l -> 5040 lignes"
+    },
+    {
+      "cible": "VSCode3:reliquats-de-lint-du-chantier-deck",
+      "date": "2026-09-21",
+      "titre": "Trois points de lint et deux zip() sans strict=True restent sur le chantier deck : corriges dans le working tree pour les zip, jamais commites",
+      "categories": [
+        "pratique-dev"
+      ],
+      "decision": "REFUSE (deja fait, constat) : les deux zip() du chantier ont bien strict=True (generate_deck.py:3865 et :4479). ruff check sur docs/cadrage-ppt/gen_check_slide_synthese*.py -> All checks passed (les deux blocs d'imports non tries cites dans le finding sont resolus). Il reste seulement 2 erreurs ruff ailleurs dans le chantier (UP031 generate_deck.py:4286, I001 test_generate_deck.py:101), pas les 3 F841/imports d'origine : la situation a change mais aucun reliquat bloquant ne correspond plus au constat initial.",
+      "preuve_application": "grep -n 'zip(' docs/cadrage-ppt/generate_deck.py -> 2 occurrences, toutes avec strict=True ; py -m ruff check docs/cadrage-ppt/gen_check_slide_synthese.py docs/cadrage-ppt/gen_check_slide_synthese_v2_propositions.py docs/cadrage-ppt/gen_check_slide_synthese_v3_refonte.py -> All checks passed! ; py -m ruff check docs/cadrage-ppt/ -> Found 2 errors (UP031 generate_deck.py:4286, I001 test_generate_deck.py:101)"
+    },
+    {
+      "cible": "flotte:point-du-jour-absent-des-5-cibles",
+      "date": "2026-09-21",
+      "titre": "Le hook qui liste ce qui attend une decision n'existe QUE au hub : les 5 cibles ne l'ont pas, et le kit ne le distribue pas",
+      "categories": [
+        "pratique-dev"
+      ],
+      "decision": "REFUSE (deja fait, constat) : .claude/hooks/point_du_jour.py existe maintenant sur les 5 cibles (VSCode, VSCode1, VSCode2, VSCode3, VSCode4), pas au chemin .claude/supervision/ initialement cherche mais bien present et distribue.",
+      "preuve_application": "find <chaque depot> -iname point_du_jour* -> .claude/hooks/point_du_jour.py present sur VSCode, VSCode1, VSCode2, VSCode3 et VSCode4 (VSCode1 et VSCode ont aussi un .pyc compile, signe d'execution reelle)"
     }
   ]
 }
