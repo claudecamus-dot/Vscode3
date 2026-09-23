@@ -181,7 +181,19 @@ def main():
     # arbitrage du 2026-09-20 : fils humain + technique fusionnés en
     # slide_deux_fils, 3 slides d'agent regroupées en slide_agents_candidats,
     # slide_livrables_ppt supprimée).
-    check(len(prs.slides) == 41, f"41 slides — reçu {len(prs.slides)}")
+    # v2.40 (trame arbitrée du 2026-09-23) : 41 -> 41 — 8 intercalaires
+    # deviennent 7 (-1 : Executive summary, Enjeux, Douleur, Opportunités, Next
+    # steps retirés ; Ce que ça coûte, Nos convictions, L'IA sous contrôle,
+    # Réussir et démarrer ajoutés), slide_convictions neuve (+1), annexe sans
+    # intercalaire. Même total par coïncidence, pas par constance du contenu.
+    # v2.41 (restructuration validée du 2026-09-23) : 41 -> 37 — schéma de
+    # fonctionnement et workflows supprimés (-2), gate+prudence fusionnées
+    # (-1), ambition+SI+contexte client fusionnées (-2), slide_intro_agentic
+    # neuve (+1), intercalaire « L'IA sous contrôle » remplacé par « L'expertise
+    # agentic d'OCTO » (0), schéma d'accompagnement passé en annexe (0).
+    # v2.42 (six retours utilisateur) : 37 -> 34 — « Ce que ça coûte » 6 -> 3
+    # slides (-3), « L'offre » 4 -> 3 (-1), intercalaire « Annexes » (+1).
+    check(len(prs.slides) == 34, f"34 slides — reçu {len(prs.slides)}")
     check(bool(_vu), "build() consulte bien _controler (tous les filets), "
                      "et pas un sous-ensemble câblé en dur")
     check(not problemes,
@@ -281,12 +293,99 @@ def main():
     # couvrir demanderait de savoir où finit l'énumération et où reprend la
     # phrase, ce que rien dans le texte ne dit.
     titres = sorted((t.lower() for t in chapitres.values()), key=len, reverse=True)
+    # v2.40 : guillemets et apostrophe typographique neutralisés — « chapitre
+    # « L'IA sous contrôle » » ou « L’offre » ne doivent pas passer pour inconnus.
+    def _norm(t):
+        return t.lower().replace("’", "'").lstrip("«“\"  ")
     inconnus = sorted(
         f"slide {i} : « {frag} »" for i, frag in nommes
-        if not any(frag.lower().startswith(t) for t in titres)
+        if not any(_norm(frag).startswith(_norm(t)) for t in titres)
     )
     check(not inconnus,
-          f"tout renvoi nommé désigne un chapitre existant — inconnus : {inconnus or 'aucun'}")
+          f"(c) tout renvoi nommé désigne un chapitre existant — inconnus : {inconnus or 'aucun'}")
+
+    # (b) v2.40 : AUCUN renvoi positionnel. La garde ci-dessus les laissait
+    # passer (« immunisés à une renumérotation ») — mais « slide précédente »
+    # devient faux dès qu'on déplace une slide, ce que la trame v2.40 a fait
+    # à la moitié du deck : le renvoi de la prudence IA pointait sur une slide
+    # qui n'était plus la précédente. Nommer, ou supprimer.
+    POSITIONNEL = re.compile(
+        r"\b(slides?|chapitres?|pages?)\s+(suivante?s?|précédente?s?|precedente?s?"
+        r"|ci-dessus|ci-dessous|ci-avant|ci-après|qui suit|qui suivent)\b", re.I)
+    positionnels = [f"slide {i} : « {m.group(0)} »"
+                    for i, sl in enumerate(prs.slides, start=1)
+                    for shp in _formes(sl.shapes) if shp.has_text_frame
+                    for m in POSITIONNEL.finditer(shp.text_frame.text)]
+    check(not positionnels,
+          f"(b) aucun renvoi positionnel (slide/chapitre suivant·e/précédent·e) : "
+          f"{positionnels or 'aucun'}")
+
+    # (a) v2.40 : le kicker de chaque slide de contenu EST le nom de son
+    # chapitre — celui de l'intercalaire qui la précède, EXECUTIVE SUMMARY avant
+    # le premier, ANNEXE admis seulement après le dernier chapitre. Cinq
+    # kickers citaient des chapitres disparus au rendu v2.39 (« IA »,
+    # « PROPOSITION », « BESOINS & DOULEURS », « OUTILLAGE IAP », « DÉMARCHE »).
+    print("Kickers = nom du chapitre porteur :")
+    SEP = "   ·   "
+    courant, faux = "EXECUTIVE SUMMARY", []
+    n_chap_vus, n_chap = 0, len(chapitres)
+    for i, sl in enumerate(prs.slides, start=1):
+        nom_layout = sl.slide_layout.name
+        if nom_layout.startswith("50 - Chapitre"):
+            ph0 = next(p for p in sl.placeholders if p.placeholder_format.idx == 0)
+            courant = ph0.text_frame.paragraphs[0].text.strip().upper()
+            n_chap_vus += 1
+            continue
+        if i == 1:
+            continue   # couverture
+        ph0 = next((p for p in sl.placeholders if p.placeholder_format.idx == 0), None)
+        texte = ph0.text_frame.text if ph0 is not None else ""
+        kicker = texte.split(SEP)[0].strip() if SEP in texte else None
+        attendu = {courant}
+        if n_chap_vus == n_chap:
+            attendu.add("ANNEXE")
+        if kicker not in attendu:
+            faux.append(f"slide {i} : {kicker!r} (attendu {sorted(attendu)})")
+    check(not faux, f"(a) kicker de chaque slide de contenu = son chapitre : {faux or 'tous conformes'}")
+
+    # Charte (arbitrage 2026-09-10) : aucun texte cyan, aucun texte blanc posé
+    # sur un aplat cyan (1,86:1). Relevé au rendu v2.39 sur deux pastilles.
+    print("Charte — aucun texte cyan, aucun blanc sur cyan :")
+    CYAN = str(gen.ACCENT).lstrip("#").upper()
+
+    def _fill(shp):
+        try:
+            return str(shp.fill.fore_color.rgb) if shp.fill.type == 1 else None
+        except Exception:
+            return None
+
+    def _couleur(run):
+        try:
+            return str(run.font.color.rgb) if run.font.color and run.font.color.type is not None else None
+        except Exception:
+            return None
+
+    viol = []
+    for i, sl in enumerate(prs.slides, start=1):
+        formes = list(_formes(sl.shapes))
+        aplats = [(f.left, f.top, f.left + f.width, f.top + f.height) for f in formes
+                  if _fill(f) == CYAN and f.width and f.height]
+        for shp in formes:
+            if not shp.has_text_frame or shp.left is None:
+                continue
+            cx, cy = shp.left + shp.width // 2, shp.top + shp.height // 2
+            sur_cyan = _fill(shp) == CYAN or any(
+                a <= cx <= c and b <= cy <= d for a, b, c, d in aplats)
+            for p in shp.text_frame.paragraphs:
+                for r in p.runs:
+                    if not r.text.strip():
+                        continue
+                    c = _couleur(r)
+                    if c == CYAN:
+                        viol.append(f"slide {i} : texte cyan « {r.text[:25]} »")
+                    elif c == "FFFFFF" and sur_cyan:
+                        viol.append(f"slide {i} : blanc sur cyan « {r.text[:25]} »")
+    check(not viol, f"charte : {viol or 'aucune violation'}")
 
     print("Version affichée en couverture à jour (v2.8 y est restée gelée 4 bumps de suite) :")
     versions_docstring = [tuple(int(p) for p in v.split("."))
@@ -337,17 +436,17 @@ def main():
     cadre_vision = gen._find_frame_in_group(
         slide_vision.slide_layout.shapes, "Google Shape;212;p17", "Google Shape;213;p17")
     images_vision = _images(slide_vision)
-    check(len(images_vision) == 1, f"slide 9 (vision) : exactement 1 image posée (reçu {len(images_vision)})")
-    check(cadre_vision is not None, "slide 9 (vision) : cadre 'cadre blanc' trouvé sur le layout")
+    check(len(images_vision) == 1, f"slide vision : exactement 1 image posée (reçu {len(images_vision)})")
+    check(cadre_vision is not None, "slide vision : cadre 'cadre blanc' trouvé sur le layout")
     if images_vision and cadre_vision:
         pic = images_vision[0]
         l, t, w, h, _ = cadre_vision
         check((pic.left, pic.top, pic.width, pic.height) == (l, t, w, h),
-              f"slide 9 (vision) : image alignée exactement sur le cadre "
+              f"slide vision : image alignée exactement sur le cadre "
               f"(image=({pic.left},{pic.top},{pic.width},{pic.height}) vs cadre=({l},{t},{w},{h}))")
         g = pic._element.spPr.find(qn("a:prstGeom"))
         check(g is not None and g.get("prst") == "round2DiagRect",
-              "slide 9 (vision) : image clippée au bon preset (round2DiagRect)")
+              "slide vision : image clippée au bon preset (round2DiagRect)")
 
     print("Aucun cadre laissé vide (texte gabarit « ici mettre une Photo » résiduel) :")
     texte_complet = "\n".join(
