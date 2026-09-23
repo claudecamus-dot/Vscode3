@@ -88,12 +88,9 @@ produit, Big4 sur la gouvernance seule, AIOps sans transformation).
   2026, DORA, SPACE) n'outille le lien « capacité récupérée → réinvestie » : angle mort de
   l'industrie, donc actif différenciant **si** IAP l'outille en premier, charge de preuve
   portée seul (chantier propriétaire assumé).
-- **Faisabilité** : la Grille d'Assessment Agile V3.2 est éprouvée comme *outillage* en
-  delivery agile logiciel, et **pas encore validée comme instrument en domaine infra**
-  (M2, bloquant B4 du cadrage) — la dire « adaptée de », jamais « éprouvée » sur ce
-  domaine. Contrainte de séquence : la discipline « même instrument à T0 et à ⟲ » interdit
-  de la corriger après T0, donc la passe de validation infra (astreinte, obsolescence,
-  TMA, CMDB) se fait **avant** la première mission, pas après.
+- **Faisabilité** : l'instrument de mesure est la Grille d'Assessment Agile V3.2 de
+  VSCode1, variante IA-Agentic-Complet, **reprise telle quelle, pilier agentic compris**
+  (arbitré le 2026-09-23, B4 du cadrage) ; même instrument à T0 et à ⟲.
 - **Usabilité** : test d'apprenabilité (dérouler l'intake par un consultant qui n'a pas
   écrit le cadrage) restant à programmer (M5).
 
@@ -117,7 +114,8 @@ niveau du cadrage : aucune construction du module `bmad-iap` n'est engagée.
 > le nom reste **Infra as a Product** (B1), et l'offre reprend les éléments utiles
 > d'« Agentic Product Run » plutôt que de cohabiter avec elle (B2). La mission
 > flash a une seule définition : l'**Assessment flash**, qui ouvre la démarche avant toute
-> action d'accompagnement (B3). Encore ouverte : la grille V3.2 en domaine infra (B4).
+> action d'accompagnement (B3). La grille de mesure est celle
+> de VSCode1, pilier agentic compris (B4).
 
 Les chantiers restants (KPI de réinvestissement, plan de preuve hypothèse × mission,
 contenu détaillé de l'Assessment flash) sont tracés au §Points ouverts du cadrage de fond. v2.5 n'ajoutait que des recoupements `ILLUSTRATIF` corroborant des arguments déjà
