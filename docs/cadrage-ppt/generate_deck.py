@@ -453,7 +453,7 @@ Sortie : bmad-iap-cadrage-synthese.pptx (à côté de ce script).
 import os
 import sys
 
-sys.path.insert(0, os.path.dirname(__file__))
+sys.path.append(os.path.dirname(__file__))
 import pptx_deck as D
 from pptx import Presentation
 from pptx.dml.color import RGBColor
@@ -474,10 +474,11 @@ DATE_VERSION_DECK = "2026-09-23"
 HERE = os.path.dirname(__file__)
 TEMPLATE = os.path.join(HERE, "template-octo.pptx")
 REPO_ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
-sys.path.insert(0, os.path.join(REPO_ROOT, ".claude", "skills", "pptx-framed-image", "scripts"))
+sys.path.append(os.path.join(REPO_ROOT, ".claude", "skills", "pptx-framed-image", "scripts"))
 import nature_images  # noqa: E402
 import stock_images  # noqa: E402
-from framed_image import frame_obstructions, place_image_in_frame  # noqa: E402
+from framed_image import cover_crop_to_aspect, frame_obstructions, place_image_in_frame  # noqa: E402
+from PIL import Image as _PILImage  # noqa: E402
 
 IMG_DIR = os.path.join(HERE, "_img")
 os.makedirs(IMG_DIR, exist_ok=True)
@@ -814,6 +815,28 @@ _SCENE_REPLI = {
 _ANOMALIES_BUILD = []
 
 
+def _image_cache_valide(path):
+    """True si `path` est une image utilisable : fichier non vide, décodable
+    par PIL, et de dimensions plausibles pour un cadre du deck (>= 32 px sur
+    chaque côté, <= 8000 px). Un fichier de 0 octet laissé par un build
+    interrompu (Ctrl-C pendant `fetch_to`/`save`) — ou, pour le contenu
+    Openverse fraîchement téléchargé, une image corrompue/hors format —
+    ne doit jamais être réputé valide (audit VSCode3 2026-09-23, constats
+    R2/S1 : `os.path.exists()` seul ne prouve rien sur le contenu)."""
+    try:
+        if not os.path.exists(path) or os.path.getsize(path) <= 0:
+            return False
+        with _PILImage.open(path) as im:
+            im.verify()
+        with _PILImage.open(path) as im:
+            largeur, hauteur = im.size
+            if largeur < 32 or hauteur < 32 or largeur > 8000 or hauteur > 8000:
+                return False
+        return True
+    except Exception:
+        return False
+
+
 def _remplir_cadre(slide, cadre, scene, seed=0):
     """Pose une vraie photo libre de droit (Openverse, CC0) à l'aspect exact
     du cadre, repli sur la génération procédurale (nature_images) si le
@@ -853,23 +876,17 @@ def _remplir_cadre(slide, cadre, scene, seed=0):
     # cf. docstring de la fonction pour le defaut que ce nom distinct ferme.
     path_repli = os.path.join(IMG_DIR, f"{scene}_{seed}_{px_w}x{px_h}_repli.jpg")
     path_a_poser = path
-    if not os.path.exists(path):
+    if not _image_cache_valide(path):
         requete = _REQUETES_PHOTO.get(scene, scene)
         aspect_ratio = "wide" if aspect > 1.15 else "tall" if aspect < 0.85 else "square"
+        brut = os.path.join(IMG_DIR, f"_brut_{scene}_{seed}.jpg")
+        # Try restreint au seul appel réseau (constat R1, audit VSCode3
+        # 2026-09-23) : une erreur d'import ou d'encodage ne doit plus être
+        # rapportée « Openverse indisponible » — imports sortis en tête de
+        # module, ré-encodage traité dans un second try au message distinct.
         try:
-            brut = os.path.join(IMG_DIR, f"_brut_{scene}_{seed}.jpg")
             stock_images.fetch_to(brut, requete, seed=seed, aspect_ratio=aspect_ratio,
                                    manifest_path=IMG_MANIFEST)
-            from framed_image import cover_crop_to_aspect
-            cover_crop_to_aspect(brut, path, aspect)
-            # cover_crop_to_aspect() sauve avec les défauts PIL (JPEG qualité
-            # 75) : ré-encodage local à qualité 90 pour un rendu plein cadre
-            # sur un deck client — le gain de poids vient de PNG->JPEG, pas
-            # d'une compression agressive en plus.
-            from PIL import Image as _Image
-            _Image.open(path).convert("RGB").save(path, quality=90, optimize=True)
-            print(f"  photo réelle posée pour '{scene}' ({requete!r}, via Openverse CC0)")
-            path_a_poser = path
         except Exception as e:
             repli = _SCENE_REPLI.get(scene, scene)
             note = f" (scène '{scene}' inconnue du repli -> '{repli}')" if repli != scene else ""
@@ -884,6 +901,37 @@ def _remplir_cadre(slide, cadre, scene, seed=0):
                 print(f"  {msg}")
                 _ANOMALIES_BUILD.append(msg)
                 return
+        else:
+            try:
+                cover_crop_to_aspect(brut, path, aspect)
+                # cover_crop_to_aspect() sauve avec les défauts PIL (JPEG
+                # qualité 75) : ré-encodage local à qualité 90 pour un rendu
+                # plein cadre sur un deck client — le gain de poids vient de
+                # PNG->JPEG, pas d'une compression agressive en plus.
+                _PILImage.open(path).convert("RGB").save(path, quality=90, optimize=True)
+                # Constat S1 : contenu tiers Openverse non validé avant usage
+                # dans un livrable client — valider le fichier téléchargé
+                # (format image décodable, dimensions bornées) avant de le
+                # poser. Un fichier retenu invalide ne doit pas rester en
+                # cache pour le build suivant (constat R2).
+                if not _image_cache_valide(path):
+                    raise ValueError(f"image Openverse invalide pour '{scene}' ({path})")
+                print(f"  photo réelle posée pour '{scene}' ({requete!r}, via Openverse CC0)")
+                path_a_poser = path
+            except Exception as e:
+                if os.path.exists(path):
+                    os.remove(path)
+                repli = _SCENE_REPLI.get(scene, scene)
+                note = f" (scène '{scene}' inconnue du repli -> '{repli}')" if repli != scene else ""
+                print(f"  image Openverse illisible pour '{scene}' ({e}) — repli sur nature_images{note}")
+                try:
+                    nature_images.generate_to(path_repli, repli, px_w, px_h, seed=seed)
+                    path_a_poser = path_repli
+                except Exception as e2:
+                    msg = f"aucune image pour '{scene}' : encodage/validation KO ({e}) et repli KO ({e2})"
+                    print(f"  {msg}")
+                    _ANOMALIES_BUILD.append(msg)
+                    return
     place_image_in_frame(slide, path_a_poser, left, top, width, height, geom=geom)
 
 

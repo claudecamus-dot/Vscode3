@@ -223,6 +223,136 @@ def test_les_anomalies_de_build_restent_dans_le_self_check(
         generate_deck._ANOMALIES_BUILD[:] = []
 
 
+# --- Constats chantier-tiers fermés (audit VSCode3 2026-09-23) -------------
+#
+# R1 : le try de `_remplir_cadre` englobait l'import de `cover_crop_to_aspect`/
+# `PIL.Image` et le ré-encodage, pas seulement l'appel réseau — toute panne
+# d'encodage était rapportée « Openverse indisponible ». R2 : le cache n'était
+# validé que par `os.path.exists`. S1 : le contenu Openverse téléchargé n'était
+# jamais vérifié avant usage. S2 : `sys.path.insert(0, ...)` pouvait masquer un
+# module standard.
+
+def test_cache_image_valide_rejette_fichier_vide(generate_deck, tmp_path):
+    """R2 : un fichier de 0 octet (build interrompu) n'est pas un cache valide."""
+    vide = tmp_path / "vide.jpg"
+    vide.write_bytes(b"")
+    assert not generate_deck._image_cache_valide(str(vide)), (
+        "un fichier vide passait `os.path.exists()` et était réputé valide")
+
+
+def test_cache_image_valide_rejette_contenu_non_image(generate_deck, tmp_path):
+    """S1 : un contenu tiers Openverse non-image ne doit pas être posé tel quel."""
+    faux = tmp_path / "faux.jpg"
+    faux.write_bytes(b"ceci n'est pas un jpeg")
+    assert not generate_deck._image_cache_valide(str(faux)), (
+        "un fichier non-image doit être rejeté avant usage dans le deck")
+
+
+def test_cache_image_valide_accepte_une_vraie_image(generate_deck, tmp_path):
+    """Contre-épreuve : une vraie image de taille plausible passe la garde."""
+    from PIL import Image
+    chemin = tmp_path / "vraie.jpg"
+    Image.new("RGB", (100, 80), color=(10, 20, 30)).save(str(chemin), quality=90)
+    assert generate_deck._image_cache_valide(str(chemin))
+
+
+def test_remplir_cadre_retelecharge_si_cache_invalide(generate_deck, monkeypatch, tmp_path):
+    """R2 : un cache présent mais vide (ou corrompu) doit redéclencher fetch_to.
+
+    Avant le correctif, `if not os.path.exists(path)` passait le téléchargement
+    dès qu'un fichier — même vide — existait sous ce nom : ce test échoue sans
+    le correctif car `fetch_to` n'est jamais rappelé.
+    """
+    monkeypatch.setattr(generate_deck, "IMG_DIR", str(tmp_path))
+    generate_deck._ANOMALIES_BUILD[:] = []
+    scene = "canyon"
+    px_w, px_h = 960, 720  # doit correspondre au calcul interne pour aspect 4/3
+    chemin_cache = tmp_path / f"{scene}_0_{px_w}x{px_h}.jpg"
+    chemin_cache.write_bytes(b"")  # cache invalide : 0 octet
+
+    appels = []
+
+    def faux_fetch(brut, *a, **k):
+        appels.append(brut)
+        from PIL import Image
+        Image.new("RGB", (200, 150), color=(1, 2, 3)).save(brut, quality=90)
+
+    monkeypatch.setattr(generate_deck.stock_images, "fetch_to", faux_fetch)
+
+    from pptx.util import Emu, Inches
+    cadre = (0, 0, Emu(Inches(px_w / 96.0)), Emu(Inches(px_h / 96.0)), None)
+    monkeypatch.setattr(generate_deck, "place_image_in_frame", lambda *a, **k: None)
+
+    generate_deck._remplir_cadre(None, cadre, scene, seed=0)
+    assert appels, "le cache invalide (0 octet) n'a pas redéclenché fetch_to"
+
+
+def test_remplir_cadre_replie_si_image_openverse_corrompue(generate_deck, monkeypatch, tmp_path):
+    """S1 : un fichier téléchargé illisible ne doit jamais être posé dans le deck.
+
+    `fetch_to` "réussit" en écrivant un contenu non-image ; sans la validation
+    du contenu, l'ancien code posait ce fichier tel quel (`path_a_poser = path`
+    dès que `fetch_to` ne levait pas). Ce test échoue sans le correctif.
+    """
+    monkeypatch.setattr(generate_deck, "IMG_DIR", str(tmp_path))
+    generate_deck._ANOMALIES_BUILD[:] = []
+    scene = "canyon"
+
+    def faux_fetch_corrompu(brut, *a, **k):
+        with open(brut, "wb") as f:
+            f.write(b"pas une image")
+
+    def faux_crop(brut, dest, aspect):
+        # simule cover_crop_to_aspect qui recopie le contenu corrompu
+        with open(brut, "rb") as src, open(dest, "wb") as dst:
+            dst.write(src.read())
+
+    monkeypatch.setattr(generate_deck.stock_images, "fetch_to", faux_fetch_corrompu)
+    monkeypatch.setattr(generate_deck, "cover_crop_to_aspect", faux_crop)
+
+    replis = []
+
+    def faux_repli(dest, *a, **k):
+        replis.append(dest)
+        from PIL import Image
+        Image.new("RGB", (80, 60), color=(4, 5, 6)).save(dest)
+
+    monkeypatch.setattr(generate_deck.nature_images, "generate_to", faux_repli)
+    monkeypatch.setattr(generate_deck, "place_image_in_frame", lambda *a, **k: None)
+
+    from pptx.util import Emu, Inches
+    cadre = (0, 0, Emu(Inches(10)), Emu(Inches(7.5)), None)
+    generate_deck._remplir_cadre(None, cadre, scene, seed=0)
+
+    assert replis, (
+        "une image Openverse corrompue a été posée sans repli : la validation "
+        "du contenu téléchargé n'est pas branchée")
+
+
+def test_sys_path_ne_masque_pas_les_modules_standards(generate_deck):
+    """S2 : les répertoires du dépôt doivent être ajoutés en FIN de sys.path.
+
+    `sys.path.insert(0, ...)` place un dossier du dépôt avant la bibliothèque
+    standard — un fichier nommé `re.py`/`io.py` déposé là serait importé à la
+    place du module standard. Ce test échoue sans le correctif : lecture
+    directe du source, pas de l'état déjà exécuté de `sys.path` (partagé entre
+    tests et déjà modifié par l'import du fixture module-scope).
+    """
+    lignes_code = [
+        l for l in CADRAGE.joinpath("generate_deck.py").read_text(encoding="utf-8").splitlines()
+        if "sys.path." in l and not l.strip().startswith("#")
+    ]
+    # Exclut l'exemple de commande dans le docstring d'usage (`py -c "import
+    # sys;sys.path.insert(0,...)"`) : seules les lignes qui appellent
+    # sys.path.*(...) au niveau module comptent, pas la prose.
+    lignes_appel = [l for l in lignes_code if l.strip().startswith("sys.path.")]
+    assert not any("insert(0" in l for l in lignes_appel), (
+        f"un sys.path.insert(0, ...) est revenu dans le code : {lignes_appel}")
+    assert sum("append(" in l for l in lignes_appel) >= 2, (
+        "les deux ajouts au sys.path (répertoire local, skill pptx-framed-image) "
+        f"doivent utiliser append(), pas insert(0, ...) : {lignes_appel}")
+
+
 def test_debordements_texte_reste_hors_du_self_check(
         generate_deck, prs_minimal, monkeypatch):
     """Décision explicite, pas un oubli : son seuil n'est pas réglé.
