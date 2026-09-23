@@ -177,8 +177,11 @@ def main():
     # slide_synthese_pourquoi_quoi_comment refondue). 52 -> 53 (v2.35,
     # restructuration en 9 chapitres dont Annexes). 53 -> 45 (v2.36, chapitre
     # Annexes retiré à la demande utilisateur : 7 fonctions de slide
-    # supprimées avec lui, plus l'intercalaire de chapitre).
-    check(len(prs.slides) == 45, f"45 slides — reçu {len(prs.slides)}")
+    # supprimées avec lui, plus l'intercalaire de chapitre). 45 -> 41 (v2.37,
+    # arbitrage du 2026-09-20 : fils humain + technique fusionnés en
+    # slide_deux_fils, 3 slides d'agent regroupées en slide_agents_candidats,
+    # slide_livrables_ppt supprimée).
+    check(len(prs.slides) == 41, f"41 slides — reçu {len(prs.slides)}")
     check(bool(_vu), "build() consulte bien _controler (tous les filets), "
                      "et pas un sous-ensemble câblé en dur")
     check(not problemes,
