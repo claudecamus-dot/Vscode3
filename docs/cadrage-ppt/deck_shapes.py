@@ -1,56 +1,51 @@
 """Primitives graphiques du deck (extraites mécaniquement de generate_deck.py) :
 chips, badges, chevrons, bandeaux, texte riche, cellules d'en-tête.
 """
-import os
-import sys
 
 import pptx_deck_vscode3 as D
-from pptx import Presentation
-from pptx.dml.color import RGBColor
-from pptx.enum.dml import MSO_LINE_DASH_STYLE
-from pptx.enum.shapes import MSO_SHAPE
-from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
-from pptx.oxml.ns import qn
-from pptx.util import Emu, Inches, Pt
-
 from deck_theme import (  # noqa: E402,F401 — extraction mécanique v2.46
+    ACCENT,
+    ACCENT1,
+    ACCENT2,
+    ACCENT_PLEIN,
+    BORD_DROIT,
+    CONTENT_BOTTOM,
+    CONTENT_H,
+    CONTENT_TOP,
+    CONTENT_W,
+    DK2,
+    ENCRE,
+    GAP,
     HERE,
-    TEMPLATE,
+    LAYOUT_CHAPITRE,
     LAYOUT_COUVERTURE,
     LAYOUT_TITRE_SEUL,
     LAYOUT_VIDE,
-    LAYOUT_CHAPITRE,
     LAYOUT_VISUEL_DROITE,
-    MARGIN,
-    BORD_DROIT,
-    CONTENT_TOP,
-    CONTENT_BOTTOM,
-    CONTENT_W,
-    CONTENT_H,
-    GAP,
-    _exiger_template,
-    TH,
-    NAVY,
-    DK2,
-    WHITE,
-    ACCENT,
-    MUTED,
-    ACCENT1,
-    ACCENT2,
     LINE,
-    TRACK,
+    MARGIN,
+    MUTED,
+    NAVY,
     RAYON_COIN_IN,
-    _add_rect_brut,
-    _add_rect_arrondi,
     SEVERITE,
-    _rgb,
-    new_prs,
-    ENCRE,
-    ACCENT_PLEIN,
     SUPPORT,
     SUPPORT_LIGNE,
+    TEMPLATE,
+    TH,
+    TRACK,
+    WHITE,
+    _add_rect_arrondi,
+    _add_rect_brut,
+    _exiger_template,
+    _rgb,
     encre_de,
+    new_prs,
 )
+from pptx.enum.dml import MSO_LINE_DASH_STYLE
+from pptx.enum.shapes import MSO_SHAPE
+from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
+from pptx.util import Inches, Pt
+
 
 def dot_scale(slide, x, y, n, score, color, d=0.14, gap=0.06, empty_color=None):
     """Jauge à points 0..n (score plein en `color`, reste en `empty_color`) —

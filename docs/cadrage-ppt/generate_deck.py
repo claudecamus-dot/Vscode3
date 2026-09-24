@@ -505,9 +505,6 @@ import sys
 
 sys.path.append(os.path.dirname(__file__))
 import pptx_deck_vscode3 as D
-from pptx import Presentation
-from pptx.dml.color import RGBColor
-from pptx.enum.dml import MSO_LINE_DASH_STYLE
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
 from pptx.oxml.ns import qn
@@ -521,45 +518,45 @@ from pptx.util import Emu, Inches, Pt
 VERSION_DECK = "v2.45"
 DATE_VERSION_DECK = "2026-09-23"
 
-import deck_theme  # noqa: E402
-import deck_images  # noqa: E402
+import deck_images  # noqa: E402,F401 — module accede par les tests (generate_deck.deck_images)
+import deck_theme  # noqa: E402,F401 — module accede par les tests (generate_deck.deck_theme)
 from deck_theme import (  # noqa: E402,F401 — extraction mécanique v2.46
+    ACCENT,
+    ACCENT1,
+    ACCENT2,
+    ACCENT_PLEIN,
+    BORD_DROIT,
+    CONTENT_BOTTOM,
+    CONTENT_H,
+    CONTENT_TOP,
+    CONTENT_W,
+    DK2,
+    ENCRE,
+    GAP,
     HERE,
-    TEMPLATE,
+    LAYOUT_CHAPITRE,
     LAYOUT_COUVERTURE,
     LAYOUT_TITRE_SEUL,
     LAYOUT_VIDE,
-    LAYOUT_CHAPITRE,
     LAYOUT_VISUEL_DROITE,
-    MARGIN,
-    BORD_DROIT,
-    CONTENT_TOP,
-    CONTENT_BOTTOM,
-    CONTENT_W,
-    CONTENT_H,
-    GAP,
-    _exiger_template,
-    TH,
-    NAVY,
-    DK2,
-    WHITE,
-    ACCENT,
-    MUTED,
-    ACCENT1,
-    ACCENT2,
     LINE,
-    TRACK,
+    MARGIN,
+    MUTED,
+    NAVY,
     RAYON_COIN_IN,
-    _add_rect_brut,
-    _add_rect_arrondi,
     SEVERITE,
-    _rgb,
-    new_prs,
-    ENCRE,
-    ACCENT_PLEIN,
     SUPPORT,
     SUPPORT_LIGNE,
+    TEMPLATE,
+    TH,
+    TRACK,
+    WHITE,
+    _add_rect_arrondi,
+    _add_rect_brut,
+    _exiger_template,
+    _rgb,
     encre_de,
+    new_prs,
 )
 
 _CHAPITRE_COURANT = [None]
@@ -647,24 +644,25 @@ def _sans_puce(paragraph):
 
 
 from deck_images import (  # noqa: E402,F401 — extraction mécanique v2.46
-    REPO_ROOT,
-    nature_images,
-    stock_images,
-    cover_crop_to_aspect,
-    frame_obstructions,
-    place_image_in_frame,
-    _PILImage,
-    IMG_DIR,
-    IMG_MANIFEST,
-    _find_frame_by_geom,
-    _find_frame_in_group,
+    _ANOMALIES_BUILD,
     _REQUETES_PHOTO,
     _SCENE_REPLI,
-    _ANOMALIES_BUILD,
+    IMG_DIR,
+    IMG_MANIFEST,
+    REPO_ROOT,
+    _find_frame_by_geom,
+    _find_frame_in_group,
     _image_cache_valide,
-    _remplir_cadre,
     _photo_libre,
+    _PILImage,
+    _remplir_cadre,
+    cover_crop_to_aspect,
+    frame_obstructions,
+    nature_images,
+    place_image_in_frame,
+    stock_images,
 )
+
 
 def slide_chapitre(prs, numero, titre, couverture, color, scene, seed=0):
     """Slide d'intercalaire de chapitre — vrai layout dédié du template
@@ -713,32 +711,31 @@ def slide_chapitre(prs, numero, titre, couverture, color, scene, seed=0):
 
 
 from deck_shapes import (  # noqa: E402,F401 — extraction mécanique v2.46
-    dot_scale,
-    col_x,
-    chip,
-    _oval,
-    _pale,
-    _dashed_rect,
-    QUOTE,
+    _GLYPHES_SANS_GRAS,
+    BADGE_AGENTIC_W,
     DOT,
-    _rich,
-    _split_emph,
-    _chevron_shape,
-    _chevron_arrow,
+    QUOTE,
     _badge,
     _bandeau_cloture,
-    _quote_banner,
-    _noeud_socle,
-    _pilule_variante,
-    _note_mecanisme,
+    _chevron_arrow,
+    _chevron_shape,
+    _dashed_rect,
     _fleche_h,
-    BADGE_AGENTIC_W,
-    badge_deploiement_agentic,
-    _GLYPHES_SANS_GRAS,
     _header_cell,
     _lignes,
+    _noeud_socle,
+    _note_mecanisme,
+    _oval,
+    _pale,
+    _pilule_variante,
+    _quote_banner,
+    _rich,
+    _split_emph,
+    badge_deploiement_agentic,
+    chip,
+    col_x,
+    dot_scale,
 )
-
 
 
 # ---------------------------------------------------------------- slide 1

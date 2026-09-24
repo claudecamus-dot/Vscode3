@@ -3,16 +3,10 @@ constantes de mise en page, couleurs lues dans le thème du template,
 rayon de coin branché sur D.add_rect, new_prs.
 """
 import os
-import sys
 
 import pptx_deck_vscode3 as D
 from pptx import Presentation
 from pptx.dml.color import RGBColor
-from pptx.enum.dml import MSO_LINE_DASH_STYLE
-from pptx.enum.shapes import MSO_SHAPE
-from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
-from pptx.oxml.ns import qn
-from pptx.util import Emu, Inches, Pt
 
 HERE = os.path.dirname(__file__)
 TEMPLATE = os.path.join(HERE, "template-octo.pptx")

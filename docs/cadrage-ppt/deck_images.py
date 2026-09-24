@@ -5,59 +5,56 @@ _remplir_cadre et _photo_libre.
 import os
 import sys
 
-import pptx_deck_vscode3 as D
-from pptx import Presentation
-from pptx.dml.color import RGBColor
-from pptx.enum.dml import MSO_LINE_DASH_STYLE
-from pptx.enum.shapes import MSO_SHAPE
-from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
-from pptx.oxml.ns import qn
-from pptx.util import Emu, Inches, Pt
-
 from deck_theme import (  # noqa: E402,F401 — extraction mécanique v2.46
+    ACCENT,
+    ACCENT1,
+    ACCENT2,
+    ACCENT_PLEIN,
+    BORD_DROIT,
+    CONTENT_BOTTOM,
+    CONTENT_H,
+    CONTENT_TOP,
+    CONTENT_W,
+    DK2,
+    ENCRE,
+    GAP,
     HERE,
-    TEMPLATE,
+    LAYOUT_CHAPITRE,
     LAYOUT_COUVERTURE,
     LAYOUT_TITRE_SEUL,
     LAYOUT_VIDE,
-    LAYOUT_CHAPITRE,
     LAYOUT_VISUEL_DROITE,
-    MARGIN,
-    BORD_DROIT,
-    CONTENT_TOP,
-    CONTENT_BOTTOM,
-    CONTENT_W,
-    CONTENT_H,
-    GAP,
-    _exiger_template,
-    TH,
-    NAVY,
-    DK2,
-    WHITE,
-    ACCENT,
-    MUTED,
-    ACCENT1,
-    ACCENT2,
     LINE,
-    TRACK,
+    MARGIN,
+    MUTED,
+    NAVY,
     RAYON_COIN_IN,
-    _add_rect_brut,
-    _add_rect_arrondi,
     SEVERITE,
-    _rgb,
-    new_prs,
-    ENCRE,
-    ACCENT_PLEIN,
     SUPPORT,
     SUPPORT_LIGNE,
+    TEMPLATE,
+    TH,
+    TRACK,
+    WHITE,
+    _add_rect_arrondi,
+    _add_rect_brut,
+    _exiger_template,
+    _rgb,
     encre_de,
+    new_prs,
 )
+from pptx.oxml.ns import qn
+from pptx.util import Emu, Inches
 
 REPO_ROOT = os.path.abspath(os.path.join(HERE, "..", ".."))
 sys.path.append(os.path.join(REPO_ROOT, ".claude", "skills", "pptx-framed-image", "scripts"))
 import nature_images  # noqa: E402
 import stock_images  # noqa: E402
-from framed_image import cover_crop_to_aspect, frame_obstructions, place_image_in_frame  # noqa: E402
+from framed_image import (  # noqa: E402
+    cover_crop_to_aspect,
+    frame_obstructions,  # noqa: F401 — extraction mécanique v2.46, réexporté par generate_deck.py
+    place_image_in_frame,
+)
 from PIL import Image as _PILImage  # noqa: E402
 
 IMG_DIR = os.path.join(HERE, "_img")
