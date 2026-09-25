@@ -3,10 +3,24 @@
     "source": "hub de supervision VScode5, .claude/veille/veille.json",
     "projection": "entrees dont projets_concernes nomme VSCode3",
     "ne_pas_editer": "Fichier GENERE, en lecture seule : une correction faite ici sera ecrasee a la prochaine propagation. La veille s'ecrit AU HUB, ou elle est lue (section 3 du wiki) et arbitree. Une veille lancee depuis ce depot doit y etre remontee.",
-    "date": "2026-09-23"
+    "date": "2026-09-24"
   },
   "derniere_veille": "2026-09-23T12:00:00",
   "entrees": [
+    {
+      "titre": "microsoft/hve-core — skill PowerPoint python-pptx pilotée par YAML",
+      "url": "https://github.com/microsoft/hve-core/blob/main/.github/skills/experimental/powerpoint/SKILL.md",
+      "type": "skill",
+      "projets_concernes": [
+        "VSCode1",
+        "VSCode2",
+        "VSCode3",
+        "VSCode4"
+      ],
+      "pertinence": "Approche content.yaml + style.yaml pour découpler contenu et mise en forme des decks — alternative structurée à comparer avec nos générateurs pptx_deck maison avant d'écrire le prochain. [instruit le 2026-07-31] Verifie : MIT, 1 307 etoiles, pousse le jour meme — mais la skill PPT vit sous .github/skills/EXPERIMENTAL/powerpoint/, non stabilisee par Microsoft lui-meme. Son apport : content.yaml + style.yaml par slide, un mode dry-run (parse sans build) et un validate_geometry.py (marges, gaps, debordement, degagement du titre). ECARTE pour une migration de VSCode3/VSCode4 : les deux ont un generateur Python fonctionnel et deja arbitre le 2026-07-23, migrer serait une refonte sans point de douleur identifie (R1 : correction minimale > refonte). On perdrait ajuster_police (adaptation dynamique au texte reel, indispensable sur du contenu client variable), les 22 patterns de deck-design-library, et rien ne prouve que leur validateur capte les 7 defauts que pptx-verify chasse par rendu reel. SANS OBJET pour VSCode (COMOP Node.js, pas python-pptx). SEULE PISTE RETENUE : importer l'idee du mode dry-run dans pptx-deck. [ecarte le 2026-09-01 : Ecartee sur arbitrage utilisateur du 2026-09-01, apres 40 jours en statut etudie. La decision etait DEJA prise et tracee le 2026-07-31 (« INSTRUIT, MIGRATION ECARTEE ») : la skill PPT de hve-core vit sous .github/skills/EXPERIMENTAL/, non stabilisee par Microsoft lui-meme, et migrer VSCode3/VSCode4 vers un pipeline YAML serait une refonte sans point de douleur identifie — contre R1, correction minimale > refonte. Seul le STATUT etait reste 'etudie', ce qui faisait annoncer chaque matin comme en attente une trouvaille deja tranchee. C'est exactement la panne que le finding veille:trouvailles-dormantes denonce : une decision prise mais non reinjectee dans l'etat.]",
+      "date": "2026-07-23",
+      "statut": "ecarte"
+    },
     {
       "titre": "BMAD-METHOD — v7 ANNONCEE (uv standard) — PAS sortie : derniere release v6.10.0",
       "url": "https://github.com/bmad-code-org/BMAD-METHOD/releases",
