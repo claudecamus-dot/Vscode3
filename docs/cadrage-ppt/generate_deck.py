@@ -36,9 +36,9 @@ parcours de mission — redessiné EN NATIF (pas une insertion d'image), sur 3
 registres (mouvements du socle toujours présents, variantes conditionnées au
 contexte, mécanismes additifs) — puis une synthèse en une page de l'offre qui
 résume aussi le reste du deck (COMPRENDRE/DÉFINIR/FAIRE ADOPTER & PROUVER,
-avec renvoi aux chapitres). Le nœud « Discovery gaspillages » du schéma garde
+avec renvoi aux chapitres). Le nœud « Discovery problématiques » du schéma garde
 « 6 catégories » du document source pitch (verbatim jusqu'ici) — divergence
-avec les 8 familles de gaspillage du chapitre Besoins & douleurs, arbitrée le
+avec les 8 familles de douleur du chapitre Besoins & douleurs, arbitrée le
 2026-09-18 (salle atelier-idees, storytelling) : cohérence interne du deck
 préférée à la fidélité verbatim sur ce point précis. Nœud renommé « 8
 familles » ; le reste de la slide (schéma, citation-thèse) reste verbatim.
@@ -198,7 +198,7 @@ option (3 candidats agentic-implementation, chacun avec son objectif/résultat
 familles de KPIs résumées (source slide_kpis) — arbitrage utilisateur via
 AskUserQuestion : « slide unique, très compacte » plutôt qu'un découpage en 2
 slides, malgré le volume. Chapô renforcé : douleurs mesurées → assainir le
-gaspillage → chemin vertueux, démarche centrée sur l'agentic comme
+problématique → chemin vertueux, démarche centrée sur l'agentic comme
 accélérateur dès l'ouverture. Toujours en génération isolée, non câblée.
 
 v2.20 (2026-09-03) : retour utilisateur — texte trop petit, objectifs et
@@ -295,7 +295,7 @@ journalisées ici — cf. son propre historique inline.)
 v2.28 (2026-09-03, demande utilisateur) : `slide_specificites_infra` AJOUTÉE
 ET CÂBLÉE (46 -> 47 slides) — ouvre le chapitre 02 · Contexte, avant
 slide_mission/slide_pourquoi_contexte. Deux paires constat → réponse
-(sursollicitation/guichet → assainir le gaspillage ; mieux servir les
+(sursollicitation/guichet → assainir la problématique ; mieux servir les
 utilisateurs → infra as product) posent le terrain générique, un bloc
 d'escalade explicite que l'arrivée de l'IA aggrave la sursollicitation, puis
 la conclusion — « infra as a service », terme neuf et volontairement distinct
@@ -330,7 +330,7 @@ Le cyan ne porte JAMAIS de texte (1,86:1 sur blanc) : garde `encre_de()`.
 `slide_infra_transverse` neuves, les 2 slides infra remontent du chapitre 01,
 et 03..09 deviennent 04..10. Les renvois entre chapitres citent desormais le
 NOM et plus le numero : une renumerotation ne peut plus les rendre faux.
-(3) `slide_gaspillage_partage` neuve au chapitre Proposition : la chaine de
+(3) `slide_problematique_partagee` neuve au chapitre Proposition : la chaine de
 traitement, jusque-la presentee cote cabinet, est retournee en « qui fait quoi
 et ce qui se tranche a deux ». 49 -> 53 slides. Les index de slides des tests
 sont DERIVES du deck (layouts) au lieu d'etre recomptes a la main.
@@ -464,7 +464,7 @@ n°3). Renvois positionnels et identifiants internes (iap-*, *-risk) retirés
 du texte visible.
 
 v2.41 (2026-09-23, restructuration validée par l'utilisateur) : L'offre en 4
-slides, dont `slide_gaspillages` réécrite en trois temps (repérer, chiffrer,
+slides, dont `slide_problematiques` réécrite en trois temps (repérer, chiffrer,
 prioriser) ; La démarche réduite à la trajectoire et aux deux fils ; nouveau
 chapitre « L'expertise agentic d'OCTO » après elle — `slide_intro_agentic`,
 activités outillées (+ workflows par étape), agents candidats,
@@ -786,7 +786,7 @@ def slide_executive_summary(prs):
     headline_h = 0.62
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, headline_h, [
         ("Transformer l'infrastructure en plateforme opérée comme un produit, ET traiter "
-         "structurellement le gaspillage qui l'en empêche — le deck suit le fil : pourquoi, "
+         "structurellement la problématique qui l'en empêche — le deck suit le fil : pourquoi, "
          "nos convictions, l'offre, comment, et comment démarrer.",
          dict(size=D.TYPE["small"], color=NAVY, italic=True, line_spacing=1.3)),
     ])
@@ -805,12 +805,12 @@ def slide_executive_summary(prs):
          "Trois déclencheurs, un terrain pas comme un autre, ce que coûte le statu quo, "
          "des douleurs mesurables et nommées.",
          "Contexte · Ce que ça coûte"),
-        ("CONVICTIONS", ENCRE, "Partir des utilisateurs, traiter le gaspillage d'abord.",
+        ("CONVICTIONS", ENCRE, "Partir des utilisateurs, traiter la problématique d'abord.",
          "Sept convictions et une conviction agentic sur ce qui fait réussir — et un "
          "exemple avant/après de ce qu'elle change.",
          "Nos convictions"),
         ("OFFRE", NAVY, "Traiter l'infra comme un produit, sans prérequis d'IA.",
-         "La thèse, le gaspillage traité à deux — repéré, priorisé, tenu dans la durée — "
+         "La thèse, la problématique traitée à deux — repéré, priorisé, tenu dans la durée — "
          "et la cible Platform Team.",
          "L'offre"),
         ("COMMENT", ENCRE, "Trois temps et une boucle, personnes comprises.",
@@ -890,7 +890,7 @@ def slide_offre_iap(prs):
     mission, redessiné EN NATIF (pas une insertion de l'image source) sur ses 3
     registres : mouvements du socle (toujours présents, bleu-gris), variantes
     conditionnées au contexte (sable/or), mécanismes additifs (encadrés pointillés
-    pâles). Nœud Discovery gaspillages renommé « 8 familles » (2026-09-18, cf.
+    pâles). Nœud Discovery problématiques renommé « 8 familles » (2026-09-18, cf.
     docstring de module) — seul écart volontaire à la fidélité verbatim du
     schéma, pour ne plus afficher deux chiffres différents de la même notion
     dans le même deck."""
@@ -969,7 +969,7 @@ def slide_offre_iap(prs):
         ("Premier contact", None, True),
         ("Cadrage", "note de cadrage", False),
         ("Diagnostic", "base factuelle partagée", False),
-        ("Discovery gaspillages", "8 familles", False),
+        ("Discovery problématiques", "8 familles", False),
         ("Segmentation / Product Discovery", None, False),
     ]
     for i, (titre, sous, oval) in enumerate(socle_row1):
@@ -979,7 +979,7 @@ def slide_offre_iap(prs):
             _fleche_h(s, x + w, row1_top, GAP, row_h)
     row1_bottom = row1_top + row_h
 
-    # --- + Contradictions structurelles (si contexte politique), sous Discovery gaspillages ---
+    # --- + Contradictions structurelles (si contexte politique), sous Discovery problématiques ---
     h_cs = _pilule_variante(s, x3, row1_bottom + 0.05, w3, None,
                              "+ Contradictions structurelles (si contexte politique)", size=8)
     cs_bottom = row1_bottom + 0.05 + h_cs
@@ -1463,7 +1463,7 @@ def slide_infra_as_product_exemple(prs):
 # sujet, l'exec summary les portait faute de chapitre d'accueil. Les deux
 # suivantes sont NEUVES et couvrent ce que la demande nommait explicitement et
 # que le deck ne disait nulle part : ce qui rend le RUN structurellement à part,
-# et ce que la transversalité fait au gaspillage.
+# et ce que la transversalité fait à la problématique.
 def slide_infra_run(prs):
     """Ce qui rend le RUN d'infra structurellement différent d'un projet.
 
@@ -1558,13 +1558,13 @@ def slide_infra_transverse(prs):
 
     Composition « sandwich » (deck-design-library #5) : les équipes servies en
     haut, la plateforme qui les porte en bandeau plein, et dessous la
-    conséquence qui n'est jamais dite — un gaspillage que personne ne porte en
+    conséquence qui n'est jamais dite — une problématique que personne ne porte en
     propre n'est réduit par personne. C'est la charnière vers le chapitre
     Besoins & douleurs, et le fondement de la démarche partagée.
     """
     s = content_slide(prs, None,
                       "L'infra sert toutes les équipes et n'appartient à aucune — "
-                      "c'est ce qui rend son gaspillage orphelin",
+                      "c'est ce qui rend sa problématique orpheline",
                       color=ENCRE)
 
     servies = [
@@ -1613,7 +1613,7 @@ def slide_infra_transverse(prs):
 
     consequences = [
         ("PERSONNE NE PORTE LE COÛT",
-         "Le gaspillage d'infra est mutualisé : il ne pèse sur le budget d'aucune équipe "
+         "La problématique d'infra est mutualisée : il ne pèse sur le budget d'aucune équipe "
          "en particulier, donc aucune n'a de raison propre de le réduire."),
         ("PERSONNE N'ARBITRE SEUL",
          "Décommissionner, standardiser ou fermer un service touche tous les consommateurs "
@@ -1639,7 +1639,7 @@ def slide_infra_transverse(prs):
             (corps, dict(size=corps_size, color=NAVY, line_spacing=1.25)),
         ])
 
-    _bandeau_cloture(s, "Un gaspillage que personne ne porte, personne ne le réduit.",
+    _bandeau_cloture(s, "Une problématique que personne ne porte, personne ne la réduit.",
                      cons_top + cons_h + 0.14, "slide_infra_transverse")
     return s
 
@@ -1703,7 +1703,7 @@ def slide_qui_achete(prs):
     bandeaux = [
         (TRACK, MUTED, NAVY, "CE QUE LES QUATRE ALTERNATIVES N'ONT PAS",
          "« Infrastructure as a Product » existe ailleurs (Thoughtworks, Itential) ; nous "
-         "gardons l'étiquette. Le différenciateur : produit + gaspillage + doctrine IA."),
+         "gardons l'étiquette. Le différenciateur : produit + problématique + doctrine IA."),
         (TRACK, MUTED, NAVY, "LA RÉPONSE AU « JE NE VEUX QUE LA BAISSE DE COÛTS »",
          "Un Assessment flash d'entrée, puis la trajectoire — jamais l'assainissement seul. "
          "Sous pression IA : un cas d'usage public, « tout de suite, sous gate »."),
@@ -1721,7 +1721,7 @@ def slide_qui_achete(prs):
          "Le coût du statu quo monte",
          "C'est lui que l'Assessment flash chiffre (déclencheur ①)."),
         ("FinOps outillé seul",
-         "Mesure le gaspillage : marché mature, gaspillage cloud estimé à 29 % (Flexera).",
+         "Mesure la problématique : marché mature, coût cloud estimé à 29 % (Flexera).",
          "Ni cible produit, ni réallocation",
          "IAP se place en aval : le chiffre devient une capacité produit gouvernée, pas "
          "seulement une économie."),
@@ -1825,8 +1825,8 @@ def slide_gate_ia(prs):
 # slide_why_iap : refondue en v2.43, nouvelle définition avant build().
 
 # ---------------------------------------------------------------- Besoins & douleurs
-# Nouveau (restructuration 2026-07-22) : la grille des 8 familles de gaspillage,
-# jusqu'ici empaquetée dans slide_gaspillages avec la chaîne de traitement et le
+# Nouveau (restructuration 2026-07-22) : la grille des 8 familles de douleur,
+# jusqu'ici empaquetée dans slide_problematiques avec la chaîne de traitement et le
 # score, est isolée ici — elle appartient au chapitre « Besoins & douleurs » (le
 # langage commun qui rend une douleur nommable, donc détectable et traitable),
 # tandis que la MÉTHODE de traitement (chaîne + score) reste au chapitre
@@ -1834,7 +1834,7 @@ def slide_gate_ia(prs):
 # les 8 familles se distinguent par leur libellé, pas par 8 teintes sans clé.
 # Passe de design 2026-07-23 — règle « un sur N en accent » (principes
 # transversaux + pattern 3 du catalogue deck-design-library) : la famille IA,
-# seule famille que cette méthode NOMME comme gaspillage (cas gadget,
+# seule famille que cette méthode NOMME comme problématique (cas gadget,
 # automatisation sans garde-fous — la doctrine du deck), reçoit un fill navy
 # plein ; les 7 autres restent des cartes blanches identiques.
 # slide_familles : refondue en v2.42, nouvelle définition avant build().
@@ -1853,28 +1853,28 @@ def slide_gate_ia(prs):
 # décalée d'un demi-slot, et « un sur N en accent » — seule l'étape 6 (Prioriser)
 # est remplie en couleur pleine, car c'est elle qui produit le score détaillé
 # dans le panneau navy juste en dessous.
-def slide_gaspillages(prs):
+def slide_problematiques(prs):
     """v2.41 (retour utilisateur : « à revoir, je ne la comprends pas ») — la
     chaîne de 10 étapes en quinconce et la jauge de score cèdent la place à
     TROIS temps lisibles, une phrase chacun, le score réduit à une ligne.
     Pattern : restitution n°10 (fiches-étapes à chip chevauchant), en 3."""
     s = content_slide(prs, None,
-                       "Du gaspillage au backlog priorisé, en trois temps",
+                       "De la problématique au backlog priorisé, en trois temps",
                        color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.30, [
-        ("Chaque famille de gaspillage (chapitre Ce que ça coûte) suit le même chemin — "
+        ("Chaque famille de problématique (chapitre Ce que ça coûte) suit le même chemin — "
          "jamais un tri à l'intuition.",
          dict(size=D.TYPE["small"], color=NAVY, italic=True)),
     ])
     temps = [
-        ("Repérer", "le gaspillage",
+        ("Repérer", "la problématique",
          "On le détecte et on le qualifie à partir des douleurs mesurées et des données "
          "du client, famille par famille."),
         ("Chiffrer", "ce qu'il coûte",
          "On le quantifie et on remonte à sa cause racine, preuves à l'appui — une "
          "économie démontrée, pas supposée."),
         ("Prioriser", "dans un backlog",
-         "Chaque gaspillage reçoit un score et prend sa place dans un backlog priorisé, "
+         "Chaque problématique reçoit un score et prend sa place dans un backlog priorisé, "
          "que l'on expérimente puis industrialise."),
     ]
     n = len(temps)
@@ -1921,20 +1921,20 @@ def slide_gaspillages(prs):
 
 
 # v2.33 (2026-09-10, demande utilisateur) : « une démarche plus centrée sur
-# comment traiter le gaspillage comme partagé ». Arbitrage : les DEUX lectures
+# comment traiter la problématique comme partagée ». Arbitrage : les DEUX lectures
 # à la fois — mutualisé entre équipes (chapitre 03 · Spécificités de l'infra :
-# « un gaspillage que personne ne porte, personne ne le réduit ») ET co-traité
+# « une problématique que personne ne porte, personne ne la réduit ») ET co-traitée
 # avec le client, pas rendu comme un verdict de consultant.
 #
-# Cette slide ne remplace pas `slide_gaspillages` : elle la RETOURNE. La chaîne
+# Cette slide ne remplace pas `slide_problematiques` : elle la RETOURNE. La chaîne
 # des 10 étapes et le score y étaient présentés côté cabinet, de bout en bout —
 # ce qui décrit exactement le contraire de ce que la demande vise. On reprend la
 # même chaîne, regroupée en trois moments, et on dit qui fait quoi. La colonne
 # qui compte est la troisième de chaque bloc : ce qui se tranche À DEUX, seul
-# endroit où un gaspillage mutualisé acquiert un porteur.
-def slide_gaspillage_partage(prs):
+# endroit où une problématique mutualisée acquiert un porteur.
+def slide_problematique_partagee(prs):
     s = content_slide(prs, None,
-                      "Un gaspillage partagé se traite à deux — sinon il retourne à personne",
+                      "Une problématique partagée se traite à deux — sinon elle retourne à personne",
                       color=ENCRE)
 
     # Chapô DIMENSIONNÉ par son texte : posé à une distance fixe, sa 2e ligne
@@ -1947,7 +1947,7 @@ def slide_gaspillage_partage(prs):
     # rogner les marges — règle du catalogue de design.
     # v2.40 : une seule ligne — à deux, elle touchait encore les pilules.
     chapo = ("Cette chaîne se joue AVEC le client : sans décision partagée, le "
-             "gaspillage reste sans porteur.")
+             "problématique reste sans porteur.")
     chapo_size = D.TYPE["small"]
     chapo_h = _lignes(chapo, CONTENT_W, chapo_size) * (chapo_size * 1.25 / 72.0) + 0.04
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, chapo_h, [
@@ -1960,7 +1960,7 @@ def slide_gaspillage_partage(prs):
          "vraiment, au-delà de ce qui se mesure facilement.",
          "Apporte la grille des 8 familles et la méthode de quantification, sans "
          "présumer du résultat.",
-         "Le périmètre mesuré, et ce qu'on accepte d'appeler gaspillage."),
+         "Le périmètre mesuré, et ce qu'on accepte d'appeler problématique."),
         ("Décider ensemble", "Cause racine → Prioriser",
          "Arbitre entre ses équipes ce qu'aucune ne peut trancher seule : fermer un "
          "service, standardiser, décommissionner.",
@@ -2039,9 +2039,9 @@ def slide_gaspillage_partage(prs):
 
     _bandeau_cloture(
         s,
-        ("Ce qui change depuis le chapitre Ce que ça coûte : le gaspillage "
+        ("Ce qui change depuis le chapitre Ce que ça coûte : la problématique "
          "cesse d'être orphelin — il a un porteur nommé et un objectif partagé."),
-        carte_top + carte_h + 0.12, "slide_gaspillage_partage")
+        carte_top + carte_h + 0.12, "slide_problematique_partagee")
     return s
 
 
@@ -2049,7 +2049,7 @@ def slide_gaspillage_partage(prs):
 # Nouveau (restructuration 2026-07-22) : va PLUS LOIN que slide_personas (qui porte
 # un irritant + une attente d'une ligne par persona). Ici chaque douleur est
 # approfondie, dotée d'un signal/mesure qui la rend objectivable, et rattachée à
-# une ou plusieurs familles de gaspillage — le pont direct vers slide_familles.
+# une ou plusieurs familles de douleur — le pont direct vers slide_familles.
 # La distinction par couleur d'accent persona d'origine (Infra/Utilisateur/
 # Management/Sponsor en teintes propres) a été retirée à la bascule de charte
 # du 2026-09-10 (couleur non porteuse de sens). Accent "un sur N" reposé le
@@ -2061,7 +2061,7 @@ def slide_douleurs(prs):
                        "Les douleurs des clients infra : mesurables, pas des plaintes",
                        color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.4, [
-        ("Chaque douleur appartient à un persona et se range dans une famille de gaspillage "
+        ("Chaque douleur appartient à un persona et se range dans une famille de douleur "
          "— c'est ce qui la rend traitable plutôt que subie.",
          dict(size=8, color=MUTED, italic=True, line_spacing=1.2)),
     ])
@@ -2159,7 +2159,7 @@ def slide_douleurs(prs):
         D.add_rect(s, MARGIN, note_top, CONTENT_W, note_h, fill=TRACK, rounded=True, radius=0.14)
         D.add_rect(s, MARGIN, note_top, 0.07, note_h, fill=ENCRE, rounded=True, radius=0.5)
         D.add_text(s, MARGIN + 0.26, note_top, CONTENT_W - 0.5, note_h, [
-            ("Ces 4 douleurs se rangent en 8 familles de gaspillage, le langage commun qui les rend traitables.",
+            ("Ces 4 douleurs se rangent en 8 familles de douleur, le langage commun qui les rend traitables.",
              dict(size=9, bold=True, color=ENCRE, line_spacing=1.15)),
         ], anchor=MSO_ANCHOR.MIDDLE)
     return s
@@ -2204,10 +2204,10 @@ def slide_schema_fonctionnement(prs):
           "Import outils : ServiceNow/Jira/CMDB si accès"]),
         ("DIAGNOSTIC", ENCRE,
          ["Synthèse par thème puis synthèse globale",
-          "Registre de gaspillage (tags CONFIRMÉ/DÉDUIT/INCERTAIN)"]),
+          "Registre de problématiques (tags CONFIRMÉ/DÉDUIT/INCERTAIN)"]),
         ("CONCEPTION", ENCRE,
          ["Définition produit (+ cible MVP)",
-          "Operating model + traitement du gaspillage (décisions actées)"]),
+          "Operating model + traitement des problématiques (décisions actées)"]),
         ("RESTITUTION", ENCRE,
          ["Deck exécutif : axes valeur/complexité",
           "+ radar de maturité"]),
@@ -2544,9 +2544,9 @@ def slide_activites_humaines(prs):
         ([("Intake : ", dict(size=8, bold=True, color=NAVY)),
           ("qualification du contexte · ", dict(size=8, color=NAVY)),
           ("Diagnostic : ", dict(size=8, bold=True, color=NAVY)),
-          ("diagnostic systémique, découverte du gaspillage · ", dict(size=8, color=NAVY)),
+          ("diagnostic systémique, découverte de la problématique · ", dict(size=8, color=NAVY)),
           ("Conception : ", dict(size=8, bold=True, color=NAVY)),
-          ("traitement du gaspillage, définition produit, modèle opératoire, opportunités "
+          ("traitement de la problématique, définition produit, modèle opératoire, opportunités "
            "agentic · ", dict(size=8, color=NAVY)),
           ("Adoption & restitution : ", dict(size=8, bold=True, color=NAVY)),
           ("plan d'adoption, playbook de scénario, restitution exécutive.",
@@ -2627,7 +2627,7 @@ def slide_vision(prs):
          "de la piloter.",
          "Ni utilisateurs identifiés, ni feuille de route, ni levier d'adoption."),
         ("CE QUE ÇA COÛTE", ENCRE,
-         "La capacité disponible part en gaspillage.",
+         "La capacité disponible alimente la problématique.",
          "RUN subi (l'exploitation quotidienne), ressources orphelines, seniors "
          "sur du répétitif — et le réflexe « plus d'outils » ou « mettons de "
          "l'IA » aggrave le mal."),
@@ -2736,7 +2736,7 @@ def slide_export_markdown(prs):
 
     cards = [
         ("DOCUMENTATION-FIRST", ENCRE,
-         "Agentic Readiness [0]-[1], données D3-D4 sans LLM local, ou score de gaspillage faible.",
+         "Agentic Readiness [0]-[1], données D3-D4 sans LLM local, ou score de problématique faible.",
          "Runbook du processus", "plan d'adoption"),
         ("AGENTIC-IMPLEMENTATION", ENCRE,
          "Agentic Readiness [2]-[3], données D0-D2 (ou D3-D4 avec LLM local), score positif.",
@@ -2766,7 +2766,7 @@ def slide_export_markdown(prs):
     signals = [
         ("PILIER AGENTIC READINESS", "[0-1] → documentation · [2-3] → agentic"),
         ("DONNÉES (GATE IA)", "D3-D4 sans LLM local → doc · D0-D2 → agentic"),
-        ("SCORE DE GASPILLAGE", "faible/négatif → doc · positif → agentic"),
+        ("SCORE DE PROBLÉMATIQUE", "faible/négatif → doc · positif → agentic"),
     ]
     for i, (label, mapping) in enumerate(signals):
         x, w = col_x(i, 3)
@@ -3021,7 +3021,7 @@ _AGENTS_CANDIDATS = [
      "par deux (cas nominal du cadrage)."),
     ("Agent de veille FinOps", "Financier",
      "Les ressources cloud surdimensionnées ou orphelines n'apparaissent qu'aux "
-     "audits ponctuels — le gaspillage s'accumule entre deux revues.",
+     "audits ponctuels — la problématique s'accumule entre deux revues.",
      "Scanne en continu la CMDB et la facturation, repère l'inactif et le "
      "surdimensionné, propose une liste à valider — ne décommissionne jamais seul.",
      "Coût récupéré directement mesurable — un KPI de mission déjà cadré."),
@@ -3036,12 +3036,12 @@ _AGENTS_CANDIDATS = [
 
 
 def slide_agents_candidats(prs):
-    s = content_slide(prs, None, "Trois candidats d'agent, un par famille de gaspillage",
+    s = content_slide(prs, None, "Trois candidats d'agent, un par famille de problématique",
                       color=ENCRE)
     badge_deploiement_agentic(s)
 
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W - BADGE_AGENTIC_W - 0.2, 0.34, [
-        ("Le gaspillage d'abord, l'IA ensuite : chaque candidat répond à une famille "
+        ("La problématique d'abord, l'IA ensuite : chaque candidat répond à une famille "
          "déjà cadrée au chapitre Ce que ça coûte — aucun n'est inventé pour l'occasion.",
          dict(size=9, color=MUTED, italic=True, line_spacing=1.2)),
     ])
@@ -3074,7 +3074,7 @@ def slide_agents_candidats(prs):
         icon.text_frame.paragraphs[0].text = ""
         D.add_text(s, x + icon_d + 0.12, top - 0.02, col_w - icon_d - 0.12, icon_d + 0.04, [
             (nom, dict(size=10, bold=True, color=NAVY, line_spacing=1.05)),
-            ("Gaspillage " + famille, dict(size=8, color=MUTED, italic=True, space_before=1)),
+            ("Problématique " + famille, dict(size=8, color=MUTED, italic=True, space_before=1)),
         ], anchor=MSO_ANCHOR.MIDDLE)
 
         # Ce qui sépare les 3 candidats est la POSITION et le filet, jamais une
@@ -3341,13 +3341,13 @@ def slide_architecture_agents(prs):
         ]),
         ("DIAGNOSTIC", ENCRE, [
             ("Diagnostic systémique", "Structure, flux, RUN, posture management"),
-            ("Découverte du gaspillage", "Preuves, causes racines, options de traitement"),
+            ("Découverte de la problématique", "Preuves, causes racines, options de traitement"),
         ]),
         ("CONCEPTION", ENCRE, [
-            ("Traitement du gaspillage", "Backlog priorisé et scoré des gaspillages"),
+            ("Traitement de la problématique", "Backlog priorisé et scoré des problématiques"),
             ("Définition produit", "Personas, capacités, valeur, roadmap"),
             ("Modèle opératoire", "Rôles, gouvernance, financement (décisions actées)"),
-            ("Opportunités agentic", "Le gaspillage d'abord, l'IA ensuite"),
+            ("Opportunités agentic", "La problématique d'abord, l'IA ensuite"),
         ]),
         ("ADOPTION & RESTITUTION", ENCRE, [
             ("Plan d'adoption", "Onboarding, documentation, communautés"),
@@ -3560,14 +3560,14 @@ def slide_opportunites(prs):
          dict(size=D.TYPE["small"], color=NAVY, italic=True, line_spacing=1.25)),
     ])
     leviers = [
-        ("Une méthode déjà scorée", "8 familles de gaspillage nommées et priorisables "
+        ("Une méthode déjà scorée", "8 familles de problématique nommées et priorisables "
          "(impact × faisabilité − prudence IA) : la priorisation n'est plus à inventer."),
         ("Un régime RUN devenu traitable", "Le RUN comme régime permanent, une fois nommé, "
          "ouvre la voie à une infra as a product plutôt qu'à un guichet subi."),
         ("Une IA sous gate, jamais la réponse d'abord", "Le gate confidentialité "
          "des données et le principe « process explicite avant l'agent » "
          "sécurisent l'usage — l'IA amplifie une réponse déjà là, elle ne la remplace pas."),
-        ("Une organisation cible déjà pensée", "Team topologies et partage gaspillage "
+        ("Une organisation cible déjà pensée", "Team topologies et partage problématique "
          "mutualisé/tranché-à-deux donnent un porteur à ce qui, aujourd'hui, n'en a pas."),
     ]
     n = len(leviers)
@@ -3728,7 +3728,7 @@ def slide_next_steps(prs):
          dict(size=8, bold=True, color=MUTED)),
     ])
     indicateurs = [
-        ("Gaspillage traité", "capacité RUN récupérée"),
+        ("Problématique traitée", "capacité RUN récupérée"),
         ("Adoption produit", "usage du self-service"),
         ("Fiabilité & SLA", "MTTR, respect des engagements"),
         ("Maturité", "delta par pilier, T0 → réévaluation"),
@@ -3763,7 +3763,7 @@ _CONVICTIONS_1 = [
      ["Significatifs au regard de ce que la transformation doit résoudre.",
       "Ni trop complexes, pour réussir et apprendre ; ni trop simples, pour créer du "
       "mouvement et faire émerger des promoteurs."]),
-    ("Traiter le gaspillage avant de construire, et prioriser sur des critères partagés.",
+    ("Traiter la problématique avant de construire, et prioriser sur des critères partagés.",
      ["Nommer, scorer, prioriser (valeur, coût, complexité) libère la capacité que le RUN "
       "confisque aujourd'hui.",
       "Des décisions ritualisées, reliées au budget."]),
@@ -4097,7 +4097,7 @@ def slide_cout_si_rien_ne_change(prs):
           "Sa charge vient de l'extérieur — incidents, demandes, obsolescences.",
           "Sa dette ne se voit pas le jour où on la crée : elle se paie plus tard."]),
         ("L'INFRA TRANSVERSE", "Elle sert toutes les équipes et n'appartient à aucune",
-         ["Son gaspillage est mutualisé : il ne pèse sur le budget d'aucune équipe.",
+         ["Sa problématique est mutualisée : elle ne pèse sur le budget d'aucune équipe.",
           "Personne ne porte le coût, donc personne n'a de raison de le réduire.",
           "Personne n'arbitre seul : fermer un service touche tout le monde."]),
         ("LA DSI", "Elle pilote à vue, et sa promesse reste déclarative",
@@ -4157,9 +4157,9 @@ def slide_familles(prs):
     """v2.42 (retour utilisateur : « revoir la forme et le design ») — la grille
     2×4 de cartes quasi vides devient une liste à badge numéroté + pilule de
     définition (formation-po n°20), sur deux colonnes. Reprend en clôture la
-    charnière de l'ex-slide Opportunités : nommé, le gaspillage est traitable."""
+    charnière de l'ex-slide Opportunités : nommée, la douleur est traitable."""
     s = content_slide(prs, None,
-                       "Les 8 familles de gaspillage — le langage commun qui rend les douleurs traitables",
+                       "Les 8 familles de douleur — le langage commun qui rend les douleurs traitables",
                        color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.30, [
         ("Nommer la famille, c'est déjà pouvoir la détecter, la chiffrer et la prioriser.",
@@ -4191,18 +4191,18 @@ def slide_familles(prs):
         ], anchor=MSO_ANCHOR.MIDDLE)
     bas = top0 + 4 * row_h + 3 * row_gap
     _bandeau_cloture(
-        s, "Nommé, un gaspillage devient traitable : la méthode existe déjà — détaillée au "
+        s, "Nommée, une douleur devient traitable : la méthode existe déjà — détaillée au "
            "chapitre L'offre.", bas + 0.14, "slide_familles", size=11)
     return s
 
 
 def slide_offre_mecanique(prs):
-    """v2.42 : fusion de slide_gaspillages (trois temps) et
-    slide_gaspillage_partage (le « à deux ») — chaque temps porte ce que fait le
+    """v2.42 : fusion de slide_problematiques (trois temps) et
+    slide_problematique_partagee (le « à deux ») — chaque temps porte ce que fait le
     client, ce que fait OCTO et ce qui se tranche ensemble. Pattern :
     restitution n°10 (fiches-étapes à chip chevauchant) + n°13 (rubriques)."""
     s = content_slide(prs, None,
-                       "Repérer, prioriser, tenir : le gaspillage se traite à deux, sinon il retourne à personne",
+                       "Repérer, prioriser, tenir : la problématique se traite à deux, sinon elle retourne à personne",
                        color=ENCRE)
     D.add_text(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.28, [
         ("Même chemin pour chaque famille, avec le client — score = (impact × faisabilité) "
@@ -4210,11 +4210,11 @@ def slide_offre_mecanique(prs):
          dict(size=9, color=NAVY, italic=True)),
     ])
     temps = [
-        ("Repérer", "et chiffrer", "On détecte chaque gaspillage et on le quantifie, preuves à l'appui.",
+        ("Repérer", "et chiffrer", "On détecte chaque problématique et on la quantifie, preuves à l'appui.",
          "Ouvre ses données — CMDB, facturation, tickets — et nomme ce qui le gêne vraiment.",
          "Apporte la grille des 8 familles et la méthode de quantification.",
-         "Le périmètre mesuré, et ce qu'on accepte d'appeler gaspillage."),
-        ("Prioriser", "dans un backlog", "Chaque gaspillage reçoit un score et prend sa place dans le backlog.",
+         "Le périmètre mesuré, et ce qu'on accepte d'appeler problématique."),
+        ("Prioriser", "dans un backlog", "Chaque problématique reçoit un score et prend sa place dans le backlog.",
          "Arbitre ce qu'aucune équipe ne tranche seule : fermer, standardiser, décommissionner.",
          "Instruit les causes racines et propose le score — une proposition, jamais un verdict.",
          "Le backlog priorisé et, pour chaque ligne, le porteur nommé."),
@@ -4473,7 +4473,7 @@ def slide_specificites_infra(prs):
         ("Sortir de la sursollicitation et du guichet",
          "Des équipiers qui font trop de choses, engorgés — décommissionnement jamais fait, "
          "trop de RUN au quotidien.",
-         "Assainir et travailler le gaspillage"),
+         "Assainir et travailler la problématique"),
         ("Mieux servir les utilisateurs",
          "Passer d'un guichet de demandes à une approche as a service.",
          "Une infra recentrée sur ses utilisateurs"),
@@ -4521,7 +4521,7 @@ def slide_mission(prs):
     D.add_rect(s, MARGIN, CONTENT_TOP, CONTENT_W, 0.52, fill=TRACK, rounded=True, radius=0.12)
     D.add_text(s, MARGIN + 0.25, CONTENT_TOP, CONTENT_W - 0.5, 0.52, [
         ("Deux piliers ni séquentiels ni optionnels : une cible produit sans traitement du "
-         "gaspillage manque de capacité pour s'y déployer ; l'inverse reste une réduction de "
+         "problématique manque de capacité pour s'y déployer ; l'inverse reste une réduction de "
          "coûts sans vision.", dict(size=9.5, italic=True, color=NAVY, line_spacing=1.2)),
     ], anchor=MSO_ANCHOR.MIDDLE)
     piliers = [
@@ -4530,7 +4530,7 @@ def slide_mission(prs):
          "de qualité, gouvernance lisible.",
          "La vision à moyen terme — ce que le sponsor achète."),
         ("ASSAINIR",
-         "Traitement mesurable des gaspillages : flux, RUN, humain, financier, cognitif, "
+         "Traitement mesurable des problématiques : flux, RUN, humain, financier, cognitif, "
          "décisionnel, environnemental, IA.",
          "La capacité récupérée finance la trajectoire produit — hypothèse à prouver, qui "
          "suppose une réallocation budgétaire côté client."),
@@ -4578,7 +4578,7 @@ def slide_pourquoi_contexte(prs):
     ])
     triggers = [
         ("L'infra subie n'est plus tenable",
-         "RUN subi, experts seniors drainés sur du répétitif, gaspillage cloud non maîtrisé, "
+         "RUN subi, experts seniors drainés sur du répétitif, problématique cloud non maîtrisée, "
          "plateforme contournée : le coût du statu quo ne cesse de monter."),
         ("Le modèle produit/plateforme est prouvé",
          "Devenu un standard — mais Gartner : 80 % de grandes organisations avec platform team "
@@ -4615,7 +4615,7 @@ def slide_pourquoi_contexte(prs):
          dict(size=8, bold=True, color=MUTED))])
     y += 0.28
     paires = [("Subir le RUN", "TRANSFORMER", "cible produit/plateforme"),
-              ("Le gaspillage", "ASSAINIR", "capacité récupérée à réinvestir — sous réserve "
+              ("La douleur", "ASSAINIR", "capacité récupérée à réinvestir — sous réserve "
                "d'une réallocation côté client")]
     ph = 0.66   # dimensionné au texte, jamais étiré jusqu'au bas de slide
     for i, (dl, mi, det) in enumerate(paires):
@@ -4760,7 +4760,7 @@ def build():
     slide_infra_as_product_exemple(prs)
 
     slide_chapitre(prs, "04", "L'offre",
-                   "La thèse, le gaspillage traité à deux, et la cible Platform Team.",
+                   "La thèse, la problématique traitée à deux, et la cible Platform Team.",
                    ENCRE, "forest", seed=0)
     # v2.42 : 3 slides (retour utilisateur) — les trois temps et le « à deux »
     # fusionnés dans slide_offre_mecanique.

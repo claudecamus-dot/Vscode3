@@ -167,7 +167,7 @@ def main():
     # ajoutee ou perdue sans intention. Il se met a jour quand on change le
     # deck exprès. Le 2026-09-10 : 49 -> 52 (chapitre « Specificites de
     # l'infra » : intercalaire + 2 slides neuves), puis 52 -> 53 (le
-    # traitement partage du gaspillage, au chapitre Proposition). Le
+    # traitement partage de la problématique, au chapitre Proposition). Le
     # 2026-09-11 : 53 -> 54 (slide_fil_technique, chapitre Démarche — comble
     # un manque relevé en revue face à une demande client réelle : CI/CD et
     # plateformes standard n'existaient qu'en notes "TECH :" éparpillées),

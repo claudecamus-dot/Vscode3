@@ -236,7 +236,7 @@ def slide_specificites_infra(prs):
     dw = pill_w - 2 * pill_pad
     titre_h1 = _lignes(douleur_titre, dw, 11) * (11 * 1.2 / 72.0) + 0.03
     sub_h1 = _lignes(douleur_sub_plain, dw, 9) * (9 * 1.25 / 72.0) + 0.03
-    h1 = max(2 * pill_pad + titre_h1 + 0.06 + sub_h1, _pill_h("Assainir et travailler le gaspillage"))
+    h1 = max(2 * pill_pad + titre_h1 + 0.06 + sub_h1, _pill_h("Assainir et travailler la problématique"))
 
     y = CONTENT_TOP + 0.05
     row_gap = 0.13
@@ -253,7 +253,7 @@ def slide_specificites_infra(prs):
          dict(align=PP_ALIGN.CENTER, line_spacing=1.25)),
     ])
     _chevron_arrow(s, MARGIN + pill_w, y, arrow_w, h1, color=MUTED)
-    _pill(MARGIN + pill_w + arrow_w, y, pill_w, h1, "Assainir et travailler le gaspillage",
+    _pill(MARGIN + pill_w + arrow_w, y, pill_w, h1, "Assainir et travailler la problématique",
           COUL_REPONSE, radius=0.13)
     y += h1 + row_gap
 
