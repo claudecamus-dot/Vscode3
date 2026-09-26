@@ -3,12 +3,15 @@
 Constat du 2026-09-24 : le commit de design 6408bc5 a supprime
 docs/cadrage-ppt/bmad-iap-cadrage-synthese.pptx (4 482 428 -> 0 octet), retabli seulement
 par b28baea. Un deck vide ou absent fait desormais passer la suite au rouge.
+
+Depuis le 2026-09-26 le livrable est le deck « Offre Infra as a Product »
+(generate_offre.py) ; l'ancien bmad-iap-cadrage-synthese.pptx est archive.
 """
 import os
 import zipfile
 
 RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LIVRABLE = os.path.join(RACINE, "docs", "cadrage-ppt", "bmad-iap-cadrage-synthese.pptx")
+LIVRABLE = os.path.join(RACINE, "docs", "cadrage-ppt", "offre-infra-as-a-product-V1.pptx")
 
 
 def test_livrable_present_et_lisible():

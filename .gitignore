@@ -50,7 +50,7 @@ docs/cadrage-ppt/archives/
 # disent explicitement : le deck livre, et le gabarit OCTO sans lequel
 # generate_deck.py refuse de demarrer (_exiger_template).
 docs/cadrage-ppt/*.pptx
-!docs/cadrage-ppt/bmad-iap-cadrage-synthese.pptx
+!docs/cadrage-ppt/offre-infra-as-a-product-V1.pptx
 !docs/cadrage-ppt/template-octo.pptx
 
 # Fichier verrou PowerPoint (cree quand le .pptx est ouvert via COM, ex. le
