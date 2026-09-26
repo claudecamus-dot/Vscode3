@@ -40,3 +40,8 @@ agents: [onboarder]
   — `CONFIRMÉ` · onboarder · 2026-07-07 · `.claude/hooks/guard_destructive_git.py:139-141`
 - Tags de confiance `CONFIRMÉ` / `DÉDUIT` / `INCERTAIN` systématiques sur toute assertion de cadrage, avec agent · date · source — convention empruntée au projet frère VSCode2 (OpenHub) et reprise telle quelle dans ce wiki d'onboarding
   — `CONFIRMÉ` · onboarder · 2026-07-07 · `docs/bmad-iap-cadrage.md` §Agents BMAD
+
+## Taille des changements
+
+- **Un commit = un sujet.** Au-delà de **400 lignes changées**, ou dès qu'un changement mêle plusieurs sujets non liés, le découper avant revue.
+  — `CONFIRMÉ` · adoption veille · 2026-09-26 · [Google eng-practices, *Small CLs*](https://google.github.io/eng-practices/review/developer/small-cls.html)
