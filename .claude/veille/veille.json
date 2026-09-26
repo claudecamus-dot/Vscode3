@@ -3,9 +3,9 @@
     "source": "hub de supervision VScode5, .claude/veille/veille.json",
     "projection": "entrees dont projets_concernes nomme VSCode3",
     "ne_pas_editer": "Fichier GENERE, en lecture seule : une correction faite ici sera ecrasee a la prochaine propagation. La veille s'ecrit AU HUB, ou elle est lue (section 3 du wiki) et arbitree. Une veille lancee depuis ce depot doit y etre remontee.",
-    "date": "2026-09-24"
+    "date": "2026-09-26"
   },
-  "derniere_veille": "2026-09-23T12:00:00",
+  "derniere_veille": "2026-09-26T09:14:19+02:00",
   "entrees": [
     {
       "titre": "microsoft/hve-core — skill PowerPoint python-pptx pilotée par YAML",
@@ -219,6 +219,76 @@
       "pertinence": "A2 - rendre un gate humain BLOQUANT avant qu'un increment soit marque termine. La flotte n'a aujourd'hui que des hooks de RAPPEL (remind_revue_increment, warn_verif_before_commit), tous fail-open : rien n'empeche mecaniquement de conclure. Le couple Stop + code 2 est le seul mecanisme publie qui transforme le rappel en blocage, et stop_hook_active repond precisement a l'objection 'un hook bloquant fera boucler l'agent'. [adopte le 2026-09-19 : PREUVE CHERCHEE, AUCUN GATE CABLE - conformement au texte de l'entree. Hook Stop jetable ecrit HORS DU DEPOT (scratchpad) : il rend bien 2 sur le cas nominal et 0 quand stop_hook_active est vrai (la reponse publiee a l'objection de la boucle infinie). MAIS le blocage au niveau du HARNAIS n'a PAS ete observe : aucun transcript de session bloquee n'a pu etre produit depuis un sous-agent. L'entree RESTE donc classee 'annonce' au referentiel, et settings.json n'a pas ete touche. La distinction rappel (fail-open, sortie 0) / gate (sortie 2) est inscrite au referentiel en oo.]",
       "regle_proposee": "Distinguer au referentiel les hooks de RAPPEL (fail-open, sortie 0) des hooks de GATE (sortie 2 bloquante). Critere mesurable a froid : un projet qui pretend gater la fin d'increment doit avoir au moins un chemin de sortie 2 dans le hook concerne - grep sys.exit(2) dans .claude/hooks/*.py croise avec la declaration Stop de settings.json.",
       "action_corrective": "NE PAS cabler avant preuve : ecrire d'abord un hook Stop jetable dans le scratchpad, provoquer le blocage, LIRE le transcript, et seulement alors proposer le gate. Cout de verification : ~30 min, 0 token reseau. Tant que ce transcript n'existe pas, cette entree reste classee 'annonce'."
+    },
+    {
+      "titre": "AGENTS.md — standard ouvert Linux Foundation pour les instructions d'agents de code",
+      "url": "https://agents.md/",
+      "type": "pratique",
+      "projets_concernes": [
+        "VSCode1",
+        "VSCode2",
+        "VSCode3",
+        "VSCode4",
+        "VScode5"
+      ],
+      "pertinence": "AGENTS.md est devenu un standard ouvert (issu d'Anthropic, repris par Claude Code/Codex/Cursor/VS Code) qui documente build/test/style/commit pour tout agent, pas seulement Claude Code ; la flotte n'a que des CLAUDE.md (verifie : seul VScode6-learning-sprintIA, hors flotte supervisee, a un AGENTS.md) — aucun projet supervise n'a de fichier interoperable si un autre outil agentic est utilise dessus. [adopte le 2026-09-26 : Regle outillee : agents_md_present() dans scan_projets.py, mesure affichee non imposee (Pratiques+rules). Aucun fichier cree (action = evaluer par projet). Mesure 2026-09-26 : 1/8 (VScode6-learning-sprintIA).]",
+      "date": "2026-09-26",
+      "statut": "adopte",
+      "source_referentiel": "AGENTS.md spec (agents.md, stewarding Linux Foundation, 2025-2026)",
+      "regle_proposee": "Presence d'un AGENTS.md a la racine (a cote ou en lieu de CLAUDE.md), mesurable a froid par test d'existence de fichier dans scan_projets.py",
+      "action_corrective": "Evaluer sur chaque projet de la flotte si dupliquer CLAUDE.md en AGENTS.md (ou l'inverse, un seul fichier source) apporte une valeur reelle avant d'imposer un nouveau fichier a maintenir en parallele"
+    },
+    {
+      "titre": "Google eng-practices — CL/diff petit et focalise, revue sous 1 jour ouvre",
+      "url": "https://google.github.io/eng-practices/review/developer/small-cls.html",
+      "type": "pratique",
+      "projets_concernes": [
+        "VSCode1",
+        "VSCode2",
+        "VSCode3",
+        "VSCode4"
+      ],
+      "pertinence": "Le referentiel a un critere 'Revue de code systematique avant merge/commit' (ligne 33, marque en place) mais aucun critere sur la TAILLE des changements revus ni un delai de revue ; un unique gros commit revu par un agent releveur ne respecte pas ce que Google documente comme condition d'efficacite de la revue (CLs petites, un seul sujet, tests inclus). [adopte le 2026-09-26 : Regle outillee : commits_hors_gabarit() (git log --numstat, 20 derniers commits, >400 lignes), affichee. Mesure : 1 a 3 commits hors gabarit sur 20 dans chacun des 8 depots. Etape decoupage-atomique ajoutee au playbook evolution-flotte (seuil 400, source Google Small CLs), kit regenere. conventions.md flotte deja faits : VSCode1 b8c2d6e, VSCode2 47aaed7, VSCode3 2a31808, VSCode4 a671774.]",
+      "date": "2026-09-26",
+      "statut": "adopte",
+      "source_referentiel": "Google Engineering Practices — eng-practices, Small CLs + The CL author's guide",
+      "regle_proposee": "Nombre de fichiers/lignes modifiees par commit sur les N derniers commits, mesurable a froid par git log --stat ; signaler les commits hors-gabarit (ex. > 400 lignes changees, plusieurs sujets non lies dans le message)",
+      "action_corrective": "Ajouter au playbook evolution-flotte une etape de decoupage des changements en commits atomiques avant revue, et documenter le seuil retenu dans conventions.md de chaque projet"
+    },
+    {
+      "titre": "SSDF/OWASP — verification outillee des dependances (SBOM, pip-audit/npm audit)",
+      "url": "https://csrc.nist.gov/projects/ssdf",
+      "type": "pratique",
+      "projets_concernes": [
+        "VSCode1",
+        "VSCode2",
+        "VSCode3",
+        "VSCode4"
+      ],
+      "pertinence": "criteres-pratiques.md ligne 128 marque deja 'Dependances sans vulnerabilite connue' en \\u2b1c non outille, et la ligne 131 note 'ecarts a outiller : pip-audit/npm audit' comme intention non realisee ; grep confirme aucune trace de pip-audit/npm audit/safety dans .github/workflows ni scripts/*.py du hub -- la trouvaille ne fait que confirmer un ecart deja identifie, avec sourcage provider (SSDF/OWASP Dependency-Check) pour l'etayer. [adopte le 2026-09-26 : Regle outillee : audit_dependances_ci() (pip-audit/npm audit/safety check dans .github/workflows/*.yml) ; critere criteres-pratiques.md l.128 passe de non mesure a proxy mesure (presence, pas absence de vulnerabilite). Mesure 4/8. Flotte : VSCode1 ea5e96e et VSCode4 e0a9b4e ajoutes non bloquants, VSCode2/VSCode3 deja ; VSCode4 Pillow 12.2.0->12.3.0 564d3cf (pip-audit 13 -> 0).]",
+      "date": "2026-09-26",
+      "statut": "adopte",
+      "source_referentiel": "NIST SP 800-218 SSDF + OWASP Dependency-Check/Dependency-Track",
+      "regle_proposee": "Presence d'une etape pip-audit (Python) ou npm audit (Node) dans un workflow CI, mesurable a froid par grep sur .github/workflows/*.yml",
+      "action_corrective": "Ajouter une etape pip-audit/npm audit aux workflows CI existants (5/6 projets en ont un, ligne 30 du referentiel) ; ne pas creer de nouveau workflow, etendre l'existant"
+    },
+    {
+      "titre": "Architecture Decision Records (Nygard) — journal des choix d'architecture",
+      "url": "https://adr.github.io/",
+      "type": "pratique",
+      "projets_concernes": [
+        "VSCode1",
+        "VSCode2",
+        "VSCode3",
+        "VSCode4",
+        "VScode5"
+      ],
+      "pertinence": "criteres-pratiques.md ligne 83 marque 'Explication (docs de conception, pourquoi des choix)' en \\u2705 partiel via 'docs/reflexions ici' sur le hub uniquement ; recherche find sur la flotte ne trouve aucun dossier adr/ ou docs/decisions -- seuls des dossiers de cadrage produit (VSCode1/cadrage, VSCode3/docs/cadrage-ppt) existent, pas un historique de decisions techniques dates/reversibles au format Nygard (titre/statut/contexte/decision/consequences). [adopte le 2026-09-26 : Regle outillee : adr_presents() (docs/adr/ ou docs/decisions/, fichiers portant statut/contexte/decision/consequences), mesure affichee. Aucune action generalisee (arbitrage projet par projet). Mesure : 0/8.]",
+      "date": "2026-09-26",
+      "statut": "adopte",
+      "source_referentiel": "Michael Nygard 2011 + adr.github.io (registre communautaire de templates)",
+      "regle_proposee": "Presence d'un dossier docs/adr/ ou docs/decisions/ avec au moins un fichier au format titre+statut+contexte+decision+consequences, mesurable a froid par recherche de motifs dans les titres Markdown (meme technique que diataxis_formes())",
+      "action_corrective": "Aucune action corrective generalisee proposee : a arbitrer projet par projet selon si des decisions d'architecture non tracees ont deja cause une reprise (a verifier dans diagnostic.json avant d'imposer le format)"
     }
   ]
 }
