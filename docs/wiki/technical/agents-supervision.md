@@ -1,5 +1,5 @@
 ---
-updated: 2026-09-25
+updated: 2026-09-26
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -8,19 +8,19 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-09-25T09:48:04+02:00 · **20 sessions** (transcripts) · **79** invocations de skills · **118** lancements de sous-agents.
+Dernier scan : 2026-09-26T08:34:39+02:00 · **21 sessions** (transcripts) · **82** invocations de skills · **119** lancements de sous-agents.
 
 ## Skills — usage réel
 
 | Skill | Famille | Invocations | Première | Dernière |
 | --- | --- | --- | --- | --- |
-| `agent-orchestrator` | projet | 28 | 2026-07-21 | 2026-09-23 |
+| `agent-orchestrator` | projet | 29 | 2026-07-21 | 2026-09-25 |
 | `bmad-review` | BMAD | 11 | 2026-09-07 | 2026-09-23 |
 | `bmad-party-mode` | BMAD | 7 | 2026-09-02 | 2026-09-18 |
 | `bmad-brainstorming` | BMAD | 6 | 2026-09-11 | 2026-09-18 |
 | `bmad-advanced-elicitation` | BMAD | 5 | 2026-09-11 | 2026-09-18 |
 | `deck-design-library` | projet | 5 | 2026-09-03 | 2026-09-23 |
-| `revue-increment` | projet | 4 | 2026-07-21 | 2026-09-11 |
+| `revue-increment` | projet | 5 | 2026-07-21 | 2026-09-25 |
 | `agent-supervisor` | projet | 3 | 2026-07-21 | 2026-09-03 |
 | `bmad-code-review` | BMAD | 2 | 2026-09-10 | 2026-09-10 |
 | `deck-design-review` | projet | 2 | 2026-09-07 | 2026-09-23 |
@@ -29,13 +29,14 @@ Dernier scan : 2026-09-25T09:48:04+02:00 · **20 sessions** (transcripts) · **7
 | `bmad-agent-pm` | BMAD | 1 | 2026-07-22 | 2026-07-22 |
 | `bmad-agent-ux-designer` | BMAD | 1 | 2026-09-23 | 2026-09-23 |
 | `code-review` | (builtin/session) | 1 | 2026-09-11 | 2026-09-11 |
+| `pptx-verify` | projet | 1 | 2026-09-25 | 2026-09-25 |
 | `update-config` | (builtin/session) | 1 | 2026-09-07 | 2026-09-07 |
 
 ## Sous-agents
 
 | Sous-agent | Lancements | Premier | Dernier |
 | --- | --- | --- | --- |
-| `general-purpose` | 72 | 2026-07-21 | 2026-09-23 |
+| `general-purpose` | 73 | 2026-07-21 | 2026-09-25 |
 | `ppt-designer` | 21 | 2026-07-21 | 2026-09-23 |
 | `Explore` | 11 | 2026-07-21 | 2026-09-20 |
 | `bmad-revue` | 10 | 2026-09-07 | 2026-09-23 |
@@ -65,7 +66,7 @@ Dernier scan : 2026-09-25T09:48:04+02:00 · **20 sessions** (transcripts) · **7
 
 _Consommés en lisant/exécutant leurs `scripts/`, ou via un sous-agent qui les suit (ex. `ppt-designer`, qui n'a pas l'outil Skill) — le compteur d'invocations ne peut structurellement pas les voir. `n=0` n'y vaut donc PAS « mort » : ne pas désinstaller sur ce seul signal (constat superviseur #2)._
 
-`pdf-quality`, `pptx-deck`, `pptx-framed-image`, `pptx-verify`, `restitution-deck-design`, `roadmap-keeper`, `slide-text-polish`
+`pdf-quality`, `pptx-deck`, `pptx-framed-image`, `restitution-deck-design`, `roadmap-keeper`, `slide-text-polish`
 
 ## TODO agents (constats automatiques)
 
@@ -149,7 +150,7 @@ _7 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir 
 
 ## Seuil de qualification — la mesure
 
-Depuis le 2026-09-10 : **151** demande(s) vue(s) hors commande slash (+ 18 slash), **8** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **5 %** des demandes orchestrées.
+Depuis le 2026-09-10 : **154** demande(s) vue(s) hors commande slash (+ 19 slash), **8** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **5 %** des demandes orchestrées.
 _Ce chiffre ne dit pas ce qui AURAIT dû être orchestré : le hook compte, il ne juge pas. Il donne le dénominateur qui manquait pour arbitrer le seuil sur données plutôt que sur habitude._
 
 ---

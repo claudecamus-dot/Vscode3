@@ -541,12 +541,12 @@
     <section class="doc" id="agents-supervision">
       <p class="eyebrow">Projet</p>
       <h2>Supervision des agents — tableau de bord d'usage</h2>
-      <p class="file-meta"><span>docs/wiki/technical/agents-supervision.md</span><span>généré : 2026-09-25T09:48:04+02:00</span></p>
+      <p class="file-meta"><span>docs/wiki/technical/agents-supervision.md</span><span>généré : 2026-09-26T08:34:39+02:00</span></p>
 
       <div class="fact">
-        <p><strong>Bloc généré automatiquement</strong> à chaque session (hook SessionStart → <code>.claude/supervision/scan_transcripts.py</code>, scan incrémental des transcripts, 0 token LLM) — ne pas éditer à la main. <strong>20 sessions</strong> couvertes · <strong>79</strong> invocations de skills · <strong>118</strong> lancements de sous-agents. Diagnostic qualitatif : skill <code>agent-supervisor</code> (étage 2, section diagnostic ci-dessous).</p>
+        <p><strong>Bloc généré automatiquement</strong> à chaque session (hook SessionStart → <code>.claude/supervision/scan_transcripts.py</code>, scan incrémental des transcripts, 0 token LLM) — ne pas éditer à la main. <strong>21 sessions</strong> couvertes · <strong>82</strong> invocations de skills · <strong>119</strong> lancements de sous-agents. Diagnostic qualitatif : skill <code>agent-supervisor</code> (étage 2, section diagnostic ci-dessous).</p>
         <span class="tag tag-confirme">CONFIRMÉ</span>
-        <div class="tag-source">scan_transcripts.py · 2026-09-25 · ~/.claude/projects/&lt;slug&gt;/*.jsonl</div>
+        <div class="tag-source">scan_transcripts.py · 2026-09-26 · ~/.claude/projects/&lt;slug&gt;/*.jsonl</div>
       </div>
 
       <h3>Skills — usage réel</h3>
@@ -554,13 +554,13 @@
         <table>
           <thead><tr><th>Skill</th><th>Famille</th><th>Invocations</th><th>Première</th><th>Dernière</th></tr></thead>
           <tbody>
-            <tr><td><code>agent-orchestrator</code></td><td>projet</td><td>28</td><td>2026-07-21</td><td>2026-09-23</td></tr>
+            <tr><td><code>agent-orchestrator</code></td><td>projet</td><td>29</td><td>2026-07-21</td><td>2026-09-25</td></tr>
             <tr><td><code>bmad-review</code></td><td>BMAD</td><td>11</td><td>2026-09-07</td><td>2026-09-23</td></tr>
             <tr><td><code>bmad-party-mode</code></td><td>BMAD</td><td>7</td><td>2026-09-02</td><td>2026-09-18</td></tr>
             <tr><td><code>bmad-brainstorming</code></td><td>BMAD</td><td>6</td><td>2026-09-11</td><td>2026-09-18</td></tr>
             <tr><td><code>bmad-advanced-elicitation</code></td><td>BMAD</td><td>5</td><td>2026-09-11</td><td>2026-09-18</td></tr>
             <tr><td><code>deck-design-library</code></td><td>projet</td><td>5</td><td>2026-09-03</td><td>2026-09-23</td></tr>
-            <tr><td><code>revue-increment</code></td><td>projet</td><td>4</td><td>2026-07-21</td><td>2026-09-11</td></tr>
+            <tr><td><code>revue-increment</code></td><td>projet</td><td>5</td><td>2026-07-21</td><td>2026-09-25</td></tr>
             <tr><td><code>agent-supervisor</code></td><td>projet</td><td>3</td><td>2026-07-21</td><td>2026-09-03</td></tr>
             <tr><td><code>bmad-code-review</code></td><td>BMAD</td><td>2</td><td>2026-09-10</td><td>2026-09-10</td></tr>
             <tr><td><code>deck-design-review</code></td><td>projet</td><td>2</td><td>2026-09-07</td><td>2026-09-23</td></tr>
@@ -569,6 +569,7 @@
             <tr><td><code>bmad-agent-pm</code></td><td>BMAD</td><td>1</td><td>2026-07-22</td><td>2026-07-22</td></tr>
             <tr><td><code>bmad-agent-ux-designer</code></td><td>BMAD</td><td>1</td><td>2026-09-23</td><td>2026-09-23</td></tr>
             <tr><td><code>code-review</code></td><td>(builtin/session)</td><td>1</td><td>2026-09-11</td><td>2026-09-11</td></tr>
+            <tr><td><code>pptx-verify</code></td><td>projet</td><td>1</td><td>2026-09-25</td><td>2026-09-25</td></tr>
             <tr><td><code>update-config</code></td><td>(builtin/session)</td><td>1</td><td>2026-09-07</td><td>2026-09-07</td></tr>
           </tbody>
         </table>
@@ -579,7 +580,7 @@
         <table>
           <thead><tr><th>Sous-agent</th><th>Lancements</th><th>Premier</th><th>Dernier</th></tr></thead>
           <tbody>
-            <tr><td><code>general-purpose</code></td><td>72</td><td>2026-07-21</td><td>2026-09-23</td></tr>
+            <tr><td><code>general-purpose</code></td><td>73</td><td>2026-07-21</td><td>2026-09-25</td></tr>
             <tr><td><code>ppt-designer</code></td><td>21</td><td>2026-07-21</td><td>2026-09-23</td></tr>
             <tr><td><code>Explore</code></td><td>11</td><td>2026-07-21</td><td>2026-09-20</td></tr>
             <tr><td><code>bmad-revue</code></td><td>10</td><td>2026-09-07</td><td>2026-09-23</td></tr>
@@ -594,23 +595,23 @@
       <p><strong>projet</strong> — 2/14 jamais invoqués : <code>agent-securite</code>, <code>veille-agentic</code></p>
       <p><strong>BMAD</strong> — 43/50 jamais invoqués : <details><summary>Voir la liste (43)</summary><p><code>bmad-agent-analyst</code>, <code>bmad-agent-architect</code>, <code>bmad-agent-dev</code>, <code>bmad-architecture</code>, <code>bmad-build</code>, <code>bmad-build-auto</code>, <code>bmad-checkpoint-preview</code>, <code>bmad-correct-course</code>, <code>bmad-create-architecture</code>, <code>bmad-create-epics-and-stories</code>, <code>bmad-create-prd</code>, <code>bmad-create-story</code>, <code>bmad-customize</code>, <code>bmad-deep-recon</code>, <code>bmad-dev-auto</code>, <code>bmad-dev-story</code>, <code>bmad-document-project</code>, <code>bmad-domain-research</code>, <code>bmad-edit-prd</code>, <code>bmad-editorial-review</code>, <code>bmad-editorial-review-prose</code>, <code>bmad-editorial-review-structure</code>, <code>bmad-forge-idea</code>, <code>bmad-generate-project-context</code>, <code>bmad-help</code>, <code>bmad-market-research</code>, <code>bmad-prd</code>, <code>bmad-prfaq</code>, <code>bmad-product-brief</code>, <code>bmad-project-context</code>, <code>bmad-qa-generate-e2e-tests</code>, <code>bmad-quick-dev</code>, <code>bmad-retrospective</code>, <code>bmad-review-adversarial-general</code>, <code>bmad-review-edge-case-hunter</code>, <code>bmad-review-verification-gap</code>, <code>bmad-spec</code>, <code>bmad-sprint-planning</code>, <code>bmad-sprint-status</code>, <code>bmad-technical-research</code>, <code>bmad-ux</code>, <code>bmad-validate-prd</code>, <code>bmad-walkthrough</code></p></details></p>
       <p><strong>global</strong> — 2/3 jamais invoqués : <code>skill-creator</code>, <code>synced</code></p>
-      <p><strong>bibliothèque / référence</strong> — usage via scripts/sous-agent, non capté par le compteur (n=0 ≠ mort, constat #2) : <code>pdf-quality</code>, <code>pptx-deck</code>, <code>pptx-framed-image</code>, <code>pptx-verify</code>, <code>restitution-deck-design</code>, <code>roadmap-keeper</code>, <code>slide-text-polish</code></p>
+      <p><strong>bibliothèque / référence</strong> — usage via scripts/sous-agent, non capté par le compteur (n=0 ≠ mort, constat #2) : <code>pdf-quality</code>, <code>pptx-deck</code>, <code>pptx-framed-image</code>, <code>restitution-deck-design</code>, <code>roadmap-keeper</code>, <code>slide-text-polish</code></p>
 
       <h3>TODO agents — chantiers à lancer (constats automatiques)</h3>
       <div class="critical">
         <p><strong>Désinstaller les shims BMAD dépréciés</strong> (17) : <code>bmad-checkpoint-preview</code>, <code>bmad-create-architecture</code>, <code>bmad-create-prd</code>, <code>bmad-create-story</code>, <code>bmad-dev-story</code>, <code>bmad-document-project</code>, <code>bmad-edit-prd</code>, <code>bmad-editorial-review</code>, <code>bmad-editorial-review-prose</code>, <code>bmad-editorial-review-structure</code>, <code>bmad-generate-project-context</code>, <code>bmad-review-adversarial-general</code>, <code>bmad-review-edge-case-hunter</code>, <code>bmad-review-verification-gap</code>, <code>bmad-sprint-status</code>, <code>bmad-technical-research</code>, <code>bmad-validate-prd</code> — dépréciés par BMAD dans leur propre <code>description</code>, chacun avec son remplaçant ; le seul élagage qui ne repose pas sur notre mesure d'usage.</p>
         <span class="tag tag-confirme">CONFIRMÉ</span>
-        <div class="tag-source">scan_transcripts.py · 2026-09-25 · transcripts de session</div>
+        <div class="tag-source">scan_transcripts.py · 2026-09-26 · transcripts de session</div>
       </div>
       <div class="critical">
         <p><strong>Skills projet sans usage</strong> : <code>agent-securite</code>, <code>veille-agentic</code> — vérifier pertinence et déclencheurs.</p>
         <span class="tag tag-confirme">CONFIRMÉ</span>
-        <div class="tag-source">scan_transcripts.py · 2026-09-25 · transcripts de session</div>
+        <div class="tag-source">scan_transcripts.py · 2026-09-26 · transcripts de session</div>
       </div>
       <div class="critical">
         <p><strong>Skills en sommeil (&gt;30 j sans usage)</strong> : <code>bmad-agent-pm</code>.</p>
         <span class="tag tag-confirme">CONFIRMÉ</span>
-        <div class="tag-source">scan_transcripts.py · 2026-09-25 · transcripts de session</div>
+        <div class="tag-source">scan_transcripts.py · 2026-09-26 · transcripts de session</div>
       </div>
 
       <h3>Arbitrages enregistrés</h3>
