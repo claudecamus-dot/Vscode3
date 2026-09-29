@@ -1,5 +1,5 @@
 ---
-updated: 2026-09-26
+updated: 2026-09-29
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -8,18 +8,18 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-09-26T08:34:39+02:00 · **21 sessions** (transcripts) · **82** invocations de skills · **119** lancements de sous-agents.
+Dernier scan : 2026-09-29T09:13:57+02:00 · **22 sessions** (transcripts) · **84** invocations de skills · **119** lancements de sous-agents.
 
 ## Skills — usage réel
 
 | Skill | Famille | Invocations | Première | Dernière |
 | --- | --- | --- | --- | --- |
-| `agent-orchestrator` | projet | 29 | 2026-07-21 | 2026-09-25 |
+| `agent-orchestrator` | projet | 30 | 2026-07-21 | 2026-09-26 |
 | `bmad-review` | BMAD | 11 | 2026-09-07 | 2026-09-23 |
 | `bmad-party-mode` | BMAD | 7 | 2026-09-02 | 2026-09-18 |
 | `bmad-brainstorming` | BMAD | 6 | 2026-09-11 | 2026-09-18 |
+| `deck-design-library` | projet | 6 | 2026-09-03 | 2026-09-26 |
 | `bmad-advanced-elicitation` | BMAD | 5 | 2026-09-11 | 2026-09-18 |
-| `deck-design-library` | projet | 5 | 2026-09-03 | 2026-09-23 |
 | `revue-increment` | projet | 5 | 2026-07-21 | 2026-09-25 |
 | `agent-supervisor` | projet | 3 | 2026-07-21 | 2026-09-03 |
 | `bmad-code-review` | BMAD | 2 | 2026-09-10 | 2026-09-10 |
@@ -150,7 +150,7 @@ _7 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir 
 
 ## Seuil de qualification — la mesure
 
-Depuis le 2026-09-10 : **154** demande(s) vue(s) hors commande slash (+ 19 slash), **8** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **5 %** des demandes orchestrées.
+Depuis le 2026-09-10 : **164** demande(s) vue(s) hors commande slash (+ 20 slash), **8** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **5 %** des demandes orchestrées.
 _Ce chiffre ne dit pas ce qui AURAIT dû être orchestré : le hook compte, il ne juge pas. Il donne le dénominateur qui manquait pour arbitrer le seuil sur données plutôt que sur habitude._
 
 ---
