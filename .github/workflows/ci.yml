@@ -28,9 +28,7 @@ jobs:
         run: python -m ruff check .
 
       - name: Analyse de vulnerabilite des dependances
-        run: |
-          pip install pip-audit
-          pip-audit -r requirements.txt
+        run: pip-audit -r requirements.txt
 
       - name: Tests
         run: python -m pytest tests/ -q
