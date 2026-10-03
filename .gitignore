@@ -74,3 +74,4 @@ docs/Import/*.pdf
 # Log crashpad (Chromium/VSCode) depose a la racine par l'IDE - bruit, pas du
 # contenu du projet.
 debug.log
+.claude/settings.json.avant-migration
