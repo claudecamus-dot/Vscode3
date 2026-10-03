@@ -1,5 +1,5 @@
 ---
-updated: 2026-09-30
+updated: 2026-10-03
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -8,7 +8,7 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-09-30T08:37:57+02:00 · **22 sessions** (transcripts) · **84** invocations de skills · **119** lancements de sous-agents.
+Dernier scan : 2026-10-03T20:32:40+02:00 · **22 sessions** (transcripts) · **84** invocations de skills · **119** lancements de sous-agents.
 
 ## Skills — usage réel
 
@@ -69,6 +69,8 @@ _Consommés en lisant/exécutant leurs `scripts/`, ou via un sous-agent qui les 
 `pdf-quality`, `pptx-deck`, `pptx-framed-image`, `restitution-deck-design`, `roadmap-keeper`, `slide-text-polish`
 
 ## TODO agents (constats automatiques)
+
+⚠️ **Mesure incomplète** — 5 transcript(s) sur 22 absent(s) du disque. Un `n=0` ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.
 
 1. **Désinstaller les shims BMAD dépréciés** (17) : `bmad-checkpoint-preview`, `bmad-create-architecture`, `bmad-create-prd`, `bmad-create-story`, `bmad-dev-story`, `bmad-document-project`, `bmad-edit-prd`, `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-generate-project-context`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-review-verification-gap`, `bmad-sprint-status`, `bmad-technical-research`, `bmad-validate-prd` — dépréciés par BMAD dans leur propre `description`, chacun avec son remplaçant ; le seul élagage qui ne repose pas sur notre mesure d'usage.
 2. **Skills projet sans usage** : `agent-securite`, `veille-agentic` — vérifier pertinence et déclencheurs.
