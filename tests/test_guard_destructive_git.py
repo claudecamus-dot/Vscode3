@@ -114,13 +114,14 @@ def test_heredoc_reste_une_donnee_pas_une_commande():
     assert not verdict(cmd)
 
 
-def test_quotes_desequilibrees_font_fail_open():
-    """Le hook ne devine jamais : ce qu'il ne sait pas parser, il le laisse passer.
+def test_quotes_desequilibrees_ne_laissent_plus_passer_le_destructif():
+    """Une commande non analysable recoit une analyse lexicale prudente du texte brut.
 
-    Choix assume (docstring du hook) — un bug d'analyse ici ne doit jamais
-    bloquer un usage shell sans rapport.
+    Hub SEC lot (2026-10-04) : l'ancien choix fail-open laissait passer
+    `git reset --hard # it's`. Une commande sans motif destructif passe toujours.
     """
-    assert guard._blocked_reason('git push --force \"') is None
+    assert "non analysable" in guard._blocked_reason('git push --force \"')
+    assert guard._blocked_reason('echo \"') is None
 
 
 def test_indirection_imbriquee_reste_bloquee():

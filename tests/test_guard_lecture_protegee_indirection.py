@@ -230,5 +230,9 @@ class TestLesDeuxVoletsNInterferentPas:
                "EOF")
         assert not _bloque(cmd)
 
-    def test_quotes_desequilibrees_font_fail_open(self):
-        assert guard._blocked_reason('git push --force "') is None
+    def test_quotes_desequilibrees_ne_laissent_plus_passer_le_destructif(self):
+        # Hub SEC lot (2026-10-04) : ce test affirmait le fail-open (`is None`).
+        # Une commande non analysable recoit une analyse lexicale prudente ; sans
+        # motif destructif, elle passe encore.
+        assert "non analysable" in guard._blocked_reason('git push --force "')
+        assert guard._blocked_reason('echo "') is None
