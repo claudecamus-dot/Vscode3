@@ -276,6 +276,12 @@ def _remplir_cadre(slide, cadre, scene, seed=0):
                 return
         else:
             try:
+                # Valider le brut tiers (format, dimensions bornées) AVANT tout
+                # décodage complet : cover_crop_to_aspect() décode l'image.
+                if not _image_cache_valide(brut):
+                    if os.path.exists(brut):
+                        os.remove(brut)
+                    raise ValueError(f"brut Openverse invalide pour '{scene}' ({brut})")
                 cover_crop_to_aspect(brut, path, aspect)
                 # cover_crop_to_aspect() sauve avec les défauts PIL (JPEG
                 # qualité 75) : ré-encodage local à qualité 90 pour un rendu
