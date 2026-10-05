@@ -4,7 +4,7 @@ import os
 from test_generate_deck_garde import generate_deck  # noqa: F401  (fixture)
 
 
-def _lancer(generate_deck, monkeypatch, tmp_path, ecrire_brut):
+def _lancer(generate_deck, monkeypatch, tmp_path, ecrire_brut):  # noqa: F811
     monkeypatch.setattr(generate_deck.deck_images, "IMG_DIR", str(tmp_path))
     generate_deck._ANOMALIES_BUILD[:] = []
     monkeypatch.setattr(generate_deck.stock_images, "fetch_to",
@@ -26,14 +26,14 @@ def _lancer(generate_deck, monkeypatch, tmp_path, ecrire_brut):
     return decodes
 
 
-def test_brut_hors_format_n_est_pas_decode(generate_deck, monkeypatch, tmp_path):
+def test_brut_hors_format_n_est_pas_decode(generate_deck, monkeypatch, tmp_path):  # noqa: F811
     decodes = _lancer(generate_deck, monkeypatch, tmp_path,
                       lambda b: open(b, "wb").write(b"pas une image"))
     assert decodes == [], "un brut non image a été décodé avant validation"
     assert not os.path.exists(tmp_path / "_brut_canyon_0.jpg")
 
 
-def test_brut_surdimensionne_n_est_pas_decode(generate_deck, monkeypatch, tmp_path):
+def test_brut_surdimensionne_n_est_pas_decode(generate_deck, monkeypatch, tmp_path):  # noqa: F811
     from PIL import Image
 
     def gros(b):
@@ -43,7 +43,7 @@ def test_brut_surdimensionne_n_est_pas_decode(generate_deck, monkeypatch, tmp_pa
     assert decodes == [], "un brut hors bornes a été décodé avant validation"
 
 
-def test_brut_valide_est_decode(generate_deck, monkeypatch, tmp_path):
+def test_brut_valide_est_decode(generate_deck, monkeypatch, tmp_path):  # noqa: F811
     from PIL import Image
     decodes = _lancer(generate_deck, monkeypatch, tmp_path,
                       lambda b: Image.new("RGB", (200, 150)).save(b))
