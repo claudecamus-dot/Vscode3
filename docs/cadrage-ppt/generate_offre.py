@@ -19,6 +19,7 @@ import os
 import sys
 
 import pptx_deck_vscode3 as D
+from deck_images import _image_cache_valide
 from PIL import Image, ImageDraw
 from pptx import Presentation
 from pptx.enum.dml import MSO_LINE_DASH_STYLE
@@ -45,6 +46,15 @@ CHAPITRES = ["Contexte et enjeux", "Les choix possibles",
 PHOTOS = ["mountains_0", "canyon_0", "forest_0", "riverdelta_5", "wheatfield_0", "ocean_0",
           "dunes_0"]
 PHASES = ["Explorer et diagnostiquer", "Cadrer l'offre", "Assainir", "Transformer"]
+
+
+def ouvrir_brut(chemin):
+    """Ouvre une image source en RGB apres validation (non vide, decodable,
+    dimensions bornees) : un brut invalide echoue ici avec son nom, pas dans
+    Pillow (audit VSCode3 2026-10-04, robustesse)."""
+    if not _image_cache_valide(chemin):
+        raise SystemExit(f"image source invalide ou absente : {chemin}")
+    return Image.open(chemin).convert("RGB")
 
 
 # ---------------------------------------------------------------- primitives
@@ -253,7 +263,7 @@ def photo_chapitre(slide, scene):
     pic = next(sh for sh in slide.shapes if sh.shape_type == 13)
     aspect = pic.width / pic.height
     brut = os.path.join(IMG_DIR, f"_brut_{scene}.jpg")
-    im = Image.open(brut).convert("RGB")
+    im = ouvrir_brut(brut)
     w, h = im.size
     if w / h > aspect:
         nw = int(h * aspect)
@@ -836,7 +846,7 @@ def photo_equipe(s):
     SGRF p. 2), recadrée en rond comme les autres portraits de la slide."""
     nom = next(sh for sh in s.shapes if sh.has_text_frame and "CAMUS" in sh.text_frame.text)
     brut = os.path.join(IMG_DIR, "_equipe_claude_camus_brut.png")
-    im = Image.open(brut).convert("RGB").resize((600, 600))
+    im = ouvrir_brut(brut).resize((600, 600))
     masque = Image.new("L", im.size, 0)
     ImageDraw.Draw(masque).ellipse((0, 0, 599, 599), fill=255)
     im.putalpha(masque)
