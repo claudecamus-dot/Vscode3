@@ -36,7 +36,21 @@ def test_ouvrir_brut_accepte_une_image_valide(offre, tmp_path):
     assert offre.ouvrir_brut(str(ok)).size == (64, 64)
 
 
-def test_construire_produit_un_deck_sans_defaut_de_geometrie(offre):
+@pytest.fixture
+def img_synthetiques(offre, tmp_path, monkeypatch):
+    """docs/cadrage-ppt/_img/ est gitignore (absent en CI) : le generateur est
+    pointe vers un dossier temporaire garni d'images sources synthetiques."""
+    from PIL import Image
+    for i, scene in enumerate(offre.PHOTOS):
+        im = Image.linear_gradient("L").resize((1600, 1000)).convert("RGB")
+        im = Image.blend(im, Image.new("RGB", im.size, (40 + 25 * i, 90, 160)), 0.5)
+        im.save(tmp_path / f"_brut_{scene}.jpg", quality=80)
+    Image.new("RGB", (400, 400), (120, 140, 160)).save(tmp_path / "_equipe_claude_camus_brut.png")
+    monkeypatch.setattr(offre, "IMG_DIR", str(tmp_path))
+    return tmp_path
+
+
+def test_construire_produit_un_deck_sans_defaut_de_geometrie(offre, img_synthetiques):
     prs = offre.construire()
     assert len(prs.slides) >= 10
     assert offre.D.verifier_geometrie(prs) == []
