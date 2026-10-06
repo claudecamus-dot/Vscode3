@@ -370,3 +370,21 @@ def test_debordements_texte_reste_hors_du_self_check(
         "verifier_debordements_texte a ete branche sans que son seuil soit "
         "regle contre un rendu PowerPoint reel : il rendait 58 constats sur un "
         "deck correct, ce qui ecrit .INVALIDE.pptx et bloque la livraison")
+
+
+def test_sans_ombre_ne_masque_plus_une_erreur_silencieusement(generate_deck, capsys):
+    """Finding robustesse 2026-10-04 : 4 `except Exception: pass` sur shadow.inherit."""
+    class SansOmbre:
+        @property
+        def shadow(self):
+            raise AttributeError("pas d'ombre")
+
+    generate_deck._sans_ombre(SansOmbre())
+    assert "ombre non desactivee" in capsys.readouterr().err
+
+
+def test_generate_deck_sans_except_pass_sur_ombre():
+    import re
+    src = (CADRAGE / "generate_deck.py").read_text(encoding="utf-8")
+    motif = r"shadow\.inherit = False\s+except Exception"
+    assert not re.search(motif, src)

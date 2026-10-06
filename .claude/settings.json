@@ -118,8 +118,7 @@
       "Bash(py -m pytest *)",
       "Bash(py -m py_compile *)",
       "Bash(node -c *)",
-      "Bash(npm test*)",
-      "Bash(npx bmad-method *)"
+      "Bash(npm test*)"
     ]
   }
 }

@@ -562,6 +562,16 @@ from deck_theme import (  # noqa: E402,F401 — extraction mécanique v2.46
 _CHAPITRE_COURANT = [None]
 
 
+def _sans_ombre(shape):
+    """Desactive l'ombre heritee d'une forme. Un echec n'est plus avale en
+    silence (ancien `except Exception: pass`) : seul l'AttributeError d'une
+    forme sans ombre est toleree, et elle est tracee sur stderr."""
+    try:
+        shape.shadow.inherit = False
+    except AttributeError as exc:
+        print(f"[generate_deck] ombre non desactivee : {exc}", file=sys.stderr)
+
+
 def content_slide(prs, kicker, title, color):
     if kicker is None:
         kicker = _CHAPITRE_COURANT[0]
@@ -1080,10 +1090,7 @@ def slide_offre_iap(prs):
 def _picto(slide, kind, x, y, d, color):
     forme = {"engrenage": MSO_SHAPE.GEAR_6, "deploiement": MSO_SHAPE.PENTAGON}[kind]
     shp = slide.shapes.add_shape(forme, Inches(x), Inches(y), Inches(d), Inches(d))
-    try:
-        shp.shadow.inherit = False
-    except Exception:
-        pass
+    _sans_ombre(shp)
     shp.fill.solid()
     shp.fill.fore_color.rgb = _rgb(color)
     shp.line.fill.background()
@@ -1438,10 +1445,7 @@ def slide_infra_as_product_exemple(prs):
     arrow = s.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, Inches(fx),
                                 Inches(rows_top + 0.25), Inches(fleche_w),
                                 Inches(rows_bas - rows_top - 0.50))
-    try:
-        arrow.shadow.inherit = False
-    except Exception:
-        pass
+    _sans_ombre(arrow)
     arrow.fill.solid()
     arrow.fill.fore_color.rgb = _rgb(WHITE)
     arrow.line.color.rgb = _rgb(NAVY)
@@ -3064,10 +3068,7 @@ def slide_agents_candidats(prs):
         x = MARGIN + i * (col_w + gap)
         icon = s.shapes.add_shape(_ICONES_FAMILLE_AGENT[famille], Inches(x),
                                   Inches(top), Inches(icon_d), Inches(icon_d))
-        try:
-            icon.shadow.inherit = False
-        except Exception:
-            pass
+        _sans_ombre(icon)
         icon.fill.solid()
         icon.fill.fore_color.rgb = _rgb(ENCRE)
         icon.line.fill.background()
@@ -3816,10 +3817,7 @@ def _frise_convictions(s, items, debut, txt_w, accent_idx, top0):
         accent = i == accent_idx
         onglet = s.shapes.add_shape(MSO_SHAPE.ROUND_2_DIAG_RECTANGLE, Inches(tab_x),
                                     Inches(y), Inches(tab_w), Inches(tab_h))
-        try:
-            onglet.shadow.inherit = False
-        except Exception:
-            pass
+        _sans_ombre(onglet)
         onglet.fill.solid()
         onglet.fill.fore_color.rgb = _rgb(NAVY if accent else WHITE)
         onglet.line.color.rgb = _rgb(NAVY)
