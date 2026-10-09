@@ -386,6 +386,15 @@
       ],
       "decision": "REFUSE (deja fait, constat) : .claude/hooks/point_du_jour.py existe maintenant sur les 5 cibles (VSCode, VSCode1, VSCode2, VSCode3, VSCode4), pas au chemin .claude/supervision/ initialement cherche mais bien present et distribue.",
       "preuve_application": "find <chaque depot> -iname point_du_jour* -> .claude/hooks/point_du_jour.py present sur VSCode, VSCode1, VSCode2, VSCode3 et VSCode4 (VSCode1 et VSCode ont aussi un .pyc compile, signe d'execution reelle)"
+    },
+    {
+      "cible": "VSCode3:diagnostic-porte-des-findings-deja-arbitres",
+      "date": "2026-10-09",
+      "titre": "diagnostic.json (genere 2026-09-17) affiche encore 3 findings deja tranches dans arbitrages.json : diagnostic etage 2 non relance depuis 21 j",
+      "categories": [
+        "verification-manquante"
+      ],
+      "decision": "REFUSÉ : REFUSE (infondé) : par conception le registre garde dans diagnostic.json les findings fermés par un arbitrage ; finding_arbitre() les masque au tableau de bord. Mesure du 2026-10-09 : 7 findings du diagnostic de VSCode3 sont arbitrés (arbitrages cités), aucun n'est affiché comme ouvert. Rien à nettoyer."
     }
   ]
 }
