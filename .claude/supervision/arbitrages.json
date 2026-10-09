@@ -395,6 +395,17 @@
         "verification-manquante"
       ],
       "decision": "REFUSÉ : REFUSE (infondé) : par conception le registre garde dans diagnostic.json les findings fermés par un arbitrage ; finding_arbitre() les masque au tableau de bord. Mesure du 2026-10-09 : 7 findings du diagnostic de VSCode3 sont arbitrés (arbitrages cités), aucun n'est affiché comme ouvert. Rien à nettoyer."
+    },
+    {
+      "cible": "VSCode3:nouveau-deck-offre-sans-revue-tracee",
+      "date": "2026-10-09",
+      "titre": "Le deck Offre IAP V1 remplace l ancien deck sans revue de design ni pptx-verify trace : 0 run, 0 arbitrage depuis",
+      "categories": [
+        "pratique-revue"
+      ],
+      "decision": "ACCEPTE + APPLIQUE : la revue de design manquante est jouee (finding clos) ; les defauts releves sont a corriger par l'utilisateur ou un lot dedie, sans correction ici.",
+      "preuve_application": "Revue jouée le 2026-10-09 sur docs/cadrage-ppt/offre-infra-as-a-product-V1.pptx (commit dedf5e1) : 33 slides rendues par PowerPoint sans fenêtre et regardées une à une (C:/tmp/revue_deck_vscode3/slide-01.png à slide-33.png), rapport C:/tmp/revue_deck_vscode3/RAPPORT.md ; 22 slides conformes, défauts : placeholders visibles slides 22, 29, 31 ; slide 32 sans photo ; slide 15 intercalaire différent ; slide 22 axe sur libellé ; slides 14, 24, 29, 2, 11, 25, 10 mineurs. Limites : zooms de l'étape 4 de pptx-verify non faits, test de géométrie du projet non rejoué, deck-design-review non appliquée slide par slide. Aucune correction faite.",
+      "sans_commit": "revue en lecture seule, aucun fichier du depot modifie"
     }
   ]
 }
