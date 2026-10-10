@@ -43,6 +43,17 @@ def _load():
 hook = _load()
 
 
+import pytest  # noqa: E402
+
+
+@pytest.fixture(autouse=True)
+def _repli_subprocess_run(monkeypatch):
+    """These tests stub `hook.subprocess.run`: force the fallback path (bounded
+    launcher absent). The bounded path is covered by
+    test_warn_verif_lancement_borne.py."""
+    monkeypatch.setitem(sys.modules, "_lancement_borne", None)
+
+
 # --- (a) repli generique non vide sans configuration -------------------------
 
 def test_defaut_generique_non_vide_sans_configuration(monkeypatch, tmp_path):
