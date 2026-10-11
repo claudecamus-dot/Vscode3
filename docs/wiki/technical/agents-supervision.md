@@ -1,5 +1,5 @@
 ---
-updated: 2026-10-09
+updated: 2026-10-11
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -8,7 +8,7 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-10-09T10:41:22+02:00 · **13 sessions** (transcripts) · **84** invocations de skills · **117** lancements de sous-agents.
+Dernier scan : 2026-10-11T09:22:30+02:00 · **13 sessions** (transcripts) · **84** invocations de skills · **117** lancements de sous-agents.
 
 ## Skills — usage réel
 
@@ -134,15 +134,14 @@ Ce que 'traiter' ces 3 points pourrait vouloir dire (a instruire au hub, pas tra
 - **`VSCode3:reliquats-de-lint-du-chantier-deck`** (2026-09-21) : REFUSE (deja fait, constat) : les deux zip() du chantier ont bien strict=True (generate_deck.py:3865 et :4479). ruff check sur docs/cadrage-ppt/gen_check_slide_synthese*.py -> All checks passed (les deux blocs d'imports non tries cites dans le finding sont resolus). Il reste seulement 2 erreurs ruff ailleurs dans le chantier (UP031 generate_deck.py:4286, I001 test_generate_deck.py:101), pas les 3 F841/imports d'origine : la situation a change mais aucun reliquat bloquant ne correspond plus au constat initial.
 - **`flotte:point-du-jour-absent-des-5-cibles`** (2026-09-21) : REFUSE (deja fait, constat) : .claude/hooks/point_du_jour.py existe maintenant sur les 5 cibles (VSCode, VSCode1, VSCode2, VSCode3, VSCode4), pas au chemin .claude/supervision/ initialement cherche mais bien present et distribue.
 - **`VSCode3:diagnostic-porte-des-findings-deja-arbitres`** (2026-10-09) : REFUSÉ : REFUSE (infondé) : par conception le registre garde dans diagnostic.json les findings fermés par un arbitrage ; finding_arbitre() les masque au tableau de bord. Mesure du 2026-10-09 : 7 findings du diagnostic de VSCode3 sont arbitrés (arbitrages cités), aucun n'est affiché comme ouvert. Rien à nettoyer.
+- **`VSCode3:nouveau-deck-offre-sans-revue-tracee`** (2026-10-09) : ACCEPTE + APPLIQUE : la revue de design manquante est jouee (finding clos) ; les defauts releves sont a corriger par l'utilisateur ou un lot dedie, sans correction ici.
+- **`VSCode3:journal-muet-depuis-2026-09-23`** (2026-10-10) : ACCEPTE + APPLIQUE : run recapitulatif a posteriori journalise par log_run.py (partiel, shas des fix dans les notes), decision utilisateur 2026-10-10
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 
-_Diagnostic à jour._
+_Diagnostic à jour — rien à signaler, tous les constats précédents ont été arbitrés._
 
-1. **[À VÉRIFIER] 17 commits applicatifs depuis le 2026-09-24 (dont le nouveau deck Offre Infra as a Product V1) sans aucun run journalise : derniere ligne de runs.jsonl datee 2026-09-23** — Vérifier l'appariement fin des 7 corrections avec le journal ; ne journaliser a posteriori que les vraies corrections, pas les rattrapages du hub. · **Proposition** : Journaliser a posteriori un run en-attente-validation pour le deck Offre IAP V1 (log_run.py), et faire valider le .pptx exact par l utilisateur ; verifier que le hook gate orchestrateur est actif sur les commits cadrage-ppt.
-2. **[HYPOTHÈSE] Le deck Offre IAP V1 remplace l ancien deck sans revue de design ni pptx-verify trace : 0 run, 0 arbitrage depuis** — La revue a peut-etre eu lieu hors journal ; non prouvee. · **Proposition** : Jouer le playbook export-ppt-verifie (pptx-verify + revue design) sur le deck V1 avant toute diffusion.
-
-_8 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir un, demander au superviseur un `re_challenge` avec des données nouvelles :_
+_10 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir un, demander au superviseur un `re_challenge` avec des données nouvelles :_
 
 - ~~+762 lignes en 24 h : le generateur a plus que double en un jour la croissance de ses 33 jours precedents, et le re-cotage renvoye « au prochain diagnostic etage 2 » n'a plus d'excuse~~ (`docs/cadrage-ppt/generate_deck.py`)
 - ~~Les trois filets de controle sont portes et testes dans pptx_deck.py mais AUCUN n'est branche : le point d'appel appartient au chantier deck en cours~~ (`VSCode3:brancher-les-trois-filets-dans-generate-deck`)
@@ -152,10 +151,12 @@ _8 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir 
 - ~~Le point_du_jour.py propage aux 5 cibles importe kit_installe, module qui n'existe qu'au hub : ligne de bruit permanente a chaque session~~ (`flotte:point-du-jour-importe-kit-installe-hub-only`)
 - ~~Chantier A (lecture humaine du cadrage BMAD IAP par un non-auteur) bloque sur un prealable non implemente~~ (`VSCode3:chantier-A-lecture-humaine-cadrage`)
 - ~~[À VÉRIFIER] diagnostic.json (genere 2026-09-17) affiche encore 3 findings deja tranches dans arbitrages.json : diagnostic etage 2 non relance depuis 21 j~~ (`VSCode3:diagnostic-porte-des-findings-deja-arbitres`)
+- ~~[HYPOTHÈSE] Le deck Offre IAP V1 remplace l ancien deck sans revue de design ni pptx-verify trace : 0 run, 0 arbitrage depuis~~ (`VSCode3:nouveau-deck-offre-sans-revue-tracee`)
+- ~~[À VÉRIFIER] 17 commits applicatifs depuis le 2026-09-24 (dont le nouveau deck Offre Infra as a Product V1) sans aucun run journalise : derniere ligne de runs.jsonl datee 2026-09-23~~ (`VSCode3:journal-muet-depuis-2026-09-23`)
 
 ## Seuil de qualification — la mesure
 
-Depuis le 2026-09-10 : **164** demande(s) vue(s) hors commande slash (+ 20 slash), **8** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **5 %** des demandes orchestrées.
+Depuis le 2026-09-10 : **164** demande(s) vue(s) hors commande slash (+ 20 slash), **9** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **5 %** des demandes orchestrées.
 _Ce chiffre ne dit pas ce qui AURAIT dû être orchestré : le hook compte, il ne juge pas. Il donne le dénominateur qui manquait pour arbitrer le seuil sur données plutôt que sur habitude._
 
 ---

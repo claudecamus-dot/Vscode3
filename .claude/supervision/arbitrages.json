@@ -406,6 +406,17 @@
       "decision": "ACCEPTE + APPLIQUE : la revue de design manquante est jouee (finding clos) ; les defauts releves sont a corriger par l'utilisateur ou un lot dedie, sans correction ici.",
       "preuve_application": "Revue jouée le 2026-10-09 sur docs/cadrage-ppt/offre-infra-as-a-product-V1.pptx (commit dedf5e1) : 33 slides rendues par PowerPoint sans fenêtre et regardées une à une (C:/tmp/revue_deck_vscode3/slide-01.png à slide-33.png), rapport C:/tmp/revue_deck_vscode3/RAPPORT.md ; 22 slides conformes, défauts : placeholders visibles slides 22, 29, 31 ; slide 32 sans photo ; slide 15 intercalaire différent ; slide 22 axe sur libellé ; slides 14, 24, 29, 2, 11, 25, 10 mineurs. Limites : zooms de l'étape 4 de pptx-verify non faits, test de géométrie du projet non rejoué, deck-design-review non appliquée slide par slide. Aucune correction faite.",
       "sans_commit": "revue en lecture seule, aucun fichier du depot modifie"
+    },
+    {
+      "cible": "VSCode3:journal-muet-depuis-2026-09-23",
+      "date": "2026-10-10",
+      "titre": "17 commits applicatifs depuis le 2026-09-24 (dont le nouveau deck Offre Infra as a Product V1) sans aucun run journalise : derniere ligne de runs.jsonl datee 2026-09-23",
+      "categories": [
+        "verification-manquante"
+      ],
+      "decision": "ACCEPTE + APPLIQUE : run recapitulatif a posteriori journalise par log_run.py (partiel, shas des fix dans les notes), decision utilisateur 2026-10-10",
+      "preuve_application": "ligne partiel ajoutee a runs.jsonl ; 8 fix recomptes depuis 2026-09-23T11:31",
+      "sans_commit": "runs.jsonl ignore par git (.gitignore:71)"
     }
   ]
 }
