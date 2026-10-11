@@ -8,7 +8,7 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-10-11T09:22:30+02:00 · **13 sessions** (transcripts) · **84** invocations de skills · **117** lancements de sous-agents.
+Dernier scan : 2026-10-11T19:19:34+02:00 · **13 sessions** (transcripts) · **84** invocations de skills · **117** lancements de sous-agents.
 
 ## Skills — usage réel
 
@@ -72,7 +72,7 @@ _Consommés en lisant/exécutant leurs `scripts/`, ou via un sous-agent qui les 
 
 1. **Désinstaller les shims BMAD dépréciés** (17) : `bmad-checkpoint-preview`, `bmad-create-architecture`, `bmad-create-prd`, `bmad-create-story`, `bmad-dev-story`, `bmad-document-project`, `bmad-edit-prd`, `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-generate-project-context`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-review-verification-gap`, `bmad-sprint-status`, `bmad-technical-research`, `bmad-validate-prd` — dépréciés par BMAD dans leur propre `description`, chacun avec son remplaçant ; le seul élagage qui ne repose pas sur notre mesure d'usage.
 2. **Skills projet sans usage** : `agent-securite`, `veille-agentic` — vérifier pertinence et déclencheurs.
-3. **Skills en sommeil (>30 j sans usage)** : `audit-technique`, `bmad-agent-pm`.
+3. **Skills en sommeil (>30 j sans usage)** : `audit-technique`, `bmad-agent-pm`, `bmad-code-review`.
 
 ## Arbitrages enregistrés
 
