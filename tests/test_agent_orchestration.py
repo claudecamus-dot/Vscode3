@@ -71,6 +71,7 @@ def test_log_run_appends_valid_run_with_ts(tmp_path):
         ],
         "resultat": "succes",
         "reprises": 0,
+        "notes": "pytest 12 passed",
         # Canon du 2026-09-19 (`verifier_validation_utilisateur`) : `livrable_utilisateur`
         # est OBLIGATOIRE à l'append sur tout `succes`. Motif du durcissement : 194 runs
         # journalisés `succes` sans jamais déclarer si un humain consommait un artefact —
@@ -124,6 +125,7 @@ def test_log_run_refuse_un_succes_orchestre_sans_revue_increment(tmp_path):
                   "modele": "sonnet"}],
         "resultat": "succes",
         "reprises": 0,
+        "notes": "pytest 12 passed",
         "livrable_utilisateur": False,
         "livrable_utilisateur_motif": "run de test, aucun artefact ouvert par un humain",
     }
@@ -133,7 +135,7 @@ def test_log_run_refuse_un_succes_orchestre_sans_revue_increment(tmp_path):
     assert not (tmp_path / "runs.jsonl").exists(), "un run refusé ne s'écrit pas"
 
     # Échappatoire 2 : la trace dans `notes` (revue de campagne).
-    par_notes = _log_run(tmp_path, dict(sans_revue, notes="revue-increment de campagne"))
+    par_notes = _log_run(tmp_path, dict(sans_revue, notes="revue-increment de campagne : pytest 12 passed"))
     assert par_notes.returncode == 0, par_notes.stdout
 
     # Échappatoire 3 : la dérogation motivée. Une chaîne vide ne suffit pas — c'est un
