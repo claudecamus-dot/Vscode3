@@ -1,5 +1,5 @@
 ---
-updated: 2026-10-21
+updated: 2026-10-22
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -8,13 +8,13 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-10-21T21:15:12+02:00 · **13 sessions** (transcripts) · **84** invocations de skills · **117** lancements de sous-agents.
+Dernier scan : 2026-10-22T18:00:09+02:00 · **14 sessions** (transcripts) · **85** invocations de skills · **117** lancements de sous-agents.
 
 ## Skills — usage réel
 
 | Skill | Famille | Invocations | Première | Dernière |
 | --- | --- | --- | --- | --- |
-| `agent-orchestrator` | projet | 30 | 2026-07-21 | 2026-09-26 |
+| `agent-orchestrator` | projet | 31 | 2026-07-21 | 2026-10-22 |
 | `bmad-review` | BMAD | 11 | 2026-09-07 | 2026-09-23 |
 | `bmad-party-mode` | BMAD | 7 | 2026-09-02 | 2026-09-18 |
 | `bmad-brainstorming` | BMAD | 6 | 2026-09-11 | 2026-09-18 |
@@ -70,7 +70,7 @@ _Consommés en lisant/exécutant leurs `scripts/`, ou via un sous-agent qui les 
 
 ## TODO agents (constats automatiques)
 
-⚠️ **Mesure incomplète** — 8 transcript(s) sur 13 absent(s) du disque. Un `n=0` ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.
+⚠️ **Mesure incomplète** — 9 transcript(s) sur 14 absent(s) du disque. Un `n=0` ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.
 
 1. **Désinstaller les shims BMAD dépréciés** (17) : `bmad-checkpoint-preview`, `bmad-create-architecture`, `bmad-create-prd`, `bmad-create-story`, `bmad-dev-story`, `bmad-document-project`, `bmad-edit-prd`, `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-generate-project-context`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-review-verification-gap`, `bmad-sprint-status`, `bmad-technical-research`, `bmad-validate-prd` — dépréciés par BMAD dans leur propre `description`, chacun avec son remplaçant ; le seul élagage qui ne repose pas sur notre mesure d'usage.
 2. **Skills projet sans usage** : `agent-securite`, `veille-agentic` — vérifier pertinence et déclencheurs.
@@ -158,7 +158,7 @@ _10 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir
 
 ## Seuil de qualification — la mesure
 
-Depuis le 2026-09-10 : **164** demande(s) vue(s) hors commande slash (+ 20 slash), **9** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **5 %** des demandes orchestrées.
+Depuis le 2026-09-10 : **164** demande(s) vue(s) hors commande slash (+ 21 slash), **9** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **5 %** des demandes orchestrées.
 _Ce chiffre ne dit pas ce qui AURAIT dû être orchestré : le hook compte, il ne juge pas. Il donne le dénominateur qui manquait pour arbitrer le seuil sur données plutôt que sur habitude._
 
 ---
