@@ -541,12 +541,12 @@
     <section class="doc" id="agents-supervision">
       <p class="eyebrow">Projet</p>
       <h2>Supervision des agents — tableau de bord d'usage</h2>
-      <p class="file-meta"><span>docs/wiki/technical/agents-supervision.md</span><span>généré : 2026-10-22T18:00:09+02:00</span></p>
+      <p class="file-meta"><span>docs/wiki/technical/agents-supervision.md</span><span>généré : 2026-10-25T13:23:57+01:00</span></p>
 
       <div class="fact">
         <p><strong>Bloc généré automatiquement</strong> à chaque session (hook SessionStart → <code>.claude/supervision/scan_transcripts.py</code>, scan incrémental des transcripts, 0 token LLM) — ne pas éditer à la main. <strong>14 sessions</strong> couvertes · <strong>85</strong> invocations de skills · <strong>117</strong> lancements de sous-agents. Diagnostic qualitatif : skill <code>agent-supervisor</code> (étage 2, section diagnostic ci-dessous).</p>
         <span class="tag tag-confirme">CONFIRMÉ</span>
-        <div class="tag-source">scan_transcripts.py · 2026-10-22 · ~/.claude/projects/&lt;slug&gt;/*.jsonl</div>
+        <div class="tag-source">scan_transcripts.py · 2026-10-25 · ~/.claude/projects/&lt;slug&gt;/*.jsonl</div>
       </div>
 
       <h3>Skills — usage réel</h3>
@@ -598,21 +598,21 @@
       <p><strong>bibliothèque / référence</strong> — usage via scripts/sous-agent, non capté par le compteur (n=0 ≠ mort, constat #2) : <code>pdf-quality</code>, <code>pptx-deck</code>, <code>pptx-framed-image</code>, <code>restitution-deck-design</code>, <code>roadmap-keeper</code>, <code>slide-text-polish</code></p>
 
       <h3>TODO agents — chantiers à lancer (constats automatiques)</h3>
-      <p class="avertissement"><em>⚠️ <strong>Mesure incomplète</strong> — 9 transcript(s) sur 14 absent(s) du disque. Un <code>n=0</code> ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.</em></p>
+      <p class="avertissement"><em>⚠️ <strong>Mesure incomplète</strong> — 11 transcript(s) sur 14 absent(s) du disque. Un <code>n=0</code> ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.</em></p>
       <div class="critical">
         <p><strong>Désinstaller les shims BMAD dépréciés</strong> (17) : <code>bmad-checkpoint-preview</code>, <code>bmad-create-architecture</code>, <code>bmad-create-prd</code>, <code>bmad-create-story</code>, <code>bmad-dev-story</code>, <code>bmad-document-project</code>, <code>bmad-edit-prd</code>, <code>bmad-editorial-review</code>, <code>bmad-editorial-review-prose</code>, <code>bmad-editorial-review-structure</code>, <code>bmad-generate-project-context</code>, <code>bmad-review-adversarial-general</code>, <code>bmad-review-edge-case-hunter</code>, <code>bmad-review-verification-gap</code>, <code>bmad-sprint-status</code>, <code>bmad-technical-research</code>, <code>bmad-validate-prd</code> — dépréciés par BMAD dans leur propre <code>description</code>, chacun avec son remplaçant ; le seul élagage qui ne repose pas sur notre mesure d'usage.</p>
         <span class="tag tag-confirme">CONFIRMÉ</span>
-        <div class="tag-source">scan_transcripts.py · 2026-10-22 · transcripts de session</div>
+        <div class="tag-source">scan_transcripts.py · 2026-10-25 · transcripts de session</div>
       </div>
       <div class="critical">
         <p><strong>Skills projet sans usage</strong> : <code>agent-securite</code>, <code>veille-agentic</code> — vérifier pertinence et déclencheurs.</p>
         <span class="tag tag-confirme">CONFIRMÉ</span>
-        <div class="tag-source">scan_transcripts.py · 2026-10-22 · transcripts de session</div>
+        <div class="tag-source">scan_transcripts.py · 2026-10-25 · transcripts de session</div>
       </div>
       <div class="critical">
-        <p><strong>Skills en sommeil (&gt;30 j sans usage)</strong> : <code>audit-technique</code>, <code>bmad-advanced-elicitation</code>, <code>bmad-agent-pm</code>, <code>bmad-brainstorming</code>, <code>bmad-code-review</code>, <code>bmad-party-mode</code>.</p>
+        <p><strong>Skills en sommeil (&gt;30 j sans usage)</strong> : <code>audit-technique</code>, <code>bmad-advanced-elicitation</code>, <code>bmad-agent-pm</code>, <code>bmad-agent-ux-designer</code>, <code>bmad-brainstorming</code>, <code>bmad-code-review</code>, <code>bmad-party-mode</code>, <code>bmad-review</code>, <code>bmad-revue</code>, <code>deck-design-review</code>, <code>ppt-designer</code>.</p>
         <span class="tag tag-confirme">CONFIRMÉ</span>
-        <div class="tag-source">scan_transcripts.py · 2026-10-22 · transcripts de session</div>
+        <div class="tag-source">scan_transcripts.py · 2026-10-25 · transcripts de session</div>
       </div>
 
       <h3>Arbitrages enregistrés</h3>
@@ -678,7 +678,7 @@ Ce que 'traiter' ces 3 points pourrait vouloir dire (a instruire au hub, pas tra
         <li><strong><code>VSCode3:journal-muet-depuis-2026-09-23</code></strong> (2026-10-10) : ACCEPTE + APPLIQUE : run recapitulatif a posteriori journalise par log_run.py (partiel, shas des fix dans les notes), decision utilisateur 2026-10-10</li>
       </ul>
       <h3>Diagnostic qualitatif (étage 2 — agent-supervisor)</h3>
-      <p><em>Diagnostic à jour — rien à signaler, tous les constats précédents ont été arbitrés.</em></p>
+      <p><em>Diagnostic ⚠️ à relancer (&gt; 14 j) — rien à signaler, tous les constats précédents ont été arbitrés.</em></p>
       <p><em>10 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir un, demander au superviseur un <code>re_challenge</code> avec des données nouvelles :</em></p>
       <ul><li><s>+762 lignes en 24 h : le generateur a plus que double en un jour la croissance de ses 33 jours precedents, et le re-cotage renvoye « au prochain diagnostic etage 2 » n'a plus d'excuse</s> (<code>docs/cadrage-ppt/generate_deck.py</code>)</li><li><s>Les trois filets de controle sont portes et testes dans pptx_deck.py mais AUCUN n'est branche : le point d'appel appartient au chantier deck en cours</s> (<code>VSCode3:brancher-les-trois-filets-dans-generate-deck</code>)</li><li><s>Trois points de lint et deux zip() sans strict=True restent sur le chantier deck : corriges dans le working tree pour les zip, jamais commites</s> (<code>VSCode3:reliquats-de-lint-du-chantier-deck</code>)</li><li><s>Le hook qui liste ce qui attend une decision n'existe QUE au hub : les 5 cibles ne l'ont pas, et le kit ne le distribue pas</s> (<code>flotte:point-du-jour-absent-des-5-cibles</code>)</li><li><s>Onglet Pratiques &amp; risques : la dimension RISQUE TECHNIQUE est au niveau moyen — 1 constat(s) ouvert(s) a corriger dans ce depot</s> (<code>VSCode3:audit-risque_technique-niveau-moyen</code>)</li><li><s>Le point_du_jour.py propage aux 5 cibles importe kit_installe, module qui n'existe qu'au hub : ligne de bruit permanente a chaque session</s> (<code>flotte:point-du-jour-importe-kit-installe-hub-only</code>)</li><li><s>Chantier A (lecture humaine du cadrage BMAD IAP par un non-auteur) bloque sur un prealable non implemente</s> (<code>VSCode3:chantier-A-lecture-humaine-cadrage</code>)</li><li><s>[À VÉRIFIER] diagnostic.json (genere 2026-09-17) affiche encore 3 findings deja tranches dans arbitrages.json : diagnostic etage 2 non relance depuis 21 j</s> (<code>VSCode3:diagnostic-porte-des-findings-deja-arbitres</code>)</li><li><s>[HYPOTHÈSE] Le deck Offre IAP V1 remplace l ancien deck sans revue de design ni pptx-verify trace : 0 run, 0 arbitrage depuis</s> (<code>VSCode3:nouveau-deck-offre-sans-revue-tracee</code>)</li><li><s>[À VÉRIFIER] 17 commits applicatifs depuis le 2026-09-24 (dont le nouveau deck Offre Infra as a Product V1) sans aucun run journalise : derniere ligne de runs.jsonl datee 2026-09-23</s> (<code>VSCode3:journal-muet-depuis-2026-09-23</code>)</li></ul>
     </section>

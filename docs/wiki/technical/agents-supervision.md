@@ -1,5 +1,5 @@
 ---
-updated: 2026-10-22
+updated: 2026-10-25
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -8,7 +8,7 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-10-22T18:00:09+02:00 · **14 sessions** (transcripts) · **85** invocations de skills · **117** lancements de sous-agents.
+Dernier scan : 2026-10-25T13:23:57+01:00 · **14 sessions** (transcripts) · **85** invocations de skills · **117** lancements de sous-agents.
 
 ## Skills — usage réel
 
@@ -70,11 +70,11 @@ _Consommés en lisant/exécutant leurs `scripts/`, ou via un sous-agent qui les 
 
 ## TODO agents (constats automatiques)
 
-⚠️ **Mesure incomplète** — 9 transcript(s) sur 14 absent(s) du disque. Un `n=0` ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.
+⚠️ **Mesure incomplète** — 11 transcript(s) sur 14 absent(s) du disque. Un `n=0` ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.
 
 1. **Désinstaller les shims BMAD dépréciés** (17) : `bmad-checkpoint-preview`, `bmad-create-architecture`, `bmad-create-prd`, `bmad-create-story`, `bmad-dev-story`, `bmad-document-project`, `bmad-edit-prd`, `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-generate-project-context`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-review-verification-gap`, `bmad-sprint-status`, `bmad-technical-research`, `bmad-validate-prd` — dépréciés par BMAD dans leur propre `description`, chacun avec son remplaçant ; le seul élagage qui ne repose pas sur notre mesure d'usage.
 2. **Skills projet sans usage** : `agent-securite`, `veille-agentic` — vérifier pertinence et déclencheurs.
-3. **Skills en sommeil (>30 j sans usage)** : `audit-technique`, `bmad-advanced-elicitation`, `bmad-agent-pm`, `bmad-brainstorming`, `bmad-code-review`, `bmad-party-mode`.
+3. **Skills en sommeil (>30 j sans usage)** : `audit-technique`, `bmad-advanced-elicitation`, `bmad-agent-pm`, `bmad-agent-ux-designer`, `bmad-brainstorming`, `bmad-code-review`, `bmad-party-mode`, `bmad-review`, `bmad-revue`, `deck-design-review`, `ppt-designer`.
 
 ## Arbitrages enregistrés
 
@@ -141,7 +141,7 @@ Ce que 'traiter' ces 3 points pourrait vouloir dire (a instruire au hub, pas tra
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 
-_Diagnostic à jour — rien à signaler, tous les constats précédents ont été arbitrés._
+_Diagnostic ⚠️ à relancer (> 14 j) — rien à signaler, tous les constats précédents ont été arbitrés._
 
 _10 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir un, demander au superviseur un `re_challenge` avec des données nouvelles :_
 
