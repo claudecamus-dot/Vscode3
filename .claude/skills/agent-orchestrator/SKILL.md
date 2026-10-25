@@ -20,8 +20,8 @@ Détail, mesures et historique de chaque section (divulgation progressive, lot 3
 [routage-bmad](references/routage-bmad.md) · [veille](references/veille.md) ·
 [salles](references/salles.md) · [journal](references/journal.md).
 
-<!-- SOCLE-PROVENANCE: socle : 94ee5d25 du 2026-10-22 -->
-> **Socle généré** — tout ce qui suit `## Méthode` vient du hub de supervision (`94ee5d25`, 2026-10-22) et sera **réécrit** à la prochaine propagation.
+<!-- SOCLE-PROVENANCE: socle : 350cac20 du 2026-10-25 -->
+> **Socle généré** — tout ce qui suit `## Méthode` vient du hub de supervision (`350cac20`, 2026-10-25) et sera **réécrit** à la prochaine propagation.
 > Le chapitre « Portée sur ce projet » ci-dessous, lui, n'est jamais réécrit : c'est le travail local.
 
 ## Portée sur ce projet
@@ -111,6 +111,7 @@ checkpoints**, ne garder que les étapes conditionnelles applicables. Playbooks 
 | `export-ppt-verifie` | Livrable = un deck PPT : génération + `pptx-verify` obligatoire | Importé, à confirmer |
 | `export-ppt-iteration` | Retours sur UN SOUS-ENSEMBLE de slides d'un deck PPT EXISTANT ; deck neuf → `export-ppt-verifie` | Créé 2026-10-21, jamais joué |
 | `revue-design-parallele` | Revue multi-angles d'un livrable en fan-out puis consolidation | Importé, à confirmer |
+| `revue-correction-iterative` | Lot fini : revue (comité) → correction → tests, en boucle bornée (3 rondes), escalade si non-progrès | Créé 2026-10-24, jamais joué |
 | `cadrage-produit` | Intention produit NEUVE : brief → PRD → architecture → UX, puis relais vers `dev-verifie` à son étape `cadrage-epics` (`bmad-create-epics-and-stories`) — jamais de code avant les stories | Créé 2026-09-21, routé ici le 2026-09-24 (un playbook absent de cette table n'existe pas pour l'orchestrateur) |
 
 Sinon composition libre depuis le catalogue + `routing-hints.json` : préférer les

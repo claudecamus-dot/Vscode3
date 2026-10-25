@@ -4,7 +4,7 @@
 # | garder : la signaler au hub, qui corrige le canon et re-synchronise.
 # | (Depuis le hub : « py .claude/dispositif/sync_dispositif.py » — ce script
 # |  n'est pas déployé, il n'existe pas dans ce dépôt.)
-# | Provenance canon : d8d62056 du 2026-10-22 — permet, au prochain sync, de dire si
+# | Provenance canon : bce2201b du 2026-10-25 — permet, au prochain sync, de dire si
 # | une différence vient d'une édition locale ou d'une avance du canon (voir
 # | `determiner_cause` dans sync_dispositif.py au hub).
 # +---------------------------------------------------------------------------
@@ -87,6 +87,7 @@ détection est textuelle (le plan cite le chemin ou non) : c'est un garde-fou, p
 une preuve — un plan qui ne nomme aucun chemin n'est pas vu. Un run soldé `echec`
 est concerné comme les autres : la note « revue: abandonné, rien livré » suffit.
 """
+import bisect
 import datetime
 import json
 import math
@@ -302,12 +303,15 @@ def solder(argv) -> int:
     positionnels = []
     i = 0
     while i < len(argv):
-        if argv[i] in ("--par", "--artefact", "--demande") and i + 1 < len(argv):
+        if argv[i] in ("--par", "--artefact", "--demande", "--solde-par") and i + 1 < len(argv):
             options[argv[i][2:]] = argv[i + 1]
             i += 2
         elif argv[i] == "--re-solder":
             options["re-solder"] = True
             i += 1
+        elif argv[i] == "--solde-par":
+            print("log_run --solde : --solde-par attend un run_id (valeur absente)")
+            return 1
         elif argv[i] == "--demande":
             print("log_run --solde : --demande attend un fragment de demande (valeur absente)")
             return 1
@@ -341,6 +345,10 @@ def solder(argv) -> int:
     except (OSError, ValueError) as exc:
         print(f"log_run --solde : lecture impossible ({exc})")
         return 1
+    solde_par = options.get("solde-par")
+    if solde_par is not None and not any(r.get("run_id") == solde_par for r in runs):
+        print(f"log_run --solde : --solde-par {solde_par!r} : run_id absent du journal (refuse)")
+        return 1
     if fragment is not None:
         cibles = [r for r in runs
                   if fragment.lower() in str(r.get("demande") or "").lower()]
@@ -356,6 +364,31 @@ def solder(argv) -> int:
             print(f"  - {r.get('ts')} | {str(r.get('demande') or '')[:60]}")
         return 1
     run = cibles[0]
+    if solde_par is not None:
+        if solde_par == run.get("run_id"):
+            print(f"log_run --solde : --solde-par {solde_par!r} est le run a solder lui-meme (refuse)")
+            return 1
+        homonymes = [r for r in runs if r.get("run_id") == solde_par]
+        if len(homonymes) != 1:
+            print(f"log_run --solde : --solde-par {solde_par!r} : run_id non unique dans le journal"
+                  f" ({len(homonymes)} occurrences) (refuse)")
+            return 1
+        solveur = homonymes[0]
+        try:
+            t_solveur = _aware(datetime.datetime.fromisoformat(str(solveur.get("ts"))))
+            t_solde = _aware(datetime.datetime.fromisoformat(str(run.get("ts"))))
+        except ValueError:
+            print(f"log_run --solde : --solde-par {solde_par!r} : ts absent ou illisible"
+                  f" (solveur {solveur.get('ts')!r}, run solde {run.get('ts')!r}) (refuse)")
+            return 1
+        if t_solveur <= t_solde:
+            print(f"log_run --solde : --solde-par {solde_par!r} doit etre posterieur au run solde"
+                  f" ({solveur.get('ts')} <= {run.get('ts')}) (refuse)")
+            return 1
+        if solveur.get("resultat") != "succes":
+            print(f"log_run --solde : --solde-par {solde_par!r} doit etre un run 'succes'"
+                  f" (resultat du solveur : {solveur.get('resultat')!r}) (refuse)")
+            return 1
     # Contrôle AVANT toute mutation : un refus laisse le journal exactement dans
     # l'état où il était (aucune réécriture, aucun `notes` allongé d'un solde qui
     # n'a pas eu lieu).
@@ -430,6 +463,8 @@ def solder(argv) -> int:
         soldes = [{**run["solde"], "re_solder": False}]
     run["soldes"] = soldes + [{**entree, "re_solder": bool(options.get("re-solder"))}]
     run["solde"] = entree
+    if solde_par is not None:
+        run["solde_par"] = solde_par
     # Ecriture atomique (meme convention que .claude/supervision/scan_transcripts.py) : "w" direct sur
     # RUNS_PATH tronque les 94 Ko du journal a mi-parcours si l'ecriture est interrompue
     # (Ctrl-C, coupure, disque plein). Le temporaire vit dans le meme repertoire pour
@@ -1459,11 +1494,110 @@ def lister(argv) -> int:
     return 0
 
 
+# --- Candidats et choix (GMAH, comparateur fantome) ---------------------------
+# Deux champs OPTIONNELS du run, poses par flags : `--candidats-json '<liste>'` et
+# `--choix NOM`. Tout-ou-rien ; invalide = refus, RIEN n'est ecrit ; absents =
+# comportement strictement inchange. Validation STRUCTURELLE : le canon ne peut pas
+# importer `gravite.py` (absent de certains projets) ; les noms de champs copient
+# `gravite.score` (un test les egalise avec la source quand elle est presente).
+FLAG_CANDIDATS = "--candidats-json"
+FLAG_CHOIX = "--choix"
+CANDIDATS_MAX = 20
+CANDIDATS_OCTETS_MAX = 4096
+_CHAMPS_SCORE = ("priorite", "fit", "preuve", "reuse", "distance",
+                 "cout", "tokens", "latence", "charge", "risque", "contexte")
+_CHAMPS_TEXTE = ("modele", "perimetre")
+_MODES_EXCLUSIFS = ("--solde", "--verdict", "--stats", "--lister", "--dette-oracle")
+
+
+def verifier_candidats_choix(brut, choix):
+    """(liste_validee, None) ou (None, message de refus)."""
+    if brut is None or choix is None:
+        return None, (f"log_run REFUS : {FLAG_CANDIDATS} et {FLAG_CHOIX} vont ensemble "
+                      "(les deux ou aucun).")
+    if len(brut.encode("utf-8", "replace")) > CANDIDATS_OCTETS_MAX:
+        return None, f"log_run REFUS : candidats > {CANDIDATS_OCTETS_MAX} octets."
+    try:
+        cands = json.loads(brut)
+    except ValueError as exc:
+        return None, f"log_run REFUS : candidats : JSON invalide ({exc})."
+    if not isinstance(cands, list) or not cands:
+        return None, "log_run REFUS : candidats : une liste non vide est attendue."
+    if len(cands) > CANDIDATS_MAX:
+        return None, f"log_run REFUS : candidats : {CANDIDATS_MAX} au maximum."
+    noms = []
+    permis = ("nom", "requiert_arbitrage") + _CHAMPS_TEXTE + _CHAMPS_SCORE
+    for i, c in enumerate(cands):
+        if not isinstance(c, dict):
+            return None, f"log_run REFUS : candidats[{i}] : un objet est attendu."
+        inconnus = sorted(set(c) - set(permis))
+        if inconnus:
+            return None, (f"log_run REFUS : candidats[{i}] : champ(s) inconnu(s) "
+                          f"{inconnus} (permis : {', '.join(permis)}).")
+        nom = c.get("nom")
+        if not isinstance(nom, str) or not nom.strip() or len(nom) > 64:
+            return None, f"log_run REFUS : candidats[{i}] : 'nom' = chaine non vide de 64 car. max."
+        if not nom.isprintable():
+            return None, f"log_run REFUS : candidats[{i}].nom : caractere non imprimable interdit."
+        if nom in noms:
+            return None, f"log_run REFUS : candidats : nom en double {nom!r}."
+        noms.append(nom)
+        for k in _CHAMPS_SCORE:
+            if k not in c:
+                continue
+            v = c[k]
+            # int d'abord : un entier JSON geant fait lever OverflowError a isfinite/float
+            if isinstance(v, bool) or not isinstance(v, (int, float)):
+                bon = False
+            elif isinstance(v, int):
+                bon = 0 <= v <= 1
+            else:
+                bon = 0 <= v <= 1   # NaN/Inf: comparaisons fausses, donc refuses
+            if not bon:
+                return None, (f"log_run REFUS : candidats[{i}].{k} : nombre fini "
+                              f"dans [0, 1] attendu, recu {repr(v)[:40]}.")
+        for k in _CHAMPS_TEXTE:
+            if k in c and (not isinstance(c[k], str) or len(c[k]) > 200):
+                return None, f"log_run REFUS : candidats[{i}].{k} : chaine de 200 car. max."
+            if k in c and not c[k].isprintable():
+                return None, f"log_run REFUS : candidats[{i}].{k} : caractere non imprimable interdit."
+        if "requiert_arbitrage" in c and not isinstance(c["requiert_arbitrage"], bool):
+            return None, f"log_run REFUS : candidats[{i}].requiert_arbitrage : booleen attendu."
+    if choix not in noms:
+        return None, (f"log_run REFUS : choix {choix!r} ne nomme aucun candidat "
+                      f"({', '.join(map(repr, noms))}).")
+    return cands, None
+
+
+def extraire_candidats_choix(argv):
+    """(argv sans les flags, brut|None, choix|None, presents, erreur|None)."""
+    reste, vals, i = [], {}, 0
+    while i < len(argv):
+        if argv[i] in (FLAG_CANDIDATS, FLAG_CHOIX):
+            if argv[i] in vals:
+                return argv, None, None, True, f"log_run REFUS : {argv[i]} donne deux fois."
+            if i + 1 >= len(argv):
+                return argv, None, None, True, f"log_run REFUS : {argv[i]} attend une valeur."
+            vals[argv[i]] = argv[i + 1]
+            i += 2
+            continue
+        reste.append(argv[i])
+        i += 1
+    return reste, vals.get(FLAG_CANDIDATS), vals.get(FLAG_CHOIX), bool(vals), None
+
+
 def main(argv) -> int:
     # `--help`/`-h` seul : usage et code 0 (sinon lu comme un JSON invalide).
     if len(argv) == 1 and argv[0] in ("--help", "-h"):
         print((__doc__ or "log_run : voir l'en-tete du script").strip())
         return 0
+    argv, _cands_brut, _choix_brut, _flags_cc, _err_cc = extraire_candidats_choix(argv)
+    if _err_cc or (_flags_cc and argv and argv[0] in _MODES_EXCLUSIFS):
+        print(_err_cc or f"log_run REFUS : {FLAG_CANDIDATS}/{FLAG_CHOIX} n'existent qu'a l'append d'un run.")
+        return 1
+    if "--solde-par" in argv and not (argv and argv[0] == "--solde"):
+        print("log_run : --solde-par n'a de sens qu'avec --solde (refuse)")
+        return 1
     if argv and argv[0] == "--solde":
         return solder(argv[1:])
     if argv and argv[0] == "--verdict":
@@ -1491,6 +1625,15 @@ def main(argv) -> int:
     if not isinstance(run, dict):
         print("log_run : un objet JSON est attendu")
         return 1
+    if _flags_cc:
+        if "candidats" in run or "choix" in run:
+            print("log_run REFUS : candidats/choix donnes a la fois par flag et dans le JSON du run.")
+            return 1
+        _cands, _refus_cc = verifier_candidats_choix(_cands_brut, _choix_brut)
+        if _refus_cc:
+            print(_refus_cc)
+            return 1
+        run["candidats"], run["choix"] = _cands, _choix_brut
     missing = [k for k in ("demande", "qualification") if not run.get(k)]
     if missing:
         print(f"log_run : champ(s) requis manquant(s) : {', '.join(missing)}")
@@ -1591,6 +1734,14 @@ MARQUEURS_VERIFICATION = (
 )
 
 
+# Route COMMANDE (option 1) : « mesur », « rendu regard » et « ouvert » ne designent
+# aucune commande ; ils restent dans MARQUEURS_VERIFICATION (copie du scan, qui MESURE)
+# mais ne declenchent plus la route commande -- un tel succes tombe dans le refus
+# « aucune preuve ». La preuve visuelle a sa propre route (ligne stricte).
+MARQUEURS_HORS_COMMANDE = (r"mesur", r"rendu regard", r"\bouvert")
+MARQUEURS_COMMANDE = tuple(m for m in MARQUEURS_VERIFICATION if m not in MARQUEURS_HORS_COMMANDE)
+
+
 def _a_plat(txt) -> str:
     import unicodedata
     return unicodedata.normalize("NFKD", str(txt)).encode("ascii", "ignore").decode().lower()
@@ -1599,29 +1750,266 @@ def _a_plat(txt) -> str:
 # Negation (diagnostic 2026-10-19) : « fait, rien mesure » ou « pytest pas lance »
 # portaient un marqueur sans verification. Un marqueur est NIE si, dans la meme
 # proposition (coupee a , ; . ! ? saut de ligne et « mais »), un negateur le precede
-# de moins de 4 mots (rien, pas, non, sans, jamais, aucun) ou le suit de 2 mots
-# (pas, non, jamais). « ne ... pas » compte pour UNE negation (« ne » seul ignore).
-# Un nombre pair de negateurs du meme cote s'annule (« jamais sans pytest » passe).
-# Limite : « pytest 12 passed sans erreur » reste accepte (« sans » apres), mais
-# « passed pas de regression » est refuse a tort : friction assumee.
-_NEGATEURS_AVANT = frozenset({"rien", "pas", "non", "sans", "jamais", "aucun", "aucune"})
-_NEGATEURS_APRES = frozenset({"pas", "non", "jamais"})
+# de moins de 4 mots ou le suit de 2 mots. « ne ... pas » compte pour UNE negation
+# (« ne » seul ignore). Un nombre pair de negateurs du meme cote s'annule
+# (« jamais sans pytest » passe). « non-execute » se lit « non » + « execute ».
+# Option 1 (utilisateur, 2026-10-24) : BORNER ET FIGER, pas etendre. Mesure sur le
+# journal reel (214 succes, 89 avec marqueur, 14 avec un negateur proche) : 0 negation
+# reelle, 14 innocentes (« sans ecart », « aucun dechet »). Le lexique ne gagne donc
+# que les mots du corpus de tests/test_log_run_negation_corpus.py, chacun avec un
+# contre-cas honnete accepte.
+# LIMITE ASSUMEE : cette negation LEXICALE est une FRICTION pour l'erreur honnete, PAS
+# une protection contre la mauvaise foi : rien ne relie les notes a une execution
+# reelle (« pytest 12 passed » s'ecrit sans avoir lance pytest). Friction connue :
+# « passed pas de regression » ou « nothing to report: pytest 12 passed » sont refuses
+# a tort (separer par une virgule), « pytest 12 passed sans erreur » reste accepte.
+_NEGATEURS_AVANT = frozenset({
+    "rien", "pas", "non", "sans", "jamais", "aucun", "aucune",
+    "ni", "impossible", "omis", "omise", "skipped", "unable", "nothing", "none",
+    "absent", "absente",
+})
+_NEGATEURS_APRES = frozenset({"pas", "non", "jamais", "impossible", "omis", "omise"})
+# « absent » nie juste apres le marqueur (« pytest absent »), pas dans « absent de regression ».
+_ABSENTS_APRES = frozenset({"absent", "absente"})
+_DE_APRES_ABSENT = frozenset({"de", "du", "des", "d"})
+# Mots d'echec : nient jusqu'a 8 mots apres un marqueur DANS LA PROPOSITION (« pytest failed »,
+# « 12 passed 0 failed 3 failed »), sauf un compte nul juste devant CE mot (« 0 failed »).
+# « skipped » est de plus exempt derriere un nombre (« 4 skipped » n'est pas un echec).
+# FRICTION CONNUE, VOULUE (journal reel, run 230 : « 2585 passed / 2 failed puis les 2
+# qualifies et fermes ») : « N failed » apres un compte de passed est refuse ; contournement :
+# une virgule ou une reformulation (« 2585 passed, 2 failed puis ... »).
+_ECHECS_APRES = frozenset({"skipped", "failed", "echec", "echecs"})
+_ZEROS_AVANT_ECHEC = frozenset({"0", "zero", "aucun", "aucune", "sans", "no"})
+FENETRE_ECHEC = 8
 _COUPURE_PROPOSITION = re.compile(r"[,;.!?\n]|\bmais\b")
+
+
+# Round 3 : un mot d'echec dans un CHEMIN (tests/test_failed_login.py) n'est pas un echec.
+_MARQUES_CHEMIN = ("/", chr(92), "_", ".py")
+
+
+def _mots_echec(texte: str) -> list:
+    """Mots [a-z0-9]+ de `texte`, sauf ceux d'un morceau qui ressemble a un chemin
+    (remplace par '#') : seul ce morceau est ignore, le reste de la proposition compte."""
+    mots = []
+    for morceau in texte.split():
+        if any(x in morceau for x in _MARQUES_CHEMIN):
+            mots.append("#")
+        else:
+            mots.extend(re.findall(r"[a-z0-9]+", morceau))
+    return mots
+
+
+def _echec_apres(mots) -> bool:
+    for k, w in enumerate(mots):
+        if w not in _ECHECS_APRES:
+            continue
+        prec = mots[k - 1] if k else ""
+        if prec in _ZEROS_AVANT_ECHEC:
+            continue
+        if w == "skipped" and prec.isdigit():
+            continue
+        return True
+    return False
 
 
 def _marqueur_affirme(notes: str, motif: str) -> bool:
     """Vrai si `motif` apparait dans `notes` au moins une fois sans negation proche."""
+    return _etat_marqueur(notes, motif)[0]
+
+
+def _etat_marqueur(notes: str, motif: str):
+    """(affirme, rejete_par_echec) : `rejete_par_echec` vaut vrai si au moins une
+    occurrence a ete ecartee a cause d'un mot d'echec qui la suit (message du refus)."""
+    par_echec = False
+    coupures = [(c.start(), c.end()) for c in _COUPURE_PROPOSITION.finditer(notes)]
+    fins = [e for _s, e in coupures]
+    debuts = [s for s, _e in coupures]
     for m in re.finditer(motif, notes):
-        debut = max((c.end() for c in _COUPURE_PROPOSITION.finditer(notes, 0, m.start())), default=0)
-        fin_c = _COUPURE_PROPOSITION.search(notes, m.end())
-        fin = fin_c.start() if fin_c else len(notes)
+        i = bisect.bisect_right(fins, m.start())
+        debut = max(fins[i - 1] if i else 0, m.start() - 200)
+        j = bisect.bisect_left(debuts, m.end())
+        fin = min(debuts[j] if j < len(debuts) else len(notes), m.end() + 200)
         avant = re.findall(r"[a-z0-9]+", notes[debut:m.start()])[-4:]
         apres = re.findall(r"[a-z0-9]+", notes[m.end():fin])[:2]
         nb_av = sum(1 for w in avant if w in _NEGATEURS_AVANT)
         nb_ap = sum(1 for w in apres if w in _NEGATEURS_APRES)
+        nb_ap += sum(1 for k, w in enumerate(apres)
+                     if w in _ABSENTS_APRES and not (k + 1 < len(apres) and apres[k + 1] in _DE_APRES_ABSENT))
+        if _echec_apres(_mots_echec(notes[m.end():fin])[:FENETRE_ECHEC]):
+            par_echec = True
+            continue  # un mot d'echec reel apres le marqueur : jamais une parite
         if nb_av % 2 == 0 and nb_ap % 2 == 0:
-            return True
-    return False
+            return True, par_echec
+    return False, par_echec
+
+
+# --- Contrat de sortie executable (GMAH lot 1.2, arbitre 2026-10-23) ----------
+# Un marqueur seul (« mesure », « ouvert », un sha) ne prouve pas qu'une commande a
+# tourne. Un `succes` doit citer une COMMANDE et un JETON DE RESULTAT, tous deux
+# affirmes (meme negation que ci-dessus). Vocabulaire tire de
+# MARQUEURS_VERIFICATION ; seul « exit 0 » s'ajoute, comme jeton de resultat.
+COMMANDES_PREUVE = (r"pytest", r"py -m", r"--check")
+RESULTATS_PREUVE = (r"\bpassed\b", r"\bexit 0\b", r"\b(?=[0-9]*[a-f])[0-9a-f]{7,40}\b")
+
+
+def element_manquant_preuve(notes: str) -> str | None:
+    """None si `notes` (deja mises a plat) portent commande ET resultat affirmes ;
+    sinon le nom de l'element manquant : 'commande', 'resultat' ou les deux."""
+    manque = []
+    if not any(_marqueur_affirme(notes, m) for m in COMMANDES_PREUVE):
+        manque.append("commande")
+    if not any(_marqueur_affirme(notes, m) for m in RESULTATS_PREUVE):
+        manque.append("resultat")
+    return " et ".join(manque) or None
+
+
+def refus_preuve_executable(notes: str) -> str | None:
+    manque = element_manquant_preuve(notes)
+    if not manque:
+        return None
+    par_echec = any(
+        (lambda e: not e[0] and e[1])(_etat_marqueur(notes, m))
+        for m in COMMANDES_PREUVE + RESULTATS_PREUVE)
+    indice = ""
+    if par_echec:
+        indice = (
+            "  Un mot d'echec (" + ", ".join(sorted(_ECHECS_APRES)) + ") suit la commande ou le "
+            "resultat dans la meme proposition : mettre une virgule avant ou reformuler "
+            "(ex. '3 failed au premier essai, apres correctif 15 passed' sans le melanger a la "
+            "commande).\n")
+    return (
+        f"log_run REFUS : resultat 'succes' sans preuve executable : element manquant = {manque}.\n"
+        + indice +
+        "  Attendu dans notes : une commande (pytest | py -m ... | --check) ET un jeton de "
+        "resultat (N passed | exit 0 | sha de commit), non nies.\n"
+        f"  Sinon qualifier : '{CHAMP_VERIFICATION}': '{VERIFICATION_NON_VERIFIEE}' "
+        "(journalise et compte comme non verifie), ou un resultat 'partiel' / "
+        "'en-attente-validation'."
+    )
+
+
+# Option A, FORME STRICTE (decisions utilisateur 2026-10-23 puis 2026-10-24, option b) :
+# un livrable VISUEL peut prouver par une LIGNE qui vaut exactement
+#     rendu regardé: <chemin>
+# seule sur sa ligne (blancs de bord tolérés), sans commande. Aucun pliage, aucune
+# analyse de négation : tout autre texte sur la ligne, un homoglyphe, un caractère de
+# format ou un diacritique combinant font simplement NE PAS reconnaitre la ligne
+# (fail-closed). Le chemin doit être un artefact visuel (EXTENSIONS_VISUELLES), fichier
+# regulier non vide existant AU MOMENT DU LOG, sous C:/tmp ou sous le cwd s'il est la
+# racine d'un depot git.
+# FRICTION, PAS PREUVE : un fichier ancien ou renommé passe (aucun contrôle de mtime) ;
+# une contradiction écrite sur UNE AUTRE ligne (« en fait pas regardé ») n'est pas vue.
+MOTIF_RENDU_REGARDE = r"rendu regarde"
+_RE_LIGNE_RENDU = re.compile(r"rendu regardé: +(\S+)", re.IGNORECASE)  # accent, ':' collé, 1+ espaces
+_RE_DEBUT_RENDU = re.compile(r"rendu regard", re.IGNORECASE)
+RACINES_RENDU = ("C:/tmp",)
+EXTENSIONS_VISUELLES = (".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".pdf",
+                        ".html", ".htm", ".pptx", ".docx")
+MESSAGE_PERIMETRE_VISUEL = ("preuve visuelle réservée aux livrables visuels (image, pdf, page, "
+                            "deck) ; pour du code, une commande et son résultat")
+MAX_OCCURRENCES_RENDU = 50
+MAX_LONGUEUR_NOTES_VISUEL = 20000
+MAX_LONGUEUR_NOTES = 20000  # borne AVANT tout _a_plat (NFKD peut multiplier x18)
+GABARIT_RENDU = "rendu regardé: <chemin>"
+
+
+def _lignes_rendu(notes_brutes: str):
+    """(chemins des lignes au format strict, lignes candidates, trop).
+
+    Candidate = ligne qui COMMENCE par « rendu regard » (apres strip) ; seule une
+    candidate qui vaut exactement le gabarit fournit un chemin. Au plus
+    MAX_OCCURRENCES_RENDU candidates (au-dela : trop)."""
+    chemins, candidates = [], 0
+    for ligne in notes_brutes.splitlines():
+        ligne = ligne.strip()
+        if not _RE_DEBUT_RENDU.match(ligne):
+            continue
+        candidates += 1
+        if candidates > MAX_OCCURRENCES_RENDU:
+            return chemins, candidates, True
+        m = _RE_LIGNE_RENDU.fullmatch(ligne)
+        if m:
+            chemins.append(m.group(1))
+    return chemins, candidates, False
+
+
+def chemin_rendu(notes_brutes: str) -> str | None:
+    """Chemin de la premiere ligne au format strict, sinon None (revue a posteriori)."""
+    if len(notes_brutes) > MAX_LONGUEUR_NOTES_VISUEL:
+        return None
+    chemins = _lignes_rendu(notes_brutes)[0]
+    return chemins[0] if chemins else None
+
+
+def _racines_rendu() -> list:
+    racines = [os.path.realpath(r) for r in RACINES_RENDU]
+    cwd = os.path.realpath(os.getcwd())
+    if os.path.exists(os.path.join(cwd, ".git")):
+        racines.append(cwd)
+    return racines
+
+
+def _defaut_chemin_visuel(chemin: str) -> str | None:
+    if ":" in re.sub(r"^[A-Za-z]:", "", chemin):  # flux de donnees alternatif a.txt:s.png
+        return f"':' interdit dans le chemin hors lettre de lecteur : {chemin}"
+    if os.path.splitext(chemin)[1].lower() not in EXTENSIONS_VISUELLES:
+        return f"{MESSAGE_PERIMETRE_VISUEL} (extension refusee : {chemin})"
+    absolu = os.path.normcase(os.path.realpath(os.path.abspath(chemin)))
+    if not any(absolu == os.path.normcase(r) or absolu.startswith(os.path.normcase(r).rstrip(os.sep) + os.sep)
+               for r in _racines_rendu()):
+        return ("chemin hors des racines autorisees (C:/tmp, ou cwd racine d'un depot git) : "
+                f"{chemin}")
+    if not os.path.exists(absolu):
+        return f"fichier introuvable : {chemin}"
+    if not os.path.isfile(absolu):
+        return f"pas un fichier regulier (dossier ?) : {chemin}"
+    if os.path.getsize(absolu) == 0:
+        return f"fichier vide : {chemin}"
+    return None
+
+
+def _cause_rendu(notes_brutes: str) -> str:
+    """Cause probable du rejet d'une ligne candidate (la premiere reconnue)."""
+    import unicodedata
+    for ligne in notes_brutes.splitlines():
+        ligne = ligne.strip()
+        if not _RE_DEBUT_RENDU.match(ligne):
+            continue
+        if any(unicodedata.category(c) in ("Mn", "Cf") for c in ligne):
+            return ("caractere invisible ou accent decompose : reecrire la ligne en ASCII + "
+                    "« é » precompose")
+        if "\uff1a" in ligne:
+            return "deux-points pleine chasse : utiliser le « : » ASCII"
+        if re.match(r"rendu regard.[ \t\u00a0\u2000-\u200a\u202f\u3000]+:", ligne, re.IGNORECASE):
+            return "espace, tabulation ou NBSP avant le « : » : le coller au mot"
+        if re.match(r"rendu regarde", ligne, re.IGNORECASE):
+            return "accent manquant : ecrire « regardé » avec « é »"
+    return "texte avant ou apres, ou chemin absent"
+
+
+def verifier_preuve_visuelle(notes_brutes: str) -> str | None:
+    """'' si aucune ligne ne commence par « rendu regard » (route non applicable) ;
+    None si une ligne au format strict cite un fichier valide ; sinon un refus qui
+    nomme le defaut et donne le gabarit a copier."""
+    tete = "log_run REFUS : preuve visuelle 'rendu regarde' invalide : "
+    pied = f"\n  Gabarit : une ligne a part, exactement « {GABARIT_RENDU} », rien d'autre sur la ligne."
+    if len(notes_brutes) > MAX_LONGUEUR_NOTES_VISUEL:
+        return tete + f"notes de plus de {MAX_LONGUEUR_NOTES_VISUEL} caracteres." + pied
+    chemins, candidates, trop = _lignes_rendu(notes_brutes)
+    if trop:
+        return tete + f"plus de {MAX_OCCURRENCES_RENDU} lignes 'rendu regarde'." + pied
+    if not candidates:
+        return ""
+    if not chemins:
+        return tete + "aucune ligne au format strict (" + _cause_rendu(notes_brutes) + ")." + pied
+    defauts = []
+    for chemin in chemins:
+        d = _defaut_chemin_visuel(chemin)
+        if d is None:
+            return None
+        defauts.append(d)
+    return tete + defauts[0] + pied
 
 
 def verifier_preuve_de_verification(run: dict) -> str | None:
@@ -1631,14 +2019,26 @@ def verifier_preuve_de_verification(run: dict) -> str | None:
     `verifier_lot`), et la qualification explicite `verification:
     "non-verifiee"` (le run reste `succes` mais se declare non verifie, donc
     mesurable). Le `--solde` ne passe pas par ici. Le marqueur se cherche sur les
-    seules `notes`, mises a plat (minuscules, sans accents)."""
+    seules `notes`, mises a plat (minuscules, sans accents).
+
+    La negation lexicale (_NEGATEURS_*) est une FRICTION pour l'erreur honnete, PAS une
+    protection contre la mauvaise foi : rien ne relie les notes a une execution reelle."""
     if run.get("resultat") != "succes" or str(run.get(CHAMP_LOT) or "").strip():
         return None
-    if _a_plat(run.get(CHAMP_VERIFICATION) or "").strip() == VERIFICATION_NON_VERIFIEE:
+    if _a_plat(str(run.get(CHAMP_VERIFICATION) or "")[:64]).strip() == VERIFICATION_NON_VERIFIEE:
         return None
-    notes = _a_plat(run.get("notes") or "")
-    if any(_marqueur_affirme(notes, m) for m in MARQUEURS_VERIFICATION):
-        return None
+    brutes = str(run.get("notes") or "")
+    if len(brutes) > MAX_LONGUEUR_NOTES:
+        return (f"log_run REFUS : notes de {len(brutes)} caracteres (> {MAX_LONGUEUR_NOTES}) : "
+                "trop longues pour chercher une preuve ; resumer la commande et son resultat.")
+    notes = _a_plat(brutes)
+    visuel = verifier_preuve_visuelle(brutes)
+    if visuel != "":
+        if visuel is None or refus_preuve_executable(notes) is None:
+            return None
+        return visuel
+    if any(_marqueur_affirme(notes, m) for m in MARQUEURS_COMMANDE):
+        return refus_preuve_executable(notes)
     return (
         "log_run REFUS : resultat 'succes' sans aucune preuve de verification dans "
         "'notes'.\n"
@@ -1647,7 +2047,11 @@ def verifier_preuve_de_verification(run: dict) -> str | None:
         f"  Sinon qualifier : '{CHAMP_VERIFICATION}': '{VERIFICATION_NON_VERIFIEE}' "
         "(le run reste journalise, declare non verifie), ou un resultat "
         "'partiel' / 'en-attente-validation'.\n"
-        "  Un marqueur nie a proximite (rien, pas, non, sans, jamais, aucun) ne compte pas.\n"
+        f"  Un marqueur nie a proximite ({', '.join(sorted(_NEGATEURS_AVANT | _NEGATEURS_APRES))}) "
+        "ne compte pas ; un mot d'echec apres lui non plus (" + ", ".join(sorted(_ECHECS_APRES)) + ").\n"
+        "  Exemptes : un compte nul devant le mot d'echec (" + ", ".join(sorted(_ZEROS_AVANT_ECHEC))
+        + ", ex. '0 failed'), 'N skipped', et '" + "|".join(sorted(_ABSENTS_APRES)) + " "
+        + "|".join(sorted(_DE_APRES_ABSENT)) + "' (ex. 'absent de regression').\n"
         "  Cette garde est une FRICTION, pas une preuve : elle cherche un marqueur "
         "dans les notes et ne verifie pas que la commande a ete lancee. Un sha n'est "
         "PAS verifie dans le depot courant (un run du hub cite des commits d'AUTRES "
