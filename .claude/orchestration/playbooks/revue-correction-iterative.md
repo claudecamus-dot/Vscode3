@@ -142,3 +142,8 @@ avec leur commande et leurs comptes.
   "regle_reprise": "une relance ciblée par étape en échec de contrat, puis escalade utilisateur avec l'état réel — jamais de boucle de retry ; la boucle elle-même s'arrête à la borne de rondes (défaut 3) ou dès que le même constat réapparaît"
 }
 ```
+
+<!-- SOCLE-PROVENANCE: socle : a68628d3 du 2026-10-27 -->
+> **Socle généré** — tout ce qui PRÉCÈDE ce bandeau vient du hub de supervision (`a68628d3`, 2026-10-27) et sera **réécrit** à la prochaine propagation.
+> Le chapitre « Portée sur ce projet » placé après ce bandeau, lui, n'est jamais réécrit : c'est le travail local.
+
