@@ -3,5 +3,15 @@
   "police_min_pt": 10,
   "caracteres_max_slide": 900,
   "tailles_max_slide": 6,
-  "ratio_image_tolerance": 0.05
+  "ratio_image_tolerance": 0.05,
+  "observation": {
+    "date": "2026-10-22",
+    "methode": "forme_check.py --distribution sur les 3 decks non confidentiels du hub (docs/presentation-dispositif, docs/presentation-evaluation), 72 slides, jugés bons : OBSERVATION seulement, aucun seuil n'en est dérivé : p95 caractères (1114) = une seule slide structurée de 12 cartes, et 4 slides jugées bonnes dépassent 1150",
+    "distribution": {
+      "caracteres": {"p50": 533, "p75": 626, "p90": 947, "p95": 1114},
+      "taille_min_pt": {"p5": 10.0, "p10": 10.0, "p25": 10.5, "p50": 11.0},
+      "tailles_distinctes": {"p50": 2, "p75": 2, "p90": 3, "p95": 4}
+    },
+    "limite": "corpus homogène (un seul auteur, que des bons decks) ; l'étalonnage du 2026-10-12 (docs/redaction/etalonnage-forme-decks.md) montrait que densité, police et tailles ne départagent pas bons et mauvais decks : etalonne reste false"
+  }
 }

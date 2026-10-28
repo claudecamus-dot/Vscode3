@@ -21,6 +21,7 @@ Vscode8 feedbacks_reprise.commentaires (rang, auteur, texte), rendue ici en dict
 import copy
 import os
 import re
+import sys
 import zipfile
 
 from lxml import etree
@@ -87,65 +88,126 @@ def _local(e):
     return e.tag.split("}")[-1]
 
 
-def _cloner_partie(partie, paquet):
-    """Clone une partie (graphique, classeur embarque) sous un nouveau partname, avec des
-    relations propres : editer la copie ne touche jamais l'original."""
-    from pptx.opc.package import Part
+_PARTAGEABLES = ("/image", "/hyperlink", "/slide", "/slideLayout", "/slideMaster", "/theme",
+                 "/notesMaster", "/video", "/audio", "/media")  # immuables ou simples renvois
+
+
+def _nom_libre(partie, paquet, pris):
+    """Partname libre : ni dans le graphe atteignable ni parmi les clones deja crees."""
     from pptx.opc.packuri import PackURI
     modele = re.sub(r"\d+(\.\w+)$", r"%d\1", str(partie.partname))
     if "%d" not in modele:
         modele = re.sub(r"(\.\w+)$", r"%d\1", str(partie.partname))
-    neuve = Part(PackURI(paquet.next_partname(modele)), partie.content_type, paquet, partie.blob)
-    for rel in partie.rels.values():
+    existants = {str(p.partname) for p in paquet.iter_parts()} | pris
+    n = 1
+    while modele % n in existants:
+        n += 1
+    pris.add(modele % n)
+    return PackURI(modele % n)
+
+
+def _cloner_partie(partie, paquet, memo=None, pris=None):
+    """Clone une partie (graphique, classeur, diagramme SmartArt...) sous un nouveau partname,
+    avec des relations propres (rId conserves ; ecriture directe dans rels._rels = API privee de python-pptx 1.0.x) ; les parties immuables
+    (image, layout, theme, media) restent partagees. `memo` evite les cycles ; _nom_libre est quadratique
+    (acceptable : quelques parties par slide)."""
+    from pptx.opc.package import Part, _Relationship
+    memo = {} if memo is None else memo
+    pris = set() if pris is None else pris
+    if id(partie) in memo:
+        return memo[id(partie)]
+    neuve = Part(_nom_libre(partie, paquet, pris), partie.content_type, paquet, partie.blob)
+    memo[id(partie)] = neuve
+    for rid, rel in partie.rels.items():
+        if "notesSlide" in rel.reltype:
+            continue  # _SAUTE s'applique aussi en profondeur : une page de notes n'est jamais clonee
         if rel.is_external:
-            neuve.rels.get_or_add_ext_rel(rel.reltype, rel.target_ref)
-        elif "package" in rel.reltype:
-            neuve.relate_to(_cloner_partie(rel.target_part, paquet), rel.reltype)
+            cible, mode = rel.target_ref, "External"
+        elif rel.reltype.endswith(_PARTAGEABLES):
+            cible, mode = rel.target_part, "Internal"
         else:
-            neuve.relate_to(rel.target_part, rel.reltype)
-    # le blob d'un graphique cite ses relations par rId : reconstruire dans le meme ordre
+            cible, mode = _cloner_partie(rel.target_part, paquet, memo, pris), "Internal"
+        neuve.rels._rels[rid] = _Relationship(neuve.rels._base_uri, rid, rel.reltype, mode, cible)
     return neuve
 
 
-_PARTAGEABLES = ("/image", "/hyperlink", "/slide")  # immuables ou simples renvois
+_RE_DMEXT = re.compile(rb'(<[\w.-]*:?dataModelExt\b[^>]*?\brelId=")([^"]+)(")')
+
+
+def copie_rels(prs, source, cible):
+    """Copie TOUTES les relations de la slide `source` vers `cible` (hors layout/notes) et
+    renvoie {ancien rId: nouveau rId}. Externes, images, liens, media : partages ; graphiques,
+    classeurs, SmartArt (data/layout/style/colors/drawing), OLE : clones sous des partnames
+    uniques. Rien n'est ecrit dans `source`. Les pages de notes ne sont jamais clonees, meme en profondeur."""
+    paquet, memo, pris, rid_map = prs.part.package, {}, set(), {}
+    for rid, rel in source.part.rels.items():
+        if any(k in rel.reltype for k in _SAUTE):
+            continue
+        if rel.is_external:
+            rid_map[rid] = cible.part.relate_to(rel.target_ref, rel.reltype, is_external=True)
+        elif rel.reltype.endswith(_PARTAGEABLES):
+            rid_map[rid] = cible.part.relate_to(rel.target_part, rel.reltype)
+        else:
+            rid_map[rid] = cible.part.relate_to(
+                _cloner_partie(rel.target_part, paquet, memo, pris), rel.reltype)
+    # Le modele SmartArt cite le dessin par `dataModelExt relId` (attribut SANS espace de noms r:)
+    # = rId de la relation DE LA SLIDE vers le diagramDrawing : a remapper vers la copie.
+    for rel in source.part.rels.values():
+        if not rel.is_external and rel.reltype.endswith("/diagramData") and id(rel.target_part) in memo:
+            neuve = memo[id(rel.target_part)]
+            neuve._blob = _RE_DMEXT.sub(
+                lambda m: m.group(1) + rid_map.get(m.group(2).decode(), m.group(2).decode()).encode() + m.group(3),
+                neuve.blob)
+    return rid_map
+
+
+def _copier_decor(slide, neuve, rid_map):
+    """Copie l'etat de slide que add_slide ne reprend pas : show (masquee), fond <p:bg>,
+    <p:clrMapOvr>, <p:transition>, <p:timing> (rId r: remappes via `rid_map`)."""
+    ns = "http://schemas.openxmlformats.org/presentationml/2006/main"
+    src, dst = slide._element, neuve._element
+    if src.get("show") is not None:
+        dst.set("show", src.get("show"))
+
+    def _cloner(el):
+        c = copy.deepcopy(el)
+        for n in c.iter():
+            for k, v in list(n.attrib.items()):
+                if k.startswith(f"{{{_NS_R}}}") and v in rid_map:
+                    n.set(k, rid_map[v])
+        return c
+
+    csld = dst.find(f"{{{ns}}}cSld")
+    bg = src.find(f"{{{ns}}}cSld/{{{ns}}}bg")
+    if bg is not None:
+        for old in csld.findall(f"{{{ns}}}bg"):
+            csld.remove(old)
+        csld.insert(0, _cloner(bg))
+    pos = list(dst).index(csld)
+    for nom in ("clrMapOvr", "transition", "timing"):
+        for old in dst.findall(f"{{{ns}}}{nom}"):
+            dst.remove(old)
+        el = src.find(f"{{{ns}}}{nom}")
+        if el is not None:
+            pos += 1
+            dst.insert(pos, _cloner(el))
 
 
 def copier_slide(prs, slide, index=None):
     """Copie `slide` (meme layout) avec ses relations ; renvoie la copie.
 
-    Images et liens : partages (immuables). Notes : texte recopie. Graphiques : partie
-    ET classeur embarque clones (la copie est independante). Toute autre partie liee
-    (media, objet OLE, diagramme...) leve ValueError : mieux vaut un refus qu'une copie qui
-    partage silencieusement une partie avec l'original.
-    Limites : une slide a effets d'image Office 2007 (relation hdphoto) est refusee ; le
-    graphique cloné est une partie generique : enregistrer puis rouvrir le deck avant
+    Images, liens, media : partages (immuables). Fond, masquage (show), clrMapOvr, transition et timing recopies. Notes : TEXTE SEUL
+    recopie (pas la mise en forme de la page de notes). Graphiques, SmartArt,
+    OLE : parties clonees (copie_rels), la copie est independante de l'original.
+    Non copies : `p:extLst` de la slide. Limite : le
+    graphique clone est une partie generique : enregistrer puis rouvrir le deck avant
     d'utiliser `shape.chart` sur la copie.
     `index` : position 0-based dans le deck (defaut : a la fin)."""
-    a_cloner, a_partager = {}, {}
-    for rid, rel in slide.part.rels.items():
-        if any(k in rel.reltype for k in _SAUTE):
-            continue
-        if rel.is_external or rel.reltype.endswith(_PARTAGEABLES):
-            a_partager[rid] = rel
-        elif rel.reltype.endswith("/chart"):
-            a_cloner[rid] = rel
-        else:
-            raise ValueError(
-                f"copier_slide : partie liee non clonable ({rel.reltype}, rId {rid}) ; "
-                "copie refusee plutot que partagee avec l'original")
     neuve = prs.slides.add_slide(slide.slide_layout)
     for el in list(neuve.shapes._spTree):
         if _local(el) in _FORMES:
             neuve.shapes._spTree.remove(el)
-    rid_map = {}
-    for rid, rel in a_partager.items():
-        if rel.is_external:
-            rid_map[rid] = neuve.part.relate_to(rel.target_ref, rel.reltype, is_external=True)
-        else:
-            rid_map[rid] = neuve.part.relate_to(rel.target_part, rel.reltype)
-    for rid, rel in a_cloner.items():
-        rid_map[rid] = neuve.part.relate_to(
-            _cloner_partie(rel.target_part, prs.part.package), rel.reltype)
+    rid_map = copie_rels(prs, slide, neuve)
     for el in slide.shapes._spTree:
         if _local(el) in _FORMES:
             c = copy.deepcopy(el)
@@ -154,6 +216,7 @@ def copier_slide(prs, slide, index=None):
                     if k.startswith(f"{{{_NS_R}}}") and v in rid_map:
                         n.set(k, rid_map[v])
             neuve.shapes._spTree.append(c)
+    _copier_decor(slide, neuve, rid_map)
     if slide.has_notes_slide:
         neuve.notes_slide.notes_text_frame.text = slide.notes_slide.notes_text_frame.text
     if index is not None:
@@ -570,39 +633,107 @@ def empreintes_slides(prs):
     return sortie
 
 
-def run_delta(src, dst, edits, dry=False):
+def _integrite():
+    """Import paresseux de integrite_pptx (skill pptx-verify) ; absent = ValueError (un delta ne sort
+    jamais sans son controle OPC). Cherche a cote (kit : scripts/../../pptx-verify/scripts) et depuis
+    le canon du hub (dispositif/canon/../../skills/pptx-verify/scripts)."""
+    ici = os.path.dirname(os.path.abspath(__file__))
+    for rel in (("..", "..", "pptx-verify", "scripts"), ("..", "..", "skills", "pptx-verify", "scripts")):
+        d = os.path.normpath(os.path.join(ici, *rel))
+        if os.path.isfile(os.path.join(d, "integrite_pptx.py")):
+            if d not in sys.path:
+                sys.path.append(d)
+            import integrite_pptx
+            return integrite_pptx
+    raise ValueError("run_delta : integrite_pptx introuvable ; propager la skill pptx-verify (kit agentic) dans ce projet")
+
+
+def run_delta(src, dst, edits, dry=False, figees=None, sans_garde=False):
     """Ouvre `src`, applique `edits` (cf. appliquer_delta), compare avant/apres PAR sldId et
     REFUSE d'ecrire `dst` (ValueError) si une slide hors perimetre a change. Perimetre = slides
-    visees par une op avec `slide` ; une op sans `slide` (remplacer_texte global, renumeroter)
-    couvre toutes les slides, a condition qu'aucune op ciblee ne soit melangee (ValueError). `dst` doit differer de `src` (meme fichier : ValueError, rien
-    d'ecrit). `dry` : controle les selecteurs sans modifier ni ecrire. Renvoie le rapport."""
+    visees par une op avec `slide`. `dst` doit differer de `src` (sinon ValueError, rien d'ecrit).
+    Garde : une slide non declaree ne change ni de contenu, ni d'existence, ni d'ordre relatif
+    (une `garder` declare ses retraits via `supprimees`).
+    `figees` : selecteurs de slides qui ne doivent PAS changer, resolus en sldId AVANT l'application ;
+    leur empreinte est comparee apres, meme pour une op globale (sans `slide`: remplacer_texte,
+    renumeroter) -> ValueError "figee" si l'une a bouge. Une figee ne peut etre ni visee par une op
+    ciblee ni nommee dans `supprimees`.
+    Op globale : exige `figees` (ou une `garder`, dont la liste est le perimetre), sinon ValueError ;
+    `sans_garde=True` = opt-out explicite (aucun controle des slides non ciblees). Le melange d'ops
+    globales et ciblees n'est admis qu'avec `figees` (globales : toutes les slides sauf figees ;
+    ciblees : leur propre portee) ; sans `figees` : ValueError.
+    `dry` : memes gardes que le reel, evaluees sur la copie en memoire (appliquer_delta reel, sans
+    sauvegarde) ; seuls prs.save et os.replace sont omis. `renumeroter` est toujours global. L'ordre
+    relatif des slides non declarees est controle aussi en mode global. Sections : la section des
+    slides non deplacees est conservee par deplacer_slide ; le controle ne l'empreinte pas (non necessaire). Renvoie le rapport."""
     s_abs, d_abs = os.path.abspath(src), os.path.abspath(dst)
     if os.path.normcase(s_abs) == os.path.normcase(d_abs) or (
             os.path.exists(d_abs) and os.path.samefile(s_abs, d_abs)):
         raise ValueError("run_delta : dst == src refuse (ne jamais ecraser la source)")
     prs, avant = _ouvrir(src), _ouvrir(src)
     emp_avant = empreintes_slides(avant)
-    portee, tout = set(), False
+    portee, suppr, tout, garde_op = set(), set(), False, False
+    fig = set()
+    for sel in (figees or []):
+        (rg,) = resoudre_slides(prs, [sel])
+        fig.add(prs.slides[rg - 1].slide_id)
     for d in edits:
         if d.get("op") == "garder":
+            # garder retire toutes les slides hors liste : celles-ci doivent etre DECLAREES
+            # (`supprimees`: [selecteurs]) sinon le controle les refuse comme disparues.
+            garde_op = True
+            for sel in d.get("supprimees", []):
+                (rg,) = resoudre_slides(prs, [sel])
+                suppr.add(prs.slides[rg - 1].slide_id)
             continue
-        if d.get("slide") is None:
-            tout = True
+        if d.get("slide") is None or d.get("op") == "renumeroter":
+            tout = True  # renumeroter renumerote tout le deck, quelle que soit la cle `slide`
             continue
         (rang,) = resoudre_slides(prs, [d["slide"]])
         portee.add(prs.slides[rang - 1].slide_id)
-    if tout and portee:
-        raise ValueError("run_delta : melange d'ops ciblees et globales refuse (le controle des "
-                         "slides figees serait desactive) ; separer en deux appels")
-    rapport = appliquer_delta(prs, edits, dry_run=dry)
-    if not dry and not tout:
-        apres = empreintes_slides(prs)
-        hors = [i for i in apres if i in emp_avant and apres[i] != emp_avant[i] and i not in portee]
-        if hors:
-            raise ValueError(f"run_delta : slide(s) hors perimetre modifiee(s) (sldId {hors}) ; "
-                             "dst non ecrit")
+    if fig & (portee | suppr):
+        raise ValueError(f"run_delta : slide figee visee par une op ou nommee dans `supprimees` "
+                         f"(sldId {sorted(fig & (portee | suppr))})")
+    if tout and portee and not fig:
+        raise ValueError("run_delta : melange d'ops ciblees et globales refuse sans `figees` (le controle "
+                         "des slides figees serait desactive) ; declarer `figees` ou separer en deux appels")
+    if tout and not portee and not fig and not garde_op and not sans_garde:
+        raise ValueError("run_delta : op globale sans `figees` ni perimetre : aucune slide ne serait "
+                         "protegee ; declarer `figees=[...]` ou passer sans_garde=True (opt-out explicite)")
+    # dry : appliquer_delta(dry_run=True) ne modifie rien et masquerait les changements aux gardes ;
+    # on applique donc pour de vrai sur la copie en memoire (jamais sauvegardee si dry).
+    rapport = appliquer_delta(prs, edits)
+    apres = empreintes_slides(prs)
+    gardees = [i for i in suppr if i in apres]
+    if gardees:
+        raise ValueError(f"run_delta : `supprimees` nomme des slides non retirees (sldId {gardees}) ; "
+                         "dst non ecrit")
+    perdues = [i for i in emp_avant if i not in apres and i not in portee and i not in suppr]
+    if perdues:
+        raise ValueError(f"run_delta : slide(s) hors perimetre disparue(s) (sldId {perdues}) ; "
+                         "dst non ecrit")
+    bougees = [i for i in fig if i in apres and apres[i] != emp_avant[i]]
+    if bougees:
+        raise ValueError(f"run_delta : slide(s) figee(s) modifiee(s) (sldId {bougees}) ; dst non ecrit")
+    hors = [] if tout else [i for i in apres if i in emp_avant and apres[i] != emp_avant[i] and i not in portee]
+    nd_avant = [i for i in emp_avant if i not in portee and i not in suppr and i in apres]
+    nd_apres = [i for i in apres if i in emp_avant and i not in portee and i not in suppr]
+    if not hors and nd_avant != nd_apres:  # ordre relatif des slides non declarees (meme en global)
+        hors = [i for i, j in zip(nd_avant, nd_apres, strict=True) if i != j][:1] or nd_apres[:1]
+    if hors:
+        raise ValueError(f"run_delta : slide(s) hors perimetre modifiee(s) (sldId {hors}) ; "
+                         "dst non ecrit")
     if not dry:
-        prs.save(dst)
+        tmp = dst + ".tmp"
+        try:
+            prs.save(tmp)
+            pb = _integrite().controler(tmp)["problemes"]
+            if pb:
+                raise ValueError("run_delta : integrite OPC KO : " + " ; ".join(pb) + " ; dst inchange")
+            os.replace(tmp, dst)
+        finally:
+            if os.path.exists(tmp):
+                os.remove(tmp)
     return rapport
 
 

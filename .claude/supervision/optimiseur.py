@@ -24,10 +24,12 @@ un candidat n'est `gagnant` que s'il gagne sur >= 2 familles de taches (`famille
 `fan-out degenere` (branches_lancees <= 1 ou duree ~ somme des branches) compte par cellule ;
 tendance tokens/run resolu par moitie de cellule : rapport seul, jamais dans la porte.
 """
+import datetime
 import json
 import math
 import os
 import re
+import subprocess
 import sys
 import unicodedata
 
@@ -77,7 +79,11 @@ SEUILS_DEFAUT = {
     "seuil_succes": 0.15,   # estimation non mesuree : gain de taux de succes exige (strict)
     "budget": 0.0,          # estimation non mesuree : surcout de tokens tolere (0 = aucun)
     "p90_max": 0.20,        # estimation non mesuree : degradation tolerée du p90 de duree
+    # Decision utilisateur 2026-10-26 (story 8.14) : part max de runs resolus dont la
+    # couverture du cout est `partiel`, `inconnu` ou absente, au-dela -> donnees-insuffisantes.
+    "seuil_couverture_incertaine": 0.20,
 }
+SEUIL_COUVERTURE_INCERTAINE = SEUILS_DEFAUT["seuil_couverture_incertaine"]
 
 # Copie de `scripts/scan_projets.MARQUEURS_VERIFICATION` (le scan n'est pas propage aux
 # cibles) ; un test verrouille la parite.
@@ -159,14 +165,132 @@ def est_resolu(run):
 
 
 def est_succes(run):
-    """True ssi `succes` ET pas un livrable utilisateur declare sans quittance ouverte."""
+    """True ssi `succes` ET pas un livrable utilisateur declare sans quittance ouverte
+    ET acceptation PROUVEE (story 8.20, precondition 5) : un `succes` auto-declare par
+    un agent, sans preuve deterministe ni solde humain, n'est jamais compte accepte."""
     if run.get("resultat") != "succes":
         return False
     if run.get("livrable_utilisateur") is True:
         val = run.get("validation")
         if not (isinstance(val, dict) and str(val.get("artefact_ouvert") or "").strip()):
             return False
-    return True
+    return preuve_acceptation(run) is not None
+
+
+# --- signal d'acceptation (story 8.20) ---------------------------------------------
+# Trois preuves seulement, lues sur un texte que l'agent ecrit lui-meme -- donc chaque
+# forme est etroite (revues 1 et 2, 2026-10-26). `notes` doit etre une str (sinon : aucune
+# preuve, jamais de str()) ; chiffres ASCII seuls (re.ASCII partout).
+# (1) humaine : champ structure `solde` (dict) ecrit par `log_run.py --solde`, en `succes`
+#     ET avec `quand` date ISO valide. Le segment texte « solde AAAA-MM-JJ » (runs
+#     historiques) n'est lu que si la cle `solde` est ABSENTE, en tete de segment, date
+#     valide, ET pour un run dont le `ts` precede FIN_SOLDE_TEXTE (date de cette regle) ;
+# (2) test : dans UN MEME segment (notes coupees sur « | », « ; », «, » et fin de ligne),
+#     une commande de test (pytest, py -m pytest, npm test, export_agentic.py --check,
+#     sync_dispositif.py --check -- un `--check` seul n'est PAS une commande de test : le
+#     plus etroit) ET « N passed » (N >= 1) ou « exit 0 » ; un segment qui porte des
+#     guillemets (" « ») ne compte pas (citation) ; et aucun marqueur d'echec (fail, error,
+#     traceback, crash, 0 passed, returncode/exit/code non nul) NULLE PART dans les notes.
+#     « xfailed » et « warning » ne sont pas des echecs ;
+# (3) commit : un sha qui nomme un commit du depot du HUB SEUL (les autres depots de la
+#     flotte ne sont pas verifies : leurs sha ne comptent pas), commite a/apres le `ts` du
+#     run. Au plus un appel git par sha distinct, aucun si une autre preuve est trouvee.
+# Un `ts` sans fuseau est lu en UTC. La forme `rendu regardé: <chemin>` n'est PAS une preuve.
+_A = re.ASCII
+FIN_SOLDE_TEXTE = datetime.datetime(2026, 10, 26, tzinfo=datetime.UTC).timestamp()
+_SEGMENT_SOLDE = re.compile(r"solde ([0-9]{4}-[0-9]{2}-[0-9]{2})", _A)
+_COMMANDE_TEST = re.compile(r"(\bpytest\b|\bnpm test\b|\bexport_agentic\.py --check\b"
+                            r"|\bsync_dispositif\.py --check\b)", _A)
+_SORTIE_ZERO = re.compile(r"(\b[1-9][0-9]* passed\b|\bexit 0\b)", _A)
+_SORTIE_ECHEC = re.compile(r"(\bfail(ed|ure|s)?\b|\berrors?\b|traceback|crash|\b0 passed\b"
+                           r"|returncode=[1-9]|\bexit [1-9]|\bcode [1-9])", _A)
+_SEPARATEURS = re.compile(r"[|;\n]|, ")
+_GUILLEMETS = ('"', "\u00ab", "\u00bb")
+_SHA = re.compile(r"\b[0-9a-f]{7,40}\b", _A)
+_DEPOT = os.path.dirname(os.path.dirname(_ICI))
+_SHAS_VUS = {}
+
+
+def sha_existe(sha):
+    """Heure de commit (epoch, `%ct`) si `sha` nomme un COMMIT du depot du hub, sinon None.
+    Toute erreur (git absent, delai) -> None : on ne devine pas une preuve. Cache par sha."""
+    if sha not in _SHAS_VUS:
+        try:
+            r = subprocess.run(["git", "-C", _DEPOT, "show", "-s", "--format=%ct",
+                                sha + "^{commit}", "--"],
+                               capture_output=True, text=True, encoding="utf-8",
+                               errors="replace", timeout=10)
+            out = r.stdout.strip()
+            _SHAS_VUS[sha] = (int(out) if r.returncode == 0 and re.fullmatch(r"[0-9]+", out, _A)
+                              else None)
+        except (OSError, subprocess.SubprocessError, ValueError):
+            _SHAS_VUS[sha] = None
+    return _SHAS_VUS[sha]
+
+
+def _epoch_iso(txt):
+    """Epoch d'une date ISO (naive = UTC) ; None si illisible ou pas une str."""
+    if not isinstance(txt, str) or not txt.isascii():
+        return None
+    try:
+        d = datetime.datetime.fromisoformat(txt.strip().replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if d.tzinfo is None:
+        d = d.replace(tzinfo=datetime.UTC)
+    try:
+        return d.timestamp()
+    except (OverflowError, OSError):
+        return None
+
+
+def _date_valide(txt):
+    try:
+        datetime.date.fromisoformat(txt)
+        return True
+    except ValueError:
+        return False
+
+
+def preuve_acceptation(run, verifier_sha=None):
+    """'humaine', 'test', 'commit' ou None (aucune preuve : pas accepte).
+
+    `verifier_sha(sha)` rend l'heure de commit (epoch) ou None/False ; defaut `sha_existe`."""
+    notes = run.get("notes")
+    if notes is None:
+        notes = ""
+    if not isinstance(notes, str):
+        return None
+    debut = _epoch_iso(run.get("ts"))
+    if "solde" in run:
+        solde = run.get("solde")
+        if (isinstance(solde, dict) and solde.get("resultat") == "succes"
+                and _epoch_iso(solde.get("quand")) is not None):
+            return "humaine"
+    elif debut is not None and debut < FIN_SOLDE_TEXTE:
+        for seg in notes.split(" | "):
+            m = _SEGMENT_SOLDE.match(seg.strip())
+            if m and _date_valide(m.group(1)):
+                return "humaine"
+    bas = notes.lower()
+    if not _SORTIE_ECHEC.search(bas):
+        for seg in _SEPARATEURS.split(bas):
+            if any(g in seg for g in _GUILLEMETS):
+                continue
+            if _COMMANDE_TEST.search(seg) and _SORTIE_ZERO.search(seg):
+                return "test"
+    if debut is None:
+        return None
+    verif = verifier_sha or sha_existe
+    vus = set()
+    for m in _SHA.findall(bas):
+        if m in vus or not re.search(r"[a-f]", m):
+            continue
+        vus.add(m)
+        ct = verif(m)
+        if isinstance(ct, (int, float)) and not isinstance(ct, bool) and ct >= debut:
+            return "commit"
+    return None
 
 
 def _reprises_invalides(run):
@@ -199,7 +323,12 @@ def est_fan_out_degenere(run):
         return False
     if b <= 1 and run.get("topologie") != "workflow":   # un workflow peut n'avoir qu'une branche
         return True
-    dmax, d = _nombre(run.get("duree_branche_max_s")), _nombre(run.get("duree_s"))
+    dmax = _nombre(run.get("duree_branche_max_s"))
+    if dmax is not None and dmax <= 0:   # 0 = valeur invalide (8.9) : ignoree, jamais « degenere »
+        dmax = None
+    # la serie se juge sur la duree de L'ISSUE (une tentative), jamais sur la somme des
+    # tentatives d'une tache agregee (`duree_issue_s`, pose par `_tache`)
+    d = _nombre(run.get("duree_issue_s", run.get("duree_s")))
     # un tour 2 rejoue les voix : la serie attendue est doublee (estimation non mesuree)
     tours = 2 if run.get("tour2") is True else 1
     return (b > 1 and dmax is not None and d is not None
@@ -231,6 +360,8 @@ def stats_groupe(runs):
     resolus = [r for r in runs if est_resolu(r)]
     n = len(resolus)
     succes = [r for r in resolus if est_succes(r)]
+    n_part = sum(1 for r in resolus if r.get("cout_couverture") == "partiel")
+    n_inc = sum(1 for r in resolus if r.get("cout_couverture") not in ("complet", "partiel"))
     couts = [_nombre(r.get("tokens")) for r in resolus]
     couts = [c for c in couts if c is not None]
     durees = sorted(d for d in (_nombre(r.get("duree_s")) for r in resolus) if d is not None)
@@ -243,6 +374,17 @@ def stats_groupe(runs):
                             if n else None,
         "reprises_non_numeriques": sum(1 for r in resolus if _reprises_invalides(r)),
         "n_cout": len(couts),
+        "n_sans_cout": n - len(couts),
+        "couverture_cout": (len(couts) / n) if n else None,
+        # Story 8.14 : part des runs resolus dont `cout_couverture` est `inconnu` OU
+        # absent (aucune interpolation d'un cout manquant).
+        "n_cout_couv_inconnue": n_inc,
+        "part_cout_couv_inconnue": (n_inc / n) if n else None,
+        "n_cout_couv_partielle": n_part,
+        "part_cout_couv_incertaine": ((n_inc + n_part) / n) if n else None,
+        # Declare `complet`/`partiel` mais sans `tokens` numerique : incoherent, signale.
+        "n_couv_incoherente": sum(1 for r in resolus if r.get("cout_couverture") in ("complet", "partiel")
+                                  and _nombre(r.get("tokens")) is None),
         "cout_moy": (sum(couts) / len(couts)) if couts else None,
         "p90_duree": percentile(durees, 0.9) if len(durees) >= MIN_DUREES_P90 else None,
         "succes_avec_marqueur": (sum(1 for r in succes if _a_marqueur(r)) / len(succes))
@@ -263,7 +405,10 @@ def evaluer_porte(ref, cand, seuils=None):
     s = {**SEUILS_DEFAUT, **(seuils or {})}
     n_ref, n_cand = ref.get("n_resolus") or 0, cand.get("n_resolus") or 0
     out = {"verdict": "donnees-insuffisantes", "motifs": [], "n_ref": n_ref,
-           "n_cand": n_cand, "n_requis": s["n_min"], "delta_succes": None}
+           "n_cand": n_cand, "n_requis": s["n_min"], "delta_succes": None,
+           "n_cout_ref": ref.get("n_cout") or 0, "n_cout_cand": cand.get("n_cout") or 0,
+           "part_couv_incertaine_ref": ref.get("part_cout_couv_incertaine"),
+           "part_couv_incertaine_cand": cand.get("part_cout_couv_incertaine")}
     motifs = out["motifs"]
     if n_ref < s["n_min"] or n_cand < s["n_min"]:
         motifs.append(f"effectif insuffisant : {n_ref} / {n_cand} runs resolus, "
@@ -273,6 +418,15 @@ def evaluer_porte(ref, cand, seuils=None):
     if (ref.get("cout_moy") is None or cand.get("cout_moy") is None
             or (ref.get("n_cout") or 0) < s["n_min"] or (cand.get("n_cout") or 0) < s["n_min"]):
         manque.append(f"cout non mesure (tokens sur >= {s['n_min']} runs par bras)")
+    elif (ref.get("n_cout") or 0) < n_ref or (cand.get("n_cout") or 0) < n_cand:
+        # cout partiel : une moyenne sur les seuls runs chiffres (souvent les bon marche) biaise
+        manque.append(f"cout partiel (n_cout/n_resolus : {ref.get('n_cout') or 0}/{n_ref} "
+                      f"et {cand.get('n_cout') or 0}/{n_cand})")
+    seuil_ci = s["seuil_couverture_incertaine"]
+    p_ref, p_cand = out["part_couv_incertaine_ref"], out["part_couv_incertaine_cand"]
+    if p_ref is None or p_cand is None or p_ref > seuil_ci or p_cand > seuil_ci:
+        manque.append(f"couverture du cout incertaine (partiel/inconnu/absent : {p_ref} et "
+                      f"{p_cand}, seuil {seuil_ci:g})")
     if ref.get("p90_duree") is None or cand.get("p90_duree") is None:
         manque.append(f"p90 duree (>= {MIN_DUREES_P90} durees par bras)")
     if manque:
@@ -327,6 +481,10 @@ def _tache(runs_tache):
     for champ in ("tokens", "duree_s"):
         vals = [_nombre(r.get(champ)) for r in resolus]
         out[champ] = sum(vals) if all(v is not None for v in vals) else None
+    # cout reel (tentatives comprises) sous des noms distincts ; `duree_issue_s` = duree de
+    # l'issue seule, pour le test de fan-out (jamais la somme des tentatives)
+    out["tokens_total"], out["duree_totale_s"] = out["tokens"], out["duree_s"]
+    out["duree_issue_s"] = _nombre(issue.get("duree_s"))
     return out
 
 
@@ -414,6 +572,8 @@ def comparer_bras(runs, seuils=None, ref_bras="temoin", cand_bras="variante"):
         return {"verdict": "donnees-insuffisantes", "motifs": ["non apparie : aucune tache "
                 "(tache_id) resolue aux deux bras"], "n_ref": 0, "n_cand": 0,
                 "n_requis": s["n_min"], "delta_succes": None, "paires": 0,
+                "n_cout_ref": 0, "n_cout_cand": 0,
+                "part_couv_incertaine_ref": None, "part_couv_incertaine_cand": None,
                 "taches_exclues": exclues, ref_bras: ref, cand_bras: cand}
     res = evaluer_porte(ref, cand, seuils)
     res.update({"paires": len(communs), "taches_exclues": exclues,

@@ -13,6 +13,7 @@ import sys
 import threading
 
 DELAI_S = 10.0
+RECUL_MIN = 5.0  # story 7.8: back-off after a sweep cut by the bound
 
 
 def _limite_argv(argv):
@@ -47,11 +48,17 @@ def _travail(sortie, limite_min=None):
             return  # too early: no heavy import, no process listing
     sys.path.insert(0, here)
     import _faucheur_orphelins as f
-    if limite_min:
-        marquer = getattr(f, "marquer", None)  # a project with the old helper still reaps
-        if marquer is not None:
-            marquer(chemin, now)
-    sortie.append(f.resume(f.faucher()))
+    marquer = getattr(f, "marquer", None) if limite_min else None
+    if marquer is not None:
+        # floor: a sweep cut by DELAI_S leaves only a short back-off, not 20 min nor 0
+        recul = min(RECUL_MIN, limite_min)
+        marquer(chemin, now - (limite_min - recul) * 60)
+    arretes = f.faucher()
+    # story 7.8: stamp only after a COMPLETED sweep -- a sweep cut by DELAI_S (or raising)
+    # never reaches this line: the next sweep comes after RECUL_MIN, not after 20 min
+    if marquer is not None:  # a project with the old helper still reaps
+        marquer(chemin, now)
+    sortie.append(f.resume(arretes))
 
 
 def main(travail=_travail, delai=DELAI_S, limite_min=None):
