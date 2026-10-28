@@ -72,8 +72,24 @@ def _charger(nom, chemin):
 gate = _charger("neural_shadow_gate", os.path.join(ICI, "neural_gate.py"))
 cgraph = _charger("neural_shadow_graph", os.path.join(ICI, "communication_graph.py"))
 planner = _charger("neural_shadow_planner", os.path.join(ICI, "coalition_planner.py"))
-gain = _charger("neural_shadow_gain", os.path.join(HUB, "scripts", "mesurer_gain_lineaire.py"))
-optimiseur = gain.optimiseur
+_GAIN = os.path.join(HUB, "scripts", "mesurer_gain_lineaire.py")
+
+
+class _GainAbsent:
+    """Stand-in when scripts/mesurer_gain_lineaire.py is not shipped (a kit target): importing
+    this module must work; only the measuring calls fail, with a clear message."""
+
+    def __getattr__(self, nom):
+        raise RuntimeError("mesure disponible au hub seulement (mesurer_gain_lineaire.py absent) / "
+                           "measurement available at the hub only")
+
+
+if os.path.isfile(_GAIN):
+    gain = _charger("neural_shadow_gain", _GAIN)
+    optimiseur = gain.optimiseur
+else:
+    gain = _GainAbsent()
+    optimiseur = _GainAbsent()
 
 
 # ---------------------------------------------------------------- hostile-input helpers
