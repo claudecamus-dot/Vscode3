@@ -203,7 +203,7 @@ retour d'expérience.
 ## 6. Tests fonctionnels du deck du projet (recommandé, pas juste "au cas où")
 
 Recette portée sur VSCode3 (2026-07-15), disponible ici :
-[`docs/cadrage-ppt/test_generate_deck.py`](../cadrage-ppt/test_generate_deck.py)
+[`docs/cadrage-ppt/test_generate_deck.py`](../../../cadrage-ppt/test_generate_deck.py)
 — un `check(cond, msg)` simple (pas besoin de pytest pour un script autonome) :
 
 1. **Structure** — nombre de slides, `verifier_geometrie` sans problème, fichier écrit d'une taille plausible.

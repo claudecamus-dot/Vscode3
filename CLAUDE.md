@@ -60,7 +60,7 @@ rendrait les renvois faux en silence (test dédié).
 Le dispositif vient du hub de supervision : **corriger là-bas puis régénérer
 l'export**, jamais localement — les copies locales divergent (leçon P1).
 
-## Optimisation tokens (cf. `docs/vscode1-export/optimisation-tokens.md`)
+## Optimisation tokens (cf. `docs/imports/references/vscode1-export/optimisation-tokens.md`)
 
 - Ne pas re-dériver ce que le wiki (`docs/wiki/`) ou une mémoire documente déjà.
 - Lire des portions ciblées (Grep/Glob puis Read offset/limit), pas des fichiers entiers.

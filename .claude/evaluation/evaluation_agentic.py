@@ -11,7 +11,7 @@ PER PROJECT and project-agnostic —
   B « Pratiques agentic » (10 criteria in v2, 11 in v3).
 Scale v3 (user-arbitrated 2026-09-29, « ils sont notés »): B gains ONE graded
 criterion, ``structure_mandats_agents`` (reference template of agent mandates,
-docs/reflexions/gabarit-agent.md); nothing else changes, so a v2 note is the
+docs/exports/reflexions/gabarit-agent.md); nothing else changes, so a v2 note is the
 same computation without ``CRITERES_AJOUTES_V3`` (``globale_sans_ajouts``).
 Every criterion's texts (name, definition, signals, why + public source, what
 the score allows / does not allow to conclude) are READ from the docstring of

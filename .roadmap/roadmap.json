@@ -13,7 +13,7 @@
     {
       "phase": "realisation",
       "title": "1. Mirroir du cadrage + corrections v1.6",
-      "description": "docs/bmad-iap-cadrage.md : compteurs, redaction noms clients, dependances versionnees, gate DevOps tranche, module.yaml resolu.",
+      "description": "docs/exports/cadrage/bmad-iap-cadrage.md : compteurs, redaction noms clients, dependances versionnees, gate DevOps tranche, module.yaml resolu.",
       "status": "done",
       "subItems": [
         { "label": "Mirroir artifact -> markdown", "status": "done" },

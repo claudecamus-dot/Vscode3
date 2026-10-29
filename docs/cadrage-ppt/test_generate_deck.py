@@ -159,7 +159,7 @@ def main():
     finally:
         gen._controler = _controler_reel
 
-    out = os.path.join(gen.HERE, "bmad-iap-cadrage-synthese.pptx")
+    out = os.path.join(gen.HERE, "..", "exports", "decks", "bmad-iap-cadrage-synthese.pptx")
     prs = Presentation(out)
 
     print("Structure :")

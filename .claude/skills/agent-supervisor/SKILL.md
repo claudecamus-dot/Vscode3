@@ -71,7 +71,7 @@ Le superviseur qualifie **deux choses** distinctes, avec la même exigence de pr
   confirme sur données récentes.
 - La table des playbooks (`.claude/orchestration/playbooks/` + catalogue) : statut
   `jamais-joue` ancien = candidat playbook mort.
-- `docs/reflexions/*.md` : **les propositions écrites hors diagnostic ne sont pas
+- `docs/exports/reflexions/*.md` : **les propositions écrites hors diagnostic ne sont pas
   arbitrables** — le wiki ne leur donne ni bouton Valider ni suivi. Leçon payée : le
   lot recommandé de `solutions-risque-technique.md` (2026-07-24) était appliqué à 1/6
   quatre jours plus tard, quand les findings de `diagnostic.json` du même cycle

@@ -9,30 +9,30 @@ agents: [onboarder]
 ## Vue d'ensemble
 
 Module de transformation consulting à double mission : transformer une organisation infrastructure (guichet, centre de coûts ou fonction support) en plateforme interne opérée comme un produit, ET traiter structurellement le gaspillage qui l'en empêche. Les deux piliers ne sont pas séquentiels ni optionnels l'un par rapport à l'autre.
-— `CONFIRMÉ` · onboarder · 2026-07-07 · `docs/bmad-iap-cadrage.md` §Mission & vision
+— `CONFIRMÉ` · onboarder · 2026-07-07 · `docs/exports/cadrage/bmad-iap-cadrage.md` §Mission & vision
 
 ## Domaines documentés
 
 | Domaine | Fichier | Concepts clés |
 |---------|---------|----------------|
-| Cadrage BMAD IAP | *(page unique — [docs/bmad-iap-cadrage.md](../../bmad-iap-cadrage.md))* | Produit infra, traitement des gaspillages, gate IA, modèles de maturité, agents/workflows |
+| Cadrage BMAD IAP | *(page unique — [docs/exports/cadrage/bmad-iap-cadrage.md](../../exports/cadrage/bmad-iap-cadrage.md))* | Produit infra, traitement des gaspillages, gate IA, modèles de maturité, agents/workflows |
 
 ## Concepts transversaux
 
 - **Gate IA & confidentialité** — workflow bloquant (`iap-ai-data-confidentiality-gate`), checkpoint humain non-automatisable avant tout usage IA sur données client, classification D0–D4
-  — `CONFIRMÉ` · onboarder · 2026-07-07 · `docs/bmad-iap-cadrage.md` §Gate IA & confidentialité
+  — `CONFIRMÉ` · onboarder · 2026-07-07 · `docs/exports/cadrage/bmad-iap-cadrage.md` §Gate IA & confidentialité
 - **Traitement des gaspillages** — 8 familles (flux, humain, RUN, financier, cognitif, décisionnel, environnemental, IA), chaîne Détecter→Qualifier→Quantifier→…→Prévenir, scoring Impact × Faisabilité − Prudence IA
-  — `CONFIRMÉ` · onboarder · 2026-07-07 · `docs/bmad-iap-cadrage.md` §Traitement des gaspillages
+  — `CONFIRMÉ` · onboarder · 2026-07-07 · `docs/exports/cadrage/bmad-iap-cadrage.md` §Traitement des gaspillages
 - **Modèles de maturité** — deux échelles indépendantes : maturité produit/plateforme (grille VSCode1, pilotée par pilier Excellence Technique / Agilité à l'Échelle) et maturité IA client (pilier IA/Agentic/Organisation Augmentée, remplace l'ancien M0–M4 générique)
-  — `CONFIRMÉ` · onboarder · 2026-07-07 · `docs/bmad-iap-cadrage.md` §Modèles de maturité
+  — `CONFIRMÉ` · onboarder · 2026-07-07 · `docs/exports/cadrage/bmad-iap-cadrage.md` §Modèles de maturité
 - **Export markdown — recommandation agentic ou documentation (v2.0)** — livrable markdown (pas un 5ᵉ profil PPT) qui route sur le pilier Agentic Readiness, la classification des données et le score de gaspillage déjà cadrés pour produire soit un `runbook-<processus>.md` (documentation-first, owner `iap-adoption-plan`) soit un `agentic-implementation-plan.md` (owner `iap-agentic-opportunities`) ; le même fichier est amendé, jamais dupliqué, à chaque boucle de réévaluation
-  — `CONFIRMÉ` · 2026-07-15 · `docs/bmad-iap-cadrage.md` §Trajectoire, "Export markdown — recommandation d'implémentation agentic ou documentation"
+  — `CONFIRMÉ` · 2026-07-15 · `docs/exports/cadrage/bmad-iap-cadrage.md` §Trajectoire, "Export markdown — recommandation d'implémentation agentic ou documentation"
 
 ## Utilisateurs cibles
 
 - Consultant BMAD IAP (« le coach ») — pilote la mission de bout en bout, un agent invoqué à la fois, aucune orchestration automatique (Niveau A de l'ambition de l'outil, état actuel du cadrage)
-  — `CONFIRMÉ` · onboarder · 2026-07-07 · `docs/bmad-iap-cadrage.md` §Utilisation simple par le coach
+  — `CONFIRMÉ` · onboarder · 2026-07-07 · `docs/exports/cadrage/bmad-iap-cadrage.md` §Utilisation simple par le coach
 - Sponsor client — achète la trajectoire produit/plateforme à moyen terme, lit le deck exécutif final (16 sections, radar de maturité, roadmap)
-  — `DÉDUIT` · onboarder · 2026-07-07 · `docs/bmad-iap-cadrage.md` §Mission & vision, §Workflows (`iap-deck-builder`)
+  — `DÉDUIT` · onboarder · 2026-07-07 · `docs/exports/cadrage/bmad-iap-cadrage.md` §Mission & vision, §Workflows (`iap-deck-builder`)
 - Parties prenantes interviewées — équipe infra, utilisateurs applicatifs, management, sponsor — une `Interview` par persona pour objectiver convergences/divergences
-  — `CONFIRMÉ` · onboarder · 2026-07-07 · `docs/bmad-iap-cadrage.md` §Moteur d'assessment
+  — `CONFIRMÉ` · onboarder · 2026-07-07 · `docs/exports/cadrage/bmad-iap-cadrage.md` §Moteur d'assessment

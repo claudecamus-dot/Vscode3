@@ -1,6 +1,6 @@
 # Analyse de 7 cas limites du cadrage BMAD IAP (2026-09-23)
 
-Source des findings : revue bmad-review edge-case du 2026-09-23. Chaque cas a été vérifié ici dans le texte réel de `docs/bmad-iap-cadrage.md` (numéros de ligne relevés le 2026-09-23 ; le fichier est en cours d'édition, relocaliser par le nom de section). Analyse seulement : rien n'est appliqué. Aucun nouveau chiffre n'est introduit ; les seuils éventuels restent **INCERTAIN — non mesurés**, à fixer par l'humain.
+Source des findings : revue bmad-review edge-case du 2026-09-23. Chaque cas a été vérifié ici dans le texte réel de `docs/exports/cadrage/bmad-iap-cadrage.md` (numéros de ligne relevés le 2026-09-23 ; le fichier est en cours d'édition, relocaliser par le nom de section). Analyse seulement : rien n'est appliqué. Aucun nouveau chiffre n'est introduit ; les seuils éventuels restent **INCERTAIN — non mesurés**, à fixer par l'humain.
 
 Numérotation 7-13 reprise de la revue.
 

@@ -2,7 +2,7 @@
 
 Le livrable de ce dépôt est un **deck de synthèse** (`docs/cadrage-ppt/`, v2.11,
 9 chapitres, 46 slides) qui restitue les résultats du cadrage BMAD IAP
-(`docs/bmad-iap-cadrage.md`), dessiné par-dessus le vrai template de marque
+(`docs/exports/cadrage/bmad-iap-cadrage.md`), dessiné par-dessus le vrai template de marque
 OCTO (`template-octo.pptx`) — masters/layouts/thème conservés.
 
 ## Utilisation
@@ -38,7 +38,7 @@ et les commentaires de `docs/cadrage-ppt/generate_deck.py`.
 ## Documentation
 
 - Règles et contraintes du dépôt : [`CLAUDE.md`](CLAUDE.md).
-- Cadrage produit : [`docs/product-brief.md`](docs/product-brief.md) (synthèse)
-  et [`docs/bmad-iap-cadrage.md`](docs/bmad-iap-cadrage.md) (source complète).
+- Cadrage produit : [`docs/exports/cadrage/product-brief.md`](docs/exports/cadrage/product-brief.md) (synthèse)
+  et [`docs/exports/cadrage/bmad-iap-cadrage.md`](docs/exports/cadrage/bmad-iap-cadrage.md) (source complète).
 - Tableau de bord de supervision (synchronisé depuis le hub) :
   [`docs/wiki/index.md`](docs/wiki/index.md) ou `docs/wiki.html`.

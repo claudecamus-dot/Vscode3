@@ -1,0 +1,6 @@
+{"ts": "2026-10-28T11:51:26+00:00", "nom": "chrome.exe", "age_min": 217, "pid": 22896, "resultat": "bloque-noyau"}
+{"ts": "2026-10-28T12:58:00+00:00", "nom": "git.exe", "age_min": 48, "pid": 50768, "resultat": "arrete", "sous_cmd": "rev-list", "parent": "mort"}
+{"ts": "2026-10-28T13:54:27+00:00", "nom": "git.exe", "age_min": 30, "pid": 40056, "resultat": "arrete", "sous_cmd": "rev-list", "parent": "mort"}
+{"ts": "2026-10-28T14:22:22+00:00", "nom": "git.exe", "age_min": 42, "pid": 8200, "resultat": "arrete", "sous_cmd": "rev-list", "parent": "mort"}
+{"ts": "2026-10-28T14:22:25+00:00", "nom": "git.exe", "age_min": 40, "pid": 50492, "resultat": "arrete", "sous_cmd": "update-ref", "parent": "mort"}
+{"ts": "2026-10-28T14:22:28+00:00", "nom": "git.exe", "age_min": 38, "pid": 8812, "resultat": "arrete", "sous_cmd": "for-each-ref", "parent": "mort"}

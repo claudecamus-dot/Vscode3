@@ -2,7 +2,7 @@
 
 > Extraction réalisée le 2026-07-23 (3 sous-agents, un par PDF) pour nourrir la dimension
 > **accompagnement de l'humain** de la démarche du cadrage BMAD IAP
-> (`docs/bmad-iap-cadrage.md`, §Accompagnement de l'humain dans la trajectoire, v2.4).
+> (`docs/exports/cadrage/bmad-iap-cadrage.md`, §Accompagnement de l'humain dans la trajectoire, v2.4).
 > Les références de page (p.N) renvoient aux PDF de ce dossier. Les decks SCALE datent
 > de 2019-2020 : les mécanismes se transposent, les prix/staffing cités sont indicatifs
 > et périmés.

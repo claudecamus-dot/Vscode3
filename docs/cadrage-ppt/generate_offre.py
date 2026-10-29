@@ -30,7 +30,9 @@ from pptx.util import Inches, Pt
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SOURCE = os.path.join(HERE, "source", "offre-iap-source.pptx")
-SORTIE = os.path.join(HERE, "offre-infra-as-a-product-V1.pptx")
+# sorties generees : docs/exports/decks/ (jamais a cote des scripts)
+SORTIE = os.path.join(os.path.normpath(os.path.join(HERE, "..", "exports", "decks")),
+                      "offre-infra-as-a-product-V1.pptx")
 IMG_DIR = os.path.join(HERE, "_img")
 
 NAVY, ACCENT, MUTED = "#0E2356", "#00D2DD", "#586586"
@@ -1107,6 +1109,7 @@ def main():
     defauts += [f"slide {i}: « gaspillage » subsiste" for i, _ in restes]
     defauts += D.verifier_geometrie(prs)
     debord = D.verifier_debordements_texte(prs, tolerance_in=0.4)
+    os.makedirs(os.path.dirname(SORTIE), exist_ok=True)
     prs.save(SORTIE)
     print(f"{len(prs.slides)} slides -> {SORTIE}")
     for d in debord:

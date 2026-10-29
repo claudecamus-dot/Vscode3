@@ -1,6 +1,6 @@
 # Revue de fond — cadrage BMAD IAP
 
-> Revue critique de pair du cadrage source [`docs/bmad-iap-cadrage.md`](../bmad-iap-cadrage.md),
+> Revue critique de pair du cadrage source [`docs/exports/cadrage/bmad-iap-cadrage.md`](../cadrage/bmad-iap-cadrage.md),
 > menée le **2026-07-22** sur la version **v2.1** (avant les corrections v2.2 qui en
 > découlent — recomptage d'inventaire, requalification de la thèse de financement,
 > cross-walk des échelles). Ce document est le **journal de la revue**, pas la doctrine :
@@ -163,7 +163,7 @@ que le doc ne se contredise pas.
 
 | Point de la revue | Traitement dans `bmad-iap-cadrage.md` v2.2 |
 |---|---|
-| Thèse de financement croisé (porteur 1) | Callout « hypothèse à prouver » à §Vue d'ensemble, value prop préservée (deck inchangé, [`generate_deck.py`](../cadrage-ppt/generate_deck.py) ligne 415) ; KPI de réinvestissement en point ouvert |
+| Thèse de financement croisé (porteur 1) | Callout « hypothèse à prouver » à §Vue d'ensemble, value prop préservée (deck inchangé, [`generate_deck.py`](../../cadrage-ppt/generate_deck.py) ligne 415) ; KPI de réinvestissement en point ouvert |
 | Complexité / 6 vocabulaires (porteur 2) | Nouvelle section §Cross-walk des échelles (3 natures, 1 gradient unifié) |
 | Boucle ⟲ sans continuité (porteur 3) | Callout « modalité de retour à T+6–12 mois » à §Mise en œuvre — mécanique de continuité en point ouvert, tarification/packaging hors périmètre |
 | Débit vs checkpoint humain au Niveau C (porteur 4) | Callout à §Ambition **+ table Niveau C mise à jour** : outil « quasi autonome sur collecte/préparation, jamais l'arbitrage », checkpoints batchés par risque (ADR-006) ; mise à l'échelle en point ouvert |

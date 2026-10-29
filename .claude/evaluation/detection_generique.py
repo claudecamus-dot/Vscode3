@@ -1355,7 +1355,7 @@ def validation_humaine_tracee(racine, fichiers):
 
 
 # ------------------------------------------------------------------ structure_mandats_agents
-# The 6 blocks of the reference template (docs/reflexions/gabarit-agent.md) that
+# The 6 blocks of the reference template (docs/exports/reflexions/gabarit-agent.md) that
 # can be read cold, without judgement. Blocks 1 (role quality), 3 (reasons) and
 # 5 (general guidance, no hand-written step plan) need a reader: not scored.
 RE_FRONT = re.compile(r"\A---\r?\n(.*?)\r?\n---\r?\n", re.S)
@@ -1411,7 +1411,7 @@ def structure_mandats_agents(racine, fichiers):
     """Structure des mandats d'agents (critère conditionnel, gradué).
 
     Définition : chaque définition d'agent suit le gabarit de référence à 9 blocs
-    (docs/reflexions/gabarit-agent.md) ; les 6 blocs lisibles sans jugement sont
+    (docs/exports/reflexions/gabarit-agent.md) ; les 6 blocs lisibles sans jugement sont
     présents : objectif et fin, outils décrits, ton et format, interdits, exemple de
     départ, rappel final.
     Signaux exacts : fichiers .claude/agents/*.md, .github/agents/*.md ou agents/*.md

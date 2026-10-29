@@ -21,7 +21,7 @@ qui sont les éléments transposables. `VSCode2/data/pptx_templates/2.pptx` et
 
 ## 1. Identité
 
-| Élément | `1.pptx` (ce document) | `template-octo.pptx` (déjà utilisé, cf. [`template-octo.md`](../vscode1-export/template-octo.md)) |
+| Élément | `1.pptx` (ce document) | `template-octo.pptx` (déjà utilisé, cf. [`template-octo.md`](../imports/references/vscode1-export/template-octo.md)) |
 |---|---|---|
 | Format slide | 13,333 × 7,5 in (16:9 large, standard PowerPoint moderne) | 10 × 5,625 in (16:9 « Google Slides ») |
 | Police | **Arial** — police système, aucune famille de marque dédiée | **Outfit** (Light/Regular/Medium/SemiBold) — famille de marque à part entière |
@@ -91,7 +91,7 @@ CRITÈRES DE PRIORISATION empilés à gauche, avec pour ce dernier une
 C'est frappant car **le cadrage BMAD IAP définit déjà exactement cette
 donnée** sans jamais avoir défini son traitement visuel :
 
-> §Recommandations (`docs/bmad-iap-cadrage.md`) : *« RecommendationAxis
+> §Recommandations (`docs/exports/cadrage/bmad-iap-cadrage.md`) : *« RecommendationAxis
 > (3–4 axes transverses)... noté sur deux axes simples valeur / complexité
 > (1–5) »*
 

@@ -85,7 +85,7 @@ fonctionnelle (exactitude, complétude) ET qualité profonde (répond au besoin 
 | Porte d'entrée : README avec install/usage (= how-to minimal) | ✅ (dimension documentation) |
 | Référence technique à jour (stack, architecture, conventions) | ✅ partiel (wiki technical présent sur 3 projets) |
 | Rules d'agent (CLAUDE.md) présentes et opérantes | ✅ |
-| Explication (docs de conception, pourquoi des choix) | ✅ partiel (docs/reflexions ici ; non mesuré ailleurs) |
+| Explication (docs de conception, pourquoi des choix) | ✅ partiel (docs/exports/reflexions ici ; non mesuré ailleurs) |
 | Doc générée jamais éditée à la main (marquée comme telle) | ✅ (pratique en place ici — wiki généré) |
 | Exactitude : la doc correspond au code réel (pas de doc morte) | ✅ (dimension documentation — chemins cités dans les blocs de code de README.md/CLAUDE.md vérifiés sur disque, 0 token, dégrade la pastille sur écart) |
 | Les 4 formes Diátaxis distinguées (pas un fourre-tout) | ✅ (dimension documentation — `diataxis_formes()` cherche les marqueurs usuels des 4 formes dans les titres Markdown de README.md/CLAUDE.md et les noms de fichiers sous `docs/`, 0 token ; sous-champ additif `documentation.diataxis`, ne dégrade jamais la pastille présence+exactitude) |
@@ -227,7 +227,7 @@ l'utilisateur est intégrée ici, et au scan si mesurable à froid.
 
 Structure validée par l'utilisateur le 2026-09-29 ; raisons, sources (avec leur nature :
 doc officielle, billet, papier relu, préprint), limites, squelette et exemple rempli dans
-[`docs/reflexions/gabarit-agent.md`](../../reflexions/gabarit-agent.md). Un critère de
+[`docs/exports/reflexions/gabarit-agent.md`](../../reflexions/gabarit-agent.md). Un critère de
 PRÉSENCE mesure le texte du mandat, pas la qualité du comportement de l'agent ; la preuve
 du comportement (3 à 5 briefs de référence rejoués) est proposée à part, non outillée.
 

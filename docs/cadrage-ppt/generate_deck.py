@@ -1,5 +1,5 @@
 """Génère la synthèse PPT des RÉSULTATS du cadrage BMAD IAP
-(docs/bmad-iap-cadrage.md) à partir des helpers pptx_deck, dessinée
+(docs/exports/cadrage/bmad-iap-cadrage.md) à partir des helpers pptx_deck, dessinée
 PAR-DESSUS le vrai template de marque OCTO (template-octo.pptx) —
 masters/layouts/thème conservés, pas un deck sur canevas vierge.
 
@@ -8,7 +8,7 @@ ont été faux deux fois (48 annoncées pour 53 réelles, « 9 chapitres » et u
 liste décalée d'un rang après l'insertion du chapitre « Spécificités de
 l'infra » le 2026-09-10). La source est `build()`, en bas de ce fichier ; le
 fil rouge narratif reste celui des decks SCALE
-(docs/Import/notes-extraction-scale.md : POURQUOI → QUI → QUOI → COMMENT →
+(docs/imports/references/Exemples/notes-extraction-scale.md : POURQUOI → QUI → QUOI → COMMENT →
 RÉSULTAT).
 
 CHARTE (arbitrage du 2026-09-10) : la couleur ne porte PAS le sens. Voir le
@@ -59,7 +59,7 @@ d'accueil. À leur place, deux slides neuves :
     rangée, une bande grise pleine largeur (poids visuel moindre, pas une 4e
     carte) sur le MATÉRIAU de cadrage : trois contextes sectoriels réels, sans
     jamais affirmer une mission — aucun REX n'existe dans les sources
-    (docs/bmad-iap-cadrage.md:115 décrit une note de rédaction, `rex-library.md`
+    (docs/exports/cadrage/bmad-iap-cadrage.md:115 décrit une note de rédaction, `rex-library.md`
     est planifié et non peuplé).
   - `slide_demarche_avec_sans_agentic` — le niveau ZOOMÉ-ARRIÈRE de
     l'« avec ou sans agentic » : une ligne horizontale de trois temps
@@ -492,7 +492,7 @@ Sortie : bmad-iap-cadrage-synthese.pptx (à côté de ce script).
 
 v2.44 (2026-09-23, demande utilisateur) : la slide convictions devient deux
 slides — nos convictions fusionnées avec celles de l'exemple client
-(docs/Import/Convictions.pptx), sept au total, plus un pavé « notre conviction
+(docs/imports/clients/Convictions.pptx), sept au total, plus un pavé « notre conviction
 sur l'agentic » (contour épais + filet cyan, pas de 2e aplat navy).
 
 v2.45 (2026-09-23, demande utilisateur) : formes plus arrondies — un rayon de
@@ -774,7 +774,7 @@ def slide_cover(prs):
 
 # ---------------------------------------------------------------- slide 2
 # Réancré (v2.5, chantier ②) sur le fil rouge narratif SCALE
-# (docs/Import/notes-extraction-scale.md) : 4 blocs POURQUOI → QUOI → COMMENT →
+# (docs/imports/references/Exemples/notes-extraction-scale.md) : 4 blocs POURQUOI → QUOI → COMMENT →
 # RÉSULTAT, chacun une claim d'une ligne + le renvoi aux chapitres — pattern 7
 # du catalogue deck-design-library (« rangée de cartes sur bandeau, une en
 # accent ») : le RÉSULTAT (la preuve, ce que le sponsor achète in fine) est la
@@ -2420,9 +2420,9 @@ def slide_deux_fils(prs):
 
 # --- Nouveau (v2.6, point ②) : les activités humaines de la démarche, en DEUX
 # registres — outillées par IAP vs purement humaines (sans l'outil). Contenu
-# ancré dans docs/Import/notes-extraction-scale.md (micro-lancement sponsor,
+# ancré dans docs/imports/references/Exemples/notes-extraction-scale.md (micro-lancement sponsor,
 # ateliers collaboratifs, communauté de managers N+1/N+2, coaching sous
-# déontologie, relais internes, présence dégressive) et docs/bmad-iap-cadrage.md
+# déontologie, relais internes, présence dégressive) et docs/exports/cadrage/bmad-iap-cadrage.md
 # §Accompagnement de l'humain dans la trajectoire (v2.4) — rien d'inventé.
 # Pattern 11 du catalogue deck-design-library (« trajectoire à 4 phases en
 # colonnes × lignes de catégorie ») : colonnes = les temps ①②③⟲ (mêmes badges
@@ -3469,7 +3469,7 @@ def _controler(prs):
 
         py -c "import sys;sys.path.insert(0,'docs/cadrage-ppt');\
     import pptx_deck_vscode3 as D;from pptx import Presentation;\
-    p=Presentation('docs/cadrage-ppt/bmad-iap-cadrage-synthese.pptx');\
+    p=Presentation('docs/exports/decks/bmad-iap-cadrage-synthese.pptx');\
     print(len(D.verifier_debordements_texte(p)))"
 
     Les trois zéros des filets branchés ne sont pas de même nature, et les lire
@@ -3752,7 +3752,7 @@ def slide_next_steps(prs):
 # v2.44 (demande utilisateur du 2026-09-23 : « il me manque la slide convictions
 # présente dans le PPT convictions.pptx et à compléter d'un pavé convictions sur
 # l'agentic » — puis « Fusionner les deux ») : nos convictions et celles de
-# l'exemple client (docs/Import/Convictions.pptx, slides 2-3), adaptées à
+# l'exemple client (docs/imports/clients/Convictions.pptx, slides 2-3), adaptées à
 # l'infra, sur deux slides, plus un pavé agentic. Aucune mention du client
 # d'origine. Pattern : formation-po n°30 (liste numérotée de principes) en
 # frise verticale, comme l'exemple — onglet numéroté + filet + point de fin.
@@ -4824,7 +4824,9 @@ def build():
     # `set -e`) livrait un deck casse en silence (mesure du 2026-09-01). En cas
     # de defaut on ecrit a cote, sous un nom qui ne trompe personne, et l'export
     # precedent — valide — reste en place.
-    base = os.path.join(os.path.dirname(__file__), "bmad-iap-cadrage-synthese")
+    base = os.path.join(os.path.dirname(__file__), "..", "exports", "decks",
+                        "bmad-iap-cadrage-synthese")
+    os.makedirs(os.path.dirname(base), exist_ok=True)
     if problemes:
         out = base + ".INVALIDE.pptx"
         prs.save(out)

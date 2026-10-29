@@ -1,8 +1,8 @@
 # Product-brief — BMAD IAP (« Infra as a Product »)
 
 > **Porte d'entrée produit (1 page).** Synthèse stable du cadrage de fond
-> `docs/bmad-iap-cadrage.md` (v2.7) et de la revue produit/marché
-> `docs/reflexions/revue-produit-marche.md` — ces deux fichiers restent la **source de
+> `docs/exports/cadrage/bmad-iap-cadrage.md` (v2.7) et de la revue produit/marché
+> `docs/exports/reflexions/revue-produit-marche.md` — ces deux fichiers restent la **source de
 > vérité** ; ce brief n'en est que le résumé d'accroche. **Honnêteté épistémique
 > préservée** (finding critique C1 de la revue) : le *financement croisé* (« la capacité
 > récupérée finance la trajectoire produit ») est une **promesse instrumentée à prouver

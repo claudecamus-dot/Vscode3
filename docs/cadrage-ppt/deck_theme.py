@@ -18,7 +18,7 @@ LAYOUT_CHAPITRE = 2     # "50 - Chapitre [1]" — idx0 titre (grand), idx1 numé
 LAYOUT_VISUEL_DROITE = 15  # "63 - Titre, contenu et visuel à droite - cadre blanc"
 
 # --- Géométrie du template OCTO réel (10 x 5.625 in, 16:9) — cf.
-# docs/vscode1-export/template-octo.md §4-5, vérifiée localement contre
+# docs/imports/references/vscode1-export/template-octo.md §4-5, vérifiée localement contre
 # template-octo.pptx (mêmes dims/layouts/thème). Contenu dessiné dans la
 # zone de contenu du layout « Titre seul » (sous le titre, au-dessus du
 # pied de page), marge gauche alignée sur le placeholder titre (0.615 in),

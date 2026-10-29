@@ -11,7 +11,7 @@ import os
 import zipfile
 
 RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LIVRABLE = os.path.join(RACINE, "docs", "cadrage-ppt", "offre-infra-as-a-product-V1.pptx")
+LIVRABLE = os.path.join(RACINE, "docs", "exports", "decks", "offre-infra-as-a-product-V1.pptx")
 
 
 def test_livrable_present_et_lisible():

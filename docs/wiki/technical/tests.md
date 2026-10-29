@@ -23,8 +23,8 @@ agents: [onboarder]
 
 ## Philosophie
 
-- Le seul artefact « testable » au sens qualité est `docs/bmad-iap-cadrage.md` lui-même : sa section §Qualité & test du module propose déjà une méthodologie (missions fixtures rejouées, pré-check structurel vs jugement humain, checklists taguées [STRUCTUREL]/[JUGEMENT]) applicable au futur module `bmad-iap/`, mais rien de tout cela n'est encore implémenté dans ce dépôt
-  — `CONFIRMÉ` · onboarder · 2026-07-07 · `docs/bmad-iap-cadrage.md` §Qualité & test du module
+- Le seul artefact « testable » au sens qualité est `docs/exports/cadrage/bmad-iap-cadrage.md` lui-même : sa section §Qualité & test du module propose déjà une méthodologie (missions fixtures rejouées, pré-check structurel vs jugement humain, checklists taguées [STRUCTUREL]/[JUGEMENT]) applicable au futur module `bmad-iap/`, mais rien de tout cela n'est encore implémenté dans ce dépôt
+  — `CONFIRMÉ` · onboarder · 2026-07-07 · `docs/exports/cadrage/bmad-iap-cadrage.md` §Qualité & test du module
 
 ## Tests existants (0)
 

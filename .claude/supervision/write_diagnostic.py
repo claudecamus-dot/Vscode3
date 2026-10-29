@@ -67,9 +67,9 @@ Schéma attendu : {"findings": [{"categorie", "titre", "preuve", ...}]}
 
 `generated` est posé par ce script (horodatage courant). Gitignoré — donnée machine.
 Env (tests) : AGENT_SUPERVISION_DIAGNOSTIC, AGENT_SUPERVISION_ARBITRAGES.
-Conception : docs/reflexions/conception-agent-supervisor.md (le POURQUOI, repris de
+Conception : docs/exports/reflexions/conception-agent-supervisor.md (le POURQUOI, repris de
 VSCode2 le 2026-09-02) ; le QUOI operationnel est dans .claude/skills/agent-supervisor/
-SKILL.md. Entre le 2026-08-31 et cette reprise, ce champ a pointe un docs/reflexions qui
+SKILL.md. Entre le 2026-08-31 et cette reprise, ce champ a pointe un docs/exports/reflexions qui
 n'existait pas.
 """
 import datetime

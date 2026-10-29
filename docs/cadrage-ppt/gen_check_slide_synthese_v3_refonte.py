@@ -708,6 +708,7 @@ if problemes:
 else:
     print("GEOMETRIE: OK — aucune forme hors cadre")
 
-out = os.path.join(G.HERE, "check_slide_synthese-v3-refonte.pptx")
+out = os.path.join(G.HERE, "..", "exports", "decks", "checks", "check_slide_synthese-v3-refonte.pptx")
+os.makedirs(os.path.dirname(out), exist_ok=True)
 prs.save(out)
 print("Ecrit:", out)

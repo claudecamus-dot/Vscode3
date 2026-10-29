@@ -20,7 +20,7 @@ agents: [onboarder]
 - Script hook Python : `snake_case.py`
   — `CONFIRMÉ` · onboarder · 2026-07-07 · `.claude/hooks/guard_destructive_git.py`
 - Langue : français pour toute la documentation de cadrage, vocabulaire technique anglais conservé (RUN/BUILD, gate, checklist, MVP…)
-  — `CONFIRMÉ` · onboarder · 2026-07-07 · `docs/bmad-iap-cadrage.md`
+  — `CONFIRMÉ` · onboarder · 2026-07-07 · `docs/exports/cadrage/bmad-iap-cadrage.md`
 
 ## Git
 
@@ -39,7 +39,7 @@ agents: [onboarder]
 - Garde-fou destructif « fail open » — le hook `guard_destructive_git.py` ne bloque que sur un motif reconnu avec certitude ; toute erreur de parsing laisse passer la commande plutôt que de bloquer à tort
   — `CONFIRMÉ` · onboarder · 2026-07-07 · `.claude/hooks/guard_destructive_git.py:139-141`
 - Tags de confiance `CONFIRMÉ` / `DÉDUIT` / `INCERTAIN` systématiques sur toute assertion de cadrage, avec agent · date · source — convention empruntée au projet frère VSCode2 (OpenHub) et reprise telle quelle dans ce wiki d'onboarding
-  — `CONFIRMÉ` · onboarder · 2026-07-07 · `docs/bmad-iap-cadrage.md` §Agents BMAD
+  — `CONFIRMÉ` · onboarder · 2026-07-07 · `docs/exports/cadrage/bmad-iap-cadrage.md` §Agents BMAD
 
 ## Taille des changements
 

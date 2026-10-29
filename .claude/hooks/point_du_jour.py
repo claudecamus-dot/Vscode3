@@ -1,6 +1,6 @@
 """Hook SessionStart — le point du jour : ce qui attend VOTRE decision.
 
-Rupture B de docs/reflexions/approche-disruptive-wiki-2026-07-31.md, arbitree le
+Rupture B de docs/exports/reflexions/approche-disruptive-wiki-2026-07-31.md, arbitree le
 2026-07-31. La mesure qui la fonde : sur 242 jobs enregistres depuis les boutons du
 wiki, 241 etaient des artefacts de tests et UN SEUL une action humaine. Personne ne
 vient sur la page. En revanche, la conversation sert tous les jours -- 67 runs

@@ -4,8 +4,8 @@
 COLLECTE→DIAGNOSTIC→CONCEPTION→RESTITUTION, trajectoire ①②③⟲, démarche
 d'accompagnement agent en 5 phases, comitologie) à la lumière des trois decks de
 l'offre OCTO SCALE (transformation agile, 2019-2020 — notes d'extraction sourcées :
-`docs/Import/notes-extraction-scale.md`). Cette analyse vient **après** l'intégration
-v2.4 du cadrage (`docs/bmad-iap-cadrage.md`, §Accompagnement de l'humain dans la
+`docs/imports/references/Exemples/notes-extraction-scale.md`). Cette analyse vient **après** l'intégration
+v2.4 du cadrage (`docs/exports/cadrage/bmad-iap-cadrage.md`, §Accompagnement de l'humain dans la
 trajectoire) : elle ne redit pas ce qui y est déjà acté, elle relève ce que la
 comparaison révèle **en plus** — convergences qui valident, manques restants,
 tensions à assumer. Rien de ce qui suit n'est intégré au cadrage : l'humain arbitre.
@@ -180,7 +180,7 @@ déclencheurs — contenu déjà cadré au §Positionnement & achat) avant le QU
 ---
 
 *Analyse produite le 2026-07-23 sur demande, après l'intégration v2.4. Sources :
-`docs/Import/notes-extraction-scale.md` (extraction des 3 decks SCALE) +
-`docs/bmad-iap-cadrage.md` (v2.4). Aucune recommandation S1-S7 n'est intégrée au
+`docs/imports/references/Exemples/notes-extraction-scale.md` (extraction des 3 decks SCALE) +
+`docs/exports/cadrage/bmad-iap-cadrage.md` (v2.4). Aucune recommandation S1-S7 n'est intégrée au
 cadrage à ce stade — arbitrage humain attendu, même mécanique que la revue
-produit/marché v2.3 (`docs/reflexions/revue-produit-marche.md`).*
+produit/marché v2.3 (`docs/exports/reflexions/revue-produit-marche.md`).*

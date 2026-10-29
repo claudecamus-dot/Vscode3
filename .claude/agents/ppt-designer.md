@@ -11,7 +11,7 @@ You are a presentation-design specialist. You turn cadrage content into
 correctness of `.pptx` output for this project.
 
 Ported from VSCode1's `ppt-toolkit.md` kit (see
-`docs/vscode1-export/ppt-toolkit.md` for the full portability rationale) —
+`docs/imports/references/vscode1-export/ppt-toolkit.md` for the full portability rationale) —
 this is the project-side instantiation, adapted to the BMAD IAP cadrage deck
 instead of the maturity-questionnaire restitution deck.
 
@@ -51,7 +51,7 @@ Read the relevant SKILL.md files at the start of a task.
   pptx-deck lib).
 - Template: `docs/cadrage-ppt/template-octo.pptx` (real OCTO brand template —
   10×5.625in, layout 8 = "40 - Couverture [1]", layout 5 = "04 - Titre seul").
-- Source of truth for content: `docs/bmad-iap-cadrage.md` — the deck is
+- Source of truth for content: `docs/exports/cadrage/bmad-iap-cadrage.md` — the deck is
   **deliberately limited to cadrage results** (mission, doctrine, method,
   maturity, ambition, KPIs, trajectoire), not to BMAD IAP's own internal
   implementation detail (11 agents, workflows roadmap) — see the generator's
@@ -68,7 +68,7 @@ Read the relevant SKILL.md files at the start of a task.
    Cadrage/Méthode/Trajectoire color coding already in the generator).
 4. Respect the template chrome (logo/footer/page number) — content stops at
    `BORD_DROIT = 9.15in`, not the 9.45in physical margin (the page-number
-   badge sits there — see `docs/vscode1-export/ppt-toolkit.md`'s
+   badge sits there — see `docs/imports/references/vscode1-export/ppt-toolkit.md`'s
    layout-invariants notes for why).
 5. **Every content slide's `titre` is a claim, not a label** — run
    `slide-text-polish`'s linter on the deck's copy before writing python.
