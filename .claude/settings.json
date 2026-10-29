@@ -122,6 +122,27 @@
             "statusMessage": "Journal usage agents..."
           }
         ]
+      },
+      {
+        "matcher": "Agent|Task|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/gmah_collecte.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/gmah_collecte.py\"",
+            "timeout": 10
+          }
+        ]
       }
     ]
   },
