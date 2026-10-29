@@ -23,6 +23,8 @@ et c'est l'orchestrateur qui la tient.
 | Le superviseur a besoin de l'état de l'art pour prouver un finding | Synchrone dans ce cas (le diagnostic attend le résultat) |
 | L'utilisateur demande des pistes d'amélioration, des évolutions, des bonnes pratiques | Toujours : c'est la demande même de la veille |
 
+**Avant le brief (0 token)** : lancer `py .claude/supervision/preflight_cadence.py veille` (pour un re-audit du hub : `... audit`) et citer son JSON dans le brief — fraîcheur, entrées en attente et déjà écartées n'ont pas à être re-dérivées par le sous-agent.
+
 **Comment la lancer.** Sous-agent `veille-agentic` (outil `Agent`), qui porte l'outil
 `Skill` et charge la méthode lui-même :
 

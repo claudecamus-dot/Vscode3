@@ -76,6 +76,9 @@ triples into one helper (`_add_measured_field` in `pptx_export.py` is exactly
 this pattern) instead of hand-placing `y += 1.3` / `y += 1.0` constants that
 drift independently per call site.
 
+**Fixed grid and margins.** Fix the outer margins and the column grid once per deck
+(OCTO values: `charte/octo/design.md`) and hook every shape to them; no slide gets its own margin.
+
 ## 3. Color as meaning, not decoration
 
 A categorical palette (`D.PALETTE`) distinguishes N axes/categories from
@@ -181,6 +184,12 @@ this state). If you can't articulate the reason, cut it.
 - Icons/emoji in slide content (as opposed to the *web app's* UI, where
   they're fine) should be rare and purposeful — a gauge or bar already
   encodes "value," it doesn't also need a 🎯 next to it.
+
+- **A series is never coded by colour alone**: add a shape, pattern or direct label so it
+  survives greyscale print and colour-blind readers (contrast pairs: `paires_contraste`
+  in `charte/octo/tokens.json`).
+- **One highlight per slide**: a single accent, box or bold figure; if two things shout, neither is heard.
+- **Never mix light and dark** treatments on the same slide (or alternate within a section); pick one per slide.
 
 ## Working with this project's generator (`app/services/pptx_export.py`)
 

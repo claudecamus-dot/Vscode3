@@ -119,6 +119,15 @@ the OCTO template's font — see `deck-design-library/references/template-octo.m
    slide scale/projection, whatever the fitting pressure (repris de
    VSCode1/export/design-system-octo.md §2, 2026-09-02).
 
+## Before generation (checklist)
+
+- [ ] Real slide size read (`prs.slide_width/height`); margins and grid fixed once.
+- [ ] Every title is a sentence-case claim, insight first, figures sourced (`slide-text-polish`).
+- [ ] One highlight per slide; no series coded by colour alone; no light/dark mix.
+- [ ] Palette and fonts taken from the charte tokens; text >= 10.5 pt.
+  (10.5 pt is the floor for deck content; `taille_mini_pt` 8 in the tokens is the absolute minimum, e.g. footers.)
+- [ ] Render planned for after generation (`pptx-verify`).
+
 ## Mandatory verification
 
 1. **Geometry + text-overflow check (always).** `assert not D.verifier_geometrie(prs)`

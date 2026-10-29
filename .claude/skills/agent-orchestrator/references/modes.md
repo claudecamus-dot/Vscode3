@@ -103,7 +103,7 @@ journal mesure (`bras`, `topologie`, `tache_id`, ci-dessous).
 
 Arbitré le 2026-10-23 (GMAH 3). **Off par défaut** : tant qu'il est off, `classer()`
 rend l'ordre d'entrée inchangé. Activation verrouillée par un arbitrage tracé (aucun préfixe
-de demande n'active le mode ; `gravite.py` est hub uniquement, non exporté) : `py .claude/orchestration/gravite.py on --arbitrage <clé>`
+de demande n'active le mode ; `gravite.py` est hub uniquement, non exporté) ; **repli manuel** (la voie normale est la phrase `ADOPTE GMAH`, voir « Activation en une phrase » plus bas) : `py .claude/orchestration/gravite.py on --arbitrage <clé>`
 avec la clé de contenu `<date>|<cible>|<12 premiers hex du sha256 de la décision>` d'une
 entrée d'`arbitrages.json` de cible `hub:gmah` dont la décision a la forme canonique
 `ACCEPTE : activer-gravitationnel`, exactement, ou une autre forme de la liste blanche fermée (story 8.16 : tout suffixe est refusé), datée au plus d'aujourd'hui (date future refusée : `date_future`). La clé est conservée comme preuve dans
@@ -150,6 +150,29 @@ ne lance JAMAIS `log_arbitrage.py` avec `--cible hub:gmah`.
 `log_arbitrage.py` n'authentifie personne, seule la formulation de cette règle protège. Un hook
 de garde est un lot ultérieur possible, non réalisé.
 
+**Activation en une phrase (story 14.10)** : **taper `ADOPTE GMAH` suffit**. Le hook
+`provenance_gmah.py` (hub uniquement, non exporté) vérifie d'abord un vrai prompt interactif
+(`hook_event_name` = `UserPromptSubmit`, `transcript_path` existant) et que le jour local égale le
+jour UTC (sinon rien n'est écrit), écrit l'arbitrage `hub:gmah` daté par `log_arbitrage.py`
+(idempotent le même jour), émet le jeton, puis lance `gravite.on` en processus : toutes les
+vérifications du verrou tournent (arbitrage, jeton, état signé, empreinte de clé). Si le verrou
+refuse, le jeton est consommé. Échec d'une étape : le prompt passe, le mode reste ÉTEINT.
+**Sécurité, sans excès** : la phrase tapée n'est la preuve humaine que pour le client interactif.
+Un agent disposant d'un Bash sans restriction sous le même compte peut encore lancer
+`claude -p "ADOPTE GMAH"` ou le script (capacité qui existait avant la 14.10 : il pouvait déjà
+émettre un jeton et écrire l'arbitrage lui-même). La vraie frontière est la couche de permission et
+d'approbation, pas ce hook. Les trois étapes ci-dessous restent le **repli manuel** si le hook n'a
+pas activé le mode.
+
+**Deux niveaux de plafond de bras (story 14.16)** : `standard` = 4 bras (`ADOPTE GMAH`, inchangé) ;
+`augmente` = 10 bras, UNIQUEMENT après la phrase tapée `ADOPTE GMAH AUGMENTE` (même hook, même jeton de
+15 minutes mais de type `adopte-augmente`, même consommation par `gravite.py on --arbitrage`, arbitrage
+`... ADOPTE GMAH AUGMENTE tapé par l'utilisateur le <date>`). Le niveau est dans l'état signé ; un état
+sans `mode`, de signature invalide ou de mode inconnu vaut 4. `gravite.py on --mode augmente` sans jeton
+`adopte-augmente` consommé est refusé ; `off` / `STOP GMAH` remet `standard`. Pas de palier intermédiaire.
+Rien n'est activé par cette livraison. `comparer` (sans état) reste à 4 par construction ; le point de
+mesure du gain du 2026-12-01 est inchangé.
+
 - **`ADOPTE GMAH`** : l'orchestrateur enchaîne trois étapes, dans cet ordre.
   1. Tracer l'arbitrage par le SCRIPT (jamais en éditant `arbitrages.json` à la main : le
      classifieur le refuse) :
@@ -165,7 +188,7 @@ de garde est un lot ultérieur possible, non réalisé.
      entrée entre-temps, ou si l'étape 1 a été refusée (code retour différent de 0), ne PAS
      forcer : refaire l'étape 1, relire, et exiger que la clé commence par la date affichée et
      contienne `|hub:gmah|` avant de continuer.
-  3. Activer : `py .claude/orchestration/gravite.py on --arbitrage <clé>` (hub uniquement, non exporté).
+  3. Activer (**repli manuel**, la voie normale est la phrase seule) : `py .claude/orchestration/gravite.py on --arbitrage <clé>` (hub uniquement, non exporté).
      **Jeton de provenance (story 8.21)** : `on` consomme un jeton que seul le hook
      UserPromptSubmit `provenance_gmah.py` (dans le dispatcher unique de la story 7.10) émet quand
      le message tapé est exactement `ADOPTE GMAH`. Le jeton vaut 15 minutes, sert une seule fois,
@@ -178,6 +201,16 @@ de garde est un lot ultérieur possible, non réalisé.
      Windows peut encore lire la clé ou modifier le hook. La vraie frontière est la protection de
      `.claude/**` par Claude Code, `guard_registres` sur `gravite/**`, les règles `deny` de
      `settings.json`, et l'approbation humaine de toute commande Bash qui touche `gravite/`.
+**Limites connues du verrou** (honnêtes, mesurées au 2026-10-28) :
+
+- Les motifs `deny` sur les chemins `claude-gmah` sont littéraux : ils s'évitent par un autre chemin d'accès au même fichier.
+- `GMAH_KEY_DIR` est une variable d'environnement : elle doit être absolue et hors de `.claude` ; un environnement hostile peut rediriger la clé.
+- Le fichier clé (story 14.11) est, sous Windows, un blob DPAPI (en-tête `GMAHDPAPI1`, portée utilisateur) : lisible seulement par le compte qui l'a protégé. Une ancienne clé en clair reste lue (compatibilité) jusqu'à `gravite.py migrer-cle` (commande aussi présente dans les cibles qui reçoivent le moteur), qui l'enveloppe (mêmes octets, donc état signé et empreinte inchangés ; ancien fichier remplacé seulement après relecture réussie). Un blob illisible (corrompu, autre compte) fait échouer fermé : aucun jeton, `on` refuse avec la raison, `off` reste libre. Hors Windows : clé en clair, mode 0o600. Aucune ACL `icacls` n'est posée (non testée, donc non affirmée). DPAPI protège les copies, sauvegardes et autres comptes (autre compte NON testé) ; il n'arrête pas un processus du même compte dans la même session. `gravite.py status` avertit si la clé est en clair (`cle en clair non migree`) ou illisible.
+- Un agent avec un Bash sans restriction sous le même compte peut fabriquer un jeton, écrire l'arbitrage ou lancer `gravite.py` lui-même (vrai aussi avant la story 14.10).
+- La vraie frontière est la couche de permissions plus l'approbation humaine, pas le verrou.
+- DPAPI n'arrête PAS un processus du même compte dans la même session : il peut appeler `CryptUnprotectData` lui-même. Le test d'un autre compte Windows n'est pas rejoué en CI (seuls blob corrompu et autre entropie le sont).
+- Cible (story 14.17) : la clé locale d'une cible (`claude-gmah-<slug>`) est créée protégée par DPAPI sous Windows, jamais en clair, par le même module `_gmah_cle` (scellé) ; une ancienne clé en clair de la cible est migrée (mêmes octets) quand l'utilisateur tape `ADOPTE GMAH`, avant toute écriture, et un échec laisse le mode éteint. La protection vaut contre un AUTRE compte Windows, pas contre un agent du MÊME compte ; hors Windows la clé reste en clair (0o600), sans ACL posée. La migration d'une cible ne lit ni ne copie jamais la clé du hub (dossier `claude-gmah`).
+
 - **`STOP GMAH`** : `py .claude/orchestration/gravite.py off` (hub uniquement, non exporté ; toujours libre, même si
   `arbitrages.json` est absent ou illisible).
 
@@ -186,7 +219,7 @@ Les deux laissent une ligne dans `.claude/orchestration/gravite/trace.jsonl` (é
 `ACCEPTE : activer-gravitationnel` (forme canonique à écrire), `ACCEPTE activer-gravitationnel`
 et `ACCEPTE:activer-gravitationnel` (les deux points sont facultatifs pour le verrou) ; refusées
 `ACCEPTE : ne pas activer-gravitationnel` (négation) et
-`ACCEPTE + APPLIQUE : activer-gravitationnel` (le marqueur ne suit pas ACCEPTE). Liste blanche fermée (story 8.16, correspondance exacte) : ces trois formes et `ACCEPTE : activer-gravitationnel — ADOPTE GMAH tapé par l'utilisateur le AAAA-MM-JJ` ; tout autre texte (`— REFUSE`, `pour le hub`, `(raison…)`) est refusé.
+`ACCEPTE + APPLIQUE : activer-gravitationnel` (le marqueur ne suit pas ACCEPTE). Liste blanche fermée (story 8.16, correspondance exacte) : ces trois formes et `ACCEPTE : activer-gravitationnel — ADOPTE GMAH tapé par l'utilisateur le AAAA-MM-JJ` (ou la même avec `ADOPTE GMAH AUGMENTE`, story 14.16) ; tout autre texte (`— REFUSE`, `pour le hub`, `(raison…)`) est refusé.
 
 **Ce que `ADOPTE GMAH` ne prouve pas** : le verrou ne vérifie PAS les six préconditions de
 `TODO.md` (lignes 7 à 22). `ADOPTE GMAH` est la décision explicite de l'utilisateur, soit le
@@ -198,7 +231,7 @@ préconditions, et cette activation ne les déclare pas remplis.
   raison typée, quelle que soit son attraction.
 - **Score décomposé** : `attraction` (dans [0,1)) moins les pénalités normalisées
   (coût, tokens, latence, charge², risque, contexte) ; chaque terme est rendu.
-- **Run routé, mode allumé** : passer la trace de `py scripts/construire_trace_decision.py <candidats.json>` (hub uniquement, non exporté) à `log_run.py --trace-decision` (avec `--candidats-json` et `--choix`) ; mode éteint, le script sort en code 2 et on ne passe rien.
+- **Run routé, mode allumé** : `log_run.py` construit et écrit lui-même `trace_decision` quand on lui passe `--candidats-json` et `--choix` et que `actif_verifie()` est vrai (hub uniquement ; une cible sans `scripts/construire_trace_decision.py` ne fait rien). Mode éteint ou non vérifiable : aucune trace, aucune erreur. Mode vérifié actif sans candidats (run `orchestre`), ou trace impossible : avertissement non bloquant et marqueur `trace_absente` sur le run. Choix assumé (2026-10-28) : ce cas couvre tout run `orchestre` ordinaire sans `--candidats-json`, pas seulement un run routé ; le marqueur signale donc « aucune trace de décision fournie », il ne prouve pas un oubli. Une trace passée à la main par `--trace-decision` reste prioritaire.
 - **Trace via `log_run.py` seulement**, pas de second journal. Liens, admission,
   auto-réparation et droits d'écriture du comité viennent aux lots G2-G3.
 

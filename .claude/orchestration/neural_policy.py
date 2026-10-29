@@ -2,7 +2,9 @@
 
 Safe position: any absent/unreadable/oversized/unknown-version/invalid file gives
 ABSTAIN (no action); load_policy never raises and never returns a permissive default.
-PLAFOND_BRAS is read by parsing gravite.py text (no import: no side effects).
+PLAFOND_BRAS / PLAFOND_AUGMENTE are read by parsing gravite.py text (no import: no side effects);
+the current mode (standard unless the signed state says augmente; read through gravite.mode_effectif,
+standard on any failure) only picks which one applies.
 
 Vocabulary note (two spellings, both intentional and pinned by a test):
 `measured_cost_coverage` uses the masculine `inconnu`, while `uncertainty_status`
@@ -69,6 +71,32 @@ def read_plafond_bras(path=None):
     return int(m.group(1))
 
 
+def read_plafond_augmente(path=None):
+    m = re.search(r"^PLAFOND_AUGMENTE\s*=\s*(\d+)\s*(?:#.*)?$",
+                  Path(path or GRAVITE_PATH).read_text(encoding="utf-8"), re.M)
+    if not m:
+        raise PolicyError("PLAFOND_AUGMENTE not found in gravite.py")
+    return int(m.group(1))
+
+
+def _mode_courant(path=None):
+    """Verified mode of the state (via gravite.mode_effectif); standard on any failure."""
+    try:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("gravite_policy_mode", Path(path or GRAVITE_PATH))
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod.mode_effectif()
+    except Exception:  # noqa: BLE001 - unreadable state is standard (fail closed)
+        return "standard"
+
+
+def plafond_courant(path=None, mode=None):
+    """Cap of the current mode: PLAFOND_AUGMENTE only for mode `augmente`, PLAFOND_BRAS otherwise."""
+    mode = _mode_courant(path) if mode is None else mode
+    return read_plafond_augmente(path) if mode == "augmente" else read_plafond_bras(path)
+
+
 def _loader():
     class Strict(yaml.SafeLoader):
         pass
@@ -119,7 +147,7 @@ def validate(data, plafond=None):
     _check(data, _SCHEMA, "")
     if data["version"] not in KNOWN_VERSIONS:
         raise PolicyError(f"unknown version {data['version']}")
-    plafond = read_plafond_bras() if plafond is None else plafond
+    plafond = plafond_courant() if plafond is None else plafond
     s = data["securite"]
     if s["requires_user_approval"] is not True:
         raise PolicyError("securite.requires_user_approval must be true")

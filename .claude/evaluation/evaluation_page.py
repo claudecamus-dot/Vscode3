@@ -187,7 +187,7 @@ ACTIONS = {
         "différentes), et suivre la consommation dans un fichier de coûts."),
     "structure_mandats_agents": (
         "Réécrire chaque mandat d'agent sur la structure de référence "
-        "(docs/exports/reflexions/gabarit-agent.md) : condition d'arrêt écrite sans "
+        "(docs/reflexions/gabarit-agent.md) : condition d'arrêt écrite sans "
         "maxTurns, chaque outil décrit, ligne de ton, interdits motivés, exemple "
         "de départ, contrat de sortie et provenance en fin de texte."),
     "validation_humaine_tracee": (

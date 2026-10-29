@@ -8,7 +8,7 @@ Guarantees (pure function, writes nothing, launches nothing):
   - dependent steps are never in the same wave (waves are topological layers); a cycle is refused;
   - arms = min(widest wave, cap); a reduction below the requested arms is traced in `reduction`;
   - the result is a PROPOSAL: `requires_user_approval` is always true, `lance` is always false.
-Cap: gravite.PLAFOND_BRAS (read only), a smaller --plafond may lower it, never raise it.
+Cap: gravite.plafond_courant() (4 standard, 10 augmented; read only), a smaller --plafond may lower it, never raise it.
 Exit codes: 0 plan printed; 2 refused (cycle, invalid input).
 """
 import importlib.util
@@ -31,7 +31,7 @@ def _plafond_gravite() -> int:
     spec = importlib.util.spec_from_file_location("gravite_planner", os.path.join(ICI, "gravite.py"))
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
-    v = mod.PLAFOND_BRAS
+    v = mod.plafond_courant() if hasattr(mod, "plafond_courant") else mod.PLAFOND_BRAS
     if isinstance(v, bool) or not isinstance(v, int) or v < 1:
         raise PlanRefuse("gravite PLAFOND_BRAS must be an int >= 1")
     return v

@@ -6,6 +6,13 @@ Playbook: `.claude/orchestration/playbooks/evolution-flotte.md` (real framing �
 checks → scoped commit). ONE target repo per executor.
 OUT of scope: every other repo, and any uncommitted work in the target that is not ours.
 
+## Precondition (before any edit)
+IMPLEMENTATION (a code change; pure kit-file propagation is covered by its propagation proof and exempt):
+the brief must cite a target story id (e.g. `Story 14.7`) that exists in the target's
+`_bmad-output/planning-artifacts/epics.md`, repeated in the commit's `Refs:`. epics.md absent, or story
+not found = STATUT : bloque, ask the user (`bmad-create-epics-and-stories`); NEVER create the story yourself (R4).
+Only exception: a written USER derogation quoted in the brief, committed as `Refs: derogation-utilisateur <date> <reason>`.
+
 ## Method
 1. `git status` of the target BEFORE anything: third-party WIP present → never stage, stash,
    restore or overwrite it (re-check right before staging: sessions may run concurrently).

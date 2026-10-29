@@ -32,6 +32,9 @@ Two layers: **principles** to rewrite by, and a **linter** to catch regressions.
     must sit in the layout's title placeholder, not in a free text box (otherwise the deck has
     no outline). `pptx-verify/scripts/forme_check.py` flags it (`TITRE_NON_PLACEHOLDER`) and
     flags walls of text (`MUR_DE_TEXTE`); its thresholds are provisional, see that script.
+11. **Sentence-case titles, insight first.** Capitalise only the first word and proper nouns;
+    open with the finding, use an active verb, and give figures with their source:
+    "Le build passe de 12 à 4 min (mesure CI, oct. 2026)" — not "Évolution Du Temps De Build".
 
 ## Linter
 

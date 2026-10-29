@@ -57,6 +57,9 @@ import unicodedata
 from datetime import UTC, datetime
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import _gmah_cle as _cle  # noqa: E402 - DPAPI key storage shared with the hook (story 14.11)
+
 ETAT = Path(__file__).resolve().parent / "gravite" / "etat.json"
 TRACE = Path(__file__).resolve().parent / "gravite" / "trace.jsonl"
 ARBITRAGES = Path(__file__).resolve().parents[1] / "supervision" / "arbitrages.json"
@@ -68,13 +71,17 @@ DECISIONS_ACTIVATION = (  # closed whitelist, matched with fullmatch (story 8.16
     re.compile(r"ACCEPTE:activer-gravitationnel"),
     re.compile("ACCEPTE : activer-gravitationnel — ADOPTE GMAH tapé par l'utilisateur le "
                r"[0-9]{4}-[0-9]{2}-[0-9]{2}"),
+    re.compile("ACCEPTE : activer-gravitationnel — ADOPTE GMAH AUGMENTE tapé par l'utilisateur le "
+               r"[0-9]{4}-[0-9]{2}-[0-9]{2}"),
 )
 VERDICTS_NEUTRES = re.compile(r"(accepte|reporte)\b")  # closed allowlist on _texte; Unicode \b (8.22)
 TAILLE_MAX_ARBITRAGES = 2 * 1024 * 1024  # bytes; refused before json.loads (story 8.22)
-PLAFOND_BRAS = 4
+PLAFOND_BRAS = 4  # standard cap (kept: other code reads this name)
+PLAFOND_STANDARD = PLAFOND_BRAS
+PLAFOND_AUGMENTE = 10  # only after the typed phrase ADOPTE GMAH AUGMENTE (story 14.16)
 RHO_MAX = 10.0
 DEFAUT_ETAT = {"actif": False, "depuis": None, "par": None, "plafond_bras": PLAFOND_BRAS,
-               "arbitrage": None}
+               "arbitrage": None, "mode": "standard"}
 POIDS_DEFAUT = {"w_attr": 1.0, "kappa": 1.0, "eps": 0.05, "rho": 1.0,
                 "cout": 0.15, "tokens": 0.15, "latence": 0.1, "charge": 0.2,
                 "risque": 0.25, "contexte": 0.1}
@@ -200,7 +207,7 @@ def _champ_negatif(candidat: dict) -> bool:
     return any((v := _fini(candidat.get(k))) is not None and v < 0 for k in CHAMPS_SCORE)
 
 
-def filtre_dur(candidat, contexte: dict | None) -> str | None:
+def filtre_dur(candidat, contexte: dict | None, cap_mode: int = PLAFOND_STANDARD) -> str | None:
     """Typed exclusion reason, or None if eligible. Fails closed: unknown or malformed
     candidate fields are ineligible; a malformed context raises ValueError."""
     contexte = _valider_contexte(contexte)
@@ -237,8 +244,8 @@ def filtre_dur(candidat, contexte: dict | None) -> str | None:
     bras = None if isinstance(brut_bras, bool) else _fini(brut_bras)
     if bras is not None and (bras < 0 or bras != int(bras)):  # a fractional count is not a count
         return "plafond_bras"
-    plafond = _fini(contexte.get("plafond_bras", PLAFOND_BRAS))
-    if bras is None or plafond is None or bras >= min(plafond, PLAFOND_BRAS):
+    plafond = _fini(contexte.get("plafond_bras", cap_mode))
+    if bras is None or plafond is None or bras >= min(plafond, cap_mode):
         return "plafond_bras"
     arb = candidat.get("requiert_arbitrage")
     if arb is not False:
@@ -280,10 +287,13 @@ def valider_poids(poids: dict | None) -> dict:
     return p
 
 
-def score(candidat, contexte: dict | None = None, poids: dict | None = None) -> dict:
+def score(candidat, contexte: dict | None = None, poids: dict | None = None,
+          cap_mode: int = PLAFOND_STANDARD) -> dict:
     contexte = _valider_contexte(contexte)
     p = valider_poids(poids)
-    raison = filtre_dur(candidat, contexte)
+    # the 3rd argument only when the mode raised the cap (keeps the standard call shape unchanged)
+    raison = (filtre_dur(candidat, contexte) if cap_mode == PLAFOND_STANDARD
+              else filtre_dur(candidat, contexte, cap_mode))
     if raison:
         return {"eligible": False, "raison": raison, "total": None, "termes": {}}
     base = 1.0
@@ -299,6 +309,11 @@ def score(candidat, contexte: dict | None = None, poids: dict | None = None) -> 
     if not math.isfinite(total):
         return {"eligible": False, "raison": "entree_non_finie", "total": None, "termes": {}}
     return {"eligible": True, "raison": None, "total": total, "termes": termes}
+
+
+def plafond(mode) -> int:
+    """Arm cap of a mode: 10 only for exactly `augmente`; 4 for `standard` and anything else (fail closed)."""
+    return PLAFOND_AUGMENTE if mode == "augmente" else PLAFOND_STANDARD
 
 
 def etat() -> dict:
@@ -469,6 +484,18 @@ def etat_verifie() -> tuple[bool, str]:
     return True, raison
 
 
+def mode_effectif() -> str:
+    """Mode of the VERIFIED active state (the signature covers `mode`); `standard` otherwise."""
+    ok, _ = etat_verifie()
+    m = etat().get("mode")
+    return m if ok and isinstance(m, str) else "standard"
+
+
+def plafond_courant() -> int:
+    """Arm cap in force now: plafond(mode_effectif()); 4 when off, unsigned or unreadable."""
+    return plafond(mode_effectif())
+
+
 def actif_verifie() -> bool:
     """True only if the flag is True AND its stored proof still validates (re-read every call)."""
     return etat_verifie()[0] is True
@@ -504,13 +531,14 @@ def classer(candidats: list, contexte: dict | None = None, poids: dict | None = 
     ctx = dict(_valider_contexte(contexte))
     cap_malforme = "plafond_bras" in ctx and _fini(ctx["plafond_bras"]) is None
     valider_poids(poids)
-    caps = [c for c in (_fini(e.get("plafond_bras")), _fini(ctx.get("plafond_bras", PLAFOND_BRAS))) if c is not None]
+    cap_mode = plafond_courant()  # state-bound cap (comparer never reads the state: it stays at 4)
+    caps = [c for c in (_fini(e.get("plafond_bras")), _fini(ctx.get("plafond_bras", cap_mode))) if c is not None]
     ctx["plafond_bras"] = min(caps) if caps else None
     if cap_malforme:
         ctx["plafond_bras"] = None  # a malformed cap in the context blocks (fail closed)
     gardes, exclus = [], []
     for c in candidats:
-        s = score(c, ctx, poids)
+        s = score(c, ctx, poids, cap_mode)
         if not s["eligible"]:
             exclus.append({"nom": _nom(c), "raison": s["raison"]})
         elif s["total"] < PLANCHER_SCORE:
@@ -602,16 +630,17 @@ def _tracer(action: str, arbitrage) -> None:
         f.write(json.dumps(ligne, ensure_ascii=False) + "\n")
 
 
-def _ecrire(actif: bool, arbitrage=None, nonce: str = "") -> None:
+def _ecrire(actif: bool, arbitrage=None, nonce: str = "", mode: str = "standard") -> None:
     """Atomic write (temp file in the same directory + os.replace).
 
     An ACTIVE state is HMAC-signed (key outside the repo, same key as the provenance tokens) over
-    actif|arbitrage|depuis|plafond_bras|jeton, `jeton` being the nonce of the consumed token: no
+    actif|arbitrage|depuis|plafond_bras|jeton (+ `mode` when not standard), `jeton` being the nonce of the consumed token: no
     key -> OSError (fail closed), so `on` is refused rather than writing an unverifiable state."""
     d = etat()
     d.update(actif=actif, depuis=datetime.now(UTC).isoformat(timespec="seconds"),
              par="cli", arbitrage=arbitrage if actif else None,
-             jeton=(nonce or "") if actif else None, sig_etat=None, cle_empreinte=None)
+             jeton=(nonce or "") if actif else None, sig_etat=None, cle_empreinte=None,
+             mode=mode if actif else "standard", plafond_bras=plafond(mode) if actif else PLAFOND_STANDARD)
     if actif:
         cle = _cle_lue()
         if cle is None:
@@ -681,6 +710,19 @@ VERROU_JETONS_PERIME_S = 30.0
 VERROU_JETONS_ATTENTE_S = 10.0
 
 
+def sous_dossier_cle() -> str:
+    """Key folder name: `claude-gmah` at the hub (story 8.21), `claude-gmah-<project slug>` in a
+    target (story 14.12), so a target never shares the hub's key. The hub is recognised by the
+    token-issuer hook `.claude/hooks/provenance_gmah.py`, which is never exported."""
+    claude = next((a for a in Path(__file__).resolve().parents if a.name == ".claude"), None)
+    if claude is None or (claude / "hooks" / "provenance_gmah.py").is_file():
+        return "claude-gmah"
+    slug = "".join(c if c.isalnum() else "-" for c in claude.parent.name.lower()).strip("-")
+    while "--" in slug:
+        slug = slug.replace("--", "-")
+    return "claude-gmah-" + (slug[:40] or "projet")
+
+
 def cle_hmac_chemin() -> Path | None:
     """HMAC key OUTSIDE the repo: <APPDATA>/claude-gmah/jeton.key (created by the hook).
 
@@ -689,8 +731,8 @@ def cle_hmac_chemin() -> Path | None:
     directory) or inside the protected `.claude` tree. KEEP IN SYNC with hooks/provenance_gmah.py.
 
     Honest limit: a process of the same Windows user can still read the key file; this raises the
-    bar and makes tampering detectable (key fingerprint frozen in the signed state). DPAPI is a
-    future option."""
+    bar and makes tampering detectable (key fingerprint frozen in the signed state). On Windows the file is a DPAPI blob
+    (story 14.11) but DPAPI does not stop a process of the same account/session."""
     try:
         brut = os.environ.get("GMAH_KEY_DIR") or os.environ.get("APPDATA")
         if not brut:
@@ -698,7 +740,7 @@ def cle_hmac_chemin() -> Path | None:
         base = Path(brut)
         if not base.is_absolute():
             return None
-        p = (base / "claude-gmah" / "jeton.key").resolve()
+        p = (base / sous_dossier_cle() / "jeton.key").resolve()
         protege = next((a for a in Path(__file__).resolve().parents if a.name == ".claude"), None)
         if protege is not None and protege in p.parents:
             return None
@@ -718,14 +760,30 @@ def _cle_lue():
     if p is None:
         return None
     try:
-        return p.read_bytes() or None
-    except OSError:
+        return _cle.lire(p) or None
+    except OSError:  # absent, corrupted blob, other account, legacy plaintext on Windows: fail closed
         return None
+
+
+def _cle_raison() -> str | None:
+    """Why the key is unusable (None if it is usable); used by `on`/`status` to say it (story 14.11)."""
+    p = cle_hmac_chemin()
+    if p is None:
+        return None  # unsafe location: the later checks refuse with their own message
+    try:
+        _cle.lire(p)
+        return None
+    except FileNotFoundError:
+        return None  # absent key: the token check below refuses with its own message
+    except OSError as exc:
+        return f"key unusable ({exc})"
 
 
 def signature_etat(cle_hmac: bytes, e: dict) -> str:
     msg = "|".join(["etat"] + [str(e.get(k)) for k in ("actif", "arbitrage", "depuis", "plafond_bras")]
                    + [str(e.get("jeton") or ""), str(e.get("cle_empreinte") or "")])
+    if e.get("mode", "standard") != "standard":  # a state signed before `mode` existed stays valid (= standard)
+        msg += "|mode=" + str(e.get("mode"))
     return hmac.new(cle_hmac, msg.encode("utf-8"), hashlib.sha256).hexdigest()
 
 
@@ -747,7 +805,9 @@ def _etat_signe(e: dict) -> bool:
 
 def _nonce_lie(cle: str) -> str:
     """Nonce of the freshest token consumed (bound) for `cle`; '' if none is recorded or if a
-    revocation (written by `off`) is more recent than the last consumption."""
+    revocation (written by `off`) is more recent than the last consumption. The consomme/revoque
+    lines are unsigned on purpose: forging one can only turn the mode off or burn a token (the
+    state signature binds the real nonce), never switch it on; pinned by a test."""
     for d in reversed(_lire_jetons()):
         if d.get("revoque") is True:
             return ""
@@ -808,7 +868,7 @@ class _VerrouJetons:
         return False
 
 
-def consommer_jeton(cle: str, maintenant: datetime | None = None) -> tuple[bool, str]:
+def consommer_jeton(cle: str, maintenant: datetime | None = None, type_jeton: str = "adopte") -> tuple[bool, str]:
     """(ok, reason): consume the freshest unused, HMAC-signed ADOPTE token for `cle` (fail closed).
 
     Refused: no token, unsigned or badly signed line (ignored), token older than JETON_TTL_S or
@@ -817,19 +877,19 @@ def consommer_jeton(cle: str, maintenant: datetime | None = None) -> tuple[bool,
     an exclusive lock: two concurrent consumers of one token, exactly one wins."""
     try:
         with _VerrouJetons(_jetons_chemin()):
-            return _consommer_sous_verrou(cle, maintenant or datetime.now(UTC))
+            return _consommer_sous_verrou(cle, maintenant or datetime.now(UTC), type_jeton)
     except OSError as exc:
         return False, f"cannot consume provenance token ({exc})"
 
 
-def _consommer_sous_verrou(cle: str, maintenant: datetime) -> tuple[bool, str]:
+def _consommer_sous_verrou(cle: str, maintenant: datetime, type_jeton: str = "adopte") -> tuple[bool, str]:
     cle_hmac = _cle_lue()
     lignes = _lire_jetons()
     liees = {d["consomme"]: d.get("cle") for d in lignes if isinstance(d.get("consomme"), str)}
     raison = "no provenance token (type ADOPTE GMAH first)"
     for d in reversed(lignes):
         nonce, ts = d.get("nonce"), d.get("ts")
-        if d.get("type") != "adopte" or not isinstance(nonce, str) or not isinstance(ts, str):
+        if d.get("type") != type_jeton or not isinstance(nonce, str) or not isinstance(ts, str):
             continue
         if not _signe(cle_hmac, d):
             raison = "provenance token unsigned or bad signature"
@@ -874,6 +934,19 @@ def _cle_demandee(args: list):
     return cle or None
 
 
+def _extraire_mode(args: list):
+    """(mode, remaining args) for an optional trailing `--mode standard|augmente`; None if malformed."""
+    if "--mode" not in args and not any(a.startswith("--mode=") for a in args):
+        return "standard", args
+    if len(args) >= 2 and args[-2] == "--mode":
+        mode, reste = args[-1], args[:-2]
+    elif args and args[-1].startswith("--mode="):
+        mode, reste = args[-1][len("--mode="):], args[:-1]
+    else:
+        return None
+    return (mode, reste) if mode in ("standard", "augmente") else None
+
+
 def _revoquer() -> None:
     """Append the revocation record (called by `off` under the state lock): from now on no
     earlier nonce validates a signed state (replay protection, see _etat_signe)."""
@@ -883,7 +956,7 @@ def _revoquer() -> None:
         f.write(json.dumps(ligne) + "\n")
 
 
-def _activer(cle: str) -> int:
+def _activer(cle: str, mode: str = "standard") -> int:
     """Critical section of `on` (called under the state lock): 0 = activated, 1 = refused."""
     try:
         _arret().unlink(missing_ok=True)
@@ -899,7 +972,7 @@ def _activer(cle: str) -> int:
     except OSError:
         avant = None
     try:
-        _ecrire(True, cle, nonce)
+        _ecrire(True, cle, nonce, mode)
     except OSError as exc:
         print(f"refused: cannot persist activation ({exc})", file=sys.stderr)
         return 1
@@ -921,19 +994,37 @@ def main(argv=None) -> int:
     args = list(argv[1:])
     if cmd == "comparer":
         return _comparer_cli(args)
+    if cmd == "migrer-cle":  # story 14.11: wrap the plaintext key in DPAPI, same bytes
+        p = cle_hmac_chemin()
+        if args or p is None:
+            return _usage("usage: gravite.py migrer-cle (no argument; needs a safe key location)")
+        try:
+            print(f"migrer-cle: {_cle.migrer(p)}")
+        except OSError as exc:
+            print(f"refused: migration failed, original untouched ({exc})", file=sys.stderr)
+            return 1
+        return 0
     if cmd == "on":
-        cle = _cle_demandee(args)
+        extrait = _extraire_mode(args)
+        cle = _cle_demandee(extrait[1]) if extrait else None
         if cle is None:
             return _usage("usage: gravite.py on --arbitrage <key> (exactly one non-empty key)")
+        mode = extrait[0]
+        raison_cle = _cle_raison()
+        if raison_cle:
+            print(f"refused: {raison_cle}", file=sys.stderr)
+            return 1
         ok, raison = verifier_arbitrage(cle)
         if ok:
-            ok, raison = consommer_jeton(cle)  # story 8.21: typed-prompt provenance
+            # story 8.21: typed-prompt provenance; `augmente` needs the token of the typed AUGMENTE phrase
+            ok, raison = (consommer_jeton(cle) if mode == "standard"
+                          else consommer_jeton(cle, type_jeton="adopte-augmente"))
         if not ok:
             print(f"refused: {raison}", file=sys.stderr)
             return 1
         try:
             with _VerrouJetons(ETAT.with_name("etat.json")):  # on/off serialised (no interleaving)
-                code = _activer(cle)
+                code = _activer(cle, mode)
         except OSError as exc:
             print(f"refused: state lock unavailable ({exc})", file=sys.stderr)
             return 1
@@ -962,6 +1053,14 @@ def main(argv=None) -> int:
     elif cmd == "status":
         if args:
             return _usage("usage: gravite.py status (no argument)")
+        raison_cle = _cle_raison()
+        if raison_cle:
+            print(f"gravite: warning: {raison_cle}", file=sys.stderr)
+        else:
+            pc = cle_hmac_chemin()
+            if pc is not None and _cle.est_clair(pc):
+                print("gravite: warning: cle en clair non migree: lancer gravite.py migrer-cle",
+                      file=sys.stderr)
     else:
         return _usage()
     e = etat()

@@ -1,6 +1,6 @@
 """Hook SessionStart — le point du jour : ce qui attend VOTRE decision.
 
-Rupture B de docs/exports/reflexions/approche-disruptive-wiki-2026-07-31.md, arbitree le
+Rupture B de docs/reflexions/approche-disruptive-wiki-2026-07-31.md, arbitree le
 2026-07-31. La mesure qui la fonde : sur 242 jobs enregistres depuis les boutons du
 wiki, 241 etaient des artefacts de tests et UN SEUL une action humaine. Personne ne
 vient sur la page. En revanche, la conversation sert tous les jours -- 67 runs
@@ -1197,6 +1197,28 @@ def _lignes_processus():
         return lignes, False
 
 
+CACHE_TTL_REPETITIONS_S = 3600
+REPETITIONS = os.path.join(RACINE, ".claude", "supervision", "repetitions_actions.py")
+
+
+def _lignes_repetitions():
+    """Ligne « action repetee = candidate script 0 token » ; (lignes, memorisable).
+    Lecture seule, silencieuse si le detecteur est absent (projet cible) ; fail-open."""
+    try:
+        chemin = REPETITIONS
+        if not os.path.isfile(chemin):
+            return [], False
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("repetitions_actions", chemin)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        ligne = mod.ligne_candidats(os.path.dirname(chemin),
+                                    scripts_connus=mod.scripts_versionnes(RACINE))
+        return ([ligne] if ligne else []), True
+    except Exception:  # noqa: BLE001 - fail-open : un hook ne bloque jamais la session
+        return [], False
+
+
 def _lignes_kit():
     """[(en_tete, ligne)] de la derive de kit ; (valeur, memorisable)."""
     sortie = []
@@ -1349,6 +1371,8 @@ def main(argv=None):
     ligne_rev = ligne_revue_fonctionnement()
     if ligne_rev:
         lignes.append(ligne_rev)
+
+    lignes.extend(_avec_cache("repetitions", "", CACHE_TTL_REPETITIONS_S, _lignes_repetitions))
 
     ligne_ame = ligne_amelioration()
     if ligne_ame:

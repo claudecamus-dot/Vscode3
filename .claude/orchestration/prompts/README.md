@@ -70,3 +70,5 @@ Rules:
   (missing = `partiel`), Windows/Unicode grep checklist (rule 5), git hygiene post-conditions
   (`git status --porcelain`, `git stash list`, forbidden commands), one bypass attempt per guard
   (rule 4). Locked by `tests/test_prompt_templates.py`; indicator unchanged (see the synthesis doc).
+
+- SLOW COMMANDS (executor-lot, adopted 2026-10-29, retro of the integration agent): the harness backgrounds any command past ~180 s and an agent cannot wait on it. Replays are split by test file with timeout <= 170000, at most 8 suites per agent; suites known to exceed 150 s are named SLOW in the brief and replayed by the orchestrator.

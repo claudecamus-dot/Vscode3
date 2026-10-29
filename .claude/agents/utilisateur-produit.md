@@ -139,7 +139,7 @@ chemins **hors du dépôt** (spec client, cahier des charges, document Word/PDF/
 sur le poste, page de wiki d'entreprise fournie en fichier) ; sinon les exigences
 fonctionnelles du PRD (`FR-n`) ; sinon `docs/cadrage-projet.md`, `docs/*spec*`,
 `docs/format-echange.md` ou équivalents ; sinon les gabarits et exemples de
-livrables attendus (`Imports/`, `docs/imports/`) qui tiennent lieu de spec par
+livrables attendus (`Imports/`, `docs/Import/`) qui tiennent lieu de spec par
 l'exemple. Note chemin et date de chaque source. Lis-les **en lecture seule** et
 **cite-les par chemin et numéro d'exigence**, sans recopier de données client
 dans ton rapport au-delà de ce qu'il faut pour localiser un écart. Aucune source →

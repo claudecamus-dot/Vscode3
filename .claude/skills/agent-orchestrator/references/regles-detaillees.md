@@ -267,3 +267,14 @@ exécuté ne change pas (`requires_user_approval` vaut toujours vrai).
 n'accepte qu'un `trace_porte*.jsonl` sous `gravite/` ou un dossier tmp.
 
 - Mesure du 2026-09-12 (§ 1 bis de SKILL.md) : 10 demandes « reprendre », 20 « traiter les findings » alors que le hook annonçait tout.
+
+- **Rédiger une story (story 7.13, critères INVEST)** : avant de la proposer à l'utilisateur, lancer `py .claude/dispositif/verifier_invest.py <epics.md>` (ajouter `--strict` seulement pour un contrôle bloquant) et CITER le résultat (avertissements et propositions) dans la proposition. Le contrôle signale, il ne bloque jamais ; N (négociable) et E (estimable) restent un jugement humain.
+
+- **Action répétée = candidate à un script 0 token (décision du 2026-10-24, N=3)** : une même action agentique (outil, type d'agent ou skill, description normalisée) vue dans 3 sessions distinctes sur 30 jours est seulement signalée *candidate* par `.claude/supervision/repetitions_actions.py` (ligne du `point_du_jour`, lecture seule, aucun hook, sans git/ls/cat/grep nus, scripts déjà versionnés, reprises ni boucles) ; créer le script est un arbitrage de l'utilisateur, jamais automatique. Indicateur fixé d'avance : scripts proposés → créés/refusés et reprises par run, sur 20 runs avant/après ; retrait du mécanisme si aucune création en 20 runs ou plus de 80 % de refus.
+
+## Fusion d'un lot dans main : nettoyer son temporaire
+
+Après chaque fusion `--no-ff` d'un lot dans main : `py scripts/tmp_lot.py nettoyer <lot>` (dry-run, le lire),
+puis `py scripts/tmp_lot.py nettoyer <lot> --appliquer`. Le script refuse seul si la branche n'est pas fusionnée :
+ne jamais contourner (pas de suppression manuelle de `C:/tmp/<lot>`). Les agents ont créé leurs dossiers sous
+`C:/tmp/<lot>/` via `tmp_lot.py creer <lot>` (gabarit executor-lot, étape 0).

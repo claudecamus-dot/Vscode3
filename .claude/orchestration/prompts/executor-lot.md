@@ -3,17 +3,25 @@
 GABARIT : executor-lot
 
 ## Method
+0. FIRST: `py scripts/tmp_lot.py creer <lot>` (<lot> = lot branch name). Every --basetemp, red.txt, replay.sh
+   lives under C:/tmp/<lot>/ (fresh `bt<N>` per run: reused basetemp = PermissionError); no other top-level C:/tmp dir.
 1. Regression test SEEN RED on the current code, then green (quote both runs); keep the red run's output in
-   C:/tmp/<short dir>/red.txt, cited in the report.
+   C:/tmp/<lot>/red.txt, cited in the report.
 2. Pose the requested mutant(s) on the decisive line(s), each marked `# MUTANT:`, see the
    targeted test go red, RESTORE (`git diff` clean of mutants). Name them in the commit message.
-3. `py -m py_compile` on each touched .py; pytest `--basetemp C:/tmp/<lot>/bt`,
+3. `py -m py_compile` on each touched .py; pytest `--basetemp C:/tmp/<lot>/bt<N>`,
    `-p no:cacheprovider` — no `| tail`, no `2>&1`.
    Commands in the foreground with an explicit timeout — never run_in_background nor Monitor.
    NON-REGRESSION: for each touched file F, run `grep -rl "<basename F>" tests/` and replay EVERY
    suite found BEFORE "fini", quoting the command + the pass count of each. "Should be replayed"
    without a run = STATUT : partiel.
-   REPLAY: ship ONE file C:/tmp/<short dir>/replay.sh, run from the worktree root, one exact command
+   SLOW COMMANDS: the harness moves ANY command past ~180 s to the background and you cannot wait on it
+   (retro 2026-10-29: an agent starved and was killed after 600 s). So: split a replay BY test file, each
+   command with `timeout` ≤ 170000; replay at most 8 suites per agent (more = a second agent). A suite
+   known to exceed 150 s is listed by the orchestrator in the brief as "SLOW: orchestrator replays" and
+   you do not run it. If a command of yours still goes to the background, STOP waiting: report
+   STATUT : partiel and list the suites not replayed in NON FERMÉ.
+   REPLAY: ship ONE file C:/tmp/<lot>/replay.sh, run from the worktree root, one exact command
    per line for every test suite quoted (py_compile/mutant replays not required).
    A form-only miss (no replay.sh) is a réserve in NON FERMÉ; only a missing substance rule = partiel.
    MUTATION PROOF: any claim "corrigé"/"testé"/"couvert" (a fix, a closure, or an "already fixed"

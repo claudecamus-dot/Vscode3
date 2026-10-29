@@ -41,7 +41,15 @@ def _plafond() -> int:
     return int(mod.PLAFOND_BRAS)
 
 
-PLAFOND_BRAS = _plafond()
+def _plafond_courant() -> int:
+    """Cap of the CURRENT mode (4 standard, 10 augmented), read at each decision, never frozen at import."""
+    spec = importlib.util.spec_from_file_location("gravite_porte", os.path.join(ICI, "gravite.py"))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return int(mod.plafond_courant())
+
+
+PLAFOND_BRAS = _plafond()  # standard cap (reference for policy validation)
 
 
 def _nombre(x):
@@ -65,12 +73,13 @@ def decider(demande) -> dict:
     if not isinstance(demande, dict):
         return _sortie("ABSTAIN", "INVALID_INPUT", {})
     etapes, indep = demande.get("etapes"), demande.get("independantes")
+    cap = _plafond_courant()
     cout = _nombre(demande.get("cout_historique"))
     qual = _nombre(demande.get("qualite_historique"))
     valeurs = {"etapes": etapes if isinstance(etapes, int) and not isinstance(etapes, bool)
                else None, "independantes": indep if isinstance(indep, bool) else None,
                "cout_historique": cout, "qualite_historique": qual,
-               "deterministe": demande.get("deterministe") is True, "plafond_bras": PLAFOND_BRAS}
+               "deterministe": demande.get("deterministe") is True, "plafond_bras": cap}
     if cout is None or cout < 0 or qual is None or not 0.0 <= qual <= 1.0:
         return _sortie("ABSTAIN", "NO_EVIDENCE", valeurs)
     if valeurs["etapes"] is None or etapes < 0 or valeurs["independantes"] is None:
@@ -79,7 +88,7 @@ def decider(demande) -> dict:
         return _sortie("D", "DETERMINISTIC_SCRIPT", valeurs)
     if not indep or etapes <= 1:
         return _sortie("S", "SEQUENTIAL" if not indep else "SINGLE_STEP", valeurs)
-    return _sortie("C", "INDEPENDENT_STEPS", valeurs, bras=min(etapes, PLAFOND_BRAS))
+    return _sortie("C", "INDEPENDENT_STEPS", valeurs, bras=min(etapes, cap))
 
 
 def chemin_trace(arg=None) -> str:
