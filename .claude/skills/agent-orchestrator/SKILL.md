@@ -20,8 +20,8 @@ Détail, mesures et historique de chaque section (divulgation progressive, lot 3
 [routage-bmad](references/routage-bmad.md) · [veille](references/veille.md) ·
 [salles](references/salles.md) · [journal](references/journal.md).
 
-<!-- SOCLE-PROVENANCE: socle : a68628d3 du 2026-10-27 -->
-> **Socle généré** — tout ce qui suit `## Méthode` vient du hub de supervision (`a68628d3`, 2026-10-27) et sera **réécrit** à la prochaine propagation.
+<!-- SOCLE-PROVENANCE: socle : 51f6c4a6 du 2026-10-29 -->
+> **Socle généré** — tout ce qui suit `## Méthode` vient du hub de supervision (`51f6c4a6`, 2026-10-29) et sera **réécrit** à la prochaine propagation.
 > Le chapitre « Portée sur ce projet » ci-dessous, lui, n'est jamais réécrit : c'est le travail local.
 
 ## Portée sur ce projet
@@ -154,7 +154,7 @@ d'intention. Détail, incidents datés et mesures : [multi-agents-briefs](refere
 - **Un seul sous-agent capable avant un fan-out** ; **le relecteur n'est pas l'auteur**.
 - **Aucun agent/skill ne couvre le besoin ?** `py .claude/orchestration/git_agents_inventory.py`, puis `skill-creator`, arbitré ; noter `resolution:`.
 
-Texte intégral de ces puces, mesures et incidents : [regles-detaillees](references/regles-detaillees.md) § « Mécanique de l'outil Agent ».
+Détail: [regles-detaillees](references/regles-detaillees.md) § « Mécanique de l'outil Agent » ; après fusion : `tmp_lot.py nettoyer <lot>`.
 
 **Brief de sous-agent — partir d'un gabarit versionné** de `.claude/orchestration/prompts/`
 (index dans son `README.md`, `tests/test_prompt_templates.py`), jamais d'une page blanche.
@@ -210,7 +210,7 @@ NON FERMÉ : <ce qui reste> | rien
 `COMMIT :` est outillé par `guard_terminaison_etayee.py` (SubagentStop, `general-purpose`
 seulement) : absent = refus, sha vérifié par `git cat-file -e`. **Tout commit cite sa
 demande** : trailer `Refs: <cible|story|run>` (hook `warn_commit_sans_ref.py`), consigne à
-reporter dans le brief de tout exécutant qui committe.
+reporter dans tout brief committant. Story : `verifier_invest.py`, cité (regles-detaillees.md).
 
 ### 2 bis. Agir sur une recommandation du superviseur
 
