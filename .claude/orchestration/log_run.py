@@ -4,7 +4,7 @@
 # | garder : la signaler au hub, qui corrige le canon et re-synchronise.
 # | (Depuis le hub : « py .claude/dispositif/sync_dispositif.py » — ce script
 # |  n'est pas déployé, il n'existe pas dans ce dépôt.)
-# | Provenance canon : bce2201b du 2026-10-25 — permet, au prochain sync, de dire si
+# | Provenance canon : 94aedf4d du 2026-10-29 — permet, au prochain sync, de dire si
 # | une différence vient d'une édition locale ou d'une avance du canon (voir
 # | `determiner_cause` dans sync_dispositif.py au hub).
 # +---------------------------------------------------------------------------
@@ -690,18 +690,18 @@ def _aware(t):
     return t.astimezone() if t.tzinfo is None else t
 
 
-def jointure_cout(run: dict, maintenant=None, nb_lignes: int = 20) -> dict:
-    """Renseigne `tokens` et `duree_s` SEULEMENT si la jointure est fiable, sinon {}.
+EVENT_FIN_SOUS_AGENT = "subagent-stop"
 
-    Fiable = le run porte `session_id` ET `debut` (ISO) ; les `nb_lignes` dernieres
-    lignes de usage.jsonl (jamais le fichier entier) remontent jusqu'au debut du run ;
-    au moins une ligne de la meme session tombe dans [debut, maintenant] ; TOUTES ont
-    `jetons` (un agent `async_launched` n'a pas de cout : somme partielle = valeur
-    fausse, donc rien). `duree_s` = maintenant - debut (duree murale). Jamais
-    d'ecrasement d'une valeur fournie."""
+
+def _jointure_lignes(run: dict, maintenant=None, nb_lignes: int = 20):
+    """(lignes de FIN de sous-agent de la session dans [debut, maintenant], t0, t1) ou None.
+
+    None = aucune jointure etablie : run sans `session_id`/`debut`, fichier illisible,
+    fenetre des `nb_lignes` dernieres lignes qui ne remonte pas jusqu'au debut du run,
+    ou aucune ligne de fin de sous-agent de la session dans l'intervalle."""
     sid, debut = run.get("session_id"), run.get("debut")
     if not (isinstance(sid, str) and isinstance(debut, str)):
-        return {}
+        return None
     try:
         t0 = _aware(datetime.datetime.fromisoformat(debut))
         t1 = _aware(maintenant or datetime.datetime.now().astimezone())
@@ -712,12 +712,37 @@ def jointure_cout(run: dict, maintenant=None, nb_lignes: int = 20) -> dict:
         lignes = [json.loads(x) for x in brut if x.strip()]
         ts = [_aware(datetime.datetime.fromisoformat(x["ts"])) for x in lignes]
         if not lignes or min(ts) > t0:
-            return {}   # la fenetre de 20 lignes ne remonte pas jusqu'au debut du run
+            return None   # la fenetre de 20 lignes ne remonte pas jusqu'au debut du run
         dedans = [x for x, t in zip(lignes, ts, strict=True)
                   if x.get("session_id") == sid and t0 <= t <= t1]
     except (OSError, ValueError, KeyError, TypeError, AttributeError):
-        return {}   # une ligne abimee ou un ts sans fuseau ne coute jamais l'ecriture du run
-    if not dedans or any(not _entier_positif(x.get("jetons")) for x in dedans):
+        return None   # une ligne abimee ou un ts sans fuseau ne coute jamais l'ecriture du run
+    # Story 8.25 : seules les lignes de FIN de sous-agent portent un cout ; les lignes
+    # d'evenement d'outil (`tool`: Agent, Skill...) n'en ont jamais. Discriminant MESURE sur la
+    # queue d'usage.jsonl (400 dernieres lignes) : fin = `event: "subagent-stop"` ; outil = `tool`
+    # SANS `event`. Le filtre est explicite sur ce champ : un type d'evenement futur inconnu
+    # n'est pas une fin et ne force donc jamais `partiel`.
+    fins = [x for x in dedans if x.get("event") == EVENT_FIN_SOUS_AGENT]
+    return (fins, t0, t1) if fins else None
+
+
+_A_CALCULER = object()   # sentinelle : `jointure` non fournie (None est une valeur : pas de jointure)
+
+
+def jointure_cout(run: dict, maintenant=None, nb_lignes: int = 20, jointure=_A_CALCULER) -> dict:
+    """Renseigne `tokens` et `duree_s` SEULEMENT si la jointure est fiable, sinon {}.
+
+    Fiable = le run porte `session_id` ET `debut` (ISO) ; les `nb_lignes` dernieres
+    lignes de usage.jsonl (jamais le fichier entier) remontent jusqu'au debut du run ;
+    au moins une ligne de la meme session tombe dans [debut, maintenant] ; TOUTES les lignes de fin de sous-agent ont
+    `jetons` (somme = `tokens` ; les lignes d'evenement d'outil ne comptent pas) (un agent `async_launched` n'a pas de cout : somme partielle = valeur
+    fausse, donc rien). `duree_s` = maintenant - debut (duree murale). Jamais
+    d'ecrasement d'une valeur fournie."""
+    jl = _jointure_lignes(run, maintenant, nb_lignes) if jointure is _A_CALCULER else jointure
+    if jl is None:
+        return {}
+    dedans, t0, t1 = jl
+    if any(not _entier_positif(x.get("jetons")) for x in dedans):
         return {}
     out = {}
     if "tokens" not in run:
@@ -725,6 +750,19 @@ def jointure_cout(run: dict, maintenant=None, nb_lignes: int = 20) -> dict:
     if "duree_s" not in run:
         out["duree_s"] = max(0, int((t1 - t0).total_seconds()))
     return out
+
+
+def couverture_jointure(run: dict, maintenant=None, nb_lignes: int = 20, jointure=_A_CALCULER):
+    """Story 8.25 : `complet` si toutes les lignes de FIN de sous-agent de la jointure portent
+    `jetons`, `partiel` si l'une manque, None si aucune jointure n'est etablie (champ absent).
+    Les lignes d'evenement d'outil ne comptent pas. Cette valeur decrit la JOINTURE d'usage, pas
+    un `tokens` fourni par l'appelant (qui peut venir d'ailleurs). `jointure` : le resultat d'un
+    seul `_jointure_lignes`, partage avec `jointure_cout` pour que `tokens` et la couverture
+    decrivent le meme lot de lignes."""
+    jl = _jointure_lignes(run, maintenant, nb_lignes) if jointure is _A_CALCULER else jointure
+    if jl is None:
+        return None
+    return "complet" if all(_entier_positif(x.get("jetons")) for x in jl[0]) else "partiel"
 
 
 def _prompts_path() -> str:
@@ -1569,6 +1607,276 @@ def verifier_candidats_choix(brut, choix):
     return cands, None
 
 
+# --- Trace de decision rejouable (story 8.10) ------------------------------------
+# Champ OPTIONNEL `trace_decision`, pose par `--trace-decision '<json>'` : exige
+# `--candidats-json` ET `--choix`. Validation STRUCTURELLE (le canon n'importe pas
+# `gravite.py`) ; la verification arithmetique est le travail de
+# `scripts/rejouer_decisions.py`. Invalide = refus, RIEN n'est ecrit ; flag absent =
+# ligne de journal strictement inchangee.
+FLAG_TRACE = "--trace-decision"
+TRACE_OCTETS_MAX = 8192
+TRACE_PROFONDEUR_MAX = 6
+TRACE_VERSION = 1
+TRACE_TOTAL_MAX = 1000.0
+_TRACE_POIDS = ("w_attr", "kappa", "eps", "rho", "cout", "tokens", "latence", "charge",
+                "risque", "contexte")
+_TRACE_CLES = ("version", "poids", "contexte", "decisions", "plancher")
+_TRACE_DECISION_CLES = ("nom", "eligible", "raison", "total")
+
+
+def _profondeur(x) -> int:
+    """Nesting depth of a parsed JSON value, iterative (no recursion on hostile input)."""
+    maxi, pile = 0, [(x, 1)]
+    while pile:
+        v, d = pile.pop()
+        if isinstance(v, (dict, list)):
+            maxi = max(maxi, d)
+            if maxi > TRACE_PROFONDEUR_MAX:
+                return maxi
+            pile.extend((e, d + 1) for e in (v.values() if isinstance(v, dict) else v))
+    return maxi
+
+
+def _refus_constante(nom):
+    raise ValueError(f"constante {nom} interdite")
+
+
+def _sans_doublon(paires):
+    d = {}
+    for k, v in paires:
+        if k in d:
+            raise ValueError(f"cle en double {k!r}")
+        d[k] = v
+    return d
+
+
+def _nombre_fini(v) -> bool:
+    return (not isinstance(v, bool) and isinstance(v, (int, float))
+            and (isinstance(v, int) or v - v == 0))
+
+
+def _contenu_sain(x) -> bool:
+    """No non-finite number, no non-printable string anywhere in the value."""
+    pile = [x]
+    while pile:
+        v = pile.pop()
+        if isinstance(v, dict):
+            for k, e in v.items():
+                if not isinstance(k, str) or not k.isprintable():
+                    return False
+                pile.append(e)
+        elif isinstance(v, list):
+            pile.extend(v)
+        elif isinstance(v, str):
+            if not v.isprintable():
+                return False
+        elif isinstance(v, float):
+            if v - v != 0:
+                return False
+    return True
+
+
+def verifier_trace(brut, noms):
+    """(trace_validee, None) ou (None, message de refus). Jamais de pile."""
+    pre = "log_run REFUS : trace_decision"
+    if len(brut.encode("utf-8", "replace")) > TRACE_OCTETS_MAX:
+        return None, f"{pre} > {TRACE_OCTETS_MAX} octets."
+    try:
+        t = json.loads(brut, parse_constant=_refus_constante, object_pairs_hook=_sans_doublon)
+    except (ValueError, RecursionError) as exc:
+        return None, f"{pre} : JSON invalide ({str(exc)[:80]})."
+    if not isinstance(t, dict):
+        return None, f"{pre} : un objet est attendu."
+    if _profondeur(t) > TRACE_PROFONDEUR_MAX:
+        return None, f"{pre} : imbrication > {TRACE_PROFONDEUR_MAX}."
+    inconnus = sorted(set(t) - set(_TRACE_CLES))
+    if inconnus:
+        return None, f"{pre} : cle(s) inconnue(s) {inconnus} (permis : {', '.join(_TRACE_CLES)})."
+    for k in ("version", "poids", "decisions", "plancher"):
+        if k not in t:
+            return None, f"{pre} : '{k}' absent."
+    if isinstance(t["version"], bool) or t["version"] != TRACE_VERSION \
+            or not isinstance(t["version"], int):
+        return None, f"{pre} : version {TRACE_VERSION} attendue."
+    if not _contenu_sain(t):
+        return None, f"{pre} : nombre non fini ou caractere non imprimable."
+    p = t["poids"]
+    if not isinstance(p, dict) or set(p) != set(_TRACE_POIDS):
+        return None, f"{pre}.poids : exactement les cles {', '.join(_TRACE_POIDS)}."
+    for k, v in p.items():
+        if not _nombre_fini(v) or not 0 <= v <= 1e6:
+            return None, f"{pre}.poids.{k} : nombre fini dans [0, 1e6] attendu."
+    if not _nombre_fini(t["plancher"]) or abs(t["plancher"]) > TRACE_TOTAL_MAX:
+        return None, f"{pre}.plancher : nombre fini dans [-{TRACE_TOTAL_MAX:g}, {TRACE_TOTAL_MAX:g}] attendu."
+    if "contexte" in t and not isinstance(t["contexte"], dict):
+        return None, f"{pre}.contexte : un objet est attendu."
+    d = t["decisions"]
+    if not isinstance(d, list) or not d or len(d) > CANDIDATS_MAX:
+        return None, f"{pre}.decisions : liste de 1 a {CANDIDATS_MAX} objets attendue."
+    vus = []
+    for i, e in enumerate(d):
+        if not isinstance(e, dict) or set(e) != set(_TRACE_DECISION_CLES):
+            return None, f"{pre}.decisions[{i}] : exactement les cles {', '.join(_TRACE_DECISION_CLES)}."
+        if not isinstance(e["nom"], str) or e["nom"] not in noms or e["nom"] in vus:
+            return None, f"{pre}.decisions[{i}].nom : nom de candidat inconnu ou en double."
+        vus.append(e["nom"])
+        if not isinstance(e["eligible"], bool):
+            return None, f"{pre}.decisions[{i}].eligible : booleen attendu."
+        if e["eligible"]:
+            ok = _nombre_fini(e["total"]) and abs(e["total"]) <= TRACE_TOTAL_MAX \
+                and e["raison"] is None
+        else:
+            ok = e["total"] is None and isinstance(e["raison"], str) and 0 < len(e["raison"]) <= 64
+        if not ok:
+            return None, (f"{pre}.decisions[{i}] : eligible = total fini dans "
+                          f"[-{TRACE_TOTAL_MAX:g}, {TRACE_TOTAL_MAX:g}] sans raison ; "
+                          "non eligible = raison texte sans total.")
+    if set(vus) != set(noms):
+        return None, f"{pre}.decisions : un candidat sans decision."
+    return t, None
+
+
+# --- Trace de decision AUTOMATIQUE (story 14.7) ----------------------------------
+# Run route (`--candidats-json` + `--choix`) journalise pendant que le mode est VERIFIE
+# actif : `log_run` construit lui-meme la trace via `scripts/construire_trace_decision.py`
+# (hub uniquement ; absent dans une cible => mode eteint, rien n'est fait). Mode eteint ou
+# non verifiable : rien, sans bruit. Mode actif et trace impossible, ou run `orchestre` sans
+# candidats : avertissement NON bloquant + marqueur `trace_absente`.
+CHAMP_TRACE_ABSENTE = "trace_absente"
+
+
+def _charger_constructeur():
+    """Module `construire_trace_decision` du hub, ou None (cible, fichier illisible)."""
+    d = os.path.dirname(os.path.abspath(__file__))
+    for _ in range(5):
+        p = os.path.join(d, "scripts", "construire_trace_decision.py")
+        if os.path.isfile(p):
+            try:
+                import importlib.util
+                spec = importlib.util.spec_from_file_location("construire_trace_decision_auto", p)
+                mod = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(mod)
+                return mod
+            except Exception:
+                return None
+        d = os.path.dirname(d)
+    return None
+
+
+def _mode_actif(mod) -> bool:
+    """True seulement si le mode est verifie actif ; toute erreur = eteint (fail-open)."""
+    try:
+        return mod is not None and bool(mod.rejouer.gravite().actif_verifie())
+    except Exception:
+        return False
+
+
+def trace_automatique(cands):
+    """(etat, trace, detail) : etat 'eteint' (rien a faire), 'ok' ou 'echec' (mode actif)."""
+    mod = _charger_constructeur()
+    if not _mode_actif(mod):
+        return "eteint", None, ""
+    try:
+        brut = json.dumps(mod.rejouer.construire_trace(cands, {}, None),
+                          ensure_ascii=False, allow_nan=False)
+    except Exception as exc:
+        return "echec", None, f"calcul impossible ({str(exc)[:80]})"
+    trace, refus = verifier_trace(brut, [c["nom"] for c in cands])
+    if refus:
+        return "echec", None, refus
+    return "ok", trace, ""
+
+
+def appliquer_trace_automatique(run, avec_candidats):
+    """Pose `trace_decision` ou `trace_absente` sur `run` (mode actif seulement), jamais bloquant."""
+    if "trace_decision" in run:
+        return
+    if avec_candidats:
+        etat, trace, detail = trace_automatique(run["candidats"])
+        if etat == "ok":
+            run["trace_decision"] = trace
+        elif etat == "echec":
+            run[CHAMP_TRACE_ABSENTE] = True
+            print(f"log_run AVERTISSEMENT : trace_decision non construite ({detail}) ; "
+                  f"run marque {CHAMP_TRACE_ABSENTE}.")
+    elif run.get("qualification") == "orchestre" and _mode_actif(_charger_constructeur()):
+        run[CHAMP_TRACE_ABSENTE] = True
+        print(f"log_run AVERTISSEMENT : run oriente sans candidats alors que le mode est actif ; "
+              f"pas de trace_decision, run marque {CHAMP_TRACE_ABSENTE} "
+              f"(voir {FLAG_CANDIDATS} / {FLAG_CHOIX}).")
+
+
+def extraire_trace(argv):
+    """(argv sans le flag, brut|None, present, erreur|None)."""
+    reste, brut, present, i = [], None, False, 0
+    while i < len(argv):
+        if argv[i] == FLAG_TRACE:
+            if present:
+                return argv, None, True, f"log_run REFUS : {FLAG_TRACE} donne deux fois."
+            if i + 1 >= len(argv):
+                return argv, None, True, f"log_run REFUS : {FLAG_TRACE} attend une valeur."
+            brut, present = argv[i + 1], True
+            i += 2
+            continue
+        reste.append(argv[i])
+        i += 1
+    return reste, brut, present, None
+
+
+# --- Couverture des couts (story 8.14) -------------------------------------------
+# Champ OPTIONNEL `cout_couverture`, pose par `--cout-couverture complet|partiel|inconnu`.
+# Autre valeur = refus, RIEN n'est ecrit ; flag absent = ligne de journal inchangee.
+FLAG_COUT_COUV = "--cout-couverture"
+COUT_COUVERTURES = ("complet", "partiel", "inconnu")
+
+
+def extraire_cout_couverture(argv):
+    """(argv sans le flag, valeur|None, present, erreur|None)."""
+    reste, val, present, i = [], None, False, 0
+    while i < len(argv):
+        if argv[i] == FLAG_COUT_COUV:
+            if present:
+                return argv, None, True, f"log_run REFUS : {FLAG_COUT_COUV} donne deux fois."
+            if i + 1 >= len(argv):
+                return argv, None, True, f"log_run REFUS : {FLAG_COUT_COUV} attend une valeur."
+            val, present = argv[i + 1], True
+            i += 2
+            continue
+        reste.append(argv[i])
+        i += 1
+    if present and val not in COUT_COUVERTURES:
+        return argv, None, True, (f"log_run REFUS : {FLAG_COUT_COUV} {val!r} invalide "
+                                  f"(attendu : {' | '.join(COUT_COUVERTURES)}).")
+    return reste, val, present, None
+
+
+# --- Refus (story 8.25) ----------------------------------------------------------
+# Champ OPTIONNEL booleen `refus`, pose par `--refus oui|non`. Autre valeur = refus,
+# RIEN n'est ecrit ; flag absent = ligne de journal inchangee.
+FLAG_REFUS = "--refus"
+REFUS_VALEURS = {"oui": True, "non": False}
+
+
+def extraire_refus(argv):
+    """(argv sans le flag, bool|None, present, erreur|None)."""
+    reste, val, present, i = [], None, False, 0
+    while i < len(argv):
+        if argv[i] == FLAG_REFUS:
+            if present:
+                return argv, None, True, f"log_run REFUS : {FLAG_REFUS} donne deux fois."
+            if i + 1 >= len(argv):
+                return argv, None, True, f"log_run REFUS : {FLAG_REFUS} attend une valeur."
+            val, present = argv[i + 1], True
+            i += 2
+            continue
+        reste.append(argv[i])
+        i += 1
+    if present and val not in REFUS_VALEURS:
+        return argv, None, True, (f"log_run REFUS : {FLAG_REFUS} {val!r} invalide "
+                                  f"(attendu : {' | '.join(REFUS_VALEURS)}).")
+    return reste, REFUS_VALEURS.get(val), present, None
+
+
 def extraire_candidats_choix(argv):
     """(argv sans les flags, brut|None, choix|None, presents, erreur|None)."""
     reste, vals, i = [], {}, 0
@@ -1591,9 +1899,22 @@ def main(argv) -> int:
     if len(argv) == 1 and argv[0] in ("--help", "-h"):
         print((__doc__ or "log_run : voir l'en-tete du script").strip())
         return 0
+    argv, _trace_brut, _flag_trace, _err_trace = extraire_trace(argv)
     argv, _cands_brut, _choix_brut, _flags_cc, _err_cc = extraire_candidats_choix(argv)
-    if _err_cc or (_flags_cc and argv and argv[0] in _MODES_EXCLUSIFS):
-        print(_err_cc or f"log_run REFUS : {FLAG_CANDIDATS}/{FLAG_CHOIX} n'existent qu'a l'append d'un run.")
+    argv, _cout_couv, _flag_cc2, _err_cc2 = extraire_cout_couverture(argv)
+    argv, _refus_val, _flag_refus, _err_refus = extraire_refus(argv)
+    if _err_refus or (_flag_refus and argv and argv[0] in _MODES_EXCLUSIFS):
+        print(_err_refus or f"log_run REFUS : {FLAG_REFUS} n'existe qu'a l'append d'un run.")
+        return 1
+    if _err_cc2 or (_flag_cc2 and argv and argv[0] in _MODES_EXCLUSIFS):
+        print(_err_cc2 or f"log_run REFUS : {FLAG_COUT_COUV} n'existe qu'a l'append d'un run.")
+        return 1
+    if _err_trace or _err_cc or ((_flags_cc or _flag_trace) and argv and argv[0] in _MODES_EXCLUSIFS):
+        print(_err_trace or _err_cc or f"log_run REFUS : {FLAG_CANDIDATS}/{FLAG_CHOIX}/{FLAG_TRACE} n'existent qu'a l'append d'un run.")
+        return 1
+    if _flag_trace and (_cands_brut is None or _choix_brut is None):
+        print(f"log_run REFUS : {FLAG_TRACE} exige {FLAG_CANDIDATS} et {FLAG_CHOIX} "
+              "(ensemble).")
         return 1
     if "--solde-par" in argv and not (argv and argv[0] == "--solde"):
         print("log_run : --solde-par n'a de sens qu'avec --solde (refuse)")
@@ -1625,6 +1946,19 @@ def main(argv) -> int:
     if not isinstance(run, dict):
         print("log_run : un objet JSON est attendu")
         return 1
+    if "trace_decision" in run and not _flag_trace:
+        print(f"log_run REFUS : trace_decision ne s'ecrit que par {FLAG_TRACE} (jamais dans le JSON du run).")
+        return 1
+    if "cout_couverture" in run:
+        print(f"log_run REFUS : cout_couverture ne s'ecrit que par {FLAG_COUT_COUV} (jamais dans le JSON du run).")
+        return 1
+    if _flag_cc2:
+        run["cout_couverture"] = _cout_couv
+    if _flag_refus:
+        if "refus" in run:
+            print(f"log_run REFUS : refus donne a la fois par {FLAG_REFUS} et dans le JSON du run.")
+            return 1
+        run["refus"] = _refus_val
     if _flags_cc:
         if "candidats" in run or "choix" in run:
             print("log_run REFUS : candidats/choix donnes a la fois par flag et dans le JSON du run.")
@@ -1634,6 +1968,15 @@ def main(argv) -> int:
             print(_refus_cc)
             return 1
         run["candidats"], run["choix"] = _cands, _choix_brut
+        if _flag_trace:
+            if "trace_decision" in run:
+                print("log_run REFUS : trace_decision donnee a la fois par flag et dans le JSON du run.")
+                return 1
+            _trace, _refus_tr = verifier_trace(_trace_brut, [c["nom"] for c in _cands])
+            if _refus_tr:
+                print(_refus_tr)
+                return 1
+            run["trace_decision"] = _trace
     missing = [k for k in ("demande", "qualification") if not run.get(k)]
     if missing:
         print(f"log_run : champ(s) requis manquant(s) : {', '.join(missing)}")
@@ -1679,7 +2022,13 @@ def main(argv) -> int:
         return 1
     run.setdefault("run_id", nouveau_run_id())
     run.update(inferer_debut(run))
-    run.update(jointure_cout(run, nb_lignes=400 if run.get("debut_infere") else 20))
+    _nb_fenetre = 400 if run.get("debut_infere") else 20
+    _jl = _jointure_lignes(run, nb_lignes=_nb_fenetre)   # UNE jointure pour tokens ET couverture
+    run.update(jointure_cout(run, nb_lignes=_nb_fenetre, jointure=_jl))
+    if "cout_couverture" not in run:   # le drapeau explicite (8.14) reste prioritaire
+        _cc_derivee = couverture_jointure(run, nb_lignes=_nb_fenetre, jointure=_jl)
+        if _cc_derivee:
+            run["cout_couverture"] = _cc_derivee
     refus_validation = verifier_validation_utilisateur(run, au_solde=False)
     if refus_validation:
         print(refus_validation)
@@ -1696,6 +2045,7 @@ def main(argv) -> int:
     if refus_revue:
         print(refus_revue)
         return 1
+    appliquer_trace_automatique(run, _flags_cc)
     run.setdefault("ts", datetime.datetime.now().astimezone().isoformat(timespec="seconds"))
     with open(RUNS_PATH, "a", encoding="utf-8") as fh:
         fh.write(json.dumps(run, ensure_ascii=False) + "\n")
