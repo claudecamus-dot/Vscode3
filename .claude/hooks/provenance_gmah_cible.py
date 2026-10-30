@@ -41,7 +41,8 @@ RACINE = CLAUDE.parent
 ORCH = CLAUDE / "orchestration"
 JETONS = ORCH / "gravite" / "jetons.jsonl"
 SCEAU = ORCH / "gmah_sceau.json"
-DECLENCHEURS = {"ADOPTE GMAH": "adopte", "STOP GMAH": "stop"}
+DECLENCHEURS = {"ADOPTE GMAH": "adopte", "ADOPTE GMAH AUGMENTE": "adopte-augmente",
+                "STOP GMAH": "stop"}
 OBLIGATOIRES = (".claude/orchestration/gravite.py", ".claude/orchestration/neural_policy.yaml")
 
 sys.path.insert(0, str(ORCH))  # story 14.17: _gmah_cle (sealed, shipped with the engine)
@@ -140,8 +141,9 @@ def emettre(gr, kind: str, session: str = "") -> dict:
     return ligne
 
 
-def _decision(jour: str) -> str:
-    return f"ACCEPTE : activer-gravitationnel — ADOPTE GMAH tapé par l'utilisateur le {jour}"
+def _decision(jour: str, mode: str = "standard") -> str:
+    phrase = "ADOPTE GMAH AUGMENTE" if mode == "augmente" else "ADOPTE GMAH"
+    return f"ACCEPTE : activer-gravitationnel — {phrase} tapé par l'utilisateur le {jour}"
 
 
 def _lire_liste(gr):
@@ -178,7 +180,7 @@ def _interactif(data) -> bool:
     return isinstance(tp, str) and bool(tp) and os.path.isfile(tp)
 
 
-def activer(gr=None, session: str = "") -> bool:
+def activer(gr=None, session: str = "", mode: str = "standard") -> bool:
     """Seal -> arbitration (idempotent) -> token -> `gravite on`. True only if the mode is on."""
     if not sceau_ok():
         return False  # drift or missing seal: nothing is written
@@ -186,7 +188,7 @@ def activer(gr=None, session: str = "") -> bool:
     jour_local, jour_utc = _jours()
     if jour_local != jour_utc:
         return False
-    decision = _decision(jour_local)
+    decision = _decision(jour_local, mode)
     liste = _lire_liste(gr)
     if liste is None:
         return False
@@ -219,14 +221,20 @@ def activer(gr=None, session: str = "") -> bool:
         cle = gr.cle_arbitrage(e)
     if not cle:
         return False
-    emettre(gr, "adopte", session)
+    jeton = "adopte-augmente" if mode == "augmente" else "adopte"
+    emettre(gr, jeton, session)
     with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-        ok = gr.main(["on", "--arbitrage", cle]) == 0
-        if not ok:
-            try:
-                gr.consommer_jeton("revoque:story-14.12")
-            except Exception:  # noqa: BLE001
-                pass
+        ok = False
+        try:
+            ok = gr.main(["on", "--arbitrage", cle] + (["--mode", "augmente"] if mode == "augmente" else [])) == 0
+        except BaseException:  # noqa: BLE001 - an engine that sys.exit()s or is interrupted is a failed `on`, not a hook crash
+            ok = False
+        finally:  # any exit of `on` must not leave a usable token
+            if not ok:
+                try:
+                    gr.consommer_jeton("revoque:story-14.12", type_jeton=jeton)
+                except Exception:  # noqa: BLE001
+                    pass
     return ok
 
 
@@ -244,8 +252,8 @@ def main():
         session = str(data.get("session_id") or "")
         if kind == "stop":
             emettre(_charger_gravite(), kind, session)
-        elif kind == "adopte" and _interactif(data):
-            activer(session=session)
+        elif kind in ("adopte", "adopte-augmente") and _interactif(data):
+            activer(session=session, mode="augmente" if kind == "adopte-augmente" else "standard")
     except Exception:  # noqa: BLE001 - fail-open
         pass
     return 0

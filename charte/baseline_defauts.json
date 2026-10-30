@@ -1,0 +1,125 @@
+{
+ "version": 28,
+ "defauts": [
+  [
+   "texte hors boite",
+   "texte ~0.42in > boîte 0.20in (« Plein : mesuré et vérifié · demi : mesur… »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~0.42in > boîte 0.20in (« Sources : Gartner (prévision platform te… »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~0.68in > boîte 0.42in (« Des coûts qui montent sans lien avec la … »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~0.68in > boîte 0.42in (« Des outils sans lien ; à qui s'adresser … »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~0.68in > boîte 0.42in (« Une plateforme existe, les équipes passe… »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~0.87in > boîte 0.62in (« Consommateurs… »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~0.89in > boîte 0.60in (« Entrer… »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~0.89in > boîte 0.60in (« Passer au second temps… »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~0.89in > boîte 0.60in (« Passer la main… »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~0.90in > boîte 0.72in (« Diagnostic et cartographie des opportuni… »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~0.90in > boîte 0.72in (« Mesure au T1 et recommandation : général… »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~0.90in > boîte 0.75in (« Un sponsor et un périmètre figé.… »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~1.08in > boîte 0.62in (« Catalogue… »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~1.08in > boîte 0.62in (« Mesure… »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~1.08in > boîte 0.62in (« Ownership… »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~1.13in > boîte 0.75in (« Critère : décision go / no-go du sponsor… »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~1.35in > boîte 0.75in (« Critère : restitution arbitrée par le sp… »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~1.35in > boîte 0.75in (« Un sponsor nommé et un périmètre priorit… »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~1.35in > boîte 1.15in (« Un sponsor : DSI ou direction Infra.… »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~1.37in > boîte 1.22in (« Public visé… »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~1.58in > boîte 0.98in (« – Le coach qualifie le périmètre et fixe… »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~1.60in > boîte 1.22in (« Cas d'usage à explorer… »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~2.09in > boîte 1.47in (« Triage de tickets — classe et route des … »)",
+   1
+  ],
+  [
+   "texte hors boite",
+   "texte ~2.11in > boîte 1.47in (« Infra Signal Miner — repère irritants et… »)",
+   1
+  ]
+ ]
+}

@@ -17,3 +17,10 @@ extend-exclude = [".claude/skills", "_bmad", "_bmad-output",
 [tool.ruff.lint]
 # F = pyflakes (vrais bugs)  ·  I = imports  ·  UP = modernisations  ·  B = bugbear
 select = ["F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "dispositif: tests du dispositif de supervision/orchestration/hooks ; a rejouer si .claude/** change",
+    "livrable: tests du deck (mecanisme delta, charte, baseline de defauts) ; palier rapide `-m livrable`",
+]

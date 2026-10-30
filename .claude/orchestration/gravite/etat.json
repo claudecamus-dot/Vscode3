@@ -1,0 +1,11 @@
+{
+  "actif": true,
+  "depuis": "2026-10-30T10:44:02+00:00",
+  "par": "cli",
+  "plafond_bras": 10,
+  "arbitrage": "2026-10-30|hub:gmah|864cabf309ca",
+  "mode": "augmente",
+  "jeton": "a1f8aeab7d6db65e473e0c84666949c8",
+  "sig_etat": "b7119ee960eb938cf0d7711ba8b3bc0a03c842e0dc01aa7e19188c40d39a432a",
+  "cle_empreinte": "2d59b002f75dc4d072ac33ea95a64206379168e49d096f2b005bd93f3c584adf"
+}

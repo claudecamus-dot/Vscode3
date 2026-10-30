@@ -32,6 +32,34 @@ import subprocess
 
 import pytest
 
+DISPOSITIF = ("test_agent_", "test_guard_", "test_warn_", "test_lint_perimetre")
+LIVRABLE = ("test_deck_delta", "test_charte_livrable", "test_paliers")
+
+
+def pytest_collection_modifyitems(items):
+    """Paliers (port de Vscode8) : `-m livrable` = tests du deck seuls (rapide), `-m "not dispositif"` = livraison d'un deck,
+    sans `-m` = complet (exige des qu'un fichier de `.claude/**` change). Verrouille par tests/test_paliers.py."""
+    for item in items:
+        nom = os.path.basename(str(item.fspath))
+        if nom.startswith(DISPOSITIF):
+            item.add_marker(pytest.mark.dispositif)
+        elif nom.startswith(LIVRABLE):
+            item.add_marker(pytest.mark.livrable)
+
+
+@pytest.fixture(scope="session")
+def livrable():
+    """(chemin, N) du dernier livrable `offre-infra-as-a-product-V<N>.pptx` (tri numerique) ; skip s'il n'y en a aucun (checkout sans exports)."""
+    import sys
+    delta = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "docs", "cadrage-ppt", "deck_delta")
+    if delta not in sys.path:
+        sys.path.insert(0, delta)
+    import deck_base
+    try:
+        return deck_base.dernier_livrable()
+    except (ValueError, FileNotFoundError):
+        pytest.skip("aucun livrable dans docs/exports/decks")
+
 
 def _relacher_acl(chemin) -> None:
     """Rétablit l'héritage de l'ACL parente — le dossier redevient un dossier

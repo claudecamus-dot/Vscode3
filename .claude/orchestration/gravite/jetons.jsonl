@@ -1,0 +1,6 @@
+{"ts": "2026-10-29T11:06:55+00:00", "type": "adopte", "nonce": "4610a6e3bfda07b8e0faa54e77e430ca", "session": "867efd08-93fa-4fcc-9e07-af417cd06c7c", "par": "provenance_gmah_cible", "sig": "6a29c4eec196b194b384daa505e1bec191c4a790cee6a1bb33d9b479c3718952"}
+{"consomme": "4610a6e3bfda07b8e0faa54e77e430ca", "cle": "2026-10-29|hub:gmah|f671ed5b327d", "ts": "2026-10-29T11:06:55+00:00"}
+{"ts": "2026-10-29T21:11:18+00:00", "type": "adopte", "nonce": "a7f1dcfdbf56c7cc79426fae5c430785", "session": "867efd08-93fa-4fcc-9e07-af417cd06c7c", "par": "provenance_gmah_cible", "sig": "85c76d7b869ba922503882032e30110e374c4df296f3813aaef7ec2882f93d98"}
+{"consomme": "a7f1dcfdbf56c7cc79426fae5c430785", "cle": "2026-10-29|hub:gmah|f671ed5b327d", "ts": "2026-10-29T21:11:18+00:00"}
+{"ts": "2026-10-30T10:44:02+00:00", "type": "adopte-augmente", "nonce": "a1f8aeab7d6db65e473e0c84666949c8", "session": "867efd08-93fa-4fcc-9e07-af417cd06c7c", "par": "provenance_gmah_cible", "sig": "8d5616180452d9ac6c4fb9b2b7d095a15c3085a3c59e4f4971bd50806eceec5a"}
+{"consomme": "a1f8aeab7d6db65e473e0c84666949c8", "cle": "2026-10-30|hub:gmah|864cabf309ca", "ts": "2026-10-30T10:44:02+00:00"}

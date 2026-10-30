@@ -417,6 +417,42 @@
       "decision": "ACCEPTE + APPLIQUE : run recapitulatif a posteriori journalise par log_run.py (partiel, shas des fix dans les notes), decision utilisateur 2026-10-10",
       "preuve_application": "ligne partiel ajoutee a runs.jsonl ; 8 fix recomptes depuis 2026-09-23T11:31",
       "sans_commit": "runs.jsonl ignore par git (.gitignore:71)"
+    },
+    {
+      "cible": "hub:gmah",
+      "date": "2026-10-29",
+      "titre": "Mode gravitationnel",
+      "categories": [
+        "autre"
+      ],
+      "decision": "ACCEPTE : activer-gravitationnel — ADOPTE GMAH tapé par l'utilisateur le 2026-10-29"
+    },
+    {
+      "cible": "hub:gmah",
+      "date": "2026-10-29",
+      "titre": "Mode gravitationnel",
+      "categories": [
+        "autre"
+      ],
+      "decision": "ACCEPTE : activer-gravitationnel — ADOPTE GMAH AUGMENTE tapé par l'utilisateur le 2026-10-29"
+    },
+    {
+      "cible": "hub:gmah",
+      "date": "2026-10-29",
+      "titre": "Mode gravitationnel",
+      "categories": [
+        "autre"
+      ],
+      "decision": "ACCEPTE : activer-gravitationnel — ADOPTE GMAH tapé par l'utilisateur le 2026-10-29"
+    },
+    {
+      "cible": "hub:gmah",
+      "date": "2026-10-30",
+      "titre": "Mode gravitationnel",
+      "categories": [
+        "autre"
+      ],
+      "decision": "ACCEPTE : activer-gravitationnel — ADOPTE GMAH AUGMENTE tapé par l'utilisateur le 2026-10-30"
     }
   ]
 }

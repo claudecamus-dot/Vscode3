@@ -1,5 +1,5 @@
 ---
-updated: 2026-10-29
+updated: 2026-10-30
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -8,13 +8,13 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-10-29T09:57:38+01:00 · **19 sessions** (transcripts) · **87** invocations de skills · **119** lancements de sous-agents.
+Dernier scan : 2026-10-30T17:11:46+01:00 · **91 sessions** (transcripts) · **90** invocations de skills · **188** lancements de sous-agents.
 
 ## Skills — usage réel
 
 | Skill | Famille | Invocations | Première | Dernière |
 | --- | --- | --- | --- | --- |
-| `agent-orchestrator` | projet | 33 | 2026-07-21 | 2026-10-28 |
+| `agent-orchestrator` | projet | 36 | 2026-07-21 | 2026-10-29 |
 | `bmad-review` | BMAD | 11 | 2026-09-07 | 2026-09-23 |
 | `bmad-party-mode` | BMAD | 7 | 2026-09-02 | 2026-09-18 |
 | `bmad-brainstorming` | BMAD | 6 | 2026-09-11 | 2026-09-18 |
@@ -36,13 +36,15 @@ Dernier scan : 2026-10-29T09:57:38+01:00 · **19 sessions** (transcripts) · **8
 
 | Sous-agent | Lancements | Premier | Dernier |
 | --- | --- | --- | --- |
-| `general-purpose` | 73 | 2026-07-21 | 2026-09-25 |
-| `ppt-designer` | 23 | 2026-07-21 | 2026-10-28 |
+| `general-purpose` | 130 | 2026-07-21 | 2026-10-30 |
+| `ppt-designer` | 26 | 2026-07-21 | 2026-10-29 |
 | `Explore` | 11 | 2026-07-21 | 2026-09-20 |
 | `bmad-revue` | 9 | 2026-09-07 | 2026-09-23 |
+| `(defaut)` | 8 | 2026-10-30 | 2026-10-30 |
 | `Plan` | 1 | 2026-07-21 | 2026-07-21 |
 | `agent-supervisor` | 1 | 2026-09-03 | 2026-09-03 |
 | `claude-code-guide` | 1 | 2026-07-21 | 2026-07-21 |
+| `scribe` | 1 | 2026-10-30 | 2026-10-30 |
 
 ## Jamais utilisés
 
@@ -70,7 +72,7 @@ _Consommés en lisant/exécutant leurs `scripts/`, ou via un sous-agent qui les 
 
 ## TODO agents (constats automatiques)
 
-⚠️ **Mesure incomplète** — 13 transcript(s) sur 19 absent(s) du disque. Un `n=0` ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.
+⚠️ **Mesure incomplète** — 13 transcript(s) sur 91 absent(s) du disque. Un `n=0` ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.
 
 1. **Désinstaller les shims BMAD dépréciés** (17) : `bmad-checkpoint-preview`, `bmad-create-architecture`, `bmad-create-prd`, `bmad-create-story`, `bmad-dev-story`, `bmad-document-project`, `bmad-edit-prd`, `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-generate-project-context`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-review-verification-gap`, `bmad-sprint-status`, `bmad-technical-research`, `bmad-validate-prd` — dépréciés par BMAD dans leur propre `description`, chacun avec son remplaçant ; le seul élagage qui ne repose pas sur notre mesure d'usage.
 2. **Skills projet sans usage** : `agent-securite`, `veille-agentic` — vérifier pertinence et déclencheurs.
@@ -138,6 +140,10 @@ Ce que 'traiter' ces 3 points pourrait vouloir dire (a instruire au hub, pas tra
 - **`VSCode3:diagnostic-porte-des-findings-deja-arbitres`** (2026-10-09) : REFUSÉ : REFUSE (infondé) : par conception le registre garde dans diagnostic.json les findings fermés par un arbitrage ; finding_arbitre() les masque au tableau de bord. Mesure du 2026-10-09 : 7 findings du diagnostic de VSCode3 sont arbitrés (arbitrages cités), aucun n'est affiché comme ouvert. Rien à nettoyer.
 - **`VSCode3:nouveau-deck-offre-sans-revue-tracee`** (2026-10-09) : ACCEPTE + APPLIQUE : la revue de design manquante est jouee (finding clos) ; les defauts releves sont a corriger par l'utilisateur ou un lot dedie, sans correction ici.
 - **`VSCode3:journal-muet-depuis-2026-09-23`** (2026-10-10) : ACCEPTE + APPLIQUE : run recapitulatif a posteriori journalise par log_run.py (partiel, shas des fix dans les notes), decision utilisateur 2026-10-10
+- **`hub:gmah`** (2026-10-29) : ACCEPTE : activer-gravitationnel — ADOPTE GMAH tapé par l'utilisateur le 2026-10-29
+- **`hub:gmah`** (2026-10-29) : ACCEPTE : activer-gravitationnel — ADOPTE GMAH AUGMENTE tapé par l'utilisateur le 2026-10-29
+- **`hub:gmah`** (2026-10-29) : ACCEPTE : activer-gravitationnel — ADOPTE GMAH tapé par l'utilisateur le 2026-10-29
+- **`hub:gmah`** (2026-10-30) : ACCEPTE : activer-gravitationnel — ADOPTE GMAH AUGMENTE tapé par l'utilisateur le 2026-10-30
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 
@@ -158,7 +164,7 @@ _10 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir
 
 ## Seuil de qualification — la mesure
 
-Depuis le 2026-09-10 : **179** demande(s) vue(s) hors commande slash (+ 28 slash), **9** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **5 %** des demandes orchestrées.
+Depuis le 2026-09-10 : **284** demande(s) vue(s) hors commande slash (+ 76 slash), **9** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **3 %** des demandes orchestrées.
 _Ce chiffre ne dit pas ce qui AURAIT dû être orchestré : le hook compte, il ne juge pas. Il donne le dénominateur qui manquait pour arbitrer le seuil sur données plutôt que sur habitude._
 
 ---
