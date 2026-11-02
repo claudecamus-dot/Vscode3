@@ -32,3 +32,6 @@
 {"ts": "2026-10-30T16:09:09+00:00", "nom": "git.exe", "age_min": 35, "pid": 44296, "resultat": "arrete", "sous_cmd": "rev-list", "parent": "mort"}
 {"ts": "2026-10-30T16:43:43+00:00", "nom": "py.exe", "age_min": 44, "pid": 28820, "resultat": "arrete"}
 {"ts": "2026-10-30T16:43:45+00:00", "nom": "git.exe", "age_min": 32, "pid": 44780, "resultat": "arrete", "sous_cmd": "rev-list", "parent": "mort"}
+{"ts": "2026-10-30T16:53:23+00:00", "nom": "git.exe", "age_min": 39, "pid": 7580, "resultat": "arrete", "sous_cmd": "rev-list", "parent": "mort"}
+{"ts": "2026-11-02T11:45:57+00:00", "nom": "git.exe", "age_min": 49, "pid": 32776, "resultat": "arrete", "sous_cmd": "rev-list", "parent": "mort"}
+{"ts": "2026-11-02T13:48:42+00:00", "nom": "git.exe", "age_min": 30, "pid": 37860, "resultat": "arrete", "sous_cmd": "log", "parent": "mort"}
