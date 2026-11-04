@@ -222,7 +222,7 @@ def activer(gr=None, session: str = "", mode: str = "standard") -> bool:
     if not cle:
         return False
     jeton = "adopte-augmente" if mode == "augmente" else "adopte"
-    emettre(gr, jeton, session)
+    emis = emettre(gr, jeton, session)
     with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
         ok = False
         try:
@@ -231,11 +231,56 @@ def activer(gr=None, session: str = "", mode: str = "standard") -> bool:
             ok = False
         finally:  # any exit of `on` must not leave a usable token
             if not ok:
-                try:
-                    gr.consommer_jeton("revoque:story-14.12", type_jeton=jeton)
-                except Exception:  # noqa: BLE001
-                    pass
+                _revoquer(gr, "revoque:story-14.12", jeton, emis)
     return ok
+
+
+def _revoquer(gr, cle_rev: str, jeton: str, emis) -> None:
+    """Consume the minted token with gravite's own helper; neutralise it unless that PROVABLY worked.
+    gravite.consommer_jeton catches OSError itself (lock busy, ACL, disk full) and RETURNS
+    (False, reason): a refusal is as much a failure as a raise. A False for "already consumed" is
+    harmless (the extra line only rebinds the nonce to a revocation key). A BaseException
+    (KeyboardInterrupt) still neutralises, then propagates: the interruption is not swallowed."""
+    neutraliser = True
+    try:
+        ok_r, _ = gr.consommer_jeton(cle_rev, type_jeton=jeton)
+        neutraliser = ok_r is not True
+    except Exception:  # noqa: BLE001 - story 14.11 (user decision 2026-11-04): fall back
+        pass
+    finally:
+        if neutraliser:
+            _neutraliser_jeton(gr, emis)
+
+
+def _neutraliser_jeton(gr, emis) -> None:
+    """Fallback when gravite's consommer_jeton raised or refused: bind the minted nonce to a
+    revocation key by appending the same {"consomme": nonce, ...} line gravite writes, without its lock (the lock may
+    be what failed). gravite then refuses that token for every real key ("bound to another key").
+    Never raises: the prompt is never blocked. RESIDUAL RISK (honest): if the token log cannot be
+    appended at all (disk full, ACL, file locked), the token stays consumable until its TTL
+    (gravite.JETON_TTL_S, 15 min); `gravite.py on` still needs a valid arbitration for its key."""
+    try:
+        nonce = emis.get("nonce") if isinstance(emis, dict) else None
+        if not isinstance(nonce, str):
+            return
+        try:
+            chemin = Path(gr._jetons_chemin())  # the file gravite reads when it consumes
+        except Exception:  # noqa: BLE001
+            chemin = JETONS
+        ligne = {"consomme": nonce, "cle": "revoque:story-14.11",
+                 "ts": datetime.now(UTC).isoformat(timespec="seconds")}
+        tete = ""
+        try:  # a previous writer may have left a truncated last line: never glue onto it
+            with chemin.open("rb") as f:
+                if f.seek(0, 2) > 0:
+                    f.seek(-1, 2)
+                    tete = "" if f.read(1) == b"\n" else "\n"
+        except OSError:
+            pass
+        with chemin.open("a", encoding="utf-8", newline="\n") as f:
+            f.write(tete + json.dumps(ligne, ensure_ascii=False) + "\n")
+    except Exception:  # noqa: BLE001 - fail-open for the prompt; residual risk documented above
+        pass
 
 
 def main():

@@ -1,8 +1,12 @@
 """SubagentStop — libere le perimetre d'ecriture d'un agent qui s'arrete (story 14.14).
 
-Appelle `guard_perimetres_actifs.liberer` : retire les entrees expirees et la plus ancienne
-entree de la session du payload (heuristique : le payload ne dit pas quel agent s'arrete ;
-le TTL reste le filet). N'est PAS une garde : fail-open integral et exit 0 TOUJOURS (un arret
+Appelle `guard_perimetres_actifs.liberer` : retire les entrees expirees et l'entree de
+l'agent qui s'arrete, reconnue par la declaration PERIMETRE ECRIT relue dans le premier
+message `user` de son `agent_transcript_path` (story 14.22 AC.2, voie (b) arbitree le
+2026-11-04). Transcript lisible mais rien a liberer (`aucun`, pas de ligne, aucune entree
+vivante appariee) -> rien n'est libere. Transcript ILLISIBLE (champ ou fichier absent,
+illisible, plafond, entree user vide ou absente) -> repli sur la plus ancienne entree de la session, motif journalise
+dans le registre ; le TTL reste le filet. N'est PAS une garde : fail-open integral et exit 0 TOUJOURS (un arret
 legitime d'agent ne doit jamais etre bloque) - stdin absent, JSON illisible, registre
 corrompu ou module absent -> exit 0 sans rien ecrire.
 """

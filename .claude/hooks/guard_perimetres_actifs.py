@@ -16,7 +16,21 @@ Contrat :
     puis est resolu contre le `cwd` de l'entree du hook (repli os.getcwd() SEULEMENT si le
     champ est absent ; present mais invalide -> les relatifs sont ignores). Refuses (donc
     ignores avec avertissement) : `:` hors de `X:` en position 1, `C:x`, `/x` sans lecteur
-    sous Windows, UNC `//serveur/partage`, `~` (nom court 8.3), racine seule, noms reserves ;
+    sous Windows, UNC sans partage, `~` (nom court 8.3) INEXISTANT, racine seule, noms reserves.
+    Alias deplies avant la cle (story 14.14, `_deplier_alias`, ecrits ici avec des `/`) :
+    `//?/X:/`, `//./X:/`, `//?/UNC/srv/share`, partage admin `//hote/X$` de CETTE machine
+    (`localhost`, 127.0.0.0/8 sous toute forme classique, `::1`, `*.ipv6-literal.net` de
+    bouclage, nom de la machine, point final toleres) ; le partage admin d'un AUTRE hote est
+    refuse avec avertissement ; nom 8.3 d'un prefixe EXISTANT sur un lecteur LOCAL
+    (GetLongPathNameW, budget BUDGET_8_3_S par declaration, jeton > MAX_CHEMIN_LEN + 8 laisse
+    tel quel) ; un UNC complet `//srv/share/...` recoit sa propre cle. Les alias sont deplies
+    par jeton AVANT `_couper` (regles a/b/c'' appliquees a la forme depliee) ;
+  - libelle accepte avec ou sans accents, NFC ou NFD, toute casse, blancs insecables, `**`/`_`
+    autour (story 14.14) ;
+  - plus de MAX_CHEMINS chemins : verrouilles, avertissement avec le compte ; au-dela de
+    MAX_CHEMINS_DUR (1000), seuls les 1000 premiers, avertissement explicite (14.14) ;
+  - l'entree du registre porte `decl_sha` (empreinte de la declaration BRUTE + cwd) : la
+    liberation l'apparie sans recalcul disque (14.14) ;
   - chevauchement = meme cle ou prefixe de SEGMENT (dans un sens ou l'autre) -> deny,
     exit 0 ; deux worktrees differents ne se chevauchent donc jamais. Les anciennes entrees
     a cle relative ne chevauchent plus rien et expirent avec leur TTL (pas de migration) ;
@@ -52,8 +66,14 @@ une declaration non normalisable est
 ignoree avec avertissement. Et encore :
   - casefold Unicode : `ß` et `ss` (ou toute paire que casefold confond) donnent la meme cle
     sous Windows — sur-verrouillage prudent, jamais un trou ;
-  - cle lexicale : jonctions, liens symboliques et alias UNC ou 8.3 d'un meme fichier ne
-    sont pas rapproches (un alias UNC ou `~` est refuse, donc ignore) ;
+  - cle lexicale : jonctions, liens symboliques, partage reseau pointant un disque local
+    hors partage admin `X$` de cette machine (un partage NOMME `//localhost/donnees` garde sa
+    propre cle), lecteur `subst`/mappe, nom 8.3 d'un chemin qui n'existe pas encore ou d'un
+    lecteur non local, et prefixes `//?/GLOBALROOT/...`, `//./GLOBALROOT/...`,
+    `//?/Volume{GUID}/...` ne sont pas rapproches : ces derniers sont refuses, nommes dans
+    l'avertissement (« perimetre NON verrouille »), jamais un deny (D31) ;
+  - budget 8.3 : verifie ENTRE deux appels disque ; un seul appel `exists` qui bloque n'est
+    pas interrompu (les lecteurs non locaux ne sont jamais sondes, ce qui borne le cas) ;
   - declaration entierement ignoree -> avertissement seulement, l'appel passe (fail-open, D31) ;
   - hypothese NON verifiee : le `cwd` du hook d'un agent `isolation: worktree` est celui de
     la session, si bien que ses chemins RELATIFS sont cles sous la racine de la session et
@@ -69,10 +89,14 @@ entree illisible, registre corrompu ou verrou indisponible -> exit 0 (sauf absen
 de stdin : refus prudent du regime commun des gardes).
 """
 import datetime
+import hashlib
+import ipaddress
 import json
+import ntpath
 import os
 import posixpath
 import re
+import socket
 import sys
 import time
 import unicodedata
@@ -90,7 +114,11 @@ JOURNAL_MAX = 50             # release journal entries kept in the registry
 MAX_JUMEAUX = 3              # same-call twins kept per (session, description, key set)
 RESERVES = {"con", "prn", "aux", "nul", "conin$", "conout$"} | {f"com{i}" for i in range(1, 10)} | {f"lpt{i}" for i in range(1, 10)}
 INTERDITS = set('*?<>"|:~')
-RE_DECL = re.compile(r"^[ \t]*PERIMETRE[ \t]+ECRIT[ \t]*:[ \t]*(.*)$", re.I | re.M)
+# Story 14.14 (T2 P2): accented or not, NFC or NFD, any case; NBSP/U+202F blanks, `**`/`_`
+_E = r"(?:[e\u00e9\u00e8\u00ea\u00eb][\u0300\u0301\u0302\u0308]?)"
+_BL = r"[ \t\u00a0\u202f]"
+RE_DECL = re.compile(rf"^[ \t]*[*_]*P{_E}RIM{_E}TRE{_BL}+{_E}CRIT[*_]*{_BL}*:[*_]*{_BL}*(.*)$",
+                     re.I | re.M)
 
 
 class _Refuse(ValueError):
@@ -136,7 +164,12 @@ def _canon_abs(q, nt, racine_ok=False):
     clamps at the root, like the OS; links/junctions are NOT followed (lexical key: the
     path may not exist yet). On Windows, trailing dots/spaces of a segment are stripped
     and the key is casefolded."""
-    if nt:
+    if nt and q.startswith("//"):   # story 14.14: a full UNC `//server/share/...` is keyed
+        m = re.match(r"^//([^/]+)/([^/]+)(/.*)?$", q)
+        if not m or m.group(1) in (".", "..") or m.group(2) in (".", ".."):
+            raise _Refuse("UNC needs //server/share")
+        tete, reste = f"//{m.group(1)}/{m.group(2)}".casefold(), m.group(3) or "/"
+    elif nt:
         if not (len(q) >= 3 and q[0].isascii() and q[0].isalpha() and q[1] == ":" and q[2] == "/"):
             raise _Refuse("absolute path needs a drive (X:/)")
         tete, reste = q[:2].casefold(), q[2:]
@@ -207,11 +240,146 @@ def _base(cwd, nt):
     raise _Refuse("invalid cwd: no absolute base for a relative path")
 
 
+BUDGET_8_3_S = 2.0          # cumulated 8.3 unfolding time per declaration (P2-1)
+MAX_CHEMINS_DUR = 1000      # hard cap of keyed paths, said in the warning (P3)
+_FIN_8_3 = [None]           # monotonic deadline of the declaration being parsed, or None
+_RE_HOTE_ADMIN = re.compile(r"^//([^/]+)/([A-Za-z])\$(?=/|$)")
+_RE_PREFIXE_INCONNU = re.compile(r"^[\\/]{2}[?.][\\/]")
+
+
+def _ipv4_classique(h):
+    """Integer value of a classic inet_aton IPv4 text (1 to 4 parts: decimal, 0x hex or
+    leading-0 octal, the last part filling the remaining bytes: `127.1`), or None."""
+    parts = h.split(".")
+    if not 1 <= len(parts) <= 4:
+        return None
+    vals = []
+    for x in parts:
+        try:
+            if x[:2].casefold() == "0x":
+                v = int(x[2:], 16)
+            elif len(x) > 1 and x[0] == "0":
+                v = int(x[1:], 8)
+            elif x.isascii() and x.isdigit():
+                v = int(x, 10)
+            else:
+                return None
+        except ValueError:
+            return None
+        vals.append(v)
+    *tete, dernier = vals
+    if any(v > 255 for v in tete) or dernier >= 256 ** (4 - len(tete)):
+        return None
+    n = 0
+    for v in tete:
+        n = n * 256 + v
+    return n * 256 ** (4 - len(tete)) + dernier
+
+
+def _hotes_locaux():
+    try:
+        h = socket.gethostname()
+    except OSError:
+        h = ""
+    return {"localhost"} | ({h.casefold().rstrip(".")} if h else set())
+
+
+def _hote_local(h, hotes):
+    """This machine: its name (any case, trailing dot), `localhost`, 127.0.0.0/8 in any
+    classic form, `::1`, or a loopback `*.ipv6-literal.net`."""
+    h = h.casefold().rstrip(".")
+    if h == "localhost" or h in hotes:
+        return True
+    if h.endswith(".ipv6-literal.net"):
+        h = h[: -len(".ipv6-literal.net")].replace("-", ":").split("s")[0]
+    try:
+        return ipaddress.ip_address(h).is_loopback
+    except ValueError:
+        pass
+    v = _ipv4_classique(h)
+    return v is not None and v >> 24 == 127
+
+
+def _deplier_alias(p, nt, hotes=None):
+    """Story 14.14 (T2 P2): Windows spellings of one path get one text BEFORE validation.
+    Pure text except the 8.3 step (`_long_8_3`, Windows only, injectable `_API_8_3`).
+    `//?/X:/` and `//./X:/` -> `X:/`; `//?/UNC/srv/share` -> `//srv/share`; the admin share
+    `//host/X$` of THIS machine (`_hote_local`) -> `X:`, of any other host -> _Refuse (an
+    alias we cannot resolve is ignored WITH a warning, never keyed apart in silence). A
+    token longer than MAX_CHEMIN_LEN + 8 is returned untouched, so `_valider` refuses it
+    without any disk lookup (P2-1). Anything else is returned unchanged."""
+    if not nt or type(p) is not str or len(p) > MAX_CHEMIN_LEN + 8:
+        return p
+    q = p.replace("\\", "/")
+    if q[:4] in ("//?/", "//./"):
+        reste = q[4:]
+        if re.match(r"^[A-Za-z]:(/|$)", reste):
+            q = reste
+        elif reste[:4].casefold() == "unc/":
+            q = "//" + reste[4:]
+    m = _RE_HOTE_ADMIN.match(q)
+    if m:
+        if not _hote_local(m.group(1), _hotes_locaux() if hotes is None else hotes):
+            raise _Refuse("admin share of another host")
+        q = m.group(2) + ":" + q[m.end():]
+    if "~" in q and os.name == "nt":
+        q = _long_8_3(q)
+    return q
+
+
+def _lecteur_ok(racine):
+    """Only local drives are probed (removable, fixed, RAM disk): a mapped or offline network
+    drive (`Z:/DOSSI~1`) could hang on exists (P2-1)."""
+    import ctypes
+    return ctypes.windll.kernel32.GetDriveTypeW(racine) in (2, 3, 6)
+
+
+def _longue_win32(p):
+    import ctypes
+    buf = ctypes.create_unicode_buffer(32768)
+    n = ctypes.windll.kernel32.GetLongPathNameW(p, buf, 32768)
+    return buf.value if 0 < n < 32768 else ""
+
+
+_API_8_3 = {"existe": os.path.exists, "lecteur_ok": _lecteur_ok, "longue": _longue_win32}
+
+
+def _long_8_3(q):
+    """Expands the 8.3 short names of the longest EXISTING prefix of an absolute `X:/...`
+    (GetLongPathNameW, read-only). Linear: one exists per segment walked up, the tail kept
+    as a list. Stops at the declaration's deadline (`_FIN_8_3`, BUDGET_8_3_S). A `~` part
+    that does not exist cannot be expanded: unchanged, so still refused (residual limit)."""
+    if not re.match(r"^[A-Za-z]:/", q) or len(q) > MAX_CHEMIN_LEN + 8:
+        return q
+    fin = _FIN_8_3[0]
+    try:
+        if not _API_8_3["lecteur_ok"](q[:2] + "\\"):
+            return q
+        tete, reste = ntpath.normpath(q), []
+        while True:
+            if fin is not None and time.monotonic() > fin:
+                return q
+            if _API_8_3["existe"](tete):
+                break
+            parent, nom = ntpath.split(tete)
+            if parent == tete or not nom:
+                return q
+            tete = parent
+            reste.append(nom)
+        long_ = _API_8_3["longue"](tete)
+        if not long_:
+            return q
+        return ntpath.join(long_, *reversed(reste)).replace("\\", "/")
+    except Exception:  # noqa: BLE001 - best effort: unchanged, so still refused
+        return q
+
+
 def cle(p, cwd=None, nt=None):
     """Canonical key of a declared path (story 14.22, D1): absolute, resolved, `/`, NFC,
     casefolded on Windows. A relative path keeps every refusal of `_norm` (unchanged) and
     is then resolved against `cwd` (the hook input's field, fallback os.getcwd())."""
     nt = (os.name == "nt") if nt is None else nt
+    p = _deplier_alias(p, nt)
     q = _valider(p, nt)
     if _est_absolu(q, nt):
         return _canon_abs(q, nt)
@@ -223,8 +391,10 @@ def chevauche(a, b):
     return a == b or a.startswith(b + "/") or b.startswith(a + "/")
 
 
-RE_DEBUT_ABS = re.compile(r"^[A-Za-z]:[\\/]") if os.name == "nt" else re.compile(r"^/")
-RE_COUPE_ABS = (re.compile(r"\s+(?=[`'\"]?[A-Za-z]:[\\/])") if os.name == "nt"
+# Story 14.14 (P2-3): on Windows a UNC or `\\?\` start counts as an absolute start too
+RE_DEBUT_ABS = (re.compile(r"^(?:[A-Za-z]:[\\/]|[\\/]{2}[^\\/\s])") if os.name == "nt"
+                else re.compile(r"^/"))
+RE_COUPE_ABS = (re.compile(r"\s+(?=[`'\"]?(?:[A-Za-z]:[\\/]|[\\/]{2}))") if os.name == "nt"
                 else re.compile(r"\s+(?=[`'\"]?/)"))
 
 
@@ -261,11 +431,11 @@ def _couper(j):
     return [j, j[:premier.start()]], f"{j} (verrouille entier ET jusqu'au premier blanc)"  # (c'')
 
 
-def declaration(texte, cwd=None):
-    """(None, []) sans declaration ; ([], []) si `aucun` ; sinon (cles canoniques, ignores)."""
+def _brut_declaration(texte):
+    """Raw pieces of the declaration (the label line, then its `- ` bullets), or None."""
     m = RE_DECL.search(texte or "")
     if not m:
-        return None, []
+        return None
     brut = [m.group(1)]
     for ligne in (texte[m.end():]).split("\n")[1:]:
         s = ligne.strip()
@@ -273,6 +443,34 @@ def declaration(texte, cwd=None):
             brut.append(s[2:])
         else:
             break
+    return brut
+
+
+def empreinte(texte, cwd):
+    """Story 14.14 (P2-2): fingerprint of the RAW declaration and of the hook `cwd`, stored
+    in the registry entry. The release matches it, never a key set recomputed from the disk
+    (8.3 expansion depends on what exists at that moment). None without a declaration."""
+    brut = _brut_declaration(texte)
+    if brut is None:
+        return None
+    s = "\n".join(b.strip() for b in brut) + "\0" + repr(cwd)
+    return hashlib.sha256(s.encode("utf-8", "replace")).hexdigest()[:32]
+
+
+def declaration(texte, cwd=None):
+    """(None, []) sans declaration ; ([], []) si `aucun` ; sinon (cles canoniques, ignores).
+    The 8.3 unfolding of the whole declaration shares one deadline (BUDGET_8_3_S, P2-1)."""
+    brut = _brut_declaration(texte)
+    if brut is None:
+        return None, []
+    _FIN_8_3[0] = time.monotonic() + BUDGET_8_3_S
+    try:
+        return _declaration(brut, cwd)
+    finally:
+        _FIN_8_3[0] = None
+
+
+def _declaration(brut, cwd):
     jetons = []
     for morceau in brut:
         for j in re.split(r"[;,]", morceau):
@@ -281,7 +479,16 @@ def declaration(texte, cwd=None):
     if not jetons or (len(jetons) == 1 and jetons[0].casefold() in ("aucun", "aucune", "none")):
         return [], []
     ok, ignores = [], []
-    for j in jetons[:MAX_CHEMINS]:
+    if len(jetons) > MAX_CHEMINS_DUR:   # P3: hard cap, said explicitly (never silent)
+        ignores.append(f"{len(jetons)} chemins declares : seuls les {MAX_CHEMINS_DUR} premiers "
+                       f"sont verrouilles (plafond dur)")
+        jetons = jetons[:MAX_CHEMINS_DUR]
+    for brut_j in jetons:   # story 14.14: up to MAX_CHEMINS_DUR, decider warns beyond MAX_CHEMINS
+        try:   # P2-3: aliases unfolded BEFORE `_couper`, so rules (a)/(b)/(c'') see `X:/`
+            j = _deplier_alias(brut_j, os.name == "nt")
+        except _Refuse:
+            ignores.append(brut_j)
+            continue
         morceaux, note = _couper(j)
         if note:
             ignores.append(note)
@@ -289,8 +496,8 @@ def declaration(texte, cwd=None):
             try:
                 ok.append(cle(p, cwd))
             except _Refuse:
-                ignores.append(p)
-    return ok[:MAX_CHEMINS], ignores
+                ignores.append(brut_j if p == j else p)   # the declared spelling is named
+    return ok, ignores
 
 
 def _maintenant():
@@ -413,6 +620,13 @@ def decider(data, chemin, now=None):
                         "agent ecrit des fichiers, ajouter `PERIMETRE ECRIT: chemin1, chemin2` "
                         "(ou `aucun` en lecture seule).")
     avert = (" Chemins ignores (non normalisables): " + ", ".join(ignores) + ".") if ignores else ""
+    if len(chemins) > MAX_CHEMINS:   # story 14.14: the count is said (no silent cap)
+        avert += (f" {len(chemins)} chemins verrouilles (plus de {MAX_CHEMINS}) - verifier la "
+                  f"declaration.")
+    inconnus = [i for i in ignores if _RE_PREFIXE_INCONNU.match(i)]
+    if inconnus:   # P2-5: GLOBALROOT, Volume{GUID}... are real aliases we cannot key (D31)
+        avert += (" Prefixes \\\\?\\ ou \\\\.\\ non reconnus (GLOBALROOT, Volume{GUID}...) : "
+                  + ", ".join(inconnus) + " - perimetre NON verrouille pour ces chemins.")
     if not chemins:
         return ("warn", avert.strip()) if avert else ("allow", "")
     desc = str(entree.get("description", ""))[:120]
@@ -438,7 +652,8 @@ def decider(data, chemin, now=None):
             "session_id": sid,
             "start_utc": now.isoformat(timespec="seconds"),
             "expire_utc": (now + datetime.timedelta(seconds=_ttl())).isoformat(timespec="seconds"),
-            "paths": chemins})
+            "paths": chemins,
+            "decl_sha": empreinte(prompt, data.get("cwd"))})   # P2-2: released on this
         try:
             _ecrire(chemin, vivants)
         except OSError:
@@ -514,8 +729,14 @@ def _entree_de_l_agent(data, vivants, sid, lu):
     `aucun` / nothing lockable under any cwd ("aucun-perimetre-declare"), or a lockable
     declaration with no live entry, e.g. TTL expired ("entree-absente", V2)."""
     texte, cwd_t = lu
+    cwds = [c for c in (cwd_t, data.get("cwd")) if c is not None] or [None]
+    for cwd in cwds:   # story 14.14 (P2-2): stored fingerprint first, no disk involved
+        fp = empreinte(texte, cwd)
+        for i, e in enumerate(vivants):
+            if fp and e.get("session_id") == sid and e.get("decl_sha") == fp:
+                return i
     verrouillable = False
-    for cwd in [c for c in (cwd_t, data.get("cwd")) if c is not None] or [None]:
+    for cwd in cwds:   # entries written before 14.14 (no `decl_sha`): recomputed key set
         chemins, ignores = declaration(texte, cwd)
         if chemins is None or (not chemins and not ignores):   # no line, or `aucun`
             raise _Rien("aucun-perimetre-declare")
