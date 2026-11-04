@@ -1,0 +1,150 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_dispatch_pretooluse.py\" guard_destructive_git.py warn_verif_before_commit.py guard_service.py",
+            "timeout": 130,
+            "statusMessage": "Gardes shell (dispatcher, un seul processus)..."
+          }
+        ]
+      },
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_salle_skills.py\"",
+            "timeout": 30,
+            "statusMessage": "Convocation de salle : skills BMAD nommees ?"
+          }
+        ]
+      },
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_stories_avant_dev.py\"",
+            "timeout": 30,
+            "statusMessage": "Implementation : user stories et criteres d'acceptance presents ?"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/remind_revue_increment.py\"",
+            "timeout": 30,
+            "statusMessage": "Rappel discipline revue-increment..."
+          },
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/supervision/scan_transcripts.py\"",
+            "timeout": 60,
+            "statusMessage": "Supervision agents : scan incremental des transcripts..."
+          },
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/kit_version_check.py\"",
+            "timeout": 15,
+            "statusMessage": "Version du kit agentic..."
+          },
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/faucher_orphelins.py\"",
+            "timeout": 20,
+            "statusMessage": "Arret des processus orphelins (git.exe, hooks)..."
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/remind_veille_agentic.py\"",
+            "timeout": 30,
+            "statusMessage": "Cadence veille agentic..."
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/point_du_jour.py\"",
+            "timeout": 30,
+            "statusMessage": "Ce qui attend votre decision..."
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/orchestrator_gate.py\"",
+            "timeout": 30,
+            "statusMessage": "Grille de qualification orchestrateur..."
+          },
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/faucher_orphelins.py\" --limite-min 20",
+            "timeout": 20
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/provenance_gmah_cible.py\"",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Skill|Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/supervision/log_usage.py\"",
+            "timeout": 30,
+            "statusMessage": "Journal usage agents..."
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "disableBypassPermissionsMode": "disable",
+    "deny": [
+      "Read(./.env)",
+      "Read(./secrets/**)",
+      "Read(./config/credentials.json)",
+      "Read(./.env.*)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/secrets/**)",
+      "Read(**/credentials.json)",
+      "Bash(env)",
+      "Bash(git config:*)",
+      "PowerShell(Get-ChildItem Env:*)"
+    ],
+    "allow": [
+      "Bash(py -m pytest *)",
+      "Bash(py -m py_compile *)",
+      "Bash(node -c *)",
+      "Bash(npm test*)"
+    ]
+  }
+}

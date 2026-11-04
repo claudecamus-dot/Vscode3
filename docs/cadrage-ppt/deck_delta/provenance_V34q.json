@@ -1,0 +1,47 @@
+[
+  {
+    "slide_titre": "De la douleur au produit : une mission pilote de bout en bout",
+    "fichier_source": "Slides préformatées OCTO.pptx",
+    "n_slide_source": 203,
+    "crop": [
+      90,
+      218,
+      1600,
+      1030
+    ],
+    "rendu_px": "2560x1440 (PowerPoint COM, lecture seule)",
+    "client_nom_visible": "non",
+    "donnees_client_visibles": "non",
+    "remarque": "La démarche de réalisation d'un produit en 3 grandes phases : recadré sur Discovery + Delivery (sans titre, tag « A adapter à sa situation », numéro de page, copyright vertical). Bibliothèque OCTO générique."
+  },
+  {
+    "slide_titre": "Exemples de livrables (1/2) : comprendre et décider",
+    "fichier_source": "Slides préformatées OCTO.pptx",
+    "n_slide_source": 215,
+    "crop": [
+      600,
+      140,
+      1330,
+      1250
+    ],
+    "rendu_px": "2560x1440 (PowerPoint COM, lecture seule)",
+    "client_nom_visible": "non",
+    "donnees_client_visibles": "non",
+    "remarque": "« Priorisation » (matrice gains / confiance-effort) : crop de la matrice et de ses axes, sans titre ni chrome. Bibliothèque OCTO générique."
+  },
+  {
+    "slide_titre": "Exemples de livrables (2/2) : piloter et ancrer",
+    "fichier_source": "Slides préformatées OCTO.pptx",
+    "n_slide_source": 202,
+    "crop": [
+      147,
+      326,
+      1517,
+      1050
+    ],
+    "rendu_px": "2560x1440 (PowerPoint COM, lecture seule)",
+    "client_nom_visible": "non",
+    "donnees_client_visibles": "non",
+    "remarque": "« Roadmap multi-stream » : crop des streams et des features, SANS l'axe des trimestres (« Q1 2025 », dates exclues) ni le titre. Bibliothèque OCTO générique, libellés Feat 1..5 factices."
+  }
+]

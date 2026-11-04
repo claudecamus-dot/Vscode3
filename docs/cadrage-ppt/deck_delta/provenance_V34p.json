@@ -1,0 +1,12 @@
+[
+  {
+    "slide_titre": "Un planning hypothétique en trois phases, avant tout chiffrage",
+    "fichier_source": "C:/Users/claude.camus/Downloads/Slides préformatées OCTO.pptx",
+    "n_slide_source": 133,
+    "crop": [154, 311, 1012, 405],
+    "rendu_px": [2560, 1440],
+    "client_nom_visible": "non",
+    "donnees_client_visibles": "non",
+    "remarque": "Slide « Rétroplanning » de la bibliothèque OCTO, recadrée sur les phases Cadrage et Conception et leurs deux premières lignes d'activités (x 154-1166, y 311-716 px). Écartés : la légende, les étiquettes de durée (1 mois / 3 mois), les lignes de validation qui nomment un client, et la ligne d'activités qui cite un service nommé. Sous-ensemble relu à 2560 px : aucun nom, logo ni chiffre. Image : C:/tmp/deck-v34-p/encart_retro.png (1012x405, 33 Ko), à copier à côté du delta sous le nom encart_retro_V34p.png avant le run fusionné."
+  }
+]

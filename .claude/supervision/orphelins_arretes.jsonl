@@ -35,3 +35,12 @@
 {"ts": "2026-10-30T16:53:23+00:00", "nom": "git.exe", "age_min": 39, "pid": 7580, "resultat": "arrete", "sous_cmd": "rev-list", "parent": "mort"}
 {"ts": "2026-11-02T11:45:57+00:00", "nom": "git.exe", "age_min": 49, "pid": 32776, "resultat": "arrete", "sous_cmd": "rev-list", "parent": "mort"}
 {"ts": "2026-11-02T13:48:42+00:00", "nom": "git.exe", "age_min": 30, "pid": 37860, "resultat": "arrete", "sous_cmd": "log", "parent": "mort"}
+{"ts": "2026-11-03T10:39:34+00:00", "nom": "python.exe", "age_min": 31, "pid": 8952, "resultat": "arrete"}
+{"ts": "2026-11-03T13:32:04+00:00", "nom": "python.exe", "age_min": 33, "pid": 35936, "resultat": "arrete"}
+{"ts": "2026-11-03T14:36:42+00:00", "nom": "python.exe", "age_min": 33, "pid": 38244, "resultat": "arrete"}
+{"ts": "2026-11-03T16:05:46+00:00", "nom": "git.exe", "age_min": 30, "pid": 5348, "resultat": "arrete", "sous_cmd": "cat-file", "parent": "mort"}
+{"ts": "2026-11-03T17:25:44+00:00", "nom": "git.exe", "age_min": 57, "pid": 38304, "resultat": "arrete", "sous_cmd": "status", "parent": "mort"}
+{"ts": "2026-11-03T19:57:19+00:00", "nom": "git.exe", "age_min": 35, "pid": 24692, "resultat": "arrete", "sous_cmd": "log", "parent": "mort"}
+{"ts": "2026-11-04T10:34:19+00:00", "nom": "git.exe", "age_min": 38, "pid": 31136, "resultat": "arrete", "sous_cmd": "symbolic-ref", "parent": "mort"}
+{"ts": "2026-11-04T10:34:21+00:00", "nom": "git.exe", "age_min": 36, "pid": 35048, "resultat": "arrete", "sous_cmd": "rev-list", "parent": "mort"}
+{"ts": "2026-11-04T10:34:22+00:00", "nom": "python.exe", "age_min": 36, "pid": 46932, "resultat": "arrete"}
