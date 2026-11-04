@@ -113,7 +113,7 @@ def declaration(texte):
 
 
 def _maintenant():
-    return datetime.datetime.now(datetime.timezone.utc)
+    return datetime.datetime.now(datetime.UTC)
 
 
 def _chemin_registre():
