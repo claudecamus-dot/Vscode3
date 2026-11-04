@@ -14,16 +14,32 @@ reecriture du prompt. Le bloc s'ouvre par une ligne exactement
 `FIN DONNEES NON FIABLES` ou, a defaut, jusqu'a la fin du prompt : mettre les instructions
 d'abord, le rapport relaye en dernier.
 
+Story 14.22 : toute chaine atteignable dans ces champs (listes, objets imbriques, cles
+comprises) est inspectee ; la regle de bloc vaut DANS un meme element chaine (une ouverture ne
+couvre aucun autre element) ; au-dela de
+20 niveaux ou 10 000 noeuds, refus (une imbrication non inspectable ne doit pas etre un
+contournement). Une simple MENTION passe : un span inline a backticks simples dont le contenu
+n'est QUE le marqueur ; un span plus long, un bloc clos, des guillemets ou le texte nu restent
+un relais. Les caracteres de format sont retires et le texte normalise (NFKC, tirets) avant la recherche.
+
 Limites HONNETES : detection par MARQUEURS, pas par sens - un rapport paraphrase, resume ou
 recopie sans ses marqueurs passe ; un orchestrateur de mauvaise foi peut ouvrir le bloc pour
 faire passer des instructions (le bloc ne neutralise rien, il rend le relais visible et
-auditable) ; le hook ne voit que les outils Agent et SendMessage. Fail-open integral : entree
-illisible, outil different, texte absent -> exit 0 (sauf absence totale de stdin : refus
-prudent du regime commun des gardes).
+auditable) ; des homoglyphes (cyrillique) ou un backtick insere DANS le marqueur le font
+passer (pas de translitteration) ; un span a backticks seul en tete de ligne suivi de texte
+(`M` : explication) passe comme mention, meme si ce texte est un ordre ; les champs
+`description`/`summary` ne font pas partie de CHAMPS ; un dict propre de ~6 000 cles est
+refuse par la borne de noeuds (cles comptees) ; le hook ne voit que les outils Agent et SendMessage.
+Fail-open integral sur : entree illisible (JSON mal forme), outil different, texte absent -> exit 0
+(sauf absence totale de stdin : refus prudent du regime commun des gardes). DEUX refus sur
+entree VALIDE, exception acceptee a D31 (arbitrage utilisateur 2026-11-04, story:14.22, option
+A) : une imbrication au-dela de 20 niveaux ou 10 000 noeuds, et une imbrication au-dela de la
+limite de recursion de json.loads (RecursionError).
 """
 import json
 import re
 import sys
+import unicodedata
 
 for _flux, _enc in ((sys.stdin, "utf-8-sig"), (sys.stdout, "utf-8"), (sys.stderr, "utf-8")):
     if hasattr(_flux, "reconfigure"):
@@ -35,12 +51,70 @@ MARQUEURS = re.compile(
     r"\[\s*subagent\s+hand-?back\s*\]|\bsubagent\s+hand-?back\b|\bagent-message\s+from\b"
     r"|<\s*task-notification\b", re.I)
 CHAMPS = ("prompt", "message", "content")
+# Story 14.22 (D2): a MENTION is a single-backtick inline span whose trimmed content is
+# NOTHING BUT a marker; any longer span, a fenced block, quotes or plain text still relay.
+SPAN = re.compile(r"(?<!`)`([^`\n]+)`(?!`)")
+# Format characters (every Unicode category "Cf" and "Mn", plus U+034F and U+180E) are dropped before
+# matching: they would split a marker. So are the blank fillers (Hangul U+115F, U+1160, U+3164,
+# U+FFA0, braille U+2800), letters by category but invisible. Then NFKC and the dash class mapped to "-".
+_SANS = {0x034F, 0x180E, 0x115F, 0x1160, 0x2800, 0x3164, 0xFFA0}
+_TIRETS = {0x2212}
+
+
+def normaliser(texte):
+    t = "".join(c for c in texte
+                if ord(c) not in _SANS and unicodedata.category(c) not in ("Cf", "Mn"))
+    t = unicodedata.normalize("NFKC", t)
+    return "".join("-" if (unicodedata.category(c) == "Pd" or ord(c) in _TIRETS) else c
+                   for c in t)
+
+
+# Story 14.22 (D1): every string reachable in a field is scanned, bounded walk.
+PROFONDEUR_MAX, NOEUDS_MAX = 20, 10_000
+
+
+class HorsBorne(Exception):
+    """Nested value beyond PROFONDEUR_MAX / NOEUDS_MAX: treated as carrying a marker."""
+
+
+def textes(valeur):
+    """Every string (dict keys included) reachable in ``valeur``, in order; iterative walk.
+    Beyond the bound -> HorsBorne (refused: unreadable nesting must not be a bypass)."""
+    sortie, pile, noeuds = [], [(valeur, 0)], 0
+    while pile:
+        v, prof = pile.pop()
+        noeuds += 1
+        if noeuds > NOEUDS_MAX or prof > PROFONDEUR_MAX:
+            raise HorsBorne
+        if isinstance(v, str):
+            sortie.append(v)
+        elif isinstance(v, dict):
+            enfants = [x for kv in v.items() for x in kv]
+            pile += [(x, prof + 1) for x in reversed(enfants)]
+        elif isinstance(v, list):
+            pile += [(x, prof + 1) for x in reversed(v)]
+    return sortie
+
+
+# A line made of NOTHING but the backticked marker (optional bullet) is not a mention: the
+# report body follows on the next lines (T2 review, P2).
+LIGNE_SPAN = re.compile(r"^\s*(?:[-*]\s+)?`([^`\n]+)`\s*$")
+
+
+def _sans_mention(ligne):
+    m = LIGNE_SPAN.match(ligne)
+    if m and MARQUEURS.fullmatch(m.group(1).strip()):
+        return ligne
+    return SPAN.sub(lambda m: "" if MARQUEURS.fullmatch(m.group(1).strip()) else m.group(0),
+                    ligne)
 
 
 def hors_bloc(texte):
     """Les lignes (numero, extrait) qui portent un marqueur en dehors d'un bloc ouvert."""
     dedans, trouves = False, []
-    for i, ligne in enumerate((texte or "").split("\n"), 1):
+    # matching on the normalised copy; the reported excerpt is the ORIGINAL line
+    for i, brute in enumerate((texte or "").split("\n"), 1):
+        ligne = normaliser(brute)
         s = ligne.strip()
         if s == OUVERTURE:
             dedans = True
@@ -48,8 +122,8 @@ def hors_bloc(texte):
         if s == FERMETURE:
             dedans = False
             continue
-        if not dedans and MARQUEURS.search(ligne):
-            trouves.append((i, " ".join(ligne.split())[:120]))
+        if not dedans and MARQUEURS.search(_sans_mention(ligne)):
+            trouves.append((i, " ".join(brute.split())[:120]))
     return trouves
 
 
@@ -62,9 +136,14 @@ def evaluer(data):
         return None
     fautes = []
     for champ in CHAMPS:
-        v = entree.get(champ)
-        if isinstance(v, str):
-            fautes += [(champ, i, e) for i, e in hors_bloc(v)]
+        try:
+            morceaux = textes(entree.get(champ))
+        except HorsBorne:
+            return (f"Champ `{champ}` imbrique au-dela de la borne ({PROFONDEUR_MAX} niveaux / "
+                    f"{NOEUDS_MAX} noeuds) : non inspectable, refuse. Envoie un texte simple.")
+        # one block state PER string element: an opener in one element covers no other
+        for morceau in morceaux:
+            fautes += [(champ, i, e) for i, e in hors_bloc(morceau)]
     if not fautes:
         return None
     detail = "; ".join(f"{c} ligne {i}: {e!r}" for c, i, e in fautes[:3])
@@ -173,7 +252,15 @@ def main() -> None:
     try:
         brut = _stdin_ou_refus()
         data = json.loads(brut.decode("utf-8", "replace") if isinstance(brut, bytes) else brut)
-    except Exception:   # noqa: BLE001 - fail-open
+    except RecursionError:  # nesting past the decoder's limit: not inspectable, refused
+        print(json.dumps({"hookSpecificOutput": {
+            "hookEventName": "PreToolUse",
+            "permissionDecision": "deny",
+            "permissionDecisionReason": (
+                "Entree JSON imbriquee au-dela de la borne de recursion du decodeur: "
+                "non inspectable, refuse. Envoie un texte simple.")}}))
+        sys.exit(0)
+    except Exception:   # noqa: BLE001 - fail-open (malformed input, D31 unchanged)
         sys.exit(0)
     try:
         raison = evaluer(data)
