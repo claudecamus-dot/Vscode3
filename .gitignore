@@ -72,6 +72,9 @@ docs/imports/clients/*.pdf
 .claude/supervision/diagnostic.json
 .claude/orchestration/runs.jsonl
 .claude/orchestration/routing-hints.json
+# Registre runtime de guard_perimetres_actifs.py / liberer_perimetres.py (story 14.14)
+# et ses .lock/.tmp - etat en vol, jamais versionne (le hub l'exclut via .git/info/exclude).
+.claude/orchestration/perimetres_actifs.json*
 
 # Log crashpad (Chromium/VSCode) depose a la racine par l'IDE - bruit, pas du
 # contenu du projet.

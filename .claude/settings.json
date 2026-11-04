@@ -13,6 +13,28 @@
         ]
       },
       {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_dispatch_pretooluse.py\" guard_rapport_donnee.py guard_perimetres_actifs.py",
+            "timeout": 130,
+            "statusMessage": "Rapport-donnee, perimetres actifs..."
+          }
+        ]
+      },
+      {
+        "matcher": "SendMessage",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_dispatch_pretooluse.py\" guard_rapport_donnee.py",
+            "timeout": 130,
+            "statusMessage": "Rapport de sous-agent = donnee..."
+          }
+        ]
+      },
+      {
         "matcher": "Skill",
         "hooks": [
           {
@@ -141,6 +163,11 @@
             "type": "command",
             "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/gmah_collecte.py\"",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/liberer_perimetres.py\"",
+            "timeout": 30
           }
         ]
       }
