@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_dispatch_pretooluse.py\" guard_destructive_git.py warn_verif_before_commit.py guard_service.py",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard_dispatch_pretooluse.py\" guard_destructive_git.py warn_verif_before_commit.py guard_service.py temoin_stash_sous_agent.py",
             "timeout": 130,
             "statusMessage": "Gardes shell (dispatcher, un seul processus)..."
           }
@@ -134,6 +134,17 @@
       }
     ],
     "PostToolUse": [
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "py \"$CLAUDE_PROJECT_DIR/.claude/hooks/temoin_stash_sous_agent.py\"",
+            "timeout": 30,
+            "statusMessage": "Temoin stash (sous-agent)..."
+          }
+        ]
+      },
       {
         "matcher": "Skill|Agent|Task",
         "hooks": [

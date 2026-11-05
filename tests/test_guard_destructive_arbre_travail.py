@@ -1,24 +1,32 @@
 """Le volet ARBRE du garde-fou git, backporté de VSCode2 le 2026-09-07.
 
-`guard_destructive_git.py` bloquait deja `push --force`/`reset --hard` (HISTORIQUE) et
-la lecture de chemins proteges. Un incident reel du 2026-09-02 (VSCode2) a montre la
-classe manquante : les commandes qui ecrasent le travail non commite d'un fichier dans
-l'ARBRE (`git checkout -- <chemin>`, `git restore <chemin>`, `git clean -f`,
-`git stash drop/clear`). VSCode2 avait ecrit le correctif sans test — ce fichier ferme
-ce trou ici, en plus des defenses deja propres a ce depot (protected-path reads,
-indirection) verifiees par `test_guard_destructive_git.py`.
+`guard_destructive_git.py` ne connaissait que deux commandes qui touchent
+l'HISTORIQUE (`push --force`, `reset --hard`). Un incident réel du 2026-09-02 (VSCode2) a
+montré la classe manquante : les commandes qui écrasent le travail non commité d'un
+fichier dans l'ARBRE (`git checkout -- <chemin>`, `git restore <chemin>`, `git clean -f`,
+`git stash drop/clear`). VSCode2 avait écrit le correctif sans test — ce fichier ferme ce
+trou pour la version canon.
 
-Chaque cas est verifie par le CHEMIN REEL (stdin JSON, stdout JSON), plus un controle
-par EFFET REEL sur un depot jetable pour `checkout --`.
+Chaque cas est vérifié par le CHEMIN RÉEL (stdin JSON, stdout JSON), plus un contrôle par
+EFFET RÉEL sur un dépôt jetable pour `checkout --` : sans ça on bloquerait une syntaxe sur
+la foi d'un raisonnement, pas d'une preuve (même discipline que
+`test_guard_destructive_contournements.py`).
 """
 
+import importlib.util
 import json
 import os
 import subprocess
 import sys
 
-HOOK = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                     ".claude", "hooks", "guard_destructive_git.py")
+import pytest
+
+HUB = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+HOOK = os.path.join(HUB, ".claude", "hooks", "guard_destructive_git.py")
+
+_spec = importlib.util.spec_from_file_location("guard_test_arbre", HOOK)
+guard = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(guard)
 
 
 def _bloque(commande, cwd=None):
@@ -119,6 +127,8 @@ class TestCommandesInoffensivesToujoursAutorisees:
         assert not _bloque("git show HEAD:f.txt", cwd=tmp_path)
 
 
+# Kept from VSCode3's own copy (not in the hub version): its protected-path
+# reads must not fire on ordinary worktree commands.
 class TestNInterfereJamaisAvecLesDefensesExistantes:
     """Les defenses lecture-protegee/indirection de ce depot ne doivent pas
     se declencher sur les commandes worktree ordinaires."""
@@ -223,7 +233,10 @@ class TestCorrectifsMineursRevue20260907:
         assert not _bloque("git worktree list", cwd=tmp_path)
 
 
-def _bloque_payload(commande, extra, cwd=None):
+def _reponse(commande, extra, cwd=None):
+    """Production path (subprocess, JSON on stdin, no -X utf8) with extra
+    PreToolUse fields (`agent_id`, `agent_type`, `transcript_path`) merged
+    into the payload. Returns the hook's stdout."""
     env = dict(os.environ)
     if cwd is not None:
         env["CLAUDE_PROJECT_DIR"] = str(cwd)
@@ -233,26 +246,101 @@ def _bloque_payload(commande, extra, cwd=None):
         [sys.executable, HOOK], input=json.dumps(charge), capture_output=True,
         text=True, encoding="utf-8", cwd=str(cwd) if cwd is not None else None, env=env)
     assert r.returncode == 0 and not r.stderr, (r.returncode, r.stderr)
-    return "deny" in r.stdout
+    return r.stdout
+
+
+def _bloque_payload(commande, extra, cwd=None):
+    return "deny" in _reponse(commande, extra, cwd)
+
+
+def _refus_sous_agent(commande, extra, cwd=None):
+    """True only when the refusal is the SUB-AGENT stash rule: another rule
+    denying the same command (wrapper fallback, `-EncodedCommand`...) must
+    not make a forwarding test pass."""
+    sortie = _reponse(commande, extra, cwd)
+    if "deny" not in sortie:
+        return False
+    raison = json.loads(sortie)["hookSpecificOutput"]["permissionDecisionReason"]
+    return "pour un sous-agent" in raison
+
+
+_SIGNAUX = ({"agent_id": "a1b2c3"}, {"agent_type": "ppt-designer"},
+            {"transcript_path": "/x/s/subagents/agent-a1.jsonl"},
+            {"transcript_path": r"x\s\subagents\agent-a1.jsonl"})
+_SOUS_AGENT = {"agent_id": "a1"}
 
 
 class TestStashSousAgent:
-    """Incident 2026-11-04 (repete) : un sous-agent a lance `git stash` puis
-    `git stash pop`. La session principale garde ses stash ; le sous-agent non."""
+    """Incident 2026-11-04 (VSCode3, repete) : un sous-agent a lance `git stash`
+    puis `git stash pop` « pour comparer a HEAD ». La session principale garde
+    ses stash ; le sous-agent ne garde que la lecture (`list`, `show`)."""
 
-    SIGNAUX = ({"agent_id": "a1b2c3"}, {"agent_type": "ppt-designer"},
-               {"transcript_path": "C:/x/s/subagents/agent-a1.jsonl"})
+    @pytest.mark.parametrize("sig", _SIGNAUX, ids=["agent_id", "agent_type", "tp_slash",
+                                                   "tp_antislash"])
+    @pytest.mark.parametrize("cmd", ["git stash", "git stash push -u", "git stash pop",
+                                     "git stash apply", "git stash save wip",
+                                     "git -C . stash pop"])
+    def test_stash_bloque_en_sous_agent(self, tmp_path, cmd, sig):
+        assert _refus_sous_agent(cmd, sig, cwd=tmp_path), (cmd, sig)
 
-    def test_stash_nu_push_pop_apply_bloques_en_sous_agent(self, tmp_path):
-        for sig in self.SIGNAUX:
-            for cmd in ("git stash", "git stash push -u", "git stash pop",
-                        "git stash apply", "git stash save wip", "git -C . stash pop"):
-                assert _bloque_payload(cmd, sig, cwd=tmp_path), (cmd, sig)
+    @pytest.mark.parametrize("cmd", ["git stash list", "git stash show -p",
+                                     "git stash show --stat", "git -C . stash list"])
+    def test_stash_lecture_reste_permis_en_sous_agent(self, tmp_path, cmd):
+        assert not _bloque_payload(cmd, _SOUS_AGENT, cwd=tmp_path), cmd
 
-    def test_stash_lecture_reste_permis_en_sous_agent(self, tmp_path):
-        for cmd in ("git stash list", "git stash show -p"):
-            assert not _bloque_payload(cmd, {"agent_id": "a1"}, cwd=tmp_path), cmd
+    @pytest.mark.parametrize("extra", [
+        {}, {"agent_id": ""}, {"agent_type": ""}, {"agent_id": "", "agent_type": ""},
+        {"transcript_path": "/x/s/main.jsonl"},
+        {"transcript_path": "/x/mysubagents/a.jsonl"},
+        {"transcript_path": "/x/subagentsx/a.jsonl"},
+    ], ids=["vide", "agent_id_vide", "agent_type_vide", "deux_vides", "tp_principal",
+            "tp_mysubagents", "tp_subagentsx"])
+    @pytest.mark.parametrize("cmd", ["git stash", "git stash pop", "git stash push -u"])
+    def test_session_principale_inchangee(self, tmp_path, cmd, extra):
+        assert not _bloque_payload(cmd, extra, cwd=tmp_path), (cmd, extra)
 
-    def test_session_principale_inchangee(self, tmp_path):
-        assert not _bloque_payload("git stash pop", {}, cwd=tmp_path)
-        assert not _bloque_payload("git stash push -u", {"agent_id": ""}, cwd=tmp_path)
+    @pytest.mark.parametrize("cmd", [
+        "git stash -p",                       # patch mode, no sub-command
+        "git -c a=b stash apply",             # global option with a value
+        "git --git-dir=x stash push",
+        "git --git-dir x stash push",
+        "cd x && git stash",                  # chained
+        "git status; git stash pop",
+        "git stash create",
+        "git stash store abc123",
+        "git stash -m list",                  # a push whose message is "list"
+    ])
+    def test_contournements_directs(self, tmp_path, cmd):
+        assert _refus_sous_agent(cmd, _SOUS_AGENT, cwd=tmp_path), cmd
+
+    # One case per forwarding path of the `sous_agent` flag, each asserting the
+    # refusal comes from the sub-agent rule (review T2, voice 3, 2026-11-05).
+    @pytest.mark.parametrize("cmd", [
+        # `_commande_interne` only (not in _WRAPPERS): indirection payload
+        'cmd /c "git stash pop"',
+        'powershell -Command "git stash pop"',
+        "iex 'git stash pop'",
+        # both paths
+        "sh -c 'git stash pop'",
+        'bash -c "git stash pop"',
+        'eval "git stash"',
+        # `_WRAPPERS` (`candidat`) only
+        "env git stash",
+        "sudo git stash pop",
+        "& git stash pop",
+        # alias expansion inside `_analyser`
+        "alias g=git; g stash pop",
+        # `$(...)` and backtick bodies
+        "echo $(git stash pop)",
+        "echo `git stash pop`",
+    ], ids=["cmd_c", "powershell_command", "iex", "sh_c", "bash_c", "eval", "env",
+            "sudo", "call_operator", "alias", "dollar_paren", "backtick"])
+    def test_drapeau_transmis_par_chaque_chemin(self, tmp_path, cmd):
+        assert _refus_sous_agent(cmd, _SOUS_AGENT, cwd=tmp_path), cmd
+
+    def test_drapeau_explicite_sans_etat_global(self):
+        # Direct importers of `_analyser` get the main-session behaviour by
+        # default and the sub-agent one only when they ask for it.
+        assert guard._analyser("git stash pop") is None
+        assert guard._analyser("git stash pop", sous_agent=True)
+        assert guard._analyser("git stash pop") is None
