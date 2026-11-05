@@ -88,6 +88,9 @@ au plus (estimation non mesurée) ; chemins, commandes et noms de processus rest
 - **Lancer `entretien_poste.py --appliquer`** sans arbitrage : il supprime des dossiers, le
   geste doit venir de l'utilisateur après lecture de ta proposition.
 - **`git add`, `git commit`, `git push`, `git reset`** — le périmètre du commit n'est pas le tien.
+- **`git stash` (toute forme : push, pop, apply, drop)**, `git checkout -- <fichier>`,
+  `git restore`, `git clean -f` : ils réécrivent l'arbre de travail, qui porte souvent le
+  travail non commité d'une autre session. Lecture seule : `git status`, `git stash list`.
 
 ## Contrat de sortie
 

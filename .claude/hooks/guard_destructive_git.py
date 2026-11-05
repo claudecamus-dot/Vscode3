@@ -7,7 +7,8 @@ Bloque trois familles de commandes :
    ses abreviations non ambigues (`--har`, `--h`) ;
 2. l'ARBRE : les commandes qui ecrasent le travail non commite d'un fichier
    (`git checkout -- <chemin>`, `git restore <chemin>`, `git clean -f`,
-   `git stash drop/clear`, `git rm -f`, `git worktree remove --force`) ;
+   `git stash drop/clear`, `git rm -f`, `git worktree remove --force`) ; et,
+   pour un SOUS-AGENT seulement, tout `git stash` hors `list`/`show` ;
 3. la LECTURE des chemins proteges (`.env`, `secrets/**`,
    `config/credentials.json`) — miroir des deny rules `Read(...)` de
    `.claude/settings.json`, qui ne couvrent QUE l'outil `Read` : cote shell,
@@ -69,6 +70,21 @@ import os
 import re
 import shlex
 import sys
+
+# Vrai seulement quand l'appel vient d'un SOUS-AGENT (voir `_contexte_sous_agent`) :
+# `git stash` y est interdit sauf lecture (`list`, `show`). Pose par main().
+_EN_SOUS_AGENT = False
+
+
+def _contexte_sous_agent(data: dict) -> bool:
+    """Memes deux signaux que guard_service.contexte_sous_agent : `agent_id` /
+    `agent_type` (documentes comme presents uniquement dans un sous-agent) ou un
+    `transcript_path` sous `/subagents/`."""
+    if data.get("agent_id") or data.get("agent_type"):
+        return True
+    tp = str(data.get("transcript_path") or "").replace("\\", "/")
+    return "/subagents/" in tp
+
 
 _HEREDOC_START = re.compile(r"<<-?\s*(['\"]?)(\w+)\1")
 
@@ -808,6 +824,19 @@ def _blocked_worktree(tokens_apres_git: list, rest: list):
                 "supprimée n'est plus récupérable par aucune commande ordinaire. "
                 "Confirmez avec l'utilisateur."
             )
+        if _EN_SOUS_AGENT and stash_sous_commande not in ("list", "show"):
+            # Incident repete (2026-11-04, ppt-designer) : un sous-agent a lance
+            # `git stash` puis `git stash pop` « pour comparer a HEAD ». Le pop
+            # n'est pas une annulation : l'arbre porte le travail non commite
+            # d'autres sessions, et la paire le reecrit ou le melange. Un
+            # sous-agent lit (`git show HEAD:<chemin>`), il ne range pas l'arbre.
+            return (
+                "git stash est bloqué pour un sous-agent par un hook projet : la paire "
+                "stash/pop réécrit l'arbre de travail, qui porte le travail non commité "
+                "d'autres sessions. Lisez l'ancien état avec `git show HEAD:<chemin>` ou "
+                "copiez le fichier sous C:/tmp/, et rendez la main à la session principale "
+                "si un stash semble nécessaire."
+            )
         return None
 
     if sous_commande == "rm":
@@ -1005,6 +1034,8 @@ def main() -> None:
         _refus_prudent("command n'est pas une chaine", "payload-malforme")
     cmd = _strip_heredocs(cmd)
 
+    global _EN_SOUS_AGENT
+    _EN_SOUS_AGENT = _contexte_sous_agent(data)
     blocked = _analyser(cmd)
 
     if blocked:

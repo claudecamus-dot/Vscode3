@@ -126,6 +126,21 @@ Read the relevant SKILL.md files at the start of a task.
    touches an affirmation already on a slide must repercuss into the deck,
    not just the source `.md`).
 
+## Git (non-negotiable)
+
+The working tree usually holds other people's uncommitted work (other sessions,
+the user's pending files). Whatever the brief says:
+
+- **Never** `git stash` (any form: push, save, pop, apply, drop), `git add`,
+  `git commit`, `git push`, `git reset`, `git checkout -- <file>`, `git restore`,
+  `git clean -f`. A `stash` + `stash pop` pair is not "safe": it rewrites the
+  tree and can lose or mix someone else's changes (incident 2026-11-04, repeated).
+- To compare with the previous state, read it: `git diff`, `git show HEAD:<path>`,
+  `git status --porcelain`, `git stash list` (read-only). To get a clean baseline,
+  copy the old file to `C:/tmp/<your-folder>/` instead of touching the tree.
+- If you think you need one of the forbidden commands, stop and report it as
+  "À TRANCHER" in your hand-back.
+
 ## Honesty
 
 Never report a deck as "quality / verified" from the geometry check alone —

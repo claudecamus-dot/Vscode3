@@ -221,3 +221,38 @@ class TestCorrectifsMineursRevue20260907:
 
     def test_worktree_list_reste_autorise(self, tmp_path):
         assert not _bloque("git worktree list", cwd=tmp_path)
+
+
+def _bloque_payload(commande, extra, cwd=None):
+    env = dict(os.environ)
+    if cwd is not None:
+        env["CLAUDE_PROJECT_DIR"] = str(cwd)
+    charge = {"tool_input": {"command": commande}}
+    charge.update(extra)
+    r = subprocess.run(
+        [sys.executable, HOOK], input=json.dumps(charge), capture_output=True,
+        text=True, encoding="utf-8", cwd=str(cwd) if cwd is not None else None, env=env)
+    assert r.returncode == 0 and not r.stderr, (r.returncode, r.stderr)
+    return "deny" in r.stdout
+
+
+class TestStashSousAgent:
+    """Incident 2026-11-04 (repete) : un sous-agent a lance `git stash` puis
+    `git stash pop`. La session principale garde ses stash ; le sous-agent non."""
+
+    SIGNAUX = ({"agent_id": "a1b2c3"}, {"agent_type": "ppt-designer"},
+               {"transcript_path": "C:/x/s/subagents/agent-a1.jsonl"})
+
+    def test_stash_nu_push_pop_apply_bloques_en_sous_agent(self, tmp_path):
+        for sig in self.SIGNAUX:
+            for cmd in ("git stash", "git stash push -u", "git stash pop",
+                        "git stash apply", "git stash save wip", "git -C . stash pop"):
+                assert _bloque_payload(cmd, sig, cwd=tmp_path), (cmd, sig)
+
+    def test_stash_lecture_reste_permis_en_sous_agent(self, tmp_path):
+        for cmd in ("git stash list", "git stash show -p"):
+            assert not _bloque_payload(cmd, {"agent_id": "a1"}, cwd=tmp_path), cmd
+
+    def test_session_principale_inchangee(self, tmp_path):
+        assert not _bloque_payload("git stash pop", {}, cwd=tmp_path)
+        assert not _bloque_payload("git stash push -u", {"agent_id": ""}, cwd=tmp_path)
