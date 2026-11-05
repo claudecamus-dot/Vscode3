@@ -572,6 +572,74 @@ def _sans_ombre(shape):
         print(f"[generate_deck] ombre non desactivee : {exc}", file=sys.stderr)
 
 
+# --- v2.47 (captures de référence OCTO du 2026-11-04) : formes à onglet. Rayon
+# de coin = RAYON_COIN_IN (le rayon unique du deck), exprimé en fraction du
+# petit côté pour l'ajustement de la forme. Seules les FORMES des captures sont
+# reprises, jamais leur texte.
+def _coin(w, h, r=None):
+    return min(0.5, (RAYON_COIN_IN if r is None else r) / min(w, h))
+
+
+def _onglet(s, x, y, w, h, fill=WHITE, line=NAVY, line_w=1.0, bas=False):
+    """Carte à deux grands coins arrondis du MÊME côté (round2SameRect) :
+    haut par défaut, bas si `bas`."""
+    shp = s.shapes.add_shape(MSO_SHAPE.ROUND_2_SAME_RECTANGLE, Inches(x), Inches(y),
+                             Inches(w), Inches(h))
+    _sans_ombre(shp)
+    a = _coin(w, h)
+    shp.adjustments[0] = 0 if bas else a
+    shp.adjustments[1] = a if bas else 0
+    if fill is None:
+        shp.fill.background()
+    else:
+        shp.fill.solid()
+        shp.fill.fore_color.rgb = _rgb(fill)
+    shp.line.color.rgb = _rgb(line)
+    shp.line.width = Pt(line_w)
+    return shp
+
+
+def _diag(s, x, y, w, h, fill=WHITE, line=NAVY, line_w=1.0, autre=False):
+    """Carte à deux grands coins arrondis en DIAGONALE (round2DiagRect) :
+    haut-gauche + bas-droit, ou l'autre diagonale si `autre`."""
+    shp = s.shapes.add_shape(MSO_SHAPE.ROUND_2_DIAG_RECTANGLE, Inches(x), Inches(y),
+                             Inches(w), Inches(h))
+    _sans_ombre(shp)
+    a = _coin(w, h)
+    shp.adjustments[0] = 0 if autre else a
+    shp.adjustments[1] = a if autre else 0
+    shp.fill.solid()
+    shp.fill.fore_color.rgb = _rgb(fill)
+    shp.line.color.rgb = _rgb(line)
+    shp.line.width = Pt(line_w)
+    return shp
+
+
+def _pointille(s, x1, y1, x2, y2, color=MUTED, line_w=0.75):
+    """Séparateur pointillé, vertical ou horizontal : rectangle sans remplissage
+    d'épaisseur quasi nulle (un connecteur de largeur nulle est refusé par le
+    contrôle de géométrie, qui le croit invisible)."""
+    from pptx.enum.dml import MSO_LINE
+    shp = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(x1), Inches(y1),
+                             Inches(max(x2 - x1, 0.004)), Inches(max(y2 - y1, 0.004)))
+    _sans_ombre(shp)
+    shp.fill.background()
+    shp.line.color.rgb = _rgb(color)
+    shp.line.width = Pt(line_w)
+    shp.line.dash_style = MSO_LINE.ROUND_DOT
+    return shp
+
+
+def _pastille(s, cx, cy, d, texte, plein=False, size=13):
+    """Pastille ronde contour navy (à cheval sur le bord d'une carte) portant
+    un numéro ; `plein` = l'unique accent d'une série (aplat navy, chiffre blanc)."""
+    _oval(s, cx - d / 2, cy - d / 2, d, d, fill=NAVY if plein else WHITE, line=NAVY, line_w=1.25)
+    D.add_text(s, cx - d / 2, cy - d / 2, d, d, [
+        (texte, dict(size=size, bold=True, color=WHITE if plein else NAVY,
+                     align=PP_ALIGN.CENTER)),
+    ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
+
+
 def content_slide(prs, kicker, title, color):
     if kicker is None:
         kicker = _CHAPITRE_COURANT[0]
@@ -2101,51 +2169,43 @@ def slide_douleurs(prs):
     # Hauteurs de bloc calées sur le contenu le PLUS long (pas d'étirement par
     # lane) : chaque étape (douleur, signal) partage la même hauteur dans les
     # 4 lanes pour que badges/connecteurs/chips restent alignés horizontalement.
+    # (Refonte v2.47, voir ci-dessous : le flux en lanes devient des colonnes à onglet.)
     n = len(rows)
-    lane_gap = 0.16
-    lane_w = (CONTENT_W - (n - 1) * lane_gap) / n
-    lane_xs = [MARGIN + i * (lane_w + lane_gap) for i in range(n)]
-    pad = 0.06
-    body_w = lane_w - 2 * pad
-
-    lane_top = CONTENT_TOP + 0.44
-    badge_d = 0.5
-    connector_h = 0.16
-    headline_size = 8.5
-    headline_h = 0.34
+    # Capture « colonnes à onglet séparées par des pointillés, pastille ronde à
+    # cheval sur la carte » : quatre onglets d'en-tête contigus (persona), un
+    # corps commun à coins bas arrondis, pointillés entre colonnes.
+    lane_top = CONTENT_TOP + 0.56
+    tab_h = 0.52
+    headline_size = 10
     douleur_size = 9
     douleur_lh = douleur_size * 1.25 / 72.0
     signal_size = 8
     signal_lh = signal_size * 1.2 / 72.0
-
+    lane_w = CONTENT_W / n
+    lane_xs = [MARGIN + i * lane_w for i in range(n)]
+    pad = 0.16
+    body_w = lane_w - 2 * pad
     douleur_lines = max(_lignes(r[2], body_w, douleur_size) for r in rows)
     douleur_h = douleur_lines * douleur_lh + 0.04
     signal_lines = max(_lignes(r[3], body_w, signal_size) for r in rows)
     signal_h = signal_lines * signal_lh + 0.04
-
-    badge_top = lane_top
-    connector_top = badge_top + badge_d
-    headline_top = connector_top + connector_h
-    douleur_top = headline_top + headline_h
-    signal_label_top = douleur_top + douleur_h + 0.10
+    body_top = lane_top + tab_h
+    douleur_top = body_top + 0.16
+    signal_label_top = douleur_top + douleur_h + 0.12
     signal_top = signal_label_top + 0.16
     famille_top = signal_top + signal_h + 0.14
     famille_h = 0.3
-
-    for i, (nom, color, douleur, signal, famille) in enumerate(rows):
+    body_h = famille_top + famille_h + 0.16 - body_top
+    _onglet(s, MARGIN, body_top, CONTENT_W, body_h, bas=True)
+    for i, (nom, _color, douleur, signal, famille) in enumerate(rows):
         x = lane_xs[i]
-        cxm = x + lane_w / 2.0
-        D.add_dot(s, cxm - badge_d / 2, badge_top, badge_d, color)
-        D.add_text(s, x, badge_top, lane_w, badge_d, [
-            (str(i + 1), dict(size=13, bold=True,
-                               color=NAVY if color == ACCENT_PLEIN else "#ffffff",
-                               align=PP_ALIGN.CENTER)),
-        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-        D.add_rect(s, cxm - 0.011, connector_top, 0.022, connector_h, fill=color)
-        D.add_text(s, x, headline_top, lane_w, headline_h, [
-            (nom, dict(size=headline_size, bold=True, color=encre_de(color),
-                       align=PP_ALIGN.CENTER, line_spacing=1.05)),
-        ], anchor=MSO_ANCHOR.TOP, align=PP_ALIGN.CENTER)
+        _onglet(s, x, lane_top, lane_w, tab_h)
+        _pastille(s, x + 0.30, lane_top + 0.02, 0.46, str(i + 1), plein=(i == 0), size=13)
+        D.add_text(s, x + 0.62, lane_top + 0.02, lane_w - 0.72, tab_h, [
+            (nom, dict(size=headline_size, bold=True, color=NAVY, line_spacing=1.0)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+        if i:
+            _pointille(s, x, body_top + 0.14, x, body_top + body_h - 0.14)
         D.add_text(s, x + pad, douleur_top, body_w, douleur_h, [
             (douleur, dict(size=douleur_size, color=NAVY, line_spacing=1.25)),
         ])
@@ -2155,9 +2215,9 @@ def slide_douleurs(prs):
         D.add_text(s, x + pad, signal_top, body_w, signal_h, [
             (signal, dict(size=signal_size, color=MUTED, italic=True, line_spacing=1.2)),
         ])
-        chip(s, x + pad, famille_top, body_w, famille_h, famille, color, size=8)
+        chip(s, x + pad, famille_top, body_w, famille_h, famille, NAVY, size=8)
 
-    note_top = famille_top + famille_h + 0.18
+    note_top = body_top + body_h + 0.18
     note_h = CONTENT_BOTTOM - note_top
     if note_h > 0.3:
         D.add_rect(s, MARGIN, note_top, CONTENT_W, note_h, fill=TRACK, rounded=True, radius=0.14)
@@ -3792,72 +3852,67 @@ _CONVICTION_AGENTIC = (
 )
 
 
-def _frise_convictions(s, items, debut, txt_w, accent_idx, top0):
-    tab_w, tab_h = 0.50, 0.34
-    tab_x = MARGIN
-    fil_x = tab_x + 0.10
-    txt_x = MARGIN + tab_w + 0.30
-    t_size, b_size = 10.5, 9
-
-    def lh(pt, ls):
-        return pt * ls / 72.0
-
-    hauteurs = []
-    for claim, puces in items:
-        h = _lignes(claim, txt_w, t_size) * lh(t_size, 1.15) + 0.05
-        pw = txt_w - (0.16 if len(puces) > 1 else 0)
-        h += sum(_lignes(p, pw, b_size) * lh(b_size, 1.2) + 0.03 for p in puces)
-        hauteurs.append(max(tab_h, h))
-    dispo = CONTENT_BOTTOM - top0
-    gap = min(0.34, (dispo - sum(hauteurs)) / max(1, len(hauteurs) - 1))
-    if gap < 0.10:
-        raise SystemExit(f"convictions : contenu trop haut ({gap:.2f}in d'interligne)")
-    y = top0
-    for i, ((claim, puces), h) in enumerate(zip(items, hauteurs, strict=True)):
-        accent = i == accent_idx
-        onglet = s.shapes.add_shape(MSO_SHAPE.ROUND_2_DIAG_RECTANGLE, Inches(tab_x),
-                                    Inches(y), Inches(tab_w), Inches(tab_h))
-        _sans_ombre(onglet)
-        onglet.fill.solid()
-        onglet.fill.fore_color.rgb = _rgb(NAVY if accent else WHITE)
-        onglet.line.color.rgb = _rgb(NAVY)
-        onglet.line.width = Pt(1.25)
-        D.add_text(s, tab_x, y, tab_w, tab_h, [
-            (f"{debut + i}.", dict(size=12, bold=True, color=WHITE if accent else NAVY,
-                                   align=PP_ALIGN.CENTER)),
-        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-        bas = y + h + gap * 0.45
-        D.add_rect(s, fil_x - 0.008, y + tab_h, 0.016, bas - (y + tab_h), fill=NAVY)
-        _oval(s, fil_x - 0.04, bas - 0.04, 0.08, 0.08, fill=NAVY)
-        paras = [([(claim, dict(size=t_size, bold=True, color=NAVY))], dict(line_spacing=1.15))]
+def _quinconce(s, items, debut, accent_idx, top0, specs, bas_dispo):
+    """Cartes à onglet en deux rangées décalées (capture « Nos convictions »).
+    `specs` = pour chaque carte, (x, largeur, rangée 0|1) : la rangée haute a ses
+    deux coins HAUT arrondis, la basse ses deux coins BAS ; la pastille numérotée
+    est à cheval sur le bord supérieur. Police : la plus grande qui tient dans
+    `bas_dispo` ; hauteur de rangée = contenu le plus long, jamais étirée."""
+    meilleur = None
+    for t_size, b_size in ((12, 10.5), (11.5, 10), (11, 9.5), (10.5, 9), (10, 8.5)):
+        hauteurs = [0.0, 0.0]
+        for (claim, puces), (_x, w, rang) in zip(items, specs, strict=True):
+            tw = w - 0.36
+            h = _lignes(claim, tw, t_size) * t_size * 1.15 / 72 + 0.06
+            h += sum(_lignes(p, tw, b_size) * b_size * 1.2 / 72 + 0.05 for p in puces)
+            hauteurs[rang] = max(hauteurs[rang], h + 0.34 + 0.34)
+        if sum(hauteurs) <= bas_dispo:
+            meilleur = (t_size, b_size, hauteurs)
+            break
+    if meilleur is None:
+        raise SystemExit("convictions : contenu trop haut pour le quinconce")
+    t_size, b_size, hauteurs = meilleur
+    for i, ((claim, puces), (x, w, rang)) in enumerate(zip(items, specs, strict=True)):
+        y = top0 + (hauteurs[0] if rang else 0.0)
+        h = hauteurs[rang]
+        _onglet(s, x, y, w, h, fill=WHITE, line=NAVY, line_w=1.0, bas=bool(rang))
+        paras = [([(claim, dict(size=t_size, bold=True, color=NAVY))],
+                  dict(line_spacing=1.15, align=PP_ALIGN.CENTER))]
         for p in puces:
-            runs = ([("–  ", dict(size=b_size, bold=True, color=NAVY))] if len(puces) > 1 else []) \
-                + [(p, dict(size=b_size, color=MUTED))]
-            paras.append((runs, dict(line_spacing=1.2, space_before=2)))
-        _rich(s, txt_x, y - 0.02, txt_w, h + 0.04, paras, anchor=MSO_ANCHOR.TOP)
-        y += h + gap
+            paras.append(([(p, dict(size=b_size, color=MUTED))],
+                          dict(line_spacing=1.2, space_before=3, align=PP_ALIGN.CENTER)))
+        _rich(s, x + 0.18, y + 0.34, w - 0.36, h - 0.68, paras, anchor=MSO_ANCHOR.MIDDLE)
+        _pastille(s, x + w / 2, y, 0.46, f"{debut + i}.", plein=(i == accent_idx), size=12)
+    return top0 + sum(hauteurs)
 
 
 def slide_convictions(prs):
     s = content_slide(prs, None, "Nos convictions sur votre transformation en mode produit "
                       "(1/2) — les conditions qui favorisent le succès", color=ENCRE)
-    txt_x = MARGIN + 0.50 + 0.30
-    ph_w = 2.30
-    _frise_convictions(s, _CONVICTIONS_1, 1, BORD_DROIT - ph_w - 0.30 - txt_x, 0, CONTENT_TOP + 0.10)
-    _photo_libre(s, "tropical", 0, BORD_DROIT - ph_w, CONTENT_TOP + 0.10, ph_w, 3.90)
+    w, gap = 3.30, 0.15
+    pas = w + gap
+    specs = [(MARGIN, w, 0), (MARGIN + pas, w, 0),
+             (MARGIN + pas / 2, w, 1), (MARGIN + pas / 2 + pas, w, 1)]
+    _quinconce(s, _CONVICTIONS_1, 1, 0, CONTENT_TOP + 0.16, specs,
+               CONTENT_BOTTOM - (CONTENT_TOP + 0.16))
     return s
 
 
 def slide_convictions_2(prs):
-    """Suite de la frise (5 à 7), sans aplat navy : le pavé agentic à droite
-    porte l'unique accent de la slide par un contour épais navy et un filet
-    cyan EN APLAT — jamais un 2e fond navy (charte : un seul accent)."""
+    """Suite des convictions (5 à 7) en quinconce (2 + 1), sans aplat navy : le
+    pavé agentic à droite porte l'unique accent de la slide par un contour épais
+    navy et un filet cyan EN APLAT — jamais un 2e fond navy (charte : un seul
+    accent)."""
     s = content_slide(prs, None, "Nos convictions sur votre transformation en mode produit (2/2)",
                        color=ENCRE)
     pav_w = 3.05
     pav_x = BORD_DROIT - pav_w
-    txt_x = MARGIN + 0.50 + 0.30
-    _frise_convictions(s, _CONVICTIONS_2, 5, pav_x - 0.35 - txt_x, -1, CONTENT_TOP + 0.10)
+    gap = 0.15
+    wl = pav_x - 0.30 - MARGIN
+    w2 = (wl - gap) / 2
+    specs = [(MARGIN, wl, 0), (MARGIN, w2, 1), (MARGIN + w2 + gap, w2, 1)]
+    _quinconce(s, _CONVICTIONS_2, 5, -1, CONTENT_TOP + 0.16, specs,
+               CONTENT_BOTTOM - (CONTENT_TOP + 0.16))
     titre, puces = _CONVICTION_AGENTIC
     top = CONTENT_TOP + 0.10
     h = 2.95   # dimensionné au contenu (étiré, il laissait ~1in de vide)
@@ -4163,31 +4218,29 @@ def slide_familles(prs):
         ("Nommer la famille, c'est déjà pouvoir la détecter, la chiffrer et la prioriser.",
          dict(size=D.TYPE["small"], color=NAVY, italic=True)),
     ])
-    badge = 0.46
-    row_h, row_gap = 0.52, 0.12
-    col_gap = 0.35
-    colw = (CONTENT_W - col_gap) / 2
+    # Capture « grille de 8 cellules à onglet » : 4 × 2 cellules à grands coins
+    # haut arrondis, pastille numérotée + nom en tête, filet, puce « o ».
+    n_col, gap = 4, 0.14
+    cw = (CONTENT_W - (n_col - 1) * gap) / n_col
+    ch = 1.40
     top0 = CONTENT_TOP + 0.48
+    head_h = 0.54
     for i, (nom, ex) in enumerate(_FAMILLES):
-        col, row = i // 4, i % 4
-        x = MARGIN + col * (colw + col_gap)
-        y = top0 + row * (row_h + row_gap)
+        col, row = i % n_col, i // n_col
+        x = MARGIN + col * (cw + gap)
+        y = top0 + row * (ch + gap)
         accent = nom == "IA"   # « un sur N » : la famille propre à ce deck
-        D.add_rect(s, x, y + (row_h - badge) / 2, badge, badge,
-                   fill=NAVY if accent else WHITE, line=NAVY, line_w=1.5,
-                   rounded=True, radius=0.18)
-        D.add_text(s, x, y + (row_h - badge) / 2, badge, badge, [
-            (str(i + 1), dict(size=16, bold=True, color=WHITE if accent else NAVY,
-                              align=PP_ALIGN.CENTER)),
-        ], anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
-        px = x + badge + 0.12
-        D.add_rect(s, px, y, colw - badge - 0.12, row_h, fill=WHITE, line=NAVY,
-                   line_w=1.0, rounded=True, radius=0.5)
-        _rich(s, px + 0.22, y, colw - badge - 0.12 - 0.36, row_h, [
-            ([(nom, dict(size=11, bold=True, color=NAVY)),
-              ("  —  " + ex, dict(size=9, color=MUTED))], dict()),
+        _onglet(s, x, y, cw, ch, line_w=1.0)
+        _pastille(s, x + 0.36, y + head_h / 2 + 0.02, 0.40, str(i + 1), plein=accent, size=12)
+        D.add_text(s, x + 0.64, y + 0.02, cw - 0.70, head_h, [
+            (nom, dict(size=11, bold=True, color=NAVY, line_spacing=1.0)),
         ], anchor=MSO_ANCHOR.MIDDLE)
-    bas = top0 + 4 * row_h + 3 * row_gap
+        D.add_rect(s, x + 0.18, y + head_h + 0.06, cw - 0.36, 0.012, fill=NAVY)
+        _rich(s, x + 0.18, y + head_h + 0.14, cw - 0.34, ch - head_h - 0.20, [
+            ([("o  ", dict(size=10, bold=True, color=NAVY)),
+              (ex, dict(size=10, color=NAVY))], dict(line_spacing=1.15)),
+        ])
+    bas = top0 + 2 * ch + gap
     _bandeau_cloture(
         s, "Nommée, une douleur devient traitable : la méthode existe déjà — détaillée au "
            "chapitre L'offre.", bas + 0.14, "slide_familles", size=11)
@@ -4655,46 +4708,48 @@ def slide_conditions_reussite(prs):
     band_top = CONTENT_BOTTOM - band_h
     top0 = CONTENT_TOP + 0.40
     reg_h = band_top - 0.16 - top0
-    gw = 3.85
-    gap = 0.08
-    ch = (reg_h - 3 * gap) / 4
-    fil_x = MARGIN + 0.16
-    D.add_rect(s, fil_x - 0.01, top0 + ch / 2, 0.02, 3 * (ch + gap), fill=LINE)
+    # Capture « grand panneau à coin arrondi + bloc navy en quadrants » : les
+    # quatre conditions forment UN bloc navy 2 × 2 (coins diagonaux arrondis,
+    # centre en croix) ; le panneau des refus, à droite, est un grand panneau
+    # contour navy — un seul aplat navy sur la slide.
+    qgap = 0.06
+    bloc_w = 4.40
+    qw = (bloc_w - qgap) / 2
+    qh = (reg_h - qgap) / 2
     for i, (t, c) in enumerate(conditions):
-        y = top0 + i * (ch + gap)
-        cx = MARGIN + 0.40
-        D.add_rect(s, cx, y, gw - 0.40, ch, fill=WHITE, line=LINE, line_w=0.75, rounded=True, radius=0.12)
-        _badge(s, fil_x, y + ch / 2, 0.30, NAVY if i == 0 else WHITE, str(i + 1),
-               text_color=WHITE if i == 0 else NAVY, size=9)
-        D.add_text(s, cx + 0.16, y, gw - 0.72, ch, [
-            (t, dict(size=9.5, bold=True, color=NAVY)),
-            (c, dict(size=8.5, color=MUTED, space_before=1, line_spacing=1.15)),
+        x = MARGIN + (i % 2) * (qw + qgap)
+        y = top0 + (i // 2) * (qh + qgap)
+        _diag(s, x, y, qw, qh, fill=NAVY, line=NAVY, autre=bool((i % 2) ^ (i // 2)))
+        _rich(s, x + 0.24, y + 0.10, qw - 0.48, qh - 0.20, [
+            ([(f"{i + 1}.  ", dict(size=12, bold=True, color=WHITE)),
+              (t, dict(size=10, bold=True, color=WHITE))], dict(line_spacing=1.1)),
+            ([(c, dict(size=8.5, color=WHITE))], dict(space_before=4, line_spacing=1.2)),
         ], anchor=MSO_ANCHOR.MIDDLE)
-    px = MARGIN + gw + 0.22
+    px = MARGIN + bloc_w + 0.22
     pw = BORD_DROIT - px
-    D.add_rect(s, px, top0, pw, reg_h, fill=NAVY, rounded=True, radius=0.08)
-    pad = 0.18
+    _diag(s, px, top0, pw, reg_h, fill=WHITE, line=NAVY, line_w=1.25, autre=True)
+    pad = 0.22
     D.add_rect(s, px + pad, top0 + pad, 1.2, 0.24, fill=ACCENT_PLEIN, rounded=True, radius=0.5)
     D.add_text(s, px + pad, top0 + pad, 1.2, 0.24, [
         ("NOS REFUS", dict(size=8, bold=True, color=NAVY, align=PP_ALIGN.CENTER))],
         anchor=MSO_ANCHOR.MIDDLE, align=PP_ALIGN.CENTER)
     paras = [
-        ([("Ce que la démarche ne fera pas.", dict(size=10, bold=True, color=WHITE))], dict()),
+        ([("Ce que la démarche ne fera pas.", dict(size=10, bold=True, color=NAVY))], dict()),
         ([("Des lignes qu'elle tient et explique dès l'Assessment flash — pas des conditions "
-           "posées au client.", dict(size=8.5, color="#c7cbe0"))], dict(space_before=2, line_spacing=1.15)),
-        ([("ON REFUSE", dict(size=8, bold=True, color="#8891b3"))], dict(space_before=8)),
+           "posées au client.", dict(size=8.5, color=MUTED))], dict(space_before=2, line_spacing=1.15)),
+        ([("ON REFUSE", dict(size=8, bold=True, color=MUTED))], dict(space_before=8)),
     ]
     for r in ("Automatiser un processus mal conçu.",
               "Livrer une plateforme techniquement bonne mais peu adoptée.",
               "Séparer transformation organisationnelle et technique."):
-        paras.append(([("—  " + r, dict(size=8.5, color=WHITE))], dict(space_before=2)))
-    paras.append(([("ON NE LE RÉSOUT PAS, MAIS ON LE POSE", dict(size=8, bold=True, color="#8891b3"))],
+        paras.append(([("—  " + r, dict(size=8.5, color=NAVY))], dict(space_before=2)))
+    paras.append(([("ON NE LE RÉSOUT PAS, MAIS ON LE POSE", dict(size=8, bold=True, color=MUTED))],
                   dict(space_before=8)))
     for nom, q in (("Perte de savoir-faire", "l'équipe reprendrait-elle la main une semaine sans l'agent ?"),
                    ("Incitations RH contraires", "vos grilles récompensent-elles encore ce qu'on décourage ?")):
-        paras.append(([(nom + " : ", dict(size=8.5, bold=True, color=WHITE)),
-                       (q, dict(size=8.5, color="#c7cbe0"))], dict(space_before=2, line_spacing=1.15)))
-    _rich(s, px + pad, top0 + pad + 0.32, pw - 2 * pad, reg_h - 2 * pad - 0.32, paras)
+        paras.append(([(nom + " : ", dict(size=8.5, bold=True, color=NAVY)),
+                       (q, dict(size=8.5, color=MUTED))], dict(space_before=2, line_spacing=1.15)))
+    _rich(s, px + pad, top0 + pad + 0.34, pw - 2 * pad, reg_h - 2 * pad - 0.34, paras)
     D.add_rect(s, MARGIN, band_top, CONTENT_W, band_h, fill=TRACK, rounded=True, radius=0.08)
     D.add_text(s, MARGIN + 0.2, band_top, CONTENT_W - 0.4, band_h, [
         ("LE CRITÈRE DE SORTIE EST LE MIROIR DES CONDITIONS D'ENTRÉE", dict(size=8, bold=True, color=MUTED)),
