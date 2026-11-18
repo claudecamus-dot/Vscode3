@@ -46,3 +46,7 @@
 {"ts": "2026-11-04T10:34:18+00:00", "nom": "git.exe", "age_min": 38, "pid": 31136, "resultat": "tentative", "sous_cmd": "symbolic-ref", "parent": "mort"}
 {"ts": "2026-11-04T10:34:19+00:00", "nom": "git.exe", "age_min": 36, "pid": 35048, "resultat": "tentative", "sous_cmd": "rev-list", "parent": "mort"}
 {"ts": "2026-11-04T10:34:21+00:00", "nom": "python.exe", "age_min": 36, "pid": 46932, "resultat": "tentative"}
+{"ts": "2026-11-04T20:59:55+00:00", "nom": "git.exe", "age_min": 40, "pid": 41980, "resultat": "tentative", "sous_cmd": "config", "parent": "mort"}
+{"ts": "2026-11-05T14:17:21+00:00", "nom": "git.exe", "age_min": 33, "pid": 36004, "resultat": "tentative", "sous_cmd": "status", "parent": "mort"}
+{"ts": "2026-11-05T15:59:19+00:00", "nom": "python.exe", "age_min": 47, "pid": 40284, "resultat": "tentative"}
+{"ts": "2026-11-05T15:59:22+00:00", "nom": "git.exe", "age_min": 35, "pid": 19296, "resultat": "tentative", "sous_cmd": "ls-files", "parent": "mort"}

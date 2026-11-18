@@ -4,3 +4,7 @@
 {"consomme": "a7f1dcfdbf56c7cc79426fae5c430785", "cle": "2026-10-29|hub:gmah|f671ed5b327d", "ts": "2026-10-29T21:11:18+00:00"}
 {"ts": "2026-10-30T10:44:02+00:00", "type": "adopte-augmente", "nonce": "a1f8aeab7d6db65e473e0c84666949c8", "session": "867efd08-93fa-4fcc-9e07-af417cd06c7c", "par": "provenance_gmah_cible", "sig": "8d5616180452d9ac6c4fb9b2b7d095a15c3085a3c59e4f4971bd50806eceec5a"}
 {"consomme": "a1f8aeab7d6db65e473e0c84666949c8", "cle": "2026-10-30|hub:gmah|864cabf309ca", "ts": "2026-10-30T10:44:02+00:00"}
+{"ts": "2026-11-04T19:35:10+00:00", "type": "stop", "nonce": "49aba0a12cc84fd6c3553b7d75d0d4af", "session": "ef398370-aecd-4653-8d5f-84b02049f354", "par": "provenance_gmah_cible", "sig": "97d7085c2897104a9b9c1327f7ab63c80010d737c3ff881f8b2d2e53385f90e9"}
+{"revoque": true, "ts": "2026-11-04T19:36:52+00:00"}
+{"ts": "2026-11-04T19:37:45+00:00", "type": "adopte", "nonce": "811c07442165b4300be8b39ae0a68d41", "session": "ef398370-aecd-4653-8d5f-84b02049f354", "par": "provenance_gmah_cible", "sig": "2df303b315255b01e6319ce468296f6701b0214b300a2c22dce9061f2e5a2750"}
+{"consomme": "811c07442165b4300be8b39ae0a68d41", "cle": "2026-11-04|hub:gmah|d1696d830f53", "ts": "2026-11-04T19:37:45+00:00"}

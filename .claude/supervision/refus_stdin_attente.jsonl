@@ -28,3 +28,10 @@
 {"ts": "2026-11-03T17:30:24+00:00", "hook": "guard_dispatch_pretooluse", "gardes": ["guard_destructive_git", "warn_verif_before_commit", "guard_service"], "motif": "attente", "issue": "passe", "delai_s": 15.0, "attente_s": 9.718}
 {"ts": "2026-11-03T18:30:04+00:00", "hook": "guard_dispatch_pretooluse", "gardes": ["guard_destructive_git", "warn_verif_before_commit", "guard_service"], "motif": "attente", "issue": "passe", "delai_s": 15.0, "attente_s": 3.486}
 {"ts": "2026-11-03T18:37:26+00:00", "hook": "remind_revue_increment", "motif": "attente", "issue": "passe", "delai_s": 15.0, "attente_s": 12.016}
+{"ts": "2026-11-04T11:54:39+00:00", "hook": "orchestrator_gate", "motif": "attente", "issue": "passe", "delai_s": 15.0, "attente_s": 2.212}
+{"ts": "2026-11-04T19:28:25+00:00", "hook": "remind_revue_increment", "motif": "attente", "issue": "passe", "delai_s": 15.0, "attente_s": 3.078}
+{"ts": "2026-11-05T09:39:27+00:00", "hook": "remind_revue_increment", "motif": "attente", "issue": "passe", "delai_s": 15.0, "attente_s": 6.32}
+{"ts": "2026-11-05T13:21:26+00:00", "hook": "guard_dispatch_pretooluse", "gardes": ["guard_rapport_donnee", "guard_perimetres_actifs"], "motif": "attente", "issue": "passe", "delai_s": 15.0, "attente_s": 4.169}
+{"ts": "2026-11-05T14:34:43+00:00", "hook": "orchestrator_gate", "motif": "attente", "issue": "passe", "delai_s": 15.0, "attente_s": 2.925}
+{"ts": "2026-11-05T15:12:03+00:00", "hook": "remind_revue_increment", "motif": "attente", "issue": "passe", "delai_s": 15.0, "attente_s": 7.475}
+{"ts": "2026-11-05T15:59:26+00:00", "hook": "provenance_gmah_cible", "motif": "attente", "issue": "passe", "delai_s": 10.0, "attente_s": 2.792}

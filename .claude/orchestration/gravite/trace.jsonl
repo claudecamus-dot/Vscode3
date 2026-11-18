@@ -1,3 +1,5 @@
 {"ts": "2026-10-29T11:06:55+00:00", "action": "on", "arbitrage": "2026-10-29|hub:gmah|f671ed5b327d", "par": "cli"}
 {"ts": "2026-10-29T21:11:18+00:00", "action": "on", "arbitrage": "2026-10-29|hub:gmah|f671ed5b327d", "par": "cli"}
 {"ts": "2026-10-30T10:44:02+00:00", "action": "on", "arbitrage": "2026-10-30|hub:gmah|864cabf309ca", "par": "cli"}
+{"ts": "2026-11-04T19:36:52+00:00", "action": "off", "arbitrage": null, "par": "cli"}
+{"ts": "2026-11-04T19:37:46+00:00", "action": "on", "arbitrage": "2026-11-04|hub:gmah|d1696d830f53", "par": "cli"}

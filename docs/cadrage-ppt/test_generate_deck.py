@@ -53,6 +53,29 @@ def check(cond, msg):
         print(f"  FAIL {msg}")
 
 
+def verifier_passe_charte():
+    """`_aligner_charte` : pas d'italique, trait <= 9525 EMU, aucun gris de la liste
+    hors palette — sur un deck minimal construit EXPRÈS avec les trois défauts (un
+    test sur le deck réel passerait aussi si la passe n'était jamais appelée)."""
+    from pptx.util import Inches, Pt
+    prs = Presentation()
+    s = prs.slides.add_slide(prs.slide_layouts[6])
+    tb = s.shapes.add_textbox(Inches(1), Inches(1), Inches(3), Inches(1))
+    run = tb.text_frame.paragraphs[0].add_run()
+    run.text = "x"
+    run.font.italic = True
+    box = s.shapes.add_shape(1, Inches(1), Inches(2), Inches(2), Inches(1))
+    box.line.width = Pt(1.5)
+    box.fill.solid()
+    from pptx.dml.color import RGBColor
+    box.fill.fore_color.rgb = RGBColor.from_string("C7CBE0")
+    n = gen._aligner_charte(prs)
+    xml = s._element.xml
+    check(n["italique"] >= 1 and 'i="1"' not in xml, f"charte : italique retiré ({n['italique']})")
+    check(n["trait"] >= 1 and 'w="19050"' not in xml, f"charte : trait ramené à 0,75 pt ({n['trait']})")
+    check(n["couleur"] >= 1 and "C7CBE0" not in xml.upper(), f"charte : gris hors palette ramené ({n['couleur']})")
+
+
 def _images(slide):
     return [s for s in slide.shapes if s.shape_type == MSO_SHAPE_TYPE.PICTURE]
 
@@ -194,7 +217,13 @@ def main():
     # v2.42 (six retours utilisateur) : 37 -> 34 — « Ce que ça coûte » 6 -> 3
     # slides (-3), « L'offre » 4 -> 3 (-1), intercalaire « Annexes » (+1).
     # v2.44 : 34 -> 35 — convictions sur deux slides (fusion avec l'exemple client).
-    check(len(prs.slides) == 35, f"35 slides — reçu {len(prs.slides)}")
+    # v2.45 : 35 -> 36 — conviction « équipes avec l'IA » (slide dédiée).
+    check(len(prs.slides) == 36, f"36 slides — reçu {len(prs.slides)}")
+    verifier_passe_charte()
+    # Le build() réel passe-t-il par la passe ? (un test sur deck jouet ne le prouve pas)
+    _xml_slides = "".join(s._element.xml for s in prs.slides)
+    check('i="1"' not in _xml_slides and not re.search(r'<a:ln w="(1\d{4}|[2-9]\d{4})"', _xml_slides),
+          "build() : aucun italique ni trait > 0,75 pt en sortie — la passe charte est branchée")
     check(bool(_vu), "build() consulte bien _controler (tous les filets), "
                      "et pas un sous-ensemble câblé en dur")
     check(not problemes,

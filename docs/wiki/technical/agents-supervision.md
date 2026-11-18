@@ -1,5 +1,5 @@
 ---
-updated: 2026-11-04
+updated: 2026-11-18
 generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, étage 1)
 ---
 
@@ -8,13 +8,13 @@ generated-by: .claude/supervision/scan_transcripts.py (superviseur d'agents, ét
 > ⚠️ **Page générée automatiquement** (hook SessionStart → `.claude/supervision/scan_transcripts.py`).
 > **Ne pas éditer à la main** — toute modification serait écrasée au prochain scan.
 
-Dernier scan : 2026-11-04T11:53:17+01:00 · **156 sessions** (transcripts) · **92** invocations de skills · **250** lancements de sous-agents.
+Dernier scan : 2026-11-18T09:44:27+01:00 · **170 sessions** (transcripts) · **95** invocations de skills · **261** lancements de sous-agents.
 
 ## Skills — usage réel
 
 | Skill | Famille | Invocations | Première | Dernière |
 | --- | --- | --- | --- | --- |
-| `agent-orchestrator` | projet | 38 | 2026-07-21 | 2026-11-03 |
+| `agent-orchestrator` | projet | 41 | 2026-07-21 | 2026-11-05 |
 | `bmad-review` | BMAD | 11 | 2026-09-07 | 2026-09-23 |
 | `bmad-party-mode` | BMAD | 7 | 2026-09-02 | 2026-09-18 |
 | `bmad-brainstorming` | BMAD | 6 | 2026-09-11 | 2026-09-18 |
@@ -36,11 +36,12 @@ Dernier scan : 2026-11-04T11:53:17+01:00 · **156 sessions** (transcripts) · **
 
 | Sous-agent | Lancements | Premier | Dernier |
 | --- | --- | --- | --- |
-| `general-purpose` | 139 | 2026-07-21 | 2026-11-03 |
-| `ppt-designer` | 77 | 2026-07-21 | 2026-11-03 |
+| `general-purpose` | 145 | 2026-07-21 | 2026-11-05 |
+| `ppt-designer` | 78 | 2026-07-21 | 2026-11-04 |
 | `Explore` | 13 | 2026-07-21 | 2026-11-02 |
 | `bmad-revue` | 9 | 2026-09-07 | 2026-09-23 |
 | `(defaut)` | 8 | 2026-10-30 | 2026-10-30 |
+| `fork` | 4 | 2026-11-05 | 2026-11-05 |
 | `Plan` | 1 | 2026-07-21 | 2026-07-21 |
 | `agent-supervisor` | 1 | 2026-09-03 | 2026-09-03 |
 | `claude-code-guide` | 1 | 2026-07-21 | 2026-07-21 |
@@ -72,7 +73,7 @@ _Consommés en lisant/exécutant leurs `scripts/`, ou via un sous-agent qui les 
 
 ## TODO agents (constats automatiques)
 
-⚠️ **Mesure incomplète** — 13 transcript(s) sur 156 absent(s) du disque. Un `n=0` ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.
+⚠️ **Mesure incomplète** — 13 transcript(s) sur 170 absent(s) du disque. Un `n=0` ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.
 
 1. **Désinstaller les shims BMAD dépréciés** (17) : `bmad-checkpoint-preview`, `bmad-create-architecture`, `bmad-create-prd`, `bmad-create-story`, `bmad-dev-story`, `bmad-document-project`, `bmad-edit-prd`, `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-generate-project-context`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-review-verification-gap`, `bmad-sprint-status`, `bmad-technical-research`, `bmad-validate-prd` — dépréciés par BMAD dans leur propre `description`, chacun avec son remplaçant ; le seul élagage qui ne repose pas sur notre mesure d'usage.
 2. **Skills projet sans usage** : `agent-securite`, `veille-agentic` — vérifier pertinence et déclencheurs.
@@ -144,6 +145,7 @@ Ce que 'traiter' ces 3 points pourrait vouloir dire (a instruire au hub, pas tra
 - **`hub:gmah`** (2026-10-29) : ACCEPTE : activer-gravitationnel — ADOPTE GMAH AUGMENTE tapé par l'utilisateur le 2026-10-29
 - **`hub:gmah`** (2026-10-29) : ACCEPTE : activer-gravitationnel — ADOPTE GMAH tapé par l'utilisateur le 2026-10-29
 - **`hub:gmah`** (2026-10-30) : ACCEPTE : activer-gravitationnel — ADOPTE GMAH AUGMENTE tapé par l'utilisateur le 2026-10-30
+- **`hub:gmah`** (2026-11-04) : ACCEPTE : activer-gravitationnel — ADOPTE GMAH tapé par l'utilisateur le 2026-11-04
 
 ## Diagnostic qualitatif (étage 2 — `agent-supervisor`)
 
@@ -164,7 +166,7 @@ _10 constat(s) de ce diagnostic écarté(s) par un arbitrage — pour en rouvrir
 
 ## Seuil de qualification — la mesure
 
-Depuis le 2026-09-10 : **376** demande(s) vue(s) hors commande slash (+ 127 slash), **9** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **2 %** des demandes orchestrées.
+Depuis le 2026-09-10 : **402** demande(s) vue(s) hors commande slash (+ 144 slash), **9** run(s) orchestré(s) journalisé(s) sur la même fenêtre — soit **2 %** des demandes orchestrées.
 _Ce chiffre ne dit pas ce qui AURAIT dû être orchestré : le hook compte, il ne juge pas. Il donne le dénominateur qui manquait pour arbitrer le seuil sur données plutôt que sur habitude._
 
 ---

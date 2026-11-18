@@ -453,6 +453,15 @@
         "autre"
       ],
       "decision": "ACCEPTE : activer-gravitationnel — ADOPTE GMAH AUGMENTE tapé par l'utilisateur le 2026-10-30"
+    },
+    {
+      "cible": "hub:gmah",
+      "date": "2026-11-04",
+      "titre": "Mode gravitationnel",
+      "categories": [
+        "autre"
+      ],
+      "decision": "ACCEPTE : activer-gravitationnel — ADOPTE GMAH tapé par l'utilisateur le 2026-11-04"
     }
   ]
 }

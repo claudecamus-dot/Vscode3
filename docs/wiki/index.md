@@ -55,12 +55,22 @@ Retour utilisateur le même jour (2026-07-15) : (1) le schéma de fonctionnement
   `.claude/dispositif/sync_dispositif.py`) — constaté par la revue du 2026-09-01, arbitrage en cours
 - Process de redaction du REX source formalisé en principe seulement (voir `docs/bmad-iap-cadrage.md` §Points ouverts) — pas encore une étape de workflow reproductible
 
+## TODO — reprise de session
+
+État au 2026-11-05 (rubrique tenue à la main, hors bloc généré ci-dessous) :
+
+- [ ] **Valider la slide 16** « Notre conviction sur les équipes avec l'IA » (nouvelle, deck 35 → 36 slides, matière : étude Vscode9 §5.2/§14) — non validée par l'utilisateur ; `docs/cadrage-ppt/generate_deck.py` et `test_generate_deck.py` modifiés, **non commités**.
+- [ ] **`revue-increment`** avant commit (non jouée) ; `slide-text-polish` non passée sur la slide 16.
+- [ ] **Rejouer `test_generate_deck.py` hors `WinError 6`** : son étape de rendu LibreOffice plante (soffice muet), donc **non vérifié** ; le rendu a été relu via PowerPoint COM (slides 13, 15, 16).
+- [ ] **Reliquat non commité du dispositif** : `.claude/orchestration/gravite/*.jsonl`, `.claude/supervision/*` — committer ou nommer avant toute nouvelle demande.
+- [ ] **58 commits depuis le dernier run journalisé** : vérifier qu'aucune demande ne s'y est perdue sans run ni arbitrage.
+
 <!-- TODO-AGENTS:START — section générée par .claude/supervision/scan_transcripts.py, ne pas éditer à la main -->
 ## TODO agents 🤖
 
 Constats automatiques du superviseur d'agents (usage mesuré dans les transcripts de session) :
 
-⚠️ **Mesure incomplète** — 13 transcript(s) sur 156 absent(s) du disque. Un `n=0` ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.
+⚠️ **Mesure incomplète** — 13 transcript(s) sur 170 absent(s) du disque. Un `n=0` ne veut plus dire « jamais invoquée » mais « on ne le voit plus » : les listes ci-dessous sous-estiment l'usage réel. Ne rien désinstaller sur cette base.
 
 - **Désinstaller les shims BMAD dépréciés** (17) : `bmad-checkpoint-preview`, `bmad-create-architecture`, `bmad-create-prd`, `bmad-create-story`, `bmad-dev-story`, `bmad-document-project`, `bmad-edit-prd`, `bmad-editorial-review`, `bmad-editorial-review-prose`, `bmad-editorial-review-structure`, `bmad-generate-project-context`, `bmad-review-adversarial-general`, `bmad-review-edge-case-hunter`, `bmad-review-verification-gap`, `bmad-sprint-status`, `bmad-technical-research`, `bmad-validate-prd` — dépréciés par BMAD dans leur propre `description`, chacun avec son remplaçant ; le seul élagage qui ne repose pas sur notre mesure d'usage.
 - **Skills projet sans usage** : `agent-securite`, `veille-agentic` — vérifier pertinence et déclencheurs.

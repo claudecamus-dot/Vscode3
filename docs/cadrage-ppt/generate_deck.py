@@ -761,8 +761,7 @@ def slide_chapitre(prs, numero, titre, couverture, color, scene, seed=0):
     p2.text = couverture
     for r in p2.runs:
         r.font.size = Pt(D.TYPE["small"])
-        r.font.italic = True
-        r.font.color.rgb = _rgb(MUTED)
+        r.font.color.rgb = _rgb(MUTED)   # pas d'italique : charte de référence, sl. 7
     for p in phs[0].text_frame.paragraphs[:1]:
         for r in p.runs:
             r.font.color.rgb = _rgb(color)
@@ -884,7 +883,7 @@ def slide_executive_summary(prs):
          "des douleurs mesurables et nommées.",
          "Contexte · Ce que ça coûte"),
         ("CONVICTIONS", ENCRE, "Partir des utilisateurs, traiter la problématique d'abord.",
-         "Sept convictions et une conviction agentic sur ce qui fait réussir — et un "
+         "Sept convictions, une sur l'agentic, une sur les équipes avec l'IA : ce qui fait réussir — et un "
          "exemple avant/après de ce qu'elle change.",
          "Nos convictions"),
         ("OFFRE", NAVY, "Traiter l'infra comme un produit, sans prérequis d'IA.",
@@ -3504,6 +3503,45 @@ POLICE_SECOURS = "Arial"
 GLYPHES_HORS_POLICE_DECK = {"①", "②", "③", "⟲"}
 
 
+# --- Passe « charte de référence » (revue du 2026-11-05 contre « Slides
+# préformatées OCTO (1).pptx », cf. docs/imports/references/slides-preformatees-octo/
+# REVUE-CHARTE-ET-REPRISES.md). Une passe finale sur le XML des slides plutôt que
+# ~200 sites d'appel : un nouveau helper qui réintroduirait un italique, un trait
+# de 1 pt ou un gris étranger est corrigé au même endroit, sans y penser.
+TRAIT_CHARTE_EMU = 9525        # réf. : 0,75 pt navy sur 522 des cadres du lot A
+# Gris/bleus pâles hors thème -> ton le plus proche de la rampe du thème (accent5/6).
+# `4A5A80`/`26386A` (SEVERITE) restent : rampe ordonnée à 5 paliers, voulue.
+COULEURS_HORS_PALETTE = {
+    "C7CBE0": "CFD3DD", "DCE6F5": "E7E9EE", "E6E8EE": "E7E9EE",
+    "F2F4F8": "E7E9EE", "E8EBF5": "E7E9EE", "8891B3": "9FA7BB",
+}
+
+
+def _aligner_charte(prs):
+    """Pas d'italique (réf. sl. 7), trait ≤ 0,75 pt (réf. : 9525 EMU), gris
+    étrangers ramenés au thème. Ne touche ni tailles ni interlignes (re-mise en
+    page par slide, hors de cette passe). Rend le nombre de retouches par nature."""
+    from pptx.oxml.ns import qn
+    n = {"italique": 0, "trait": 0, "couleur": 0}
+    for s in prs.slides:
+        for el in s._element.iter():
+            if el.tag in (qn("a:rPr"), qn("a:defRPr"), qn("a:endParaRPr")):
+                if el.get("i") == "1":
+                    el.set("i", "0")
+                    n["italique"] += 1
+            elif el.tag == qn("a:ln"):
+                w = el.get("w")
+                if w and int(w) > TRAIT_CHARTE_EMU:
+                    el.set("w", str(TRAIT_CHARTE_EMU))
+                    n["trait"] += 1
+            elif el.tag == qn("a:srgbClr"):
+                nv = COULEURS_HORS_PALETTE.get((el.get("val") or "").upper())
+                if nv:
+                    el.set("val", nv)
+                    n["couleur"] += 1
+    return n
+
+
 def _appliquer_police_deck(prs, police=POLICE_DECK, secours=POLICE_SECOURS):
     """Alias — logique extraite vers `pptx_deck.appliquer_police` le 2026-09-11
     (finding audit VScode5) ; le choix de police (Outfit) reste ici, propre a
@@ -3927,6 +3965,66 @@ def slide_convictions_2(prs):
                       dict(space_before=8, line_spacing=1.25)))
     _rich(s, pav_x + 0.34, top + 0.22, pav_w - 0.52, h - 0.4, paras, anchor=MSO_ANCHOR.TOP)
     _photo_libre(s, "nightsky", 0, pav_x, top + h + 0.18, pav_w, CONTENT_BOTTOM - (top + h + 0.18))
+    return s
+
+
+# v2.45 (demande utilisateur du 2026-11-05 : « rajoute une conviction sur les
+# modèles d'équipe avec IA et les rôles », matière : étude Vscode9 « Modèles
+# d'équipes et rôles dans le SDLC, le SDD et l'ADLC », §5.2 et §14). Trop dense
+# pour tenir en 3e pavé de la slide 2/2 (2 × 2,7 in pour 4,3 in disponibles,
+# mesuré) : slide à part, dans le chapitre « Nos convictions ». Les trois
+# responsabilités viennent de guides de praticiens (niveau C de l'étude) :
+# présentées comme à éprouver, jamais comme des postes établis.
+_CONVICTION_EQUIPE = (
+    "Avec l'IA, on éprouve des responsabilités avant de créer des postes.",
+    "L'équipe produit reste responsable de bout en bout : l'IA déplace son effort "
+    "vers le cadrage, l'évaluation et la supervision.",
+)
+_RESPONSABILITES_IA = [
+    ("LE QUOI", "Expert métier",
+     "Porte les règles, les cas limites et les critères de succès du domaine."),
+    ("LE COMMENT", "Ingénieur de workflows d'agents",
+     "Compose compétences, outils et contexte ; conçoit les tests d'évaluation."),
+    ("LE RUN", "Exploitation des agents",
+     "Suit coûts, traces, incidents et dérive de la qualité, dès que l'échelle l'exige."),
+]
+
+
+def slide_convictions_equipe_ia(prs):
+    """Conviction 8 : équipes et rôles avec l'IA. Pattern : cartes à onglet numérotées
+    (comme les convictions 1 à 7), une seule rangée ; aucun accent couleur (la
+    couleur ne porte pas le sens) — la numérotation différencie les trois."""
+    s = content_slide(prs, None, "Notre conviction sur les équipes avec l'IA", color=ENCRE)
+    claim, sous = _CONVICTION_EQUIPE
+    y0 = CONTENT_TOP + 0.10
+    _rich(s, MARGIN, y0, BORD_DROIT - MARGIN, 0.95, [
+        ([(claim, dict(size=15, bold=True, color=NAVY))], dict(line_spacing=1.1)),
+        ([(sous, dict(size=10.5, color=MUTED))], dict(space_before=4, line_spacing=1.2)),
+    ], anchor=MSO_ANCHOR.TOP)
+    gap = 0.15
+    w = (BORD_DROIT - MARGIN - 2 * gap) / 3
+    top = y0 + 1.15
+    h = 1.75
+    for i, (kicker, role, desc) in enumerate(_RESPONSABILITES_IA):
+        x = MARGIN + i * (w + gap)
+        _onglet(s, x, top, w, h, fill=WHITE, line=NAVY, line_w=1.0)
+        _rich(s, x + 0.18, top + 0.34, w - 0.36, h - 0.55, [
+            ([(kicker, dict(size=8, bold=True, color=MUTED))], dict(align=PP_ALIGN.CENTER)),
+            ([(role, dict(size=11.5, bold=True, color=NAVY))],
+             dict(space_before=4, line_spacing=1.15, align=PP_ALIGN.CENTER)),
+            ([(desc, dict(size=9.5, color=MUTED))],
+             dict(space_before=5, line_spacing=1.2, align=PP_ALIGN.CENTER)),
+        ], anchor=MSO_ANCHOR.MIDDLE)
+        _pastille(s, x + w / 2, top, 0.46, f"{i + 1}.", plein=False, size=12)
+    bas = top + h + 0.2
+    _rich(s, MARGIN, bas, BORD_DROIT - MARGIN, 0.5, [
+        ([("Restent humains : ", dict(size=10, bold=True, color=NAVY)),
+          ("le produit, l'architecture, la sécurité et la mise en production.",
+           dict(size=10, color=NAVY))], dict(line_spacing=1.2)),
+        ([("Ces trois rôles viennent de guides de praticiens (Agentic SDLC Handbook), "
+           "non d'un standard de staffing : on les teste en PoC avant toute formalisation RH.",
+           dict(size=8.5, color=MUTED))], dict(space_before=3, line_spacing=1.2)),
+    ], anchor=MSO_ANCHOR.TOP)
     return s
 
 
@@ -4805,11 +4903,12 @@ def build():
     slide_familles(prs)
 
     slide_chapitre(prs, "03", "Nos convictions",
-                   "Sept convictions, une conviction sur l'agentic, et un exemple "
+                   "Sept convictions, deux sur l'IA (agentic, équipes et rôles), et un exemple "
                    "avant/après de ce qu'elle change.",
                    ENCRE, "wheatfield", seed=0)
     slide_convictions(prs)
     slide_convictions_2(prs)
+    slide_convictions_equipe_ia(prs)
     slide_infra_as_product_exemple(prs)
 
     slide_chapitre(prs, "04", "L'offre",
@@ -4858,6 +4957,7 @@ def build():
     slide_export_markdown(prs)
     _CHAPITRE_COURANT[0] = None
 
+    print("CHARTE:", _aligner_charte(prs))
     _appliquer_police_deck(prs)
 
     # « GEOMETRIE » annoncait UNE nature de controle quand il y en a desormais
